@@ -1,0 +1,72 @@
+{
+  "packageId": "org.protocol-lab.components.implementation.nginx-http1",
+  "packageKind": "implementation",
+  "version": "0.1.0",
+  "component": {
+    "name": "nginx-http1",
+    "family": "nginx",
+    "role": "server",
+    "protocols": [
+      "h1"
+    ]
+  },
+  "entrypoints": {
+    "launch": {
+      "type": "command",
+      "command": "./run.ps1",
+      "workingDirectory": "."
+    }
+  },
+  "capabilities": {
+    "supported": [
+      "http.server",
+      "httpPlaintext",
+      "httpJson"
+    ],
+    "supportedProtocols": [
+      "h1"
+    ],
+    "supportedProtocolVersions": [
+      "http/1.1"
+    ],
+    "supportedTestCaseIds": [
+      "http.core.plaintext",
+      "http.core.json"
+    ],
+    "supportedScenarios": [
+      "http.core.plaintext",
+      "http.core.json"
+    ],
+    "unsupportedKnownCases": [
+      "h2",
+      "h3",
+      "https",
+      "request-body-echo",
+      "server-sent-events"
+    ]
+  },
+  "requirements": {
+    "os": [
+      "linux",
+      "windows"
+    ],
+    "runtimes": [],
+    "ports": [
+      {
+        "name": "http",
+        "protocol": "tcp",
+        "default": 8080
+      }
+    ],
+    "externalTools": [
+      "nginx"
+    ]
+  },
+  "provenance": {
+    "sourcePath": "implementations/nginx-http1",
+    "owners": [
+      "protocol-lab-components"
+    ],
+    "licenseNotes": "Confirm nginx license and binary redistribution requirements before publishing."
+  }
+}

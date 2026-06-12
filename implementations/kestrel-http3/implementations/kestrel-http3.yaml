@@ -1,0 +1,85 @@
+schemaVersion: "1.0"
+id: kestrel-http3
+name: Kestrel HTTP/3
+description: Lane-scoped Kestrel HTTP/3 target for ProtocolLab HTTP application scenarios.
+family: kestrel
+role: server
+targetKind: process
+targetContract: process
+executable: run.ps1
+project: src/KestrelHttp3.csproj
+workingDirectory: .
+dockerNetworkMode: published-port
+certificateMode: dev-cert
+roles:
+  - server
+protocols:
+  - h3
+supportedProtocols:
+  - h3
+supportedWorkloadFamilies:
+  - http.application
+protocolVersions:
+  - http/3
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+ports:
+  - name: h3
+    protocol: udp
+    default: 8443
+environment:
+  PLAB_HTTP_PORT: "8443"
+startup:
+  port:
+    name: h3
+    environmentVariable: PLAB_HTTP_PORT
+    default: 8443
+  readiness:
+    protocol: https
+    path: /health
+    expectedStatus: 200
+readinessCheck:
+  type: http
+  url: https://127.0.0.1:${PLAB_HTTP_PORT}/health
+  timeoutSeconds: 10
+capabilities:
+  - http.server
+  - httpPlaintext
+  - httpJson
+  - httpBytes1Kb
+supportedProtocolVersions:
+  - http/3
+supportedTestCaseIds:
+  - http.core.plaintext
+  - http.core.json
+  - http.payload.bytes.1kb
+supportedScenarios:
+  - http.core.plaintext
+  - http.core.json
+  - http.payload.bytes.1kb
+unsupportedKnownCases:
+  - h1
+  - h2
+  - h2c
+  - raw-quic
+  - websocket
+  - server-sent-events
+endpoints:
+  plaintext:
+    method: GET
+    path: /plaintext
+  json:
+    method: GET
+    path: /json
+  bytes1kb:
+    method: GET
+    path: /bytes/1kb
+shutdownBehavior: process
+artifactExports:
+  - kestrel-http3.log
+qlogSupport: false
+sslKeyLogSupport: true
+notes: HTTP/3-only Kestrel lane. Do not use as a combined Kestrel HTTP/1 or HTTP/2 package.

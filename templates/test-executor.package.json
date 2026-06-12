@@ -1,0 +1,38 @@
+{
+  "packageId": "org.protocol-lab.components.executor.example-http1",
+  "packageKind": "test-executor",
+  "version": "0.1.0",
+  "component": {
+    "name": "example-http1",
+    "family": "example",
+    "role": "test-executor",
+    "protocols": [
+      "http/1.1"
+    ]
+  },
+  "entrypoints": {
+    "execute": {
+      "type": "command",
+      "command": "./execute.ps1",
+      "workingDirectory": "."
+    }
+  },
+  "requirements": {
+    "os": [
+      "linux",
+      "windows"
+    ],
+    "runtimes": [],
+    "network": {
+      "requiresTargetBaseUrl": true
+    },
+    "externalTools": []
+  },
+  "provenance": {
+    "sourcePath": "executors/example-http1",
+    "owners": [
+      "protocol-lab-components"
+    ],
+    "licenseNotes": "Fill in redistribution and runtime license notes before publishing."
+  }
+}

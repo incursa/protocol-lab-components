@@ -1,0 +1,9 @@
+bin/
+obj/
+artifacts/
+packages/
+*.plabpkg
+*.nupkg
+*.snupkg
+.vs/
+.vscode/

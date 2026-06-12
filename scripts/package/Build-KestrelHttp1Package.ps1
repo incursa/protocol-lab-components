@@ -1,0 +1,80 @@
+[CmdletBinding()]
+param(
+    [ValidateSet('win-x64', 'linux-x64')]
+    [string]$RuntimeIdentifier = 'win-x64',
+
+    [string]$Configuration = 'Release',
+
+    [string]$Root = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,
+
+    [string]$OutputRoot = (Join-Path $Root 'artifacts/packages')
+)
+
+$ErrorActionPreference = 'Stop'
+
+$componentName = 'kestrel-http1'
+$componentRoot = Join-Path $Root "implementations/$componentName"
+$project = Join-Path $componentRoot 'src/KestrelHttp1.csproj'
+$sourcePackageManifest = Join-Path $componentRoot 'protocol-lab-package.json'
+$sourceImplementationManifest = Join-Path $componentRoot 'implementations/kestrel-http1.yaml'
+
+if (-not (Test-Path -LiteralPath $project)) {
+    throw "Project not found: $project"
+}
+
+$packageManifest = Get-Content -LiteralPath $sourcePackageManifest -Raw | ConvertFrom-Json
+$packageId = [string]$packageManifest.packageId
+$packageVersion = [string]$packageManifest.packageVersion
+$stagingRoot = Join-Path $OutputRoot "$componentName/$RuntimeIdentifier"
+$publishRoot = Join-Path $stagingRoot 'publish'
+$packageRoot = Join-Path $stagingRoot 'package'
+$packageBin = Join-Path $packageRoot 'bin'
+$packageImplementations = Join-Path $packageRoot 'implementations'
+$artifactName = "$packageId.$packageVersion.$RuntimeIdentifier.plabpkg"
+$artifactPath = Join-Path $OutputRoot $artifactName
+
+Remove-Item -LiteralPath $stagingRoot -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force -Path $publishRoot, $packageBin, $packageImplementations | Out-Null
+
+dotnet publish $project `
+    --configuration $Configuration `
+    --runtime $RuntimeIdentifier `
+    --self-contained true `
+    -p:PublishSingleFile=true `
+    -p:EnableCompressionInSingleFile=true `
+    -p:PublishTrimmed=false `
+    --output $publishRoot
+
+$executableName = if ($RuntimeIdentifier.StartsWith('win-', [System.StringComparison]::OrdinalIgnoreCase)) {
+    'kestrel-http1.exe'
+}
+else {
+    'kestrel-http1'
+}
+
+$publishedExecutable = Join-Path $publishRoot $executableName
+if (-not (Test-Path -LiteralPath $publishedExecutable)) {
+    throw "Published executable not found: $publishedExecutable"
+}
+
+Copy-Item -LiteralPath $publishedExecutable -Destination (Join-Path $packageBin $executableName)
+Copy-Item -LiteralPath $sourceImplementationManifest -Destination (Join-Path $packageImplementations 'kestrel-http1.yaml')
+
+$artifactManifest = $packageManifest | ConvertTo-Json -Depth 20 | ConvertFrom-Json
+$artifactManifest.environments = @(
+    $packageManifest.environments | Where-Object {
+        $_.os -eq $(if ($RuntimeIdentifier.StartsWith('win-', [System.StringComparison]::OrdinalIgnoreCase)) { 'windows' } else { 'linux' }) -and
+        $_.arch -eq 'x64'
+    }
+)
+
+if ($artifactManifest.environments.Count -ne 1) {
+    throw "Expected one package environment for runtime '$RuntimeIdentifier'."
+}
+
+$artifactManifest | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $packageRoot 'protocol-lab-package.json') -Encoding utf8
+
+Remove-Item -LiteralPath $artifactPath -Force -ErrorAction SilentlyContinue
+Compress-Archive -Path (Join-Path $packageRoot '*') -DestinationPath $artifactPath -Force
+
+Write-Host "Created $artifactPath"

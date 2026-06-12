@@ -1,0 +1,74 @@
+executorIdentity:
+  id: go-http1-executor
+  name: Go HTTP/1 Test Executor
+  version: 0.1.0
+  vendor: Incursa
+versionCompatibility:
+  contractVersion: test-executor-v1
+  compatibleContractVersions:
+    - test-executor-v1
+  executorVersion: 0.1.0
+claimedCapabilities:
+  - id: http.core.plaintext
+    status: supported
+  - id: http.core.json
+    status: supported
+  - id: h2
+    status: unsupported
+  - id: h3
+    status: unsupported
+  - id: https
+    status: unsupported
+  - id: request-body-echo
+    status: unsupported
+  - id: payload-bytes
+    status: unsupported
+  - id: load-generation
+    status: unsupported
+supportedTestSelectors:
+  - selectorType: test-id
+    expression: http.core.plaintext
+  - selectorType: test-id
+    expression: http.core.json
+supportedScenarioSelectors:
+  - selectorType: scenario-id
+    expression: http.core.plaintext
+  - selectorType: scenario-id
+    expression: http.core.json
+supportedProtocolFamilies:
+  - h1
+supportedExecutionModes:
+  - single-cell
+  - process
+requiredTargetEndpointBindings:
+  - bindingId: primary
+    purpose: test-endpoint
+    endpointType: http
+    protocols:
+      - h1
+supportedArtifactTypes:
+  - type: validation.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: result.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: load-tool.stdout.txt
+    producedByStates:
+      - stopped
+      - failed
+  - type: load-tool.stderr.txt
+    producedByStates:
+      - stopped
+      - failed
+  - type: load-tool-execution.json
+    producedByStates:
+      - stopped
+      - failed
+metricsAvailability:
+  available: true
+  availableKinds:
+    - session
+    - validation

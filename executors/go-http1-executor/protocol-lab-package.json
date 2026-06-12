@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.go-http1-executor",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "Go HTTP/1 Test Executor",
+  "entryManifests": [
+    "test-executors/go-http1-executor.yaml"
+  ],
+  "providedTestExecutors": [
+    {
+      "testExecutorId": "go-http1-executor",
+      "displayName": "Go HTTP/1 Test Executor",
+      "protocols": [
+        "h1"
+      ],
+      "scenarios": [
+        "http.core.plaintext",
+        "http.core.json"
+      ],
+      "tests": [
+        "http.core.plaintext",
+        "http.core.json"
+      ],
+      "requiredCapabilities": [
+        {
+          "name": "go",
+          "value": "true"
+        }
+      ]
+    }
+  ],
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "execute.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "execute.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": false,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": true,
+    "requiredCapabilities": [
+      {
+        "name": "go",
+        "value": "true"
+      }
+    ]
+  }
+}

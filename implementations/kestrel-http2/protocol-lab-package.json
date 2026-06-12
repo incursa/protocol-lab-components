@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Kestrel HTTP/2 Implementation",
+  "entryManifests": [
+    "implementations/kestrel-http2.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "kestrel-http2",
+      "displayName": "Kestrel HTTP/2",
+      "protocols": [
+        "h2"
+      ],
+      "scenarios": [
+        "http.core.plaintext",
+        "http.core.json",
+        "http.payload.bytes.1kb"
+      ]
+    }
+  ],
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": true,
+    "requiresDocker": false,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "dotnet-runtime",
+        "value": "10"
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+    auto_https off
+}
+
+:{$PLAB_HTTP_PORT:8080} {
+    respond /health "ok" 200
+    respond /plaintext "Hello, World!" 200
+    header /plaintext Content-Type "text/plain"
+    respond /json "{\"message\":\"Hello, World!\"}" 200
+    header /json Content-Type "application/json"
+    respond /protocol-lab/metadata "{\"implementationId\":\"caddy-http1\",\"protocol\":\"h1\",\"packageId\":\"org.protocol-lab.components.implementation.caddy-http1\"}" 200
+    header /protocol-lab/metadata Content-Type "application/json"
+}

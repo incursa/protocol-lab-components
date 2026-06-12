@@ -1,0 +1,75 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate component manifests
+        shell: pwsh
+        run: ./scripts/package/Validate-ProtocolLabComponentManifests.ps1
+
+  package-smoke:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: kestrel-http1
+            script: Build-KestrelHttp1Package.ps1
+            args: linux-x64
+          - package: kestrel-http2
+            script: Build-KestrelHttp2Package.ps1
+            args: ''
+          - package: caddy-http1
+            script: Build-CaddyHttp1Package.ps1
+            args: ''
+          - package: nginx-http1
+            script: Build-NginxHttp1Package.ps1
+            args: ''
+          - package: go-http1-executor
+            script: Build-GoHttp1ExecutorPackage.ps1
+            args: ''
+          - package: kestrel-http3
+            script: Build-KestrelHttp3Package.ps1
+            args: ''
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $script = Join-Path './scripts/package' '${{ matrix.script }}'
+          $arguments = '${{ matrix.args }}'
+          if ([string]::IsNullOrWhiteSpace($arguments)) {
+            & $script
+          }
+          else {
+            $argumentList = @($arguments -split ' ' | Where-Object { $_ })
+            & $script @argumentList
+          }
+
+      - name: Assert package artifact exists
+        shell: pwsh
+        run: |
+          $artifacts = Get-ChildItem -LiteralPath artifacts/packages -File -Filter '*.plabpkg' -ErrorAction SilentlyContinue
+          if (-not $artifacts) {
+            throw "Package smoke did not produce a .plabpkg artifact for ${{ matrix.package }}."
+          }
+          $artifacts | Select-Object FullName, Length

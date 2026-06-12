@@ -1,0 +1,94 @@
+schemaVersion: "1.0"
+id: kestrel-http1
+name: Kestrel HTTP/1
+description: Minimal Kestrel HTTP/1.1 target for the ProtocolLab HTTP/1 core smoke slice.
+family: kestrel
+role: server
+image: ""
+targetKind: process
+targetContract: adapter-v1
+executable: bin/kestrel-http1
+project: ""
+workingDirectory: .
+dockerfile: ""
+buildContext: .
+containerName: ""
+dockerNetwork: ""
+dockerNetworkMode: published-port
+dockerBaseUrl: ""
+baseUrl: ""
+adapterControlPlaneBaseUrl: ""
+certificateMode: none
+roles:
+  - server
+protocols:
+  - h1
+supportedProtocols:
+  - h1
+supportedWorkloadFamilies:
+  - http.application
+protocolVersions:
+  - http/1.1
+entrypoint:
+  kind: process
+  path: bin/kestrel-http1
+  arguments: []
+  workingDirectory: .
+ports:
+  - name: http
+    protocol: tcp
+    default: 8080
+environment:
+  PLAB_HTTP_PORT: "8080"
+dockerEnvironment: {}
+commandArguments: []
+startup:
+  port:
+    name: http
+    environmentVariable: PLAB_HTTP_PORT
+    default: 8080
+  readiness:
+    protocol: http
+    path: /health
+    expectedStatus: 200
+readinessCheck:
+  type: http
+  url: http://127.0.0.1:${PLAB_HTTP_PORT}/health
+  timeoutSeconds: 10
+capabilities:
+  - http.server
+  - httpPlaintext
+  - httpEcho
+  - httpJson
+supportedProtocolVersions:
+  - http/1.1
+supportedTestCaseIds:
+  - http.core.plaintext
+  - http.core.echo
+  - http.core.json
+supportedScenarios:
+  - http.core.plaintext
+  - http.core.echo
+  - http.core.json
+unsupportedKnownCases:
+  - h2
+  - h3
+  - https
+  - websocket
+  - server-sent-events
+endpoints:
+  plaintext:
+    method: GET
+    path: /plaintext
+  echo:
+    method: POST
+    path: /echo
+  json:
+    method: GET
+    path: /json
+shutdownBehavior: process
+artifactExports:
+  - kestrel-http1.log
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Minimal HTTP/1-only Kestrel target for the http1-core-smoke scenario suite.

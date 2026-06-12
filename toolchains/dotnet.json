@@ -1,0 +1,6 @@
+{
+  "sdk": "10.0.x",
+  "runtimes": [
+    "Microsoft.AspNetCore.App"
+  ]
+}

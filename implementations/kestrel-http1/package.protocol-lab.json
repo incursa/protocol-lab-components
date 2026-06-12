@@ -1,0 +1,75 @@
+{
+  "packageId": "org.protocol-lab.components.implementation.kestrel-http1",
+  "packageKind": "implementation",
+  "version": "0.1.0",
+  "component": {
+    "name": "kestrel-http1",
+    "family": "kestrel",
+    "role": "server",
+    "protocols": [
+      "h1"
+    ]
+  },
+  "entrypoints": {
+    "launch": {
+      "type": "command",
+      "command": "./run.ps1",
+      "workingDirectory": "."
+    }
+  },
+  "capabilities": {
+    "supported": [
+      "http.server",
+      "httpPlaintext",
+      "httpEcho",
+      "httpJson"
+    ],
+    "supportedProtocols": [
+      "h1"
+    ],
+    "supportedProtocolVersions": [
+      "http/1.1"
+    ],
+    "supportedTestCaseIds": [
+      "http.core.plaintext",
+      "http.core.echo",
+      "http.core.json"
+    ],
+    "supportedScenarios": [
+      "http.core.plaintext",
+      "http.core.echo",
+      "http.core.json"
+    ],
+    "unsupportedKnownCases": [
+      "h2",
+      "h3",
+      "https",
+      "websocket",
+      "server-sent-events"
+    ]
+  },
+  "requirements": {
+    "os": [
+      "linux",
+      "windows"
+    ],
+    "runtimes": [
+      ".NET 10 SDK for local source run; packaged artifacts are self-contained"
+    ],
+    "ports": [
+      {
+        "name": "http",
+        "protocol": "tcp",
+        "default": 8080
+      }
+    ],
+    "externalTools": []
+  },
+  "provenance": {
+    "sourcePath": "implementations/kestrel-http1",
+    "owners": [
+      "protocol-lab-components"
+    ],
+    "licenseNotes": "Confirm .NET runtime redistribution requirements before publishing binary artifacts."
+  }
+}

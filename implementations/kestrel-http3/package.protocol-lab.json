@@ -1,0 +1,77 @@
+{
+  "packageId": "org.protocol-lab.components.implementation.kestrel-http3",
+  "packageKind": "implementation",
+  "version": "0.1.0",
+  "component": {
+    "name": "kestrel-http3",
+    "family": "kestrel",
+    "role": "server",
+    "protocols": [
+      "h3"
+    ]
+  },
+  "entrypoints": {
+    "launch": {
+      "type": "command",
+      "command": "./run.ps1",
+      "workingDirectory": "."
+    }
+  },
+  "capabilities": {
+    "supported": [
+      "http.server",
+      "httpPlaintext",
+      "httpJson",
+      "httpBytes1Kb"
+    ],
+    "supportedProtocols": [
+      "h3"
+    ],
+    "supportedProtocolVersions": [
+      "http/3"
+    ],
+    "supportedTestCaseIds": [
+      "http.core.plaintext",
+      "http.core.json",
+      "http.payload.bytes.1kb"
+    ],
+    "supportedScenarios": [
+      "http.core.plaintext",
+      "http.core.json",
+      "http.payload.bytes.1kb"
+    ],
+    "unsupportedKnownCases": [
+      "h1",
+      "h2",
+      "h2c",
+      "raw-quic",
+      "websocket",
+      "server-sent-events"
+    ]
+  },
+  "requirements": {
+    "os": [
+      "linux",
+      "windows"
+    ],
+    "runtimes": [
+      ".NET 10 SDK for local source run",
+      "HTTP/3-capable OS TLS and QUIC stack"
+    ],
+    "ports": [
+      {
+        "name": "h3",
+        "protocol": "udp",
+        "default": 8443
+      }
+    ],
+    "externalTools": []
+  },
+  "provenance": {
+    "sourcePath": "implementations/kestrel-http3",
+    "owners": [
+      "protocol-lab-components"
+    ],
+    "licenseNotes": "Confirm .NET runtime redistribution requirements before publishing binary artifacts."
+  }
+}

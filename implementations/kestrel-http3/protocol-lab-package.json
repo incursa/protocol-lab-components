@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.kestrel-http3",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Kestrel HTTP/3 Implementation",
+  "entryManifests": [
+    "implementations/kestrel-http3.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "kestrel-http3",
+      "displayName": "Kestrel HTTP/3",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http.core.plaintext",
+        "http.core.json",
+        "http.payload.bytes.1kb"
+      ]
+    }
+  ],
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": true,
+    "requiresDocker": false,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "dotnet-runtime",
+        "value": "10"
+      },
+      {
+        "name": "http3-runtime",
+        "value": "true"
+      }
+    ]
+  }
+}

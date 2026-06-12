@@ -1,0 +1,38 @@
+{
+  "packageId": "org.protocol-lab.components.executor.http1-reference",
+  "packageKind": "test-executor",
+  "version": "0.1.0",
+  "component": {
+    "name": "http1-reference",
+    "family": "http1",
+    "role": "test-executor",
+    "protocols": [
+      "http/1.1"
+    ]
+  },
+  "entrypoints": {
+    "execute": {
+      "type": "command",
+      "command": "./execute.ps1",
+      "workingDirectory": "."
+    }
+  },
+  "requirements": {
+    "os": [
+      "linux",
+      "windows"
+    ],
+    "runtimes": [],
+    "network": {
+      "requiresTargetBaseUrl": true
+    },
+    "externalTools": []
+  },
+  "provenance": {
+    "sourcePath": "executors/http1-reference",
+    "owners": [
+      "protocol-lab-components"
+    ],
+    "licenseNotes": "Confirm executor dependency licenses before publishing."
+  }
+}

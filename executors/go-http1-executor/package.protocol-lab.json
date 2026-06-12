@@ -1,0 +1,69 @@
+{
+  "packageId": "org.protocol-lab.components.executor.go-http1-executor",
+  "packageKind": "test-executor",
+  "version": "0.1.0",
+  "component": {
+    "name": "go-http1-executor",
+    "family": "go-http",
+    "role": "test-executor",
+    "protocols": [
+      "h1"
+    ]
+  },
+  "entrypoints": {
+    "execute": {
+      "type": "command",
+      "command": "./execute.ps1",
+      "workingDirectory": "."
+    }
+  },
+  "capabilities": {
+    "supported": [
+      "http.validation",
+      "httpPlaintext",
+      "httpJson"
+    ],
+    "supportedProtocols": [
+      "h1"
+    ],
+    "supportedProtocolVersions": [
+      "http/1.1"
+    ],
+    "supportedTestCaseIds": [
+      "http.core.plaintext",
+      "http.core.json"
+    ],
+    "supportedScenarios": [
+      "http.core.plaintext",
+      "http.core.json"
+    ],
+    "unsupportedKnownCases": [
+      "h2",
+      "h3",
+      "https",
+      "request-body-echo",
+      "payload-bytes",
+      "load-generation"
+    ]
+  },
+  "requirements": {
+    "os": [
+      "linux",
+      "windows"
+    ],
+    "runtimes": [
+      "Go 1.23 or newer for local source run"
+    ],
+    "ports": [],
+    "externalTools": [
+      "go"
+    ]
+  },
+  "provenance": {
+    "sourcePath": "executors/go-http1-executor",
+    "owners": [
+      "protocol-lab-components"
+    ],
+    "licenseNotes": "Confirm Go module dependency licenses before publishing binary artifacts."
+  }
+}

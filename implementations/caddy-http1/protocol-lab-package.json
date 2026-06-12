@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.caddy-http1",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Caddy HTTP/1 Implementation",
+  "entryManifests": [
+    "implementations/caddy-http1.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "caddy-http1",
+      "displayName": "Caddy HTTP/1",
+      "protocols": [
+        "h1"
+      ],
+      "scenarios": [
+        "http.core.plaintext",
+        "http.core.json"
+      ]
+    }
+  ],
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": false,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "caddy",
+        "value": "true"
+      }
+    ]
+  }
+}

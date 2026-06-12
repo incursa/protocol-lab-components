@@ -1,0 +1,84 @@
+schemaVersion: "1.0"
+id: kestrel-http2
+name: Kestrel HTTP/2
+description: Lane-scoped Kestrel HTTP/2 cleartext target for ProtocolLab HTTP application scenarios.
+family: kestrel
+role: server
+targetKind: process
+targetContract: process
+executable: run.ps1
+project: src/KestrelHttp2.csproj
+workingDirectory: .
+dockerNetworkMode: published-port
+certificateMode: none
+roles:
+  - server
+protocols:
+  - h2
+supportedProtocols:
+  - h2
+supportedWorkloadFamilies:
+  - http.application
+protocolVersions:
+  - h2c
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+ports:
+  - name: h2
+    protocol: tcp
+    default: 8082
+environment:
+  PLAB_HTTP_PORT: "8082"
+startup:
+  port:
+    name: h2
+    environmentVariable: PLAB_HTTP_PORT
+    default: 8082
+  readiness:
+    protocol: http
+    path: /health
+    expectedStatus: 200
+readinessCheck:
+  type: http
+  url: http://127.0.0.1:${PLAB_HTTP_PORT}/health
+  timeoutSeconds: 10
+capabilities:
+  - http.server
+  - httpPlaintext
+  - httpJson
+  - httpBytes1Kb
+supportedProtocolVersions:
+  - h2c
+supportedTestCaseIds:
+  - http.core.plaintext
+  - http.core.json
+  - http.payload.bytes.1kb
+supportedScenarios:
+  - http.core.plaintext
+  - http.core.json
+  - http.payload.bytes.1kb
+unsupportedKnownCases:
+  - h1
+  - h3
+  - https-required-clients
+  - websocket
+  - server-sent-events
+endpoints:
+  plaintext:
+    method: GET
+    path: /plaintext
+  json:
+    method: GET
+    path: /json
+  bytes1kb:
+    method: GET
+    path: /bytes/1kb
+shutdownBehavior: process
+artifactExports:
+  - kestrel-http2.log
+qlogSupport: false
+sslKeyLogSupport: false
+notes: HTTP/2-only Kestrel lane. Do not use as a combined Kestrel HTTP/1 or HTTP/3 package.
