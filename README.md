@@ -98,3 +98,7 @@ Test-executor packages:
 - `org.protocol-lab.components.executor.go-http1-executor`
 
 Kestrel packages are intentionally lane scoped. Keep HTTP/1, HTTP/2, and HTTP/3 as separate packages so controller inventory can select exact protocol behavior and report unsupported cells explicitly.
+
+## License
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
