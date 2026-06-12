@@ -6,7 +6,7 @@ family: kestrel
 role: server
 image: ""
 targetKind: process
-targetContract: adapter-v1
+targetContract: process
 executable: bin/kestrel-http1
 project: ""
 workingDirectory: .
@@ -16,7 +16,7 @@ containerName: ""
 dockerNetwork: ""
 dockerNetworkMode: published-port
 dockerBaseUrl: ""
-baseUrl: ""
+baseUrl: http://127.0.0.1:8080
 adapterControlPlaneBaseUrl: ""
 certificateMode: none
 roles:
@@ -53,7 +53,7 @@ startup:
     expectedStatus: 200
 readinessCheck:
   type: http
-  url: http://127.0.0.1:${PLAB_HTTP_PORT}/health
+  url: /health
   timeoutSeconds: 10
 capabilities:
   - http.server
