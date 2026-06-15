@@ -1,0 +1,67 @@
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: America/Denver
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: build
+
+  - package-ecosystem: nuget
+    directory: /implementations/kestrel-http1/src
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:15"
+      timezone: America/Denver
+    labels:
+      - dependencies
+      - nuget
+    commit-message:
+      prefix: build
+
+  - package-ecosystem: nuget
+    directory: /implementations/kestrel-http2/src
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:20"
+      timezone: America/Denver
+    labels:
+      - dependencies
+      - nuget
+    commit-message:
+      prefix: build
+
+  - package-ecosystem: nuget
+    directory: /implementations/kestrel-http3/src
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:25"
+      timezone: America/Denver
+    labels:
+      - dependencies
+      - nuget
+    commit-message:
+      prefix: build
+
+  - package-ecosystem: gomod
+    directory: /executors/go-http1-executor/source
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:30"
+      timezone: America/Denver
+    labels:
+      - dependencies
+      - go
+    commit-message:
+      prefix: build

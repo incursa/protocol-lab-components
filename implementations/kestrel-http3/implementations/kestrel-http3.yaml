@@ -47,19 +47,18 @@ readinessCheck:
   timeoutSeconds: 10
 capabilities:
   - http.server
-  - httpPlaintext
-  - httpJson
-  - httpBytes1Kb
+  - httpStatus
+  - httpBytes
 supportedProtocolVersions:
   - http/3
 supportedTestCaseIds:
-  - http.core.plaintext
-  - http.core.json
-  - http.payload.bytes.1kb
+  - http3.core.status
+  - http3.payload.bytes.64kb
+  - http3.payload.bytes.1mb
 supportedScenarios:
-  - http.core.plaintext
-  - http.core.json
-  - http.payload.bytes.1kb
+  - http3.core.status
+  - http3.payload.bytes.64kb
+  - http3.payload.bytes.1mb
 unsupportedKnownCases:
   - h1
   - h2
@@ -68,15 +67,15 @@ unsupportedKnownCases:
   - websocket
   - server-sent-events
 endpoints:
-  plaintext:
+  status:
     method: GET
-    path: /plaintext
-  json:
+    path: /status
+  bytes64kb:
     method: GET
-    path: /json
-  bytes1kb:
+    path: /bytes/65536
+  bytes1mb:
     method: GET
-    path: /bytes/1kb
+    path: /bytes/1048576
 shutdownBehavior: process
 artifactExports:
   - kestrel-http3.log

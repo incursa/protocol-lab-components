@@ -9,9 +9,9 @@ versionCompatibility:
     - test-executor-v1
   executorVersion: 0.1.0
 claimedCapabilities:
-  - id: http.core.plaintext
+  - id: http1.core.plaintext
     status: supported
-  - id: http.core.json
+  - id: http1.core.json
     status: supported
   - id: h2
     status: unsupported
@@ -27,14 +27,14 @@ claimedCapabilities:
     status: unsupported
 supportedTestSelectors:
   - selectorType: test-id
-    expression: http.core.plaintext
+    expression: http1.core.plaintext
   - selectorType: test-id
-    expression: http.core.json
+    expression: http1.core.json
 supportedScenarioSelectors:
   - selectorType: scenario-id
-    expression: http.core.plaintext
+    expression: http1.core.plaintext
   - selectorType: scenario-id
-    expression: http.core.json
+    expression: http1.core.json
 supportedProtocolFamilies:
   - h1
 supportedExecutionModes:
@@ -72,3 +72,23 @@ metricsAvailability:
   availableKinds:
     - session
     - validation
+telemetry:
+  supported: true
+  supported_contract_versions:
+    - telemetry-bundle-v1
+  supported_scopes:
+    - test-executor
+    - load-generator
+  supported_artifact_kinds:
+    - summary
+    - metrics
+    - stdout
+    - stderr
+    - raw
+  export_modes:
+    - inline
+    - artifact-bundle
+  metadata:
+    optional: true
+    implementation_owned: true
+    description: Raw executor output is retained as artifacts unless normalized into public measurement summaries.

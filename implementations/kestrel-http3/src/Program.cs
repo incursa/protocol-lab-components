@@ -14,21 +14,32 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 var app = builder.Build();
-var bytes1Kb = new string('x', 1024);
+var bytes64Kb = new string('x', 65_536);
+var bytes1Mb = new string('x', 1_048_576);
 
 app.MapGet("/health", () => Results.Json(new { status = "ok", implementationId = "kestrel-http3", protocol = "h3" }));
+app.MapGet("/status", () => Results.Json(new
+{
+    protocol = "h3",
+    server = "kestrel",
+    implementation = "kestrel-http3",
+    utc = DateTimeOffset.UtcNow,
+    processId = Environment.ProcessId
+}));
 app.MapGet("/protocol-lab/metadata", () => Results.Json(new
 {
     implementationId = "kestrel-http3",
     packageId = "org.protocol-lab.components.implementation.kestrel-http3",
     protocol = "h3",
     protocolVersion = "http/3",
-    supportedScenarios = new[] { "http.core.plaintext", "http.core.json", "http.payload.bytes.1kb" },
+    supportedScenarios = new[] { "http3.core.status", "http3.payload.bytes.64kb", "http3.payload.bytes.1mb" },
     unsupportedKnownCases = new[] { "h1", "h2", "h2c", "raw-quic", "websocket", "server-sent-events" }
 }));
 app.MapGet("/plaintext", () => Results.Text("Hello, World!", "text/plain"));
 app.MapGet("/json", () => Results.Text("""{"message":"Hello, World!"}""", "application/json"));
-app.MapGet("/bytes/1kb", () => Results.Text(bytes1Kb, "application/octet-stream"));
+app.MapGet("/bytes/1kb", () => Results.Text(new string('x', 1024), "application/octet-stream"));
+app.MapGet("/bytes/65536", () => Results.Text(bytes64Kb, "application/octet-stream"));
+app.MapGet("/bytes/1048576", () => Results.Text(bytes1Mb, "application/octet-stream"));
 
 app.Run();
 

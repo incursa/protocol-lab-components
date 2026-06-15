@@ -53,13 +53,11 @@ capabilities:
 supportedProtocolVersions:
   - h2c
 supportedTestCaseIds:
-  - http.core.plaintext
-  - http.core.json
-  - http.payload.bytes.1kb
+  - http2.core.plaintext
+  - http2.core.json
 supportedScenarios:
-  - http.core.plaintext
-  - http.core.json
-  - http.payload.bytes.1kb
+  - http2.core.plaintext
+  - http2.core.json
 unsupportedKnownCases:
   - h1
   - h3

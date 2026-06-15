@@ -7,8 +7,8 @@ Lane-scoped nginx HTTP/1.1 implementation package. This package requires an
 
 - Protocol: `h1`
 - Scenarios:
-  - `http.core.plaintext`
-  - `http.core.json`
+  - `http1.core.plaintext`
+  - `http1.core.json`
 - Known unsupported:
   - `h2`
   - `h3`

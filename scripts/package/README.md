@@ -4,11 +4,11 @@ Shared package scripts live here so component directories do not drift into one-
 
 Expected script responsibilities:
 
-- validate `package.protocol-lab.json` files
+- validate `protocol-lab-package.json` and `protocol-lab.internal.json` files
 - build implementation and test-executor payloads
 - stage package artifacts under `artifacts/packages/`
-- preserve each package's independent `packageId` and `version`
-- emit provenance and manifest files alongside generated package artifacts
+- preserve each package's independent `packageId` and `packageVersion`
+- emit public and internal manifest files alongside generated package artifacts
 
 Component-specific build steps may live beside the component, but shared packaging behavior should be implemented here.
 

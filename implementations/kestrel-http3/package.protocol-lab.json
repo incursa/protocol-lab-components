@@ -31,14 +31,14 @@
       "http/3"
     ],
     "supportedTestCaseIds": [
-      "http.core.plaintext",
-      "http.core.json",
-      "http.payload.bytes.1kb"
+      "http3.core.status",
+      "http3.payload.bytes.64kb",
+      "http3.payload.bytes.1mb"
     ],
     "supportedScenarios": [
-      "http.core.plaintext",
-      "http.core.json",
-      "http.payload.bytes.1kb"
+      "http3.core.status",
+      "http3.payload.bytes.64kb",
+      "http3.payload.bytes.1mb"
     ],
     "unsupportedKnownCases": [
       "h1",

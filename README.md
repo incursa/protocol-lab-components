@@ -18,7 +18,7 @@ Separate repositories should be created only when there is a concrete boundary t
 - substantially different CI, security, or release infrastructure
 - a toolchain that cannot coexist with the shared component build
 
-Inside this repository, every component is still independently identifiable and independently versioned. Package identity, package version, runtime requirements, entrypoints, and provenance are declared in each component manifest.
+Inside this repository, every packageable component is still independently identifiable and independently versioned. Public package identity, package version, package-relative entry manifests, and provided implementation or test-executor IDs are declared in `protocol-lab-package.json`. Execution-only requirements and entrypoints live in `protocol-lab.internal.json` when the component has a local runnable payload.
 
 ## Layout
 
@@ -51,15 +51,15 @@ templates/
 
 ## Package Conventions
 
-Each component directory owns a `package.protocol-lab.json` file. The file must contain:
+Packageable component directories own a public `protocol-lab-package.json` file. The file must contain:
 
 - `packageId`: stable package identity, unique in this repository
-- `packageKind`: `implementation` or `test-executor`
-- `version`: independently advanced semantic version for that package
-- `component`: local component name and protocol role
-- `entrypoints`: commands, containers, or scripts exposed by the package
-- `requirements`: operating system, runtime, ports, protocols, and external tools
-- `provenance`: source path and maintainers
+- `packageVersion`: independently advanced semantic version for that package
+- `kind`: `implementation` or `test-executor`
+- `entryManifests`: package-relative public catalog manifests
+- `providedImplementations` or `providedTestExecutors`: selected public component IDs, protocols, and scenario/test coverage
+
+Components with local execution payloads also own `protocol-lab.internal.json`. That internal manifest contains execution environments, process or script entrypoints, and runner/tool requirements. Do not mix execution-only fields such as local commands, runtime booleans, or wrapper entrypoints back into the public package manifest.
 
 Package IDs should use a stable dotted namespace:
 
@@ -75,7 +75,7 @@ Shared scripts may build all packages, but publish and release metadata must pre
 
 1. Create a directory under `implementations/` or `executors/`.
 2. Copy the closest template from `templates/`.
-3. Fill in package identity, version, entrypoints, requirements, and provenance.
+3. Fill in package identity, version, entry manifests, provided component IDs, and execution requirements.
 4. Add local source, wrapper scripts, Dockerfiles, or build files next to the manifest.
 5. Run `pwsh ./scripts/package/Validate-ProtocolLabComponentManifests.ps1`.
 

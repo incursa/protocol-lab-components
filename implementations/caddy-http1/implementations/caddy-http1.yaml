@@ -51,11 +51,11 @@ capabilities:
 supportedProtocolVersions:
   - http/1.1
 supportedTestCaseIds:
-  - http.core.plaintext
-  - http.core.json
+  - http1.core.plaintext
+  - http1.core.json
 supportedScenarios:
-  - http.core.plaintext
-  - http.core.json
+  - http1.core.plaintext
+  - http1.core.json
 unsupportedKnownCases:
   - h2
   - h3

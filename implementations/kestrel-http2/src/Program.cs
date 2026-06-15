@@ -22,7 +22,7 @@ app.MapGet("/protocol-lab/metadata", () => Results.Json(new
     packageId = "org.protocol-lab.components.implementation.kestrel-http2",
     protocol = "h2",
     protocolVersion = "h2c",
-    supportedScenarios = new[] { "http.core.plaintext", "http.core.json", "http.payload.bytes.1kb" },
+    supportedScenarios = new[] { "http2.core.plaintext", "http2.core.json" },
     unsupportedKnownCases = new[] { "h1", "h3", "https-required-clients", "websocket", "server-sent-events" }
 }));
 app.MapGet("/plaintext", () => Results.Text("Hello, World!", "text/plain"));

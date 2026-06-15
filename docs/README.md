@@ -1,0 +1,21 @@
+# ProtocolLab Components Docs
+
+This documentation supports the component package repository.
+
+## Repository Surfaces
+
+- [Root README](../README.md) explains the monorepo boundary, package layout,
+  and current component packages.
+- [Package scripts](../scripts/package/README.md) explain shared validation and
+  packaging behavior.
+- [Contributor agreement automation](contributor-agreement-automation.md)
+  records the owner setup required for the CLA workflow.
+
+## Manifest Names
+
+Active package metadata lives in component-local `protocol-lab-package.json`
+files. Local execution metadata lives in paired `protocol-lab.internal.json`
+files when a component has runnable payloads.
+
+Do not add new documentation that treats `package.protocol-lab.json` as the
+active component manifest name.

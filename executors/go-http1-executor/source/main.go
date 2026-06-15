@@ -53,8 +53,8 @@ func main() {
 	ctx := context.Background()
 
 	checks := []checkResult{
-		runCheck(ctx, client, *targetURL, "http.core.plaintext", "/plaintext", "Hello, World!", "text/plain"),
-		runCheck(ctx, client, *targetURL, "http.core.json", "/json", `"message":"Hello, World!"`, "application/json"),
+		runCheck(ctx, client, *targetURL, "http1.core.plaintext", "/plaintext", "Hello, World!", "text/plain"),
+		runCheck(ctx, client, *targetURL, "http1.core.json", "/json", `"message":"Hello, World!"`, "application/json"),
 	}
 
 	passed := true

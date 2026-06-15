@@ -1,42 +1,22 @@
 {
+  "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.example-http1",
-  "packageKind": "implementation",
-  "version": "0.1.0",
-  "component": {
-    "name": "example-http1",
-    "family": "example",
-    "role": "server",
-    "protocols": [
-      "http/1.1"
-    ]
-  },
-  "entrypoints": {
-    "launch": {
-      "type": "command",
-      "command": "./run.ps1",
-      "workingDirectory": "."
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Example HTTP/1 Implementation",
+  "entryManifests": [
+    "implementations/example-http1.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "example-http1",
+      "displayName": "Example HTTP/1",
+      "protocols": [
+        "h1"
+      ],
+      "scenarios": [
+        "http1.core.plaintext"
+      ]
     }
-  },
-  "requirements": {
-    "os": [
-      "linux",
-      "windows"
-    ],
-    "runtimes": [],
-    "ports": [
-      {
-        "name": "http",
-        "protocol": "tcp",
-        "default": 8080
-      }
-    ],
-    "externalTools": []
-  },
-  "provenance": {
-    "sourcePath": "implementations/example-http1",
-    "owners": [
-      "protocol-lab-components"
-    ],
-    "licenseNotes": "Fill in redistribution and runtime license notes before publishing."
-  }
+  ]
 }

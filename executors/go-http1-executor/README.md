@@ -5,8 +5,8 @@
 ## Supported
 
 - Protocol family: `h1`
-- Test cases: `http.core.plaintext`, `http.core.json`
-- Scenarios: `http.core.plaintext`, `http.core.json`
+- Test cases: `http1.core.plaintext`, `http1.core.json`
+- Scenarios: `http1.core.plaintext`, `http1.core.json`
 - Artifacts: `validation.json`, `result.json`, `load-tool-execution.json`
 
 ## Known Unsupported

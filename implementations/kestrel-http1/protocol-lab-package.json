@@ -15,40 +15,9 @@
         "h1"
       ],
       "scenarios": [
-        "http.core.plaintext",
-        "http.core.echo",
-        "http.core.json"
+        "http1.core.plaintext",
+        "http1.core.json"
       ]
     }
-  ],
-  "environments": [
-    {
-      "os": "windows",
-      "arch": "x64",
-      "entrypoint": {
-        "kind": "process",
-        "path": "bin/kestrel-http1.exe",
-        "arguments": [],
-        "workingDirectory": "."
-      }
-    },
-    {
-      "os": "linux",
-      "arch": "x64",
-      "entrypoint": {
-        "kind": "process",
-        "path": "bin/kestrel-http1",
-        "arguments": [],
-        "workingDirectory": "."
-      }
-    }
-  ],
-  "dependencies": {
-    "requiresDotNet": false,
-    "requiresDocker": false,
-    "requiresPwsh": false,
-    "requiresBash": false,
-    "requiresGo": false,
-    "requiredCapabilities": []
-  }
+  ]
 }

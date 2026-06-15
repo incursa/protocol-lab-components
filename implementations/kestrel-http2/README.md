@@ -8,9 +8,8 @@ combined Kestrel package; select `kestrel-http2` only for HTTP/2 work.
 - Protocol: `h2`
 - Transport: cleartext HTTP/2 prior-knowledge (`h2c`) on the configured port
 - Scenarios:
-  - `http.core.plaintext`
-  - `http.core.json`
-  - `http.payload.bytes.1kb`
+  - `http2.core.plaintext`
+  - `http2.core.json`
 - Known unsupported:
   - `h1`
   - `h3`

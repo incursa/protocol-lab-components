@@ -15,12 +15,12 @@
         "h1"
       ],
       "scenarios": [
-        "http.core.plaintext",
-        "http.core.json"
+        "http1.core.plaintext",
+        "http1.core.json"
       ],
       "tests": [
-        "http.core.plaintext",
-        "http.core.json"
+        "http1.core.plaintext",
+        "http1.core.json"
       ],
       "requiredCapabilities": [
         {
@@ -30,34 +30,7 @@
       ]
     }
   ],
-  "environments": [
-    {
-      "os": "windows",
-      "arch": "x64",
-      "entrypoint": {
-        "kind": "pwsh",
-        "path": "execute.ps1",
-        "arguments": [],
-        "workingDirectory": "."
-      }
-    },
-    {
-      "os": "linux",
-      "arch": "x64",
-      "entrypoint": {
-        "kind": "bash",
-        "path": "execute.sh",
-        "arguments": [],
-        "workingDirectory": "."
-      }
-    }
-  ],
   "dependencies": {
-    "requiresDotNet": false,
-    "requiresDocker": false,
-    "requiresPwsh": true,
-    "requiresBash": true,
-    "requiresGo": true,
     "requiredCapabilities": [
       {
         "name": "go",

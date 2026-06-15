@@ -16,6 +16,7 @@ $componentName = 'kestrel-http1'
 $componentRoot = Join-Path $Root "implementations/$componentName"
 $project = Join-Path $componentRoot 'src/KestrelHttp1.csproj'
 $sourcePackageManifest = Join-Path $componentRoot 'protocol-lab-package.json'
+$sourceInternalManifest = Join-Path $componentRoot 'protocol-lab.internal.json'
 $sourceImplementationManifest = Join-Path $componentRoot 'implementations/kestrel-http1.yaml'
 
 if (-not (Test-Path -LiteralPath $project)) {
@@ -60,19 +61,20 @@ if (-not (Test-Path -LiteralPath $publishedExecutable)) {
 Copy-Item -LiteralPath $publishedExecutable -Destination (Join-Path $packageBin $executableName)
 Copy-Item -LiteralPath $sourceImplementationManifest -Destination (Join-Path $packageImplementations 'kestrel-http1.yaml')
 
-$artifactManifest = $packageManifest | ConvertTo-Json -Depth 20 | ConvertFrom-Json
-$artifactManifest.environments = @(
-    $packageManifest.environments | Where-Object {
+$executionManifest = Get-Content -LiteralPath $sourceInternalManifest -Raw | ConvertFrom-Json
+$executionManifest.environments = @(
+    $executionManifest.environments | Where-Object {
         $_.os -eq $(if ($RuntimeIdentifier.StartsWith('win-', [System.StringComparison]::OrdinalIgnoreCase)) { 'windows' } else { 'linux' }) -and
         $_.arch -eq 'x64'
     }
 )
 
-if ($artifactManifest.environments.Count -ne 1) {
+if ($executionManifest.environments.Count -ne 1) {
     throw "Expected one package environment for runtime '$RuntimeIdentifier'."
 }
 
-$artifactManifest | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $packageRoot 'protocol-lab-package.json') -Encoding utf8
+$packageManifest | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $packageRoot 'protocol-lab-package.json') -Encoding utf8
+$executionManifest | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $packageRoot 'protocol-lab.internal.json') -Encoding utf8
 
 Remove-Item -LiteralPath $artifactPath -Force -ErrorAction SilentlyContinue
 Compress-Archive -Path (Join-Path $packageRoot '*') -DestinationPath $artifactPath -Force

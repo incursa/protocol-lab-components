@@ -8,9 +8,8 @@ Package identity is intentionally `kestrel-http1`. Future `kestrel-http2` and `k
 
 - Protocol: `h1` / HTTP/1.1 only
 - Supported test case IDs and scenarios:
-  - `http.core.plaintext`
-  - `http.core.echo`
-  - `http.core.json`
+  - `http1.core.plaintext`
+  - `http1.core.json`
 - Supported capabilities:
   - `http.server`
   - `httpPlaintext`
@@ -66,4 +65,4 @@ Build a Linux package:
 pwsh ./scripts/package/Build-KestrelHttp1Package.ps1 -RuntimeIdentifier linux-x64
 ```
 
-Artifacts are written under `artifacts/packages/` as `.plabpkg` files. The package entrypoint is the published `bin/kestrel-http1` process, so an adapter or controller can start it from package metadata without knowing it is implemented in .NET.
+Artifacts are written under `artifacts/packages/` as `.plabpkg` files. The public package manifest identifies the component, and the paired `protocol-lab.internal.json` points at the published `bin/kestrel-http1` process so an adapter or controller can start it without knowing it is implemented in .NET.
