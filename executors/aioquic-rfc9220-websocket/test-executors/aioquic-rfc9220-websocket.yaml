@@ -1,0 +1,130 @@
+executorIdentity:
+  id: aioquic-rfc9220-websocket
+  name: aioquic RFC9220 WebSocket-over-H3 Test Executor
+  version: 0.1.0
+  vendor: Incursa
+versionCompatibility:
+  contractVersion: test-executor-v1
+  compatibleContractVersions:
+    - test-executor-v1
+  executorVersion: 0.1.0
+claimedCapabilities:
+  - id: http3.websocket.rfc9220.extended-connect
+    status: supported
+  - id: http3.websocket.rfc9220.control-frames
+    status: supported
+  - id: http3.websocket.rfc9220.text-echo
+    status: supported
+  - id: http3.websocket.rfc9220.binary-echo
+    status: supported
+  - id: http3.websocket.rfc9220.close
+    status: supported
+  - id: websocket-server-role
+    status: unsupported
+  - id: h1
+    status: unsupported
+  - id: h2
+    status: unsupported
+  - id: raw-quic
+    status: unsupported
+supportedTestSelectors:
+  - selectorType: test-id
+    expression: rfc9220.websocket.extended-connect
+  - selectorType: test-id
+    expression: rfc9220.websocket.ping-pong
+  - selectorType: test-id
+    expression: rfc9220.websocket.text-echo
+  - selectorType: test-id
+    expression: rfc9220.websocket.binary-echo.6000
+  - selectorType: test-id
+    expression: rfc9220.websocket.close-echo
+supportedScenarioSelectors:
+  - selectorType: scenario-id
+    expression: http3.websocket.rfc9220.extended-connect
+  - selectorType: scenario-id
+    expression: http3.websocket.rfc9220.control-frames
+  - selectorType: scenario-id
+    expression: http3.websocket.rfc9220.text-echo
+  - selectorType: scenario-id
+    expression: http3.websocket.rfc9220.binary-echo
+  - selectorType: scenario-id
+    expression: http3.websocket.rfc9220.close
+supportedProtocolFamilies:
+  - h3
+  - websocket
+supportedExecutionModes:
+  - single-cell
+  - docker
+requiredTargetEndpointBindings:
+  - bindingId: primary
+    purpose: websocket-proof-endpoint
+    endpointType: http
+    protocols:
+      - h3
+supportedArtifactTypes:
+  - type: command.txt
+    producedByStates:
+      - stopped
+      - failed
+  - type: result.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: client-result.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: stdout.txt
+    producedByStates:
+      - stopped
+      - failed
+  - type: stderr.txt
+    producedByStates:
+      - stopped
+      - failed
+  - type: qlog
+    producedByStates:
+      - stopped
+      - failed
+  - type: sslkeylog
+    producedByStates:
+      - stopped
+      - failed
+metricsAvailability:
+  available: true
+  availableKinds:
+    - session
+    - validation
+telemetry:
+  supported: true
+  supported_contract_versions:
+    - telemetry-bundle-v1
+  supported_scopes:
+    - test-executor
+  supported_artifact_kinds:
+    - summary
+    - stdout
+    - stderr
+    - raw
+  export_modes:
+    - artifact-bundle
+externalPeerScenarios:
+  stable:
+    - extended-connect
+    - server-ping-client-pong
+    - client-ping-server-pong
+    - text-echo
+    - binary-echo-6000
+    - close-echo
+  unsupported:
+    - server-role
+    - broad-websocket-suite
+requirementIds:
+  - REQ-QUIC-RFC9220-0017
+  - REQ-QUIC-RFC9220-0018
+  - REQ-QUIC-RFC9220-0019
+  - REQ-QUIC-RFC9220-0022
+  - REQ-QUIC-RFC9220-0030
+  - REQ-QUIC-RFC9220-0031
+executionMetadata:
+  manifest: protocol-lab.internal.json

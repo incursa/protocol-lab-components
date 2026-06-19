@@ -24,6 +24,7 @@ pwsh ./scripts/package/Build-GoHttp1ExecutorPackage.ps1
 pwsh ./scripts/package/Build-KestrelHttp3Package.ps1
 pwsh ./scripts/package/Build-CurlHttp3ClientPackage.ps1
 pwsh ./scripts/package/Build-H3SpecHttp3QpackPackage.ps1
+pwsh ./scripts/package/Build-AioquicRfc9220WebSocketPackage.ps1
 pwsh ./scripts/package/Build-AioquicHttp3Package.ps1
 pwsh ./scripts/package/Build-QuicheHttp3Package.ps1
 pwsh ./scripts/package/Build-Ngtcp2Http3Package.ps1

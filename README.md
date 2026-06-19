@@ -39,6 +39,7 @@ executors/
   quic-go-raw-load/
   curl-http3-client/
   h3spec-http3-qpack/
+  aioquic-rfc9220-websocket/
 scenarios/
   raw-quic-transport/
 toolchains/
@@ -112,6 +113,7 @@ Test-executor packages:
 - `org.protocol-lab.components.executor.quic-go-raw-load`
 - `org.protocol-lab.components.executor.curl-http3-client`
 - `org.protocol-lab.components.executor.h3spec-http3-qpack`
+- `org.protocol-lab.components.executor.aioquic-rfc9220-websocket`
 
 Scenario-pack packages:
 

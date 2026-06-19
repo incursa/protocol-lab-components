@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.aioquic-rfc9220-websocket",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "aioquic RFC9220 WebSocket-over-H3 Test Executor",
+  "entryManifests": [
+    "test-executors/aioquic-rfc9220-websocket.yaml"
+  ],
+  "providedTestExecutors": [
+    {
+      "testExecutorId": "aioquic-rfc9220-websocket",
+      "displayName": "aioquic RFC9220 WebSocket-over-H3 Test Executor",
+      "protocols": [
+        "h3",
+        "websocket"
+      ],
+      "scenarios": [
+        "http3.websocket.rfc9220.extended-connect",
+        "http3.websocket.rfc9220.control-frames",
+        "http3.websocket.rfc9220.text-echo",
+        "http3.websocket.rfc9220.binary-echo",
+        "http3.websocket.rfc9220.close"
+      ],
+      "tests": [
+        "rfc9220.websocket.extended-connect",
+        "rfc9220.websocket.ping-pong",
+        "rfc9220.websocket.text-echo",
+        "rfc9220.websocket.binary-echo.6000",
+        "rfc9220.websocket.close-echo"
+      ],
+      "requiredCapabilities": [
+        {
+          "name": "docker",
+          "value": "true"
+        },
+        {
+          "name": "aioquic",
+          "value": "1.3.0"
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "http3-runtime",
+        "value": "true"
+      }
+    ]
+  }
+}
