@@ -7,13 +7,14 @@
 - Protocol family: `h3`
 - Roles: client and server
 - Public scenarios: `http3.core.status`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`
-- Stable external interop scenarios: `get-small`, `get-empty`, `not-found`, `many-headers`
+- Stable external interop scenarios: `get-small`, `not-found`
 
 ## Known Unsupported
 
 - HTTP/1 and HTTP/2
 - raw QUIC transport scenarios outside HTTP/3
-- Large-body client rows may be skipped with aioquic 1.3.0 when response completion stalls are observed.
+- `get-large` client and server rows are documented skips with aioquic 1.3.0 because response completion stalls were observed.
+- `get-empty`, `many-headers`, and `split-data` are not promoted until they have live package-backed peer proof.
 
 ## Pinned Toolchain
 
@@ -24,7 +25,15 @@
 - Component repo digest: `incursa-protocol-lab-aioquic-http3@sha256:00ca4bff791e5beb205c35e7874c15ad025e67d4f1ded3fcc5b743459e0fc7c6`
 - Source manifest image ID: `sha256:ef138c09ec4cb224ee283f00768eebba6b2d196d9e869809603606ce0d0c0937`
 - Local interop image ID observed during this package proof: `sha256:6f84896f71dc47f2c5c842912b99c90e6c101bf187fc7ecd997192e4f8fb8a5e`
-- Source evidence: `C:\shared\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184606Z\peer-tool-manifest.json`
+- Source evidence: `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184606Z\peer-tool-manifest.json`
+
+## Scenario Evidence
+
+| External row | Scenarios | Status | Evidence |
+| --- | --- | --- | --- |
+| `aioquic-client__incursa-server` | `get-small`, `not-found` | pass | `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T055801Z` |
+| `incursa-client__aioquic-server` | `get-small`, `not-found` | pass | `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T055801Z` |
+| `aioquic-client__incursa-server`, `incursa-client__aioquic-server` | `get-large` | skipped | aioquic 1.3.0 large-body peer incompatibility; see `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T055646Z` |
 
 ## Local Smoke
 

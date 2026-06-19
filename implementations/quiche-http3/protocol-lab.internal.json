@@ -44,7 +44,7 @@
         "image": "cloudflare/quiche:latest",
         "resolvedImageId": "sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c",
         "repoDigest": "cloudflare/quiche@sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c",
-        "source": "C:/shared/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184606Z/peer-tool-manifest.json"
+        "source": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184606Z/peer-tool-manifest.json"
       }
     ]
   },
@@ -56,5 +56,65 @@
   "knownLimitations": [
     "The image does not expose a stable --version flag; pin by image ID or repo digest.",
     "Header-heavy and split-response behavior are not wired for quiche-server rows in the current external interop harness."
-  ]
+  ],
+  "externalInteropEvidence": {
+    "evidenceClass": "external-peer-characterization",
+    "passingRows": [
+      {
+        "target": "quiche-client__incursa-server",
+        "scenarios": [
+          "get-small",
+          "not-found",
+          "get-large",
+          "many-headers"
+        ],
+        "artifactRun": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T125600Z"
+      },
+      {
+        "target": "quiche-client__incursa-server",
+        "scenarios": [
+          "get-empty",
+          "split-data"
+        ],
+        "artifactRun": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T130112Z"
+      },
+      {
+        "target": "incursa-client__quiche-server",
+        "scenarios": [
+          "get-small",
+          "not-found"
+        ],
+        "artifactRun": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T124926Z"
+      },
+      {
+        "target": "incursa-client__quiche-server",
+        "scenarios": [
+          "get-empty",
+          "get-large"
+        ],
+        "artifactRun": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T130112Z"
+      }
+    ],
+    "blockedRows": [
+      {
+        "target": "incursa-client__quiche-server",
+        "scenarios": [
+          "get-small",
+          "not-found"
+        ],
+        "artifactRun": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T124803Z",
+        "reason": "Earlier run blocked because the peer server exited before the client run; later runs passed for these rows."
+      }
+    ],
+    "skippedRows": [
+      {
+        "target": "incursa-client__quiche-server",
+        "scenarios": [
+          "many-headers",
+          "split-data"
+        ],
+        "reason": "Peer server rows are not wired for these scenarios in the current external interop harness."
+      }
+    ]
+  }
 }

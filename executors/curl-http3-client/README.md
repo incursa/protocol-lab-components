@@ -14,7 +14,15 @@
 - Image: `ghcr.io/macbre/curl-http3`
 - Image ID: `sha256:c3a360869a4e132180f458f83af2ce67b873b2302739eda27274dad4f62155f8`
 - Repo digest: `ghcr.io/macbre/curl-http3@sha256:c3a360869a4e132180f458f83af2ce67b873b2302739eda27274dad4f62155f8`
-- Source evidence: `C:\shared\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184606Z\peer-tool-manifest.json`
+- Source evidence: `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184606Z\peer-tool-manifest.json`
+
+## Scenario Evidence
+
+| External row | Scenarios | Status | Evidence |
+| --- | --- | --- | --- |
+| `curl__incursa-server` | `get-small`, `not-found`, `get-large`, `many-headers` | pass | `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T125600Z` |
+| `curl__incursa-server` | `get-empty`, `split-data` | pass | `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T130112Z` |
+| server role | all | unsupported | curl is packaged as a client executor only |
 
 ## Local Smoke
 

@@ -14,7 +14,16 @@
 - Image: `ghcr.io/ngtcp2/ngtcp2-interop:latest`
 - Image ID: `sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af`
 - Repo digest: `ghcr.io/ngtcp2/ngtcp2-interop@sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af`
-- Source evidence: `C:\shared\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184606Z\peer-tool-manifest.json`
+- Source evidence: `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184606Z\peer-tool-manifest.json`
+
+## Scenario Evidence
+
+| External row | Scenarios | Status | Evidence |
+| --- | --- | --- | --- |
+| `ngtcp2-client__incursa-server` | `get-small`, `not-found`, `get-large`, `many-headers` | pass | `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T125600Z` |
+| `ngtcp2-client__incursa-server` | `get-empty`, `split-data` | pass | `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T130112Z` |
+| `incursa-client__ngtcp2-server` | `get-empty`, `get-small`, `not-found`, `get-large` | pass after earlier handshake timeouts | latest passing proofs exist under `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T130437Z` and `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184808Z`; earlier failures reported `handshake timeout` |
+| `incursa-client__ngtcp2-server` | `many-headers`, `split-data` | skipped | peer server rows are not wired for these scenarios in the current harness |
 
 ## Local Smoke
 

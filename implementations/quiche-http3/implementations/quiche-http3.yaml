@@ -30,9 +30,20 @@ externalPeerScenarios:
     - get-empty
     - get-large
     - not-found
-  notWiredInCurrentHarness:
+  clientAdditionalPass:
     - many-headers
     - split-data
+  serverNotWiredInCurrentHarness:
+    - many-headers
+    - split-data
+  blockerHistory:
+    - target: incursa-client__quiche-server
+      status: blocked
+      scenarios:
+        - get-small
+        - not-found
+      artifactRun: C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T124803Z
+      reason: peer server exited before client run; later focused rows passed
 entrypoint:
   kind: pwsh
   path: run.ps1

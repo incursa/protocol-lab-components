@@ -44,7 +44,7 @@
         "image": "ghcr.io/ngtcp2/ngtcp2-interop:latest",
         "resolvedImageId": "sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af",
         "repoDigest": "ghcr.io/ngtcp2/ngtcp2-interop@sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af",
-        "source": "C:/shared/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184606Z/peer-tool-manifest.json"
+        "source": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184606Z/peer-tool-manifest.json"
       }
     ]
   },
@@ -57,5 +57,71 @@
     "The interop image default entrypoint is bypassed for server rows.",
     "The image does not expose a stable no-argument --version output; pin by image ID or repo digest.",
     "Header-heavy and split-response behavior are not wired for ngtcp2-server rows in the current external interop harness."
-  ]
+  ],
+  "externalInteropEvidence": {
+    "evidenceClass": "external-peer-characterization",
+    "passingRows": [
+      {
+        "target": "ngtcp2-client__incursa-server",
+        "scenarios": [
+          "get-small",
+          "not-found",
+          "get-large",
+          "many-headers"
+        ],
+        "artifactRun": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T125600Z"
+      },
+      {
+        "target": "ngtcp2-client__incursa-server",
+        "scenarios": [
+          "get-empty",
+          "split-data"
+        ],
+        "artifactRun": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T130112Z"
+      },
+      {
+        "target": "incursa-client__ngtcp2-server",
+        "scenarios": [
+          "get-empty",
+          "get-small"
+        ],
+        "artifactRun": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T130437Z"
+      },
+      {
+        "target": "incursa-client__ngtcp2-server",
+        "scenarios": [
+          "not-found",
+          "get-large"
+        ],
+        "artifactRun": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184808Z"
+      }
+    ],
+    "failedRows": [
+      {
+        "target": "incursa-client__ngtcp2-server",
+        "scenarios": [
+          "get-small",
+          "not-found",
+          "get-large"
+        ],
+        "artifactRuns": [
+          "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T124359Z",
+          "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T124545Z",
+          "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T124926Z",
+          "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184606Z"
+        ],
+        "reason": "Earlier runs reported handshake timeout; later focused rows passed after server invocation/network wiring was refined."
+      }
+    ],
+    "skippedRows": [
+      {
+        "target": "incursa-client__ngtcp2-server",
+        "scenarios": [
+          "many-headers",
+          "split-data"
+        ],
+        "reason": "Peer server rows are not wired for these scenarios in the current external interop harness."
+      }
+    ]
+  }
 }

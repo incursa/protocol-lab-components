@@ -14,7 +14,17 @@
 - Image: `cloudflare/quiche:latest`
 - Image ID: `sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c`
 - Repo digest: `cloudflare/quiche@sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c`
-- Source evidence: `C:\shared\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184606Z\peer-tool-manifest.json`
+- Source evidence: `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184606Z\peer-tool-manifest.json`
+
+## Scenario Evidence
+
+| External row | Scenarios | Status | Evidence |
+| --- | --- | --- | --- |
+| `quiche-client__incursa-server` | `get-small`, `not-found`, `get-large`, `many-headers` | pass | `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T125600Z` |
+| `quiche-client__incursa-server` | `get-empty`, `split-data` | pass | `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T130112Z` |
+| `incursa-client__quiche-server` | `get-empty`, `get-large` | pass | `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T130112Z`, `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T125037Z` |
+| `incursa-client__quiche-server` | `get-small`, `not-found` | pass after earlier peer-server exits | latest passing proof exists under `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T124926Z`; earlier blocker was `peer server exited before client run` in `20260619T124803Z` |
+| `incursa-client__quiche-server` | `many-headers`, `split-data` | skipped | peer server rows are not wired for these scenarios in the current harness |
 
 ## Local Smoke
 

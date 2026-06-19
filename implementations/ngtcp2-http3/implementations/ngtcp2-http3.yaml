@@ -30,9 +30,21 @@ externalPeerScenarios:
     - get-empty
     - get-large
     - not-found
-  notWiredInCurrentHarness:
+  clientAdditionalPass:
     - many-headers
     - split-data
+  serverNotWiredInCurrentHarness:
+    - many-headers
+    - split-data
+  failureHistory:
+    - target: incursa-client__ngtcp2-server
+      status: fail
+      scenarios:
+        - get-small
+        - not-found
+        - get-large
+      reason: earlier runs reported handshake timeout; later focused rows passed
+      sampleArtifactRun: C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184606Z
 entrypoint:
   kind: pwsh
   path: run.ps1

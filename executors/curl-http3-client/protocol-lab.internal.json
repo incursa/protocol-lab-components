@@ -44,7 +44,7 @@
         "image": "ghcr.io/macbre/curl-http3",
         "resolvedImageId": "sha256:c3a360869a4e132180f458f83af2ce67b873b2302739eda27274dad4f62155f8",
         "repoDigest": "ghcr.io/macbre/curl-http3@sha256:c3a360869a4e132180f458f83af2ce67b873b2302739eda27274dad4f62155f8",
-        "source": "C:/shared/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184606Z/peer-tool-manifest.json"
+        "source": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184606Z/peer-tool-manifest.json"
       }
     ]
   },
@@ -55,5 +55,37 @@
   "knownLimitations": [
     "Requires a curl image built with --http3-only support.",
     "Client-only executor; it does not start a target server."
-  ]
+  ],
+  "externalInteropEvidence": {
+    "evidenceClass": "external-peer-characterization",
+    "passingRows": [
+      {
+        "target": "curl__incursa-server",
+        "scenarios": [
+          "get-small",
+          "not-found",
+          "get-large",
+          "many-headers"
+        ],
+        "artifactRun": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T125600Z"
+      },
+      {
+        "target": "curl__incursa-server",
+        "scenarios": [
+          "get-empty",
+          "split-data"
+        ],
+        "artifactRun": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T130112Z"
+      }
+    ],
+    "blockedRows": [
+      {
+        "target": "curl-server",
+        "scenarios": [
+          "*"
+        ],
+        "reason": "curl is packaged as a client test executor only."
+      }
+    ]
+  }
 }
