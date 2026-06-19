@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.aioquic-http3",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "aioquic HTTP/3 Implementation Wrapper",
+  "entryManifests": [
+    "implementations/aioquic-http3.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "aioquic-http3",
+      "displayName": "aioquic HTTP/3",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http3.core.status",
+        "http3.headers.response-headers-50x32",
+        "http3.protocol.qpack-repeated-headers"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "http3-runtime",
+        "value": "true"
+      }
+    ]
+  }
+}

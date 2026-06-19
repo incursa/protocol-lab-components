@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "ngtcp2-nghttp3",
+        "value": "http3"
+      }
+    ],
+    "images": [
+      {
+        "name": "ngtcp2-nghttp3",
+        "image": "ghcr.io/ngtcp2/ngtcp2-interop:latest",
+        "resolvedImageId": "sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af",
+        "repoDigest": "ghcr.io/ngtcp2/ngtcp2-interop@sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af",
+        "source": "C:/shared/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184606Z/peer-tool-manifest.json"
+      }
+    ]
+  },
+  "commands": {
+    "defaultImageEnvironmentVariable": "HTTP3_NGTCP2_IMAGE",
+    "clientTemplate": "wsslclient --download=/downloads --exit-on-all-streams-close --timeout=15s --handshake-timeout=10s --no-http-dump --qlog-dir=/logs/qlog <host> 4433 <url>",
+    "serverTemplate": "wsslserver --htdocs=/www --qlog-dir=/logs/qlog --no-http-dump --timeout=15s --handshake-timeout=10s 0.0.0.0 4433 /certs/priv.key /certs/cert.pem"
+  },
+  "knownLimitations": [
+    "The interop image default entrypoint is bypassed for server rows.",
+    "The image does not expose a stable no-argument --version output; pin by image ID or repo digest.",
+    "Header-heavy and split-response behavior are not wired for ngtcp2-server rows in the current external interop harness."
+  ]
+}

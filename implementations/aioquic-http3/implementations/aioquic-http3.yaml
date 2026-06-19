@@ -1,0 +1,65 @@
+schemaVersion: "1.0"
+id: aioquic-http3
+name: aioquic HTTP/3
+description: Docker-backed aioquic HTTP/3 client/server wrapper for ProtocolLab external peer characterization.
+family: aioquic
+roles:
+  - client
+  - server
+targetKind: docker
+targetContract: process
+protocols:
+  - h3
+supportedProtocols:
+  - h3
+supportedWorkloadFamilies:
+  - http.application
+supportedProtocolVersions:
+  - http/3
+supportedScenarios:
+  - http3.core.status
+  - http3.headers.response-headers-50x32
+  - http3.protocol.qpack-repeated-headers
+supportedTestCaseIds:
+  - http3.core.status
+  - http3.headers.response-headers-50x32
+  - http3.protocol.qpack-repeated-headers
+externalPeerScenarios:
+  stable:
+    - get-small
+    - get-empty
+    - not-found
+    - many-headers
+  documentedSkips:
+    - get-large
+    - split-data
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+ports:
+  - name: h3
+    protocol: udp
+    default: 4433
+capabilities:
+  - http.client
+  - http.server
+  - httpStatus
+  - httpHeaders
+unsupportedKnownCases:
+  - h1
+  - h2
+  - h2c
+  - raw-quic
+  - websocket
+artifactExports:
+  - command.txt
+  - stdout.txt
+  - stderr.txt
+  - result.json
+qlogSupport: true
+sslKeyLogSupport: true
+executionMetadata:
+  manifest: protocol-lab.internal.json
+notes: Package public metadata intentionally omits Docker command lines; runtime details live in protocol-lab.internal.json.

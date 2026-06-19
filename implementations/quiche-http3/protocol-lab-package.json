@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.quiche-http3",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "quiche HTTP/3 Implementation Wrapper",
+  "entryManifests": [
+    "implementations/quiche-http3.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "quiche-http3",
+      "displayName": "quiche HTTP/3",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http3.core.status",
+        "http3.payload.bytes.64kb",
+        "http3.payload.bytes.1mb"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "http3-runtime",
+        "value": "true"
+      }
+    ]
+  }
+}

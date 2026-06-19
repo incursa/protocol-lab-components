@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "quiche",
+        "value": "http3"
+      }
+    ],
+    "images": [
+      {
+        "name": "quiche",
+        "image": "cloudflare/quiche:latest",
+        "resolvedImageId": "sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c",
+        "repoDigest": "cloudflare/quiche@sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c",
+        "source": "C:/shared/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184606Z/peer-tool-manifest.json"
+      }
+    ]
+  },
+  "commands": {
+    "defaultImageEnvironmentVariable": "HTTP3_QUICHE_IMAGE",
+    "clientTemplate": "quiche-client --http-version HTTP/3 --no-verify --connect-to <ip:port> --dump-responses <dir> <url>",
+    "serverTemplate": "quiche-server --listen 0.0.0.0:4433 --cert /certs/cert.pem --key /certs/priv.key --root /www --http-version HTTP/3"
+  },
+  "knownLimitations": [
+    "The image does not expose a stable --version flag; pin by image ID or repo digest.",
+    "Header-heavy and split-response behavior are not wired for quiche-server rows in the current external interop harness."
+  ]
+}

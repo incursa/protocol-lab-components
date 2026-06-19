@@ -1,0 +1,107 @@
+executorIdentity:
+  id: curl-http3-client
+  name: curl HTTP/3 Client Test Executor
+  version: 0.1.0
+  vendor: Incursa
+versionCompatibility:
+  contractVersion: test-executor-v1
+  compatibleContractVersions:
+    - test-executor-v1
+  executorVersion: 0.1.0
+claimedCapabilities:
+  - id: http3.core.status
+    status: supported
+  - id: http3.payload.bytes.64kb
+    status: supported
+  - id: http3.payload.bytes.1mb
+    status: supported
+  - id: http3.headers.response-headers-50x32
+    status: supported
+  - id: http3.protocol.qpack-repeated-headers
+    status: supported
+  - id: h1
+    status: unsupported
+  - id: h2
+    status: unsupported
+  - id: server-role
+    status: unsupported
+supportedTestSelectors:
+  - selectorType: test-id
+    expression: http3.core.status
+  - selectorType: test-id
+    expression: http3.payload.bytes.64kb
+  - selectorType: test-id
+    expression: http3.payload.bytes.1mb
+  - selectorType: test-id
+    expression: http3.headers.response-headers-50x32
+  - selectorType: test-id
+    expression: http3.protocol.qpack-repeated-headers
+supportedScenarioSelectors:
+  - selectorType: scenario-id
+    expression: http3.core.status
+  - selectorType: scenario-id
+    expression: http3.payload.bytes.64kb
+  - selectorType: scenario-id
+    expression: http3.payload.bytes.1mb
+  - selectorType: scenario-id
+    expression: http3.headers.response-headers-50x32
+  - selectorType: scenario-id
+    expression: http3.protocol.qpack-repeated-headers
+supportedProtocolFamilies:
+  - h3
+supportedExecutionModes:
+  - single-cell
+  - docker
+requiredTargetEndpointBindings:
+  - bindingId: primary
+    purpose: test-endpoint
+    endpointType: http
+    protocols:
+      - h3
+supportedArtifactTypes:
+  - type: command.txt
+    producedByStates:
+      - stopped
+      - failed
+  - type: result.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: body.bin
+    producedByStates:
+      - stopped
+  - type: stdout.txt
+    producedByStates:
+      - stopped
+      - failed
+  - type: stderr.txt
+    producedByStates:
+      - stopped
+      - failed
+metricsAvailability:
+  available: true
+  availableKinds:
+    - session
+    - validation
+telemetry:
+  supported: true
+  supported_contract_versions:
+    - telemetry-bundle-v1
+  supported_scopes:
+    - test-executor
+  supported_artifact_kinds:
+    - summary
+    - stdout
+    - stderr
+    - raw
+  export_modes:
+    - artifact-bundle
+externalPeerScenarios:
+  - get-small
+  - get-empty
+  - get-large
+  - not-found
+  - many-headers
+  - split-data
+executionMetadata:
+  manifest: protocol-lab.internal.json

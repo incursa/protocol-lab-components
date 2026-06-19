@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.ngtcp2-http3",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "ngtcp2/nghttp3 HTTP/3 Implementation Wrapper",
+  "entryManifests": [
+    "implementations/ngtcp2-http3.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "ngtcp2-http3",
+      "displayName": "ngtcp2/nghttp3 HTTP/3",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http3.core.status",
+        "http3.payload.bytes.64kb",
+        "http3.payload.bytes.1mb"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "http3-runtime",
+        "value": "true"
+      }
+    ]
+  }
+}

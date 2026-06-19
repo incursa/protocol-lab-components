@@ -29,10 +29,14 @@ implementations/
   caddy-http1/
   nginx-http1/
   kestrel-http3/
+  aioquic-http3/
+  quiche-http3/
+  ngtcp2-http3/
 executors/
   http1-reference/
   http1-go-smoke/
   go-http1-executor/
+  curl-http3-client/
 toolchains/
 scripts/
   package/
@@ -90,12 +94,16 @@ Implementation packages:
 - `org.protocol-lab.components.implementation.caddy-http1`
 - `org.protocol-lab.components.implementation.nginx-http1`
 - `org.protocol-lab.components.implementation.kestrel-http3`
+- `org.protocol-lab.components.implementation.aioquic-http3`
+- `org.protocol-lab.components.implementation.quiche-http3`
+- `org.protocol-lab.components.implementation.ngtcp2-http3`
 
 Test-executor packages:
 
 - `org.protocol-lab.components.executor.http1-reference`
 - `org.protocol-lab.components.executor.http1-go-smoke`
 - `org.protocol-lab.components.executor.go-http1-executor`
+- `org.protocol-lab.components.executor.curl-http3-client`
 
 Kestrel packages are intentionally lane scoped. Keep HTTP/1, HTTP/2, and HTTP/3 as separate packages so controller inventory can select exact protocol behavior and report unsupported cells explicitly.
 

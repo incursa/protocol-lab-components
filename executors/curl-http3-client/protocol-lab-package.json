@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.curl-http3-client",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "curl HTTP/3 Client Test Executor",
+  "entryManifests": [
+    "test-executors/curl-http3-client.yaml"
+  ],
+  "providedTestExecutors": [
+    {
+      "testExecutorId": "curl-http3-client",
+      "displayName": "curl HTTP/3 Client Test Executor",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http3.core.status",
+        "http3.payload.bytes.64kb",
+        "http3.payload.bytes.1mb",
+        "http3.headers.response-headers-50x32",
+        "http3.protocol.qpack-repeated-headers"
+      ],
+      "tests": [
+        "http3.core.status",
+        "http3.payload.bytes.64kb",
+        "http3.payload.bytes.1mb",
+        "http3.headers.response-headers-50x32",
+        "http3.protocol.qpack-repeated-headers"
+      ],
+      "requiredCapabilities": [
+        {
+          "name": "docker",
+          "value": "true"
+        },
+        {
+          "name": "curl-http3",
+          "value": "true"
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "http3-runtime",
+        "value": "true"
+      }
+    ]
+  }
+}

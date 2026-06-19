@@ -22,6 +22,10 @@ pwsh ./scripts/package/Build-CaddyHttp1Package.ps1
 pwsh ./scripts/package/Build-NginxHttp1Package.ps1
 pwsh ./scripts/package/Build-GoHttp1ExecutorPackage.ps1
 pwsh ./scripts/package/Build-KestrelHttp3Package.ps1
+pwsh ./scripts/package/Build-CurlHttp3ClientPackage.ps1
+pwsh ./scripts/package/Build-AioquicHttp3Package.ps1
+pwsh ./scripts/package/Build-QuicheHttp3Package.ps1
+pwsh ./scripts/package/Build-Ngtcp2Http3Package.ps1
 ```
 
 All wrappers call `Build-ProtocolLabComponentPackage.ps1`, which reads each component's `protocol-lab-package.json` and writes a `.plabpkg` under `artifacts/packages/`.

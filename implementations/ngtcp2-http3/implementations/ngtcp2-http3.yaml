@@ -1,0 +1,64 @@
+schemaVersion: "1.0"
+id: ngtcp2-http3
+name: ngtcp2/nghttp3 HTTP/3
+description: Docker-backed ngtcp2/nghttp3 HTTP/3 client/server wrapper for ProtocolLab external peer characterization.
+family: ngtcp2-nghttp3
+roles:
+  - client
+  - server
+targetKind: docker
+targetContract: process
+protocols:
+  - h3
+supportedProtocols:
+  - h3
+supportedWorkloadFamilies:
+  - http.application
+supportedProtocolVersions:
+  - http/3
+supportedScenarios:
+  - http3.core.status
+  - http3.payload.bytes.64kb
+  - http3.payload.bytes.1mb
+supportedTestCaseIds:
+  - http3.core.status
+  - http3.payload.bytes.64kb
+  - http3.payload.bytes.1mb
+externalPeerScenarios:
+  stable:
+    - get-small
+    - get-empty
+    - get-large
+    - not-found
+  notWiredInCurrentHarness:
+    - many-headers
+    - split-data
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+ports:
+  - name: h3
+    protocol: udp
+    default: 4433
+capabilities:
+  - http.client
+  - http.server
+  - httpStatus
+  - httpBytes
+unsupportedKnownCases:
+  - h1
+  - h2
+  - h2c
+  - raw-quic
+  - websocket
+artifactExports:
+  - command.txt
+  - stdout.txt
+  - stderr.txt
+  - result.json
+qlogSupport: true
+sslKeyLogSupport: true
+executionMetadata:
+  manifest: protocol-lab.internal.json

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "execute.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "execute.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "curl-http3",
+        "value": "true"
+      }
+    ],
+    "images": [
+      {
+        "name": "curl-http3",
+        "image": "ghcr.io/macbre/curl-http3",
+        "resolvedImageId": "sha256:c3a360869a4e132180f458f83af2ce67b873b2302739eda27274dad4f62155f8",
+        "repoDigest": "ghcr.io/macbre/curl-http3@sha256:c3a360869a4e132180f458f83af2ce67b873b2302739eda27274dad4f62155f8",
+        "source": "C:/shared/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184606Z/peer-tool-manifest.json"
+      }
+    ]
+  },
+  "commands": {
+    "defaultImageEnvironmentVariable": "HTTP3_CURL_IMAGE",
+    "clientTemplate": "curl --http3-only --max-time 15 --insecure --silent --show-error <url>"
+  },
+  "knownLimitations": [
+    "Requires a curl image built with --http3-only support.",
+    "Client-only executor; it does not start a target server."
+  ]
+}
