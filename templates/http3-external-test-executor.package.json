@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.example-http3-tool",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "Example HTTP/3 External Test Executor",
+  "entryManifests": [
+    "test-executors/example-http3-tool.yaml"
+  ],
+  "providedTestExecutors": [
+    {
+      "testExecutorId": "example-http3-tool",
+      "displayName": "Example HTTP/3 External Test Executor",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http3.core.status"
+      ],
+      "tests": [
+        "http3.core.status"
+      ],
+      "requiredCapabilities": [
+        {
+          "name": "docker",
+          "value": "true"
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "http3-runtime",
+        "value": "true"
+      }
+    ]
+  }
+}

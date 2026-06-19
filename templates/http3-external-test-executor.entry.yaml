@@ -1,0 +1,41 @@
+executorIdentity:
+  id: example-http3-tool
+  name: Example HTTP/3 External Test Executor
+  version: 0.1.0
+  vendor: Incursa
+versionCompatibility:
+  contractVersion: test-executor-v1
+  compatibleContractVersions:
+    - test-executor-v1
+  executorVersion: 0.1.0
+claimedCapabilities:
+  - id: http3.core.status
+    status: supported
+supportedTestSelectors:
+  - selectorType: test-id
+    expression: http3.core.status
+supportedScenarioSelectors:
+  - selectorType: scenario-id
+    expression: http3.core.status
+supportedProtocolFamilies:
+  - h3
+supportedExecutionModes:
+  - single-cell
+  - docker
+requiredTargetEndpointBindings:
+  - bindingId: primary
+    purpose: test-endpoint
+    endpointType: http
+    protocols:
+      - h3
+supportedArtifactTypes:
+  - type: result.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: command.txt
+    producedByStates:
+      - stopped
+      - failed
+executionMetadata:
+  manifest: protocol-lab.internal.json

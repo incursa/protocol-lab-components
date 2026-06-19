@@ -1,0 +1,23 @@
+schemaVersion: "1.0"
+id: example-http3-peer
+name: Example HTTP/3 External Peer
+description: Template for a Docker-backed HTTP/3 peer wrapper.
+family: external-http3
+roles:
+  - client
+  - server
+protocols:
+  - h3
+supportedProtocols:
+  - h3
+supportedWorkloadFamilies:
+  - http.application
+supportedProtocolVersions:
+  - http/3
+supportedScenarios:
+  - http3.core.status
+supportedTestCaseIds:
+  - http3.core.status
+executionMetadata:
+  manifest: protocol-lab.internal.json
+notes: Keep Docker image names, commands, ports, and local runner requirements in protocol-lab.internal.json.

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.example-http3-peer",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Example HTTP/3 External Peer",
+  "entryManifests": [
+    "implementations/example-http3-peer.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "example-http3-peer",
+      "displayName": "Example HTTP/3 External Peer",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http3.core.status"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "http3-runtime",
+        "value": "true"
+      }
+    ]
+  }
+}
