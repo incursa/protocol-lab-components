@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "execute.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "execute.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "python",
+        "value": "3"
+      },
+      {
+        "name": "h3spec",
+        "value": "v0.1.13"
+      }
+    ],
+    "tools": [
+      {
+        "name": "h3spec",
+        "version": "v0.1.13",
+        "asset": "h3spec-linux-x86_64",
+        "downloadUrl": "https://github.com/summerwind/h3spec/releases/download/v0.1.13/h3spec-linux-x86_64"
+      }
+    ],
+    "images": [
+      {
+        "name": "h3spec-linux-wrapper",
+        "image": "ubuntu:24.04",
+        "resolvedImageId": "unresolved-local",
+        "repoDigest": "ubuntu:24.04",
+        "source": "Install-H3SpecTool.ps1"
+      }
+    ]
+  },
+  "commands": {
+    "planOnly": "pwsh ./execute.ps1 -PlanOnly",
+    "acquireTool": "pwsh ./Install-H3SpecTool.ps1",
+    "liveRun": "pwsh ./execute.ps1 -AcquireH3Spec -NoValidateCertificate -HostName 127.0.0.1 -Port 4433"
+  },
+  "knownLimitations": [
+    "Executor-only package; it does not start or own the target HTTP/3 server lifecycle.",
+    "Filtered h3spec runs that select no cases are tooling evidence only and are not conformance evidence.",
+    "The default acquisition path wraps the Linux h3spec binary with Docker on Windows hosts."
+  ]
+}

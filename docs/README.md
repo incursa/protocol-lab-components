@@ -10,6 +10,9 @@ This documentation supports the component package repository.
   packaging behavior.
 - [Contributor agreement automation](contributor-agreement-automation.md)
   records the owner setup required for the CLA workflow.
+- The QUIC/HTTP/3 parity matrix lives in
+  `C:\shared\src\incursa\quic-dotnet\docs\protocol-lab\quic-http3-component-parity-matrix.md`
+  because `quic-dotnet` owns the Incursa support and proof story.
 
 ## Manifest Names
 

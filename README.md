@@ -37,6 +37,7 @@ executors/
   http1-go-smoke/
   go-http1-executor/
   curl-http3-client/
+  h3spec-http3-qpack/
 toolchains/
 scripts/
   package/
@@ -104,6 +105,7 @@ Test-executor packages:
 - `org.protocol-lab.components.executor.http1-go-smoke`
 - `org.protocol-lab.components.executor.go-http1-executor`
 - `org.protocol-lab.components.executor.curl-http3-client`
+- `org.protocol-lab.components.executor.h3spec-http3-qpack`
 
 Kestrel packages are intentionally lane scoped. Keep HTTP/1, HTTP/2, and HTTP/3 as separate packages so controller inventory can select exact protocol behavior and report unsupported cells explicitly.
 

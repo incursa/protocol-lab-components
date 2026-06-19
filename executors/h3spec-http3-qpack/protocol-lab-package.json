@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.h3spec-http3-qpack",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "h3spec HTTP/3 and QPACK Test Executor",
+  "entryManifests": [
+    "test-executors/h3spec-http3-qpack.yaml"
+  ],
+  "providedTestExecutors": [
+    {
+      "testExecutorId": "h3spec-http3-qpack",
+      "displayName": "h3spec HTTP/3 and QPACK Test Executor",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http3.core.status",
+        "http3.headers.response-headers-50x32",
+        "http3.protocol.qpack-repeated-headers"
+      ],
+      "tests": [
+        "h3spec.http3",
+        "h3spec.qpack"
+      ],
+      "requiredCapabilities": [
+        {
+          "name": "docker",
+          "value": "true"
+        },
+        {
+          "name": "h3spec",
+          "value": "v0.1.13"
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "h3spec",
+        "value": "v0.1.13"
+      }
+    ]
+  }
+}

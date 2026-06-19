@@ -1,0 +1,43 @@
+schemaVersion: protocol-lab-test-executor-v1
+executor:
+  id: h3spec-http3-qpack
+  displayName: h3spec HTTP/3 and QPACK Test Executor
+  version: 0.1.0
+  protocolFamilies:
+    - h3
+  modes:
+    - single-cell
+    - docker
+  claimedCapabilities:
+    h3spec.http3: supported
+    h3spec.qpack: supported
+    h3spec.no-selected-cases-classification: supported
+    target-server-lifecycle: unsupported
+  supportedScenarioSelectors:
+    - http3.core.status
+    - http3.headers.response-headers-50x32
+    - http3.protocol.qpack-repeated-headers
+  supportedTestSelectors:
+    - h3spec.http3
+    - h3spec.qpack
+    - match:HTTP/3
+    - match:QPACK
+  entrypoints:
+    windows:
+      shell: pwsh
+      path: execute.ps1
+      arguments: []
+    linux:
+      shell: bash
+      path: execute.sh
+      arguments: []
+  artifacts:
+    - artifacts/h3spec-http3-qpack/h3spec-metadata.json
+    - artifacts/h3spec-http3-qpack/h3spec-results.json
+    - artifacts/h3spec-http3-qpack/h3spec-report.md
+    - artifacts/h3spec-http3-qpack/h3spec-stdout.txt
+    - artifacts/h3spec-http3-qpack/h3spec-stderr.txt
+  telemetry:
+    resultSummary: artifacts/h3spec-http3-qpack/h3spec-results.json
+    rawStdout: artifacts/h3spec-http3-qpack/h3spec-stdout.txt
+    rawStderr: artifacts/h3spec-http3-qpack/h3spec-stderr.txt
