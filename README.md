@@ -36,8 +36,11 @@ executors/
   http1-reference/
   http1-go-smoke/
   go-http1-executor/
+  quic-go-raw-load/
   curl-http3-client/
   h3spec-http3-qpack/
+scenarios/
+  raw-quic-transport/
 toolchains/
 scripts/
   package/
@@ -47,6 +50,8 @@ templates/
 `implementations/` contains runnable server/client wrappers that expose a Protocol Lab implementation package.
 
 `executors/` contains test-executor packages. These may be reference executors, smoke executors, or compatibility checks. Executors are not fallback implementations; package consumers should select them explicitly.
+
+`scenarios/` contains scenario-pack packages. Scenario packs publish scenario and suite manifests without carrying implementation or load-generator payloads.
 
 `toolchains/` pins shared build inputs such as .NET SDK versions, Go versions, container base images, and external binary versions.
 
@@ -60,9 +65,9 @@ Packageable component directories own a public `protocol-lab-package.json` file.
 
 - `packageId`: stable package identity, unique in this repository
 - `packageVersion`: independently advanced semantic version for that package
-- `kind`: `implementation` or `test-executor`
+- `kind`: `implementation`, `test-executor`, or `scenario-pack`
 - `entryManifests`: package-relative public catalog manifests
-- `providedImplementations` or `providedTestExecutors`: selected public component IDs, protocols, and scenario/test coverage
+- `providedImplementations`, `providedTestExecutors`, or `providedScenarios`: selected public component IDs, protocols, and scenario/test coverage
 
 Components with local execution payloads also own `protocol-lab.internal.json`. That internal manifest contains execution environments, process or script entrypoints, and runner/tool requirements. Do not mix execution-only fields such as local commands, runtime booleans, or wrapper entrypoints back into the public package manifest.
 
@@ -104,10 +109,17 @@ Test-executor packages:
 - `org.protocol-lab.components.executor.http1-reference`
 - `org.protocol-lab.components.executor.http1-go-smoke`
 - `org.protocol-lab.components.executor.go-http1-executor`
+- `org.protocol-lab.components.executor.quic-go-raw-load`
 - `org.protocol-lab.components.executor.curl-http3-client`
 - `org.protocol-lab.components.executor.h3spec-http3-qpack`
 
+Scenario-pack packages:
+
+- `org.protocol-lab.components.scenario.raw-quic-transport`
+
 Kestrel packages are intentionally lane scoped. Keep HTTP/1, HTTP/2, and HTTP/3 as separate packages so controller inventory can select exact protocol behavior and report unsupported cells explicitly.
+
+Incursa raw QUIC implementation packages remain implementation-owned by `quic-dotnet`. This repository packages the reusable raw QUIC scenario and executor pieces so controller jobs do not have to source them from local `protocol-lab-internal` scripts.
 
 ## License
 

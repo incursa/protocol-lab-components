@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.scenario.raw-quic-transport",
+  "packageVersion": "0.1.0",
+  "kind": "scenario-pack",
+  "displayName": "Raw QUIC Transport Scenario Pack",
+  "entryManifests": [
+    "scenarios/quic/transport/stream-throughput.yaml",
+    "scenarios/quic/transport/latency-echo-1kb.yaml",
+    "scenarios/quic/transport/multiplex-100-streams.yaml",
+    "scenarios/quic/transport/stream-limits-100-streams.yaml",
+    "scenarios/quic/transport/payload-large-1mb.yaml",
+    "scenarios/quic/transport/duplex-streams.yaml",
+    "scenarios/quic/transport/cancellation-reset-stream.yaml",
+    "suites/raw-quic-transport-v1-smoke.yaml"
+  ],
+  "providedScenarios": [
+    {
+      "scenarioId": "quic.transport.stream-throughput.1mb",
+      "displayName": "QUIC Stream Throughput 1MB",
+      "protocols": [
+        "quic"
+      ],
+      "tests": [
+        "quic.transport.stream-throughput.1mb"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.latency.echo-1kb",
+      "displayName": "QUIC Echo Latency 1KB",
+      "protocols": [
+        "quic"
+      ],
+      "tests": [
+        "quic.transport.latency.echo-1kb"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.multiplex.100x64kb",
+      "displayName": "QUIC Multiplex 100x64KB",
+      "protocols": [
+        "quic"
+      ],
+      "tests": [
+        "quic.transport.multiplex.100x64kb"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.stream-limits.100x64kb",
+      "displayName": "QUIC Stream Limit Pressure 100x64KB",
+      "protocols": [
+        "quic"
+      ],
+      "tests": [
+        "quic.transport.stream-limits.100x64kb"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.payload.large-1mb",
+      "displayName": "QUIC Large Payload 1MB",
+      "protocols": [
+        "quic"
+      ],
+      "tests": [
+        "quic.transport.payload.large-1mb"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.duplex-streams",
+      "displayName": "QUIC Duplex Streams",
+      "protocols": [
+        "quic"
+      ],
+      "tests": [
+        "quic.transport.duplex-streams"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.cancellation.reset-stream",
+      "displayName": "QUIC Stream Cancellation",
+      "protocols": [
+        "quic"
+      ],
+      "status": "unsupported",
+      "tests": []
+    }
+  ],
+  "providedSuites": [
+    {
+      "suiteId": "raw-quic-transport-v1-smoke",
+      "displayName": "Raw QUIC transport package smoke suite",
+      "purpose": "smoke",
+      "resultKind": "validation",
+      "protocols": [
+        "quic"
+      ],
+      "testExecutors": [
+        "quic-go-raw-load"
+      ]
+    }
+  ]
+}

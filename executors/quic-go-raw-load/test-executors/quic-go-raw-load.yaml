@@ -1,0 +1,118 @@
+executorIdentity:
+  id: quic-go-raw-load
+  name: quic-go Raw QUIC Load Executor
+  version: 0.1.0
+  vendor: Incursa
+versionCompatibility:
+  contractVersion: test-executor-v1
+  compatibleContractVersions:
+    - test-executor-v1
+  executorVersion: 0.1.0
+claimedCapabilities:
+  - id: quic.transport.stream-throughput.1mb
+    status: supported
+  - id: quic.transport.latency.echo-1kb
+    status: supported
+  - id: quic.transport.multiplex.100x64kb
+    status: supported
+  - id: quic.transport.stream-limits.100x64kb
+    status: supported
+  - id: quic.transport.payload.large-1mb
+    status: supported
+  - id: quic.transport.duplex-streams
+    status: supported
+  - id: quic.transport.cancellation.reset-stream
+    status: unsupported
+    reason: quic-go raw load does not yet drive stream reset or cancellation classification.
+supportedTestSelectors:
+  - selectorType: test-id
+    expression: quic.transport.stream-throughput.1mb
+  - selectorType: test-id
+    expression: quic.transport.latency.echo-1kb
+  - selectorType: test-id
+    expression: quic.transport.multiplex.100x64kb
+  - selectorType: test-id
+    expression: quic.transport.stream-limits.100x64kb
+  - selectorType: test-id
+    expression: quic.transport.payload.large-1mb
+  - selectorType: test-id
+    expression: quic.transport.duplex-streams
+supportedScenarioSelectors:
+  - selectorType: scenario-id
+    expression: quic.transport.stream-throughput.1mb
+  - selectorType: scenario-id
+    expression: quic.transport.latency.echo-1kb
+  - selectorType: scenario-id
+    expression: quic.transport.multiplex.100x64kb
+  - selectorType: scenario-id
+    expression: quic.transport.stream-limits.100x64kb
+  - selectorType: scenario-id
+    expression: quic.transport.payload.large-1mb
+  - selectorType: scenario-id
+    expression: quic.transport.duplex-streams
+supportedProtocolFamilies:
+  - quic
+supportedExecutionModes:
+  - single-cell
+  - process
+requiredTargetEndpointBindings:
+  - bindingId: primary
+    purpose: quic-endpoint
+    endpointType: quic
+    protocols:
+      - quic
+defaultArguments:
+  - --sni
+  - localhost
+  - --alpn
+  - plab-raw-quic
+supportedArtifactTypes:
+  - type: validation.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: result.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: load-tool.stdout.txt
+    producedByStates:
+      - stopped
+      - failed
+  - type: load-tool.stderr.txt
+    producedByStates:
+      - stopped
+      - failed
+  - type: load-tool-execution.json
+    producedByStates:
+      - stopped
+      - failed
+metricsAvailability:
+  available: true
+  availableKinds:
+    - raw-quic-json
+    - session
+    - validation
+parser:
+  id: raw-quic-json
+  preservesRawOutput: true
+telemetry:
+  supported: true
+  supported_contract_versions:
+    - telemetry-bundle-v1
+  supported_scopes:
+    - test-executor
+    - load-generator
+  supported_artifact_kinds:
+    - summary
+    - metrics
+    - stdout
+    - stderr
+    - raw
+  export_modes:
+    - inline
+    - artifact-bundle
+  metadata:
+    optional: true
+    implementation_owned: false
+    description: The executor emits raw-quic-json metrics to stdout and relies on the runner to retain stdout and stderr artifacts.

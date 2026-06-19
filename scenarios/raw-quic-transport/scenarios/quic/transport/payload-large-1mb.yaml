@@ -1,0 +1,74 @@
+schemaVersion: "1.0"
+title: QUIC Large Payload 1MB
+status: stable
+kind: protocolValidation
+layer: transport
+roles:
+  - server
+requires:
+  capabilities:
+    - quic.server
+  protocols:
+    - quic
+  roles:
+    - server
+trafficShape: bidirectional-stream
+id: quic.transport.payload.large-1mb
+name: QUIC Large Payload 1MB
+family: quic.transport
+description: Validate and benchmark a single bidirectional 1MB QUIC stream payload without routing through HTTP/3.
+protocol: quic
+implementationRole: server
+requiredCapabilities:
+  - quicTransport
+  - quicStreams
+quicTransport:
+  behavior: large-payload
+  connectionCount: 1
+  streamType: bidirectional
+  streamCount: 1
+  payloadSizeBytes: 1048576
+  payloadDirection: bidirectional
+  openPattern: sequential
+  expectedBytes: 2097152
+validation:
+  required: true
+  checks:
+    - payload-bytes-delivered
+    - no-short-read
+benchmark:
+  warmupSeconds: 5
+  durationSeconds: 30
+  repetitions: 1
+  connections:
+    - 1
+  streamsPerConnection:
+    - 1
+benchmarkCompat:
+  compatibleLoadShapes:
+    - fixed-path-request-response
+  primaryMetrics:
+    - throughputBytesPerSecond
+    - latencyP50
+    - latencyP95
+    - latencyP99
+    - errorRate
+artifacts:
+  required:
+    - validation.json
+    - result.json
+  optional:
+    - qlog
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - quic.stream.bytesSent
+  - quic.stream.bytesReceived
+  - quic.stream.completedStreams
+artifactRequirements:
+  - load-tool.stdout.txt
+  - load-tool.stderr.txt
+tags:
+  - quic
+  - payload
+  - large-payload

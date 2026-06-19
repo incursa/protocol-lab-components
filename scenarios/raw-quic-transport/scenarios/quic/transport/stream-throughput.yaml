@@ -1,0 +1,74 @@
+schemaVersion: "1.0"
+title: QUIC Stream Throughput
+status: stable
+kind: protocolValidation
+layer: transport
+roles:
+  - server
+requires:
+  capabilities:
+    - quic.server
+  protocols:
+    - quic
+  roles:
+    - server
+trafficShape: bidirectional-stream
+id: quic.transport.stream-throughput.1mb
+name: QUIC Stream Throughput
+family: quic.transport
+description: Validate and benchmark single-stream QUIC payload throughput once a raw QUIC validator and load generator exist.
+protocol: quic
+implementationRole: server
+requiredCapabilities:
+  - quicTransport
+  - quicStreams
+quicTransport:
+  behavior: stream-throughput
+  connectionCount: 1
+  streamType: bidirectional
+  streamCount: 1
+  payloadSizeBytes: 1048576
+  payloadDirection: client-to-server
+  openPattern: sequential
+  expectedBytes: 1048576
+validation:
+  required: true
+  checks:
+    - unsupported-until-quic-validator
+    - payload-bytes-delivered
+benchmark:
+  warmupSeconds: 5
+  durationSeconds: 30
+  repetitions: 1
+  connections:
+    - 1
+  streamsPerConnection:
+    - 1
+benchmarkCompat:
+  compatibleLoadShapes:
+    - fixed-path-request-response
+  primaryMetrics:
+    - requestsPerSecond
+    - latencyP50
+    - latencyP95
+    - latencyP99
+    - errorRate
+artifacts:
+  required:
+    - validation.json
+    - result.json
+  optional:
+    - qlog
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - quic.stream.bytesPerSecond
+  - quic.stream.completedStreams
+artifactRequirements:
+  - load-tool.stdout.txt
+  - load-tool.stderr.txt
+  - qlog
+tags:
+  - phase6
+  - quic
+  - throughput

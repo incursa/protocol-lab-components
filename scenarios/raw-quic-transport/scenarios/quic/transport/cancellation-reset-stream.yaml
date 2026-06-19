@@ -1,0 +1,68 @@
+schemaVersion: "1.0"
+title: QUIC Stream Cancellation
+status: deferred
+kind: protocolValidation
+layer: transport
+roles:
+  - server
+requires:
+  capabilities:
+    - quic.server
+  protocols:
+    - quic
+  roles:
+    - server
+trafficShape: bidirectional-stream
+id: quic.transport.cancellation.reset-stream
+name: QUIC Stream Cancellation
+family: quic.transport
+description: Reserved raw QUIC cancellation scenario for stream reset and cancellation classification once the raw load executor can drive reset behavior.
+protocol: quic
+implementationRole: server
+requiredCapabilities:
+  - quicTransport
+  - quicStreams
+  - quicCancellation
+quicTransport:
+  behavior: cancellation-reset-stream
+  connectionCount: 1
+  streamType: bidirectional
+  streamCount: 1
+  payloadSizeBytes: 65536
+  payloadDirection: client-to-server
+  openPattern: cancel-after-first-write
+  expectedBytes: 0
+validation:
+  required: true
+  checks:
+    - unsupported-until-quic-cancellation-validator
+    - reset-classification-recorded
+benchmark:
+  warmupSeconds: 0
+  durationSeconds: 10
+  repetitions: 1
+  connections:
+    - 1
+  streamsPerConnection:
+    - 1
+benchmarkCompat:
+  compatibleLoadShapes: []
+  primaryMetrics:
+    - errorRate
+artifacts:
+  required:
+    - validation.json
+    - result.json
+  optional:
+    - qlog
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - quic.stream.resetCount
+artifactRequirements:
+  - load-tool.stdout.txt
+  - load-tool.stderr.txt
+tags:
+  - quic
+  - cancellation
+  - pending-executor-support

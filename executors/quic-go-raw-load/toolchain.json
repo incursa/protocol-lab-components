@@ -1,0 +1,24 @@
+{
+  "go": {
+    "version": "1.26.x",
+    "module": "incursa.com/protocol-lab/adapters/quicgo"
+  },
+  "dependencies": [
+    {
+      "name": "github.com/quic-go/quic-go",
+      "version": "v0.60.0"
+    },
+    {
+      "name": "golang.org/x/crypto",
+      "version": "v0.51.0"
+    },
+    {
+      "name": "golang.org/x/net",
+      "version": "v0.55.0"
+    },
+    {
+      "name": "golang.org/x/sys",
+      "version": "v0.45.0"
+    }
+  ]
+}

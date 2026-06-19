@@ -1,0 +1,75 @@
+schemaVersion: "1.0"
+title: QUIC Multiplex 100x64KB
+status: stable
+kind: protocolValidation
+layer: transport
+roles:
+  - server
+requires:
+  capabilities:
+    - quic.server
+  protocols:
+    - quic
+  roles:
+    - server
+trafficShape: bidirectional-stream
+id: quic.transport.multiplex.100x64kb
+name: QUIC Multiplex 100x64KB
+family: quic.transport
+description: Validate and benchmark 100 concurrent 64KB QUIC streams once a raw QUIC validator and load generator exist.
+protocol: quic
+implementationRole: server
+requiredCapabilities:
+  - quicTransport
+  - quicStreams
+  - quicMultiplexing
+quicTransport:
+  behavior: multiplex-streams
+  connectionCount: 1
+  streamType: bidirectional
+  streamCount: 100
+  payloadSizeBytes: 65536
+  payloadDirection: bidirectional
+  openPattern: concurrent
+  expectedBytes: 6553600
+validation:
+  required: true
+  checks:
+    - unsupported-until-quic-validator
+    - concurrent-streams-complete
+benchmark:
+  warmupSeconds: 5
+  durationSeconds: 30
+  repetitions: 1
+  connections:
+    - 1
+  streamsPerConnection:
+    - 100
+benchmarkCompat:
+  compatibleLoadShapes:
+    - fixed-path-request-response
+  primaryMetrics:
+    - requestsPerSecond
+    - latencyP50
+    - latencyP95
+    - latencyP99
+    - errorRate
+artifacts:
+  required:
+    - validation.json
+    - result.json
+  optional:
+    - qlog
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - quic.stream.maxActiveStreams
+  - quic.stream.completedStreams
+artifactRequirements:
+  - load-tool.stdout.txt
+  - load-tool.stderr.txt
+  - qlog
+tags:
+  - phase6
+  - quic
+  - multiplexing

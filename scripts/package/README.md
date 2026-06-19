@@ -27,6 +27,9 @@ pwsh ./scripts/package/Build-H3SpecHttp3QpackPackage.ps1
 pwsh ./scripts/package/Build-AioquicHttp3Package.ps1
 pwsh ./scripts/package/Build-QuicheHttp3Package.ps1
 pwsh ./scripts/package/Build-Ngtcp2Http3Package.ps1
+pwsh ./scripts/package/Build-RawQuicScenarioPackage.ps1
+pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1
 ```
 
 All wrappers call `Build-ProtocolLabComponentPackage.ps1`, which reads each component's `protocol-lab-package.json` and writes a `.plabpkg` under `artifacts/packages/`.
+Compiled payload wrappers may stage a runtime-specific package before compression while preserving the same package manifest layout and artifact root.

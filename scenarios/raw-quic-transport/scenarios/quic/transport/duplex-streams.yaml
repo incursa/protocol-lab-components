@@ -1,0 +1,76 @@
+schemaVersion: "1.0"
+title: QUIC Duplex Streams
+status: stable
+kind: protocolValidation
+layer: transport
+roles:
+  - server
+requires:
+  capabilities:
+    - quic.server
+  protocols:
+    - quic
+  roles:
+    - server
+trafficShape: bidirectional-stream
+id: quic.transport.duplex-streams
+name: QUIC Duplex Streams
+family: quic.transport
+description: Validate and benchmark simultaneous bidirectional QUIC stream payload transfer once a raw QUIC validator and load generator exist.
+protocol: quic
+implementationRole: server
+requiredCapabilities:
+  - quicTransport
+  - quicStreams
+  - quicDuplex
+quicTransport:
+  behavior: duplex-streams
+  connectionCount: 1
+  streamType: bidirectional
+  streamCount: 16
+  payloadSizeBytes: 65536
+  payloadDirection: bidirectional
+  openPattern: concurrent
+  expectedBytes: 2097152
+validation:
+  required: true
+  checks:
+    - unsupported-until-quic-validator
+    - bidirectional-payloads-complete
+benchmark:
+  warmupSeconds: 5
+  durationSeconds: 30
+  repetitions: 1
+  connections:
+    - 1
+  streamsPerConnection:
+    - 16
+benchmarkCompat:
+  compatibleLoadShapes:
+    - fixed-path-request-response
+  primaryMetrics:
+    - requestsPerSecond
+    - latencyP50
+    - latencyP95
+    - latencyP99
+    - errorRate
+artifacts:
+  required:
+    - validation.json
+    - result.json
+  optional:
+    - qlog
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - quic.stream.bytesSent
+  - quic.stream.bytesReceived
+  - quic.stream.completedStreams
+artifactRequirements:
+  - load-tool.stdout.txt
+  - load-tool.stderr.txt
+  - qlog
+tags:
+  - phase6
+  - quic
+  - duplex

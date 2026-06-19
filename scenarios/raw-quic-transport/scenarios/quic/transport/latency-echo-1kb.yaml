@@ -1,0 +1,72 @@
+schemaVersion: "1.0"
+title: QUIC Echo Latency 1KB
+status: stable
+kind: protocolValidation
+layer: transport
+roles:
+  - server
+requires:
+  capabilities:
+    - quic.server
+  protocols:
+    - quic
+  roles:
+    - server
+trafficShape: bidirectional-stream
+id: quic.transport.latency.echo-1kb
+name: QUIC Echo Latency 1KB
+family: quic.transport
+description: Validate and benchmark small bidirectional QUIC stream echo latency.
+protocol: quic
+implementationRole: server
+requiredCapabilities:
+  - quicTransport
+  - quicStreams
+quicTransport:
+  behavior: latency-echo
+  connectionCount: 1
+  streamType: bidirectional
+  streamCount: 1
+  payloadSizeBytes: 1024
+  payloadDirection: bidirectional
+  openPattern: sequential
+  expectedBytes: 2048
+validation:
+  required: true
+  checks:
+    - payload-bytes-delivered
+    - latency-sample-recorded
+benchmark:
+  warmupSeconds: 2
+  durationSeconds: 10
+  repetitions: 1
+  connections:
+    - 1
+  streamsPerConnection:
+    - 1
+benchmarkCompat:
+  compatibleLoadShapes:
+    - fixed-path-request-response
+  primaryMetrics:
+    - latencyP50
+    - latencyP95
+    - latencyP99
+    - errorRate
+artifacts:
+  required:
+    - validation.json
+    - result.json
+  optional:
+    - qlog
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - quic.stream.completedStreams
+  - quic.stream.latencyP50
+artifactRequirements:
+  - load-tool.stdout.txt
+  - load-tool.stderr.txt
+tags:
+  - quic
+  - latency
+  - correctness

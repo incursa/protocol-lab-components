@@ -1,0 +1,74 @@
+schemaVersion: "1.0"
+title: QUIC Stream Limit Pressure 100x64KB
+status: stable
+kind: protocolValidation
+layer: transport
+roles:
+  - server
+requires:
+  capabilities:
+    - quic.server
+  protocols:
+    - quic
+  roles:
+    - server
+trafficShape: bidirectional-stream
+id: quic.transport.stream-limits.100x64kb
+name: QUIC Stream Limit Pressure 100x64KB
+family: quic.transport
+description: Validate and benchmark a high-concurrency bidirectional stream batch that exercises advertised stream capacity without using the HTTP/3 lane.
+protocol: quic
+implementationRole: server
+requiredCapabilities:
+  - quicTransport
+  - quicStreams
+  - quicMultiplexing
+quicTransport:
+  behavior: stream-limit-pressure
+  connectionCount: 1
+  streamType: bidirectional
+  streamCount: 100
+  payloadSizeBytes: 65536
+  payloadDirection: bidirectional
+  openPattern: concurrent
+  expectedBytes: 13107200
+validation:
+  required: true
+  checks:
+    - concurrent-streams-complete
+    - no-stream-limit-deadlock
+benchmark:
+  warmupSeconds: 5
+  durationSeconds: 30
+  repetitions: 1
+  connections:
+    - 1
+  streamsPerConnection:
+    - 100
+benchmarkCompat:
+  compatibleLoadShapes:
+    - fixed-path-request-response
+  primaryMetrics:
+    - requestsPerSecond
+    - latencyP50
+    - latencyP95
+    - latencyP99
+    - errorRate
+artifacts:
+  required:
+    - validation.json
+    - result.json
+  optional:
+    - qlog
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - quic.stream.maxActiveStreams
+  - quic.stream.completedStreams
+artifactRequirements:
+  - load-tool.stdout.txt
+  - load-tool.stderr.txt
+tags:
+  - quic
+  - stream-limits
+  - correctness
