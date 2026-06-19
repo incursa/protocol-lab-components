@@ -46,6 +46,20 @@ function Test-StringArray {
     return $items.Count -gt 0 -and -not ($items | Where-Object { [string]::IsNullOrWhiteSpace([string]$_) })
 }
 
+function Test-AllowedProperties {
+    param(
+        [Parameter(Mandatory)][object]$Value,
+        [Parameter(Mandatory)][string[]]$Allowed,
+        [Parameter(Mandatory)][string]$Context
+    )
+
+    foreach ($propertyName in $Value.PSObject.Properties.Name) {
+        if ($propertyName -notin $Allowed) {
+            $errors.Add("${Context}: unsupported public property '$propertyName'.")
+        }
+    }
+}
+
 $publicManifestFiles = Get-ChildItem -LiteralPath $Root -Recurse -Filter 'protocol-lab-package.json' |
     Where-Object { -not (Test-IsIgnoredPath -Path $_.FullName) } |
     Sort-Object FullName
@@ -236,6 +250,28 @@ foreach ($file in $publicManifestFiles) {
 
         if ($manifest.PSObject.Properties.Name.Contains('providedImplementations')) {
             $errors.Add("$($file.FullName): test-executor packages must not declare providedImplementations.")
+        }
+    }
+    elseif ($manifest.kind -eq 'scenario-pack') {
+        if (($null -eq $manifest.providedScenarios -or @($manifest.providedScenarios).Count -eq 0) -and
+            ($null -eq $manifest.providedSuites -or @($manifest.providedSuites).Count -eq 0)) {
+            $errors.Add("$($file.FullName): scenario-pack packages must declare providedScenarios or providedSuites.")
+        }
+
+        foreach ($provided in @($manifest.providedScenarios)) {
+            $providedId = [string]$provided.scenarioId
+            Test-AllowedProperties `
+                -Value $provided `
+                -Allowed @('scenarioId', 'displayName', 'protocols') `
+                -Context "$($file.FullName): providedScenarios entry '$providedId'"
+
+            if (-not (Test-Token -Value $providedId)) {
+                $errors.Add("$($file.FullName): providedScenarios entry is missing a valid scenarioId.")
+            }
+
+            if (-not (Test-StringArray -Value $provided.protocols)) {
+                $errors.Add("$($file.FullName): provided scenario '$providedId' must declare one or more protocols.")
+            }
         }
     }
 

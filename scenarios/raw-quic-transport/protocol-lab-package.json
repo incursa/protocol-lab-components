@@ -20,9 +20,6 @@
       "displayName": "QUIC Stream Throughput 1MB",
       "protocols": [
         "quic"
-      ],
-      "tests": [
-        "quic.transport.stream-throughput.1mb"
       ]
     },
     {
@@ -30,9 +27,6 @@
       "displayName": "QUIC Echo Latency 1KB",
       "protocols": [
         "quic"
-      ],
-      "tests": [
-        "quic.transport.latency.echo-1kb"
       ]
     },
     {
@@ -40,9 +34,6 @@
       "displayName": "QUIC Multiplex 100x64KB",
       "protocols": [
         "quic"
-      ],
-      "tests": [
-        "quic.transport.multiplex.100x64kb"
       ]
     },
     {
@@ -50,9 +41,6 @@
       "displayName": "QUIC Stream Limit Pressure 100x64KB",
       "protocols": [
         "quic"
-      ],
-      "tests": [
-        "quic.transport.stream-limits.100x64kb"
       ]
     },
     {
@@ -60,9 +48,6 @@
       "displayName": "QUIC Large Payload 1MB",
       "protocols": [
         "quic"
-      ],
-      "tests": [
-        "quic.transport.payload.large-1mb"
       ]
     },
     {
@@ -70,9 +55,6 @@
       "displayName": "QUIC Duplex Streams",
       "protocols": [
         "quic"
-      ],
-      "tests": [
-        "quic.transport.duplex-streams"
       ]
     },
     {
@@ -80,9 +62,7 @@
       "displayName": "QUIC Stream Cancellation",
       "protocols": [
         "quic"
-      ],
-      "status": "unsupported",
-      "tests": []
+      ]
     }
   ],
   "providedSuites": [
