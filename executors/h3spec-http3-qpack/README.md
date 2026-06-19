@@ -35,7 +35,27 @@ pwsh ./executors/h3spec-http3-qpack/Install-H3SpecTool.ps1
 Run against a live local HTTP/3 server:
 
 ```powershell
-pwsh ./executors/h3spec-http3-qpack/execute.ps1 -AcquireH3Spec -NoValidateCertificate -HostName 127.0.0.1 -Port 4433
+pwsh ./executors/h3spec-http3-qpack/execute.ps1 -Mode full -AcquireH3Spec -NoValidateCertificate -HostName 127.0.0.1 -Port 4433
+```
+
+Run a focused HTTP/3 subset:
+
+```powershell
+pwsh ./executors/h3spec-http3-qpack/execute.ps1 -Mode focused -Match "HTTP/3 4.1" -AcquireH3Spec -NoValidateCertificate -HostName 127.0.0.1 -Port 4433
+```
+
+Run the QPACK-focused subset:
+
+```powershell
+pwsh ./executors/h3spec-http3-qpack/execute.ps1 -Mode qpack -AcquireH3Spec -NoValidateCertificate -HostName 127.0.0.1 -Port 4433
+```
+
+The bash wrapper accepts equivalent flags:
+
+```bash
+./executors/h3spec-http3-qpack/execute.sh --mode full --acquire-h3spec --no-validate --host 127.0.0.1 --port 4433
+./executors/h3spec-http3-qpack/execute.sh --mode focused --match "HTTP/3 4.1" --acquire-h3spec --no-validate --host 127.0.0.1 --port 4433
+./executors/h3spec-http3-qpack/execute.sh --mode qpack --acquire-h3spec --no-validate --host 127.0.0.1 --port 4433
 ```
 
 Build the package artifact:
@@ -49,3 +69,5 @@ The package artifact is written under `artifacts/packages/`.
 ## Evidence Notes
 
 Filtered h3spec runs that select no cases are classified as tooling evidence only. They are not conformance evidence. Live runs should preserve `h3spec-metadata.json`, `h3spec-results.json`, `h3spec-report.md`, stdout, and stderr together.
+
+`h3spec-results.json` preserves `selectedCases`, `passedCases`, `failedCases`, `skippedCases`, `selectionStatus`, `skipStatus`, `classification`, and `reportPath`. A run with zero parsed cases and a nonzero h3spec exit code is classified as `tooling-failure`; a zero-case successful focused selector is classified as `no-selected-cases`.

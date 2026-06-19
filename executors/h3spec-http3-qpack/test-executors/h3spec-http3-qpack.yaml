@@ -18,6 +18,9 @@ executor:
     - http3.headers.response-headers-50x32
     - http3.protocol.qpack-repeated-headers
   supportedTestSelectors:
+    - full
+    - focused
+    - qpack
     - h3spec.http3
     - h3spec.qpack
     - match:HTTP/3

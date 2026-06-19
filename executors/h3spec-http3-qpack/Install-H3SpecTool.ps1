@@ -20,7 +20,7 @@ function Resolve-ComponentPath {
 
 $toolRoot = Join-Path (Resolve-ComponentPath -Path $ArtifactsRoot) "h3spec-$Version"
 $assetName = "h3spec-linux-x86_64"
-$downloadUrl = "https://github.com/summerwind/h3spec/releases/download/$Version/$assetName"
+$downloadUrl = "https://github.com/kazu-yamamoto/h3spec/releases/download/$Version/$assetName"
 $binaryPath = Join-Path $toolRoot $assetName
 $wrapperPath = Join-Path $toolRoot 'Invoke-H3SpecDocker.ps1'
 
@@ -29,6 +29,8 @@ New-Item -ItemType Directory -Force -Path $toolRoot | Out-Null
 if ($Force -or -not (Test-Path -LiteralPath $binaryPath -PathType Leaf)) {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $binaryPath
 }
+
+$sha256 = (Get-FileHash -LiteralPath $binaryPath -Algorithm SHA256).Hash.ToLowerInvariant()
 
 $wrapper = @'
 [CmdletBinding()]
@@ -60,6 +62,8 @@ $manifest = [ordered]@{
     version = $Version
     asset = $assetName
     downloadUrl = $downloadUrl
+    sha256 = $sha256
+    acquiredUtc = (Get-Date).ToUniversalTime().ToString('o')
     executable = $wrapperPath
     prefixArguments = @()
     wrapperImage = 'ubuntu:24.04'

@@ -152,7 +152,29 @@ def load_metadata(path: Path | None) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def build_result(stdout: str, stderr: str, metadata: dict[str, Any]) -> dict[str, Any]:
+def classify_result(
+    exit_code: int | None,
+    selected_cases: int,
+    failures: int,
+    requested_matches: list[Any],
+) -> tuple[str, str]:
+    if exit_code is None:
+        return "not-run", "not-run"
+    if selected_cases == 0 and exit_code != 0:
+        return "tooling-failure", "tooling-failure"
+    if requested_matches and selected_cases == 0:
+        return "no-selected-cases", "no-selected-cases"
+    if failures == 0 and exit_code == 0:
+        return "pass", "conformance-pass"
+    return "fail", "conformance-fail"
+
+
+def build_result(
+    stdout: str,
+    stderr: str,
+    metadata: dict[str, Any],
+    report_path: Path | None = None,
+) -> dict[str, Any]:
     cases, summary = parse_stdout(stdout)
     exit_code = metadata.get("exitCode")
     requested_matches = metadata.get("match", [])
@@ -162,23 +184,34 @@ def build_result(stdout: str, stderr: str, metadata: dict[str, Any]) -> dict[str
     if requested_matches:
         selection_status = "filtered" if selected_cases else "no-selected-cases"
 
-    if exit_code is None:
-        status = "not-run"
-    elif selection_status == "no-selected-cases":
-        status = "no-selected-cases"
-    elif int(exit_code) == 0 and summary["failures"] == 0:
-        status = "pass"
-    else:
-        status = "fail"
+    if exit_code is not None:
+        exit_code = int(exit_code)
+
+    status, classification = classify_result(
+        exit_code,
+        selected_cases,
+        int(summary["failures"]),
+        requested_matches,
+    )
+    matched_failed_cases = sum(1 for case in cases if case["status"] == "fail")
+    failed_cases = max(matched_failed_cases, int(summary["failures"]))
+    passed_cases = max(selected_cases - failed_cases, 0)
 
     summary.update(
         {
             "status": status,
+            "classification": classification,
             "exitCode": exit_code,
             "selectedCases": selected_cases,
+            "passedCases": passed_cases,
+            "failedCases": failed_cases,
+            "matchedFailedCases": matched_failed_cases,
+            "unmatchedFailures": max(int(summary["failures"]) - matched_failed_cases, 0),
+            "skippedCases": 0,
             "selectionStatus": selection_status,
             "requestedMatchCount": len(requested_matches),
             "requestedSkipCount": len(requested_skips),
+            "skipStatus": "skip-filters-requested" if requested_skips else "none",
             "rerunSuggestions": sum(1 for case in cases if case.get("rerun")),
             "http3OrQpackFailures": sum(
                 1
@@ -186,6 +219,7 @@ def build_result(stdout: str, stderr: str, metadata: dict[str, Any]) -> dict[str
                 if case["status"] == "fail" and case["rfc"] in {"RFC 9114", "RFC 9204"}
             ),
             "stderrBytes": len(stderr.encode("utf-8")),
+            "reportPath": str(report_path) if report_path is not None else "",
         }
     )
 
@@ -209,12 +243,18 @@ def render_markdown(result: dict[str, Any]) -> str:
         "## Summary",
         "",
         f"- Status: {summary['status']}",
+        f"- Classification: {summary['classification']}",
         f"- Exit code: {summary['exitCode']}",
         f"- Cases: {summary['total']}",
         f"- Selected cases: {summary['selectedCases']}",
+        f"- Passed cases: {summary['passedCases']}",
+        f"- Failed cases: {summary['failedCases']}",
+        f"- Skipped cases: {summary['skippedCases']}",
         f"- Selection status: {summary['selectionStatus']}",
+        f"- Skip status: {summary['skipStatus']}",
         f"- Failures: {summary['failures']}",
         f"- RFC 9114/RFC 9204 failures: {summary['http3OrQpackFailures']}",
+        f"- Report path: {summary['reportPath']}",
         f"- Host: {metadata.get('host', '')}",
         f"- Port: {metadata.get('port', '')}",
         "",
@@ -233,6 +273,16 @@ def render_markdown(result: dict[str, Any]) -> str:
                 "## Selection Warning",
                 "",
                 "The requested match filters selected no h3spec cases. Treat this run as tooling evidence only, not conformance evidence.",
+                "",
+            ]
+        )
+
+    if summary["classification"] == "tooling-failure":
+        lines.extend(
+            [
+                "## Tooling Failure",
+                "",
+                "h3spec exited nonzero before any cases were parsed. Treat this as executor/tooling evidence, not target conformance evidence.",
                 "",
             ]
         )
@@ -281,7 +331,12 @@ def main() -> int:
     parser.add_argument("--markdown-output", type=Path, required=True)
     args = parser.parse_args()
 
-    result = build_result(read_text(args.stdout), read_text(args.stderr), load_metadata(args.metadata))
+    result = build_result(
+        read_text(args.stdout),
+        read_text(args.stderr),
+        load_metadata(args.metadata),
+        args.markdown_output,
+    )
     args.json_output.parent.mkdir(parents=True, exist_ok=True)
     args.markdown_output.parent.mkdir(parents=True, exist_ok=True)
     args.json_output.write_text(json.dumps(result, indent=2), encoding="utf-8")

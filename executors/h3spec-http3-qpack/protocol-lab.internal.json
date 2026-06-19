@@ -47,7 +47,7 @@
         "name": "h3spec",
         "version": "v0.1.13",
         "asset": "h3spec-linux-x86_64",
-        "downloadUrl": "https://github.com/summerwind/h3spec/releases/download/v0.1.13/h3spec-linux-x86_64"
+        "downloadUrl": "https://github.com/kazu-yamamoto/h3spec/releases/download/v0.1.13/h3spec-linux-x86_64"
       }
     ],
     "images": [
@@ -63,7 +63,9 @@
   "commands": {
     "planOnly": "pwsh ./execute.ps1 -PlanOnly",
     "acquireTool": "pwsh ./Install-H3SpecTool.ps1",
-    "liveRun": "pwsh ./execute.ps1 -AcquireH3Spec -NoValidateCertificate -HostName 127.0.0.1 -Port 4433"
+    "liveFullRun": "pwsh ./execute.ps1 -Mode full -AcquireH3Spec -NoValidateCertificate -HostName 127.0.0.1 -Port 4433",
+    "liveFocusedRun": "pwsh ./execute.ps1 -Mode focused -Match \"HTTP/3\" -AcquireH3Spec -NoValidateCertificate -HostName 127.0.0.1 -Port 4433",
+    "liveQpackRun": "pwsh ./execute.ps1 -Mode qpack -AcquireH3Spec -NoValidateCertificate -HostName 127.0.0.1 -Port 4433"
   },
   "knownLimitations": [
     "Executor-only package; it does not start or own the target HTTP/3 server lifecycle.",

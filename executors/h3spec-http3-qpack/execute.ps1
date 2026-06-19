@@ -6,6 +6,8 @@ param(
     [string[]]$H3SpecPrefixArguments = @(),
     [string[]]$Match = @("HTTP/3", "QPACK"),
     [string[]]$Skip = @(),
+    [ValidateSet("focused", "full", "qpack")]
+    [string]$Mode = "focused",
     [int]$TimeoutMilliseconds = 5000,
     [string]$OutputRoot = "artifacts/h3spec-http3-qpack",
     [switch]$AcquireH3Spec,
@@ -103,6 +105,15 @@ $metadataPath = Join-Path $resolvedOutputRoot 'h3spec-metadata.json'
 $resultsPath = Join-Path $resolvedOutputRoot 'h3spec-results.json'
 $reportPath = Join-Path $resolvedOutputRoot 'h3spec-report.md'
 
+switch ($Mode) {
+    "full" {
+        $Match = @()
+    }
+    "qpack" {
+        $Match = @("QPACK")
+    }
+}
+
 $effectiveHostName = $HostName
 if ($AcquireH3Spec) {
     $toolManifestJson = & (Join-Path $PSScriptRoot 'Install-H3SpecTool.ps1') -Version $AcquireH3SpecVersion -PassThruJson
@@ -137,6 +148,7 @@ $h3specArguments += "$Port"
 
 $metadata = [ordered]@{
     executor = 'h3spec-http3-qpack'
+    mode = $Mode
     tool = 'h3spec'
     toolVersion = $AcquireH3SpecVersion
     executable = $H3SpecExecutable
