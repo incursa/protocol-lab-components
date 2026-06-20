@@ -1,0 +1,40 @@
+schemaVersion: "1.0"
+id: http3.core.status
+title: HTTP/3 Status
+name: HTTP/3 Status
+family: http.application
+description: Validate the status endpoint used to confirm target identity and protocol visibility before h3spec triage.
+status: stable
+kind: workload
+layer: application
+protocol: h3
+roles:
+  - server
+requires:
+  capabilities:
+    - http.server
+  protocols:
+    - h3
+  roles:
+    - server
+trafficShape: request-response
+implementationRole: server
+requiredCapabilities:
+  - httpStatus
+validation:
+  required: true
+  checks:
+    - protocol:h3
+artifacts:
+  required:
+    - h3spec-results.json
+  optional:
+    - h3spec-report.md
+    - h3spec-stdout.txt
+    - h3spec-stderr.txt
+networkProfile: clean
+tags:
+  - http
+  - h3
+  - http3
+  - h3spec

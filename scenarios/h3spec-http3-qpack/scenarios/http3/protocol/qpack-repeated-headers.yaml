@@ -1,0 +1,45 @@
+schemaVersion: "1.0"
+id: http3.protocol.qpack-repeated-headers
+title: HTTP/3 QPACK Repeated Headers
+name: HTTP/3 QPACK Repeated Headers
+family: http3.protocol
+description: Validate HTTP/3 header compression behavior for repeated response headers with h3spec/QPACK diagnostic artifacts.
+status: stable
+kind: protocolValidation
+layer: protocol
+protocol: h3
+roles:
+  - server
+requires:
+  capabilities:
+    - h3.server
+    - quic.server
+  protocols:
+    - h3
+  roles:
+    - server
+trafficShape: bidirectional-stream
+implementationRole: server
+requiredCapabilities:
+  - h3Protocol
+  - h3Qpack
+validation:
+  required: true
+  checks:
+    - qpack
+    - protocol:h3
+artifacts:
+  required:
+    - h3spec-results.json
+  optional:
+    - h3spec-report.md
+    - h3spec-stdout.txt
+    - h3spec-stderr.txt
+networkProfile: clean
+tags:
+  - http
+  - h3
+  - http3
+  - protocol
+  - qpack
+  - h3spec

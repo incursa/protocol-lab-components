@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.scenario.aioquic-rfc9220-websocket",
+  "packageVersion": "0.1.0",
+  "kind": "scenario-pack",
+  "displayName": "aioquic RFC9220 WebSocket-over-H3 Scenario Pack",
+  "entryManifests": [
+    "scenarios/http3/websocket/rfc9220-extended-connect.yaml",
+    "scenarios/http3/websocket/rfc9220-control-frames.yaml",
+    "scenarios/http3/websocket/rfc9220-text-echo.yaml",
+    "scenarios/http3/websocket/rfc9220-binary-echo.yaml",
+    "scenarios/http3/websocket/rfc9220-close.yaml",
+    "suites/aioquic-rfc9220-websocket-proof.yaml"
+  ],
+  "providedScenarios": [
+    {
+      "scenarioId": "http3.websocket.rfc9220.extended-connect",
+      "displayName": "RFC9220 Extended CONNECT",
+      "protocols": [
+        "h3",
+        "websocket"
+      ]
+    },
+    {
+      "scenarioId": "http3.websocket.rfc9220.control-frames",
+      "displayName": "RFC9220 WebSocket Control Frames",
+      "protocols": [
+        "h3",
+        "websocket"
+      ]
+    },
+    {
+      "scenarioId": "http3.websocket.rfc9220.text-echo",
+      "displayName": "RFC9220 WebSocket Text Echo",
+      "protocols": [
+        "h3",
+        "websocket"
+      ]
+    },
+    {
+      "scenarioId": "http3.websocket.rfc9220.binary-echo",
+      "displayName": "RFC9220 WebSocket Binary Echo",
+      "protocols": [
+        "h3",
+        "websocket"
+      ]
+    },
+    {
+      "scenarioId": "http3.websocket.rfc9220.close",
+      "displayName": "RFC9220 WebSocket Close Echo",
+      "protocols": [
+        "h3",
+        "websocket"
+      ]
+    }
+  ],
+  "providedSuites": [
+    {
+      "suiteId": "aioquic-rfc9220-websocket-proof",
+      "displayName": "aioquic RFC9220 WebSocket-over-H3 proof suite",
+      "purpose": "proof",
+      "resultKind": "validation",
+      "protocols": [
+        "h3",
+        "websocket"
+      ],
+      "testExecutors": [
+        "aioquic-rfc9220-websocket"
+      ]
+    }
+  ]
+}

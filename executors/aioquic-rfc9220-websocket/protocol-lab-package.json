@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.aioquic-rfc9220-websocket",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "test-executor",
   "displayName": "aioquic RFC9220 WebSocket-over-H3 Test Executor",
   "entryManifests": [
@@ -27,7 +27,12 @@
         "rfc9220.websocket.ping-pong",
         "rfc9220.websocket.text-echo",
         "rfc9220.websocket.binary-echo.6000",
-        "rfc9220.websocket.close-echo"
+        "rfc9220.websocket.close-echo",
+        "http3.websocket.rfc9220.extended-connect",
+        "http3.websocket.rfc9220.control-frames",
+        "http3.websocket.rfc9220.text-echo",
+        "http3.websocket.rfc9220.binary-echo",
+        "http3.websocket.rfc9220.close"
       ],
       "requiredCapabilities": [
         {

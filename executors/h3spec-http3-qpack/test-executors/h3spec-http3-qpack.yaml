@@ -2,7 +2,7 @@ schemaVersion: protocol-lab-test-executor-v1
 executor:
   id: h3spec-http3-qpack
   displayName: h3spec HTTP/3 and QPACK Test Executor
-  version: 0.1.0
+  version: 0.1.1
   protocolFamilies:
     - h3
   modes:
@@ -44,12 +44,18 @@ executor:
       tests:
         - h3spec.http3
         - h3spec.qpack
+        - http3.core.status
+        - http3.headers.response-headers-50x32
+        - http3.protocol.qpack-repeated-headers
   supportedTestSelectors:
     - full
     - focused
     - qpack
     - h3spec.http3
     - h3spec.qpack
+    - http3.core.status
+    - http3.headers.response-headers-50x32
+    - http3.protocol.qpack-repeated-headers
     - match:HTTP/3
     - match:QPACK
   entrypoints:

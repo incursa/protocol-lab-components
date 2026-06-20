@@ -9,6 +9,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | Source | Observed entries |
 | --- | --- |
 | Component packages before this change | `aioquic-http3`, `quiche-http3`, `ngtcp2-http3`, `kestrel-http3`, `quic-go-raw-load`, `h3spec-http3-qpack`, `aioquic-rfc9220-websocket`, plus HTTP/1 packages and the raw QUIC scenario pack |
+| Scenario packs added for controller selection | `h3spec-http3-qpack` and `aioquic-rfc9220-websocket` focused scenario packs |
 | Public site implementation catalog | `kestrel-http3`, `incursa-http3`, `msquic-dotnet`, `caddy-http3`, `nginx-http3`, and planned `quic-go-http3` entry |
 | Live controller inventory after quic-go registration | 197 package records; `org.protocol-lab.components.implementation.quic-go-http3` versions `0.1.0`, `0.1.1`, `0.1.2`, and final `0.1.3` are installed/selectable |
 | Live controller final quic-go proof | `job-020c0660877243b0b970578c139aefe2`; H3 1KB validation passed, benchmark succeeded, package-backed provenance recorded |
@@ -30,6 +31,8 @@ This matrix tracks reusable component package coverage for implementations and e
 | `quic-go-raw-load` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
 | `h3spec-http3-qpack` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
 | `aioquic-rfc9220-websocket` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
+| `h3spec-http3-qpack` scenario pack | missing | added `org.protocol-lab.components.scenario.h3spec-http3-qpack` with suite `h3spec-http3-qpack-focused` bound to `h3spec-http3-qpack` |
+| `aioquic-rfc9220-websocket` scenario pack | missing | added `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket` with suite `aioquic-rfc9220-websocket-proof` bound to `aioquic-rfc9220-websocket` |
 
 ## Scenario Support
 
@@ -62,6 +65,9 @@ This matrix tracks reusable component package coverage for implementations and e
 | `org.protocol-lab.components.executor.quic-go-raw-load` | `executors/quic-go-raw-load` |
 | `org.protocol-lab.components.executor.h3spec-http3-qpack` | `executors/h3spec-http3-qpack` |
 | `org.protocol-lab.components.executor.aioquic-rfc9220-websocket` | `executors/aioquic-rfc9220-websocket` |
+| `org.protocol-lab.components.scenario.raw-quic-transport` | `scenarios/raw-quic-transport` |
+| `org.protocol-lab.components.scenario.h3spec-http3-qpack` | `scenarios/h3spec-http3-qpack` |
+| `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket` | `scenarios/aioquic-rfc9220-websocket` |
 
 ## Registered Package
 

@@ -1,0 +1,47 @@
+schemaVersion: "1.0"
+id: http3.websocket.rfc9220.extended-connect
+title: RFC9220 Extended CONNECT
+name: RFC9220 Extended CONNECT
+family: websocket
+description: Validate WebSocket-over-HTTP/3 establishment with Extended CONNECT and the websocket pseudo-protocol.
+status: stable
+kind: protocolValidation
+layer: application
+protocol: h3
+protocols:
+  - h3
+  - websocket
+roles:
+  - server
+requires:
+  capabilities:
+    - h3.server
+    - websocket.server
+  protocols:
+    - h3
+    - websocket
+  roles:
+    - server
+trafficShape: bidirectional-stream
+implementationRole: server
+requiredCapabilities:
+  - rfc9220WebSocket
+validation:
+  required: true
+  checks:
+    - extended-connect
+    - protocol:h3
+artifacts:
+  required:
+    - client-result.json
+  optional:
+    - stdout.txt
+    - stderr.txt
+    - qlog
+    - sslkeylog
+networkProfile: clean
+tags:
+  - http
+  - h3
+  - websocket
+  - rfc9220

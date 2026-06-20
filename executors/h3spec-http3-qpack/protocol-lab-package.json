@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.h3spec-http3-qpack",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "test-executor",
   "displayName": "h3spec HTTP/3 and QPACK Test Executor",
   "entryManifests": [
@@ -21,7 +21,10 @@
       ],
       "tests": [
         "h3spec.http3",
-        "h3spec.qpack"
+        "h3spec.qpack",
+        "http3.core.status",
+        "http3.headers.response-headers-50x32",
+        "http3.protocol.qpack-repeated-headers"
       ],
       "requiredCapabilities": [
         {

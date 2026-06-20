@@ -1,0 +1,20 @@
+id: h3spec-http3-qpack-focused
+name: h3spec HTTP/3 and QPACK focused suite
+description: Package-backed conformance triage suite for h3spec HTTP/3 and QPACK checks against a supplied HTTP/3 target endpoint.
+purpose: conformance-triage
+resultKind: diagnostic
+loadProfileId: smoke
+scenarios:
+  - http3.core.status
+  - http3.headers.response-headers-50x32
+  - http3.protocol.qpack-repeated-headers
+protocol: h3
+defaults:
+  durationSeconds: 10
+  warmupSeconds: 0
+  repetitions: 1
+  connections: 1
+  streamsPerConnection: 1
+testExecutors:
+  - h3spec-http3-qpack
+notes: This suite is intentionally bound to the h3spec executor and must not be used as a managed HTTP/3 load suite.

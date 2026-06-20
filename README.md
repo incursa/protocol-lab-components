@@ -44,6 +44,8 @@ executors/
   aioquic-rfc9220-websocket/
 scenarios/
   raw-quic-transport/
+  h3spec-http3-qpack/
+  aioquic-rfc9220-websocket/
 toolchains/
 scripts/
   package/
@@ -122,6 +124,8 @@ Test-executor packages:
 Scenario-pack packages:
 
 - `org.protocol-lab.components.scenario.raw-quic-transport`
+- `org.protocol-lab.components.scenario.h3spec-http3-qpack`
+- `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket`
 
 Kestrel packages are intentionally lane scoped. Keep HTTP/1, HTTP/2, and HTTP/3 as separate packages so controller inventory can select exact protocol behavior and report unsupported cells explicitly.
 
@@ -130,6 +134,8 @@ Caddy packages follow the same lane split. `caddy-http1` and `caddy-http3` are s
 nginx packages follow the same lane split. `nginx-http1` and `nginx-http3` are separate packages, and `nginx-http3` proves `--with-http_v3_module` before serving.
 
 Incursa raw QUIC implementation packages remain implementation-owned by `quic-dotnet`. This repository packages the reusable raw QUIC scenario and executor pieces so controller jobs do not have to source them from local `protocol-lab-internal` scripts.
+
+The h3spec/QPACK and RFC9220 WebSocket scenario packs are declarative controller selection packs. They bind the focused suites to `h3spec-http3-qpack` and `aioquic-rfc9220-websocket` respectively so live package-backed jobs do not inherit unrelated managed HTTP/3 load suites.
 
 ## License
 

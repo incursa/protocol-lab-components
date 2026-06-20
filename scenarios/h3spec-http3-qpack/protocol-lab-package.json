@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.scenario.h3spec-http3-qpack",
+  "packageVersion": "0.1.0",
+  "kind": "scenario-pack",
+  "displayName": "h3spec HTTP/3 and QPACK Scenario Pack",
+  "entryManifests": [
+    "scenarios/http3/core/status.yaml",
+    "scenarios/http3/headers/response-headers-50x32.yaml",
+    "scenarios/http3/protocol/qpack-repeated-headers.yaml",
+    "suites/h3spec-http3-qpack-focused.yaml"
+  ],
+  "providedScenarios": [
+    {
+      "scenarioId": "http3.core.status",
+      "displayName": "HTTP/3 Status",
+      "protocols": [
+        "h3"
+      ]
+    },
+    {
+      "scenarioId": "http3.headers.response-headers-50x32",
+      "displayName": "HTTP/3 Response Headers 50x32",
+      "protocols": [
+        "h3"
+      ]
+    },
+    {
+      "scenarioId": "http3.protocol.qpack-repeated-headers",
+      "displayName": "HTTP/3 QPACK Repeated Headers",
+      "protocols": [
+        "h3"
+      ]
+    }
+  ],
+  "providedSuites": [
+    {
+      "suiteId": "h3spec-http3-qpack-focused",
+      "displayName": "h3spec HTTP/3 and QPACK focused suite",
+      "purpose": "conformance-triage",
+      "resultKind": "diagnostic",
+      "protocols": [
+        "h3"
+      ],
+      "testExecutors": [
+        "h3spec-http3-qpack"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+id: aioquic-rfc9220-websocket-proof
+name: aioquic RFC9220 WebSocket-over-H3 proof suite
+description: Package-backed RFC9220 WebSocket-over-H3 proof suite for a supplied HTTP/3 WebSocket proof endpoint.
+purpose: proof
+resultKind: validation
+loadProfileId: smoke
+scenarios:
+  - http3.websocket.rfc9220.extended-connect
+  - http3.websocket.rfc9220.control-frames
+  - http3.websocket.rfc9220.text-echo
+  - http3.websocket.rfc9220.binary-echo
+  - http3.websocket.rfc9220.close
+protocol: h3
+protocols:
+  - h3
+  - websocket
+defaults:
+  durationSeconds: 10
+  warmupSeconds: 0
+  repetitions: 1
+  connections: 1
+  streamsPerConnection: 1
+testExecutors:
+  - aioquic-rfc9220-websocket
+notes: This suite requires a target endpoint that implements the Incursa RFC9220 proof behavior at /websocket-proof.

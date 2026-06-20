@@ -1,0 +1,42 @@
+schemaVersion: "1.0"
+id: http3.headers.response-headers-50x32
+title: HTTP/3 Response Headers 50x32
+name: HTTP/3 Response Headers 50x32
+family: http.application
+description: Exercise a header-heavy response target useful for bounded HTTP/3 and QPACK triage.
+status: stable
+kind: workload
+layer: application
+protocol: h3
+roles:
+  - server
+requires:
+  capabilities:
+    - http.server
+  protocols:
+    - h3
+  roles:
+    - server
+trafficShape: request-response
+implementationRole: server
+requiredCapabilities:
+  - httpHeaders
+validation:
+  required: true
+  checks:
+    - protocol:h3
+    - response-headers
+artifacts:
+  required:
+    - h3spec-results.json
+  optional:
+    - h3spec-report.md
+    - h3spec-stdout.txt
+    - h3spec-stderr.txt
+networkProfile: clean
+tags:
+  - http
+  - h3
+  - http3
+  - headers
+  - h3spec
