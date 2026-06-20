@@ -14,7 +14,24 @@ Component-specific build steps may live beside the component, but shared packagi
 
 ## Package Builders
 
-Use the component-specific wrappers for release artifacts:
+Use the full package build orchestrator for CI artifacts and release handoff:
+
+```powershell
+pwsh ./scripts/package/Build-AllProtocolLabComponentPackages.ps1 -Clean
+```
+
+The orchestrator validates all component manifests, builds every packageable
+component wrapper, inspects each archive for the required public/internal
+manifest split, and writes these outputs under `artifacts/packages/`:
+
+- `.plabpkg` files for each package artifact
+- `package-index.json`
+- `package-index.md`
+- `SHA256SUMS.txt`
+- `package-validation-summary.json`
+- `package-validation-summary.md`
+
+Use the component-specific wrappers when iterating on one package:
 
 ```powershell
 pwsh ./scripts/package/Build-KestrelHttp2Package.ps1
@@ -29,9 +46,30 @@ pwsh ./scripts/package/Build-AioquicRfc9220WebSocketPackage.ps1
 pwsh ./scripts/package/Build-AioquicHttp3Package.ps1
 pwsh ./scripts/package/Build-QuicheHttp3Package.ps1
 pwsh ./scripts/package/Build-Ngtcp2Http3Package.ps1
+pwsh ./scripts/package/Build-AioquicRfc9220WebSocketScenarioPackage.ps1
+pwsh ./scripts/package/Build-H3SpecHttp3QpackScenarioPackage.ps1
 pwsh ./scripts/package/Build-RawQuicScenarioPackage.ps1
 pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1
 ```
 
 All wrappers call `Build-ProtocolLabComponentPackage.ps1`, which reads each component's `protocol-lab-package.json` and writes a `.plabpkg` under `artifacts/packages/`.
 Compiled payload wrappers may stage a runtime-specific package before compression while preserving the same package manifest layout and artifact root.
+
+## Versioning Policy
+
+Package versions come from each component's `protocol-lab-package.json`
+`packageVersion` value. Build and CI scripts must not synthesize timestamp
+versions by default. Timestamp, run-number, or prerelease version stamping can be
+added later only as an explicit release policy change.
+
+The package identity tuple is:
+
+- `packageId`
+- `packageVersion`
+- package artifact SHA-256 hash
+
+Once a package artifact is uploaded to a package inventory or controller, that
+identity tuple is immutable. Changing package contents requires a new
+`packageVersion`; rebuilding a previously uploaded `packageId` and
+`packageVersion` with different bytes must be treated as a different local build
+that is not a replacement for the uploaded artifact.

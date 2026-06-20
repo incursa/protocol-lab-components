@@ -1,0 +1,50 @@
+name: package-production
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-packages:
+    name: Build package artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.26.x
+          cache-dependency-path: |
+            implementations/quic-go-http3/go.sum
+            executors/quic-go-raw-load/source/go.sum
+
+      - name: Build all ProtocolLab component packages
+        shell: pwsh
+        run: ./scripts/package/Build-AllProtocolLabComponentPackages.ps1 -Clean
+
+      - name: Upload package production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: protocol-lab-component-packages
+          if-no-files-found: error
+          path: |
+            artifacts/packages/*.plabpkg
+            artifacts/packages/package-index.json
+            artifacts/packages/package-index.md
+            artifacts/packages/SHA256SUMS.txt
+            artifacts/packages/package-validation-summary.json
+            artifacts/packages/package-validation-summary.md

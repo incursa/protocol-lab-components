@@ -76,6 +76,11 @@ $errors = New-Object System.Collections.Generic.List[string]
 $packageIds = @{}
 $componentIds = @{}
 $publicManifestDirectories = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+$internalManifestDirectories = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+
+foreach ($file in $internalManifestFiles) {
+    [void]$internalManifestDirectories.Add($file.DirectoryName)
+}
 
 $publicAllowedProperties = @(
     'schemaVersion',
@@ -281,6 +286,12 @@ foreach ($file in $publicManifestFiles) {
                 $errors.Add("$($file.FullName): public dependencies property '$dependencyPropertyName' belongs in protocol-lab.internal.json.")
             }
         }
+    }
+}
+
+foreach ($file in $publicManifestFiles) {
+    if (-not $internalManifestDirectories.Contains($file.DirectoryName)) {
+        $errors.Add("$($file.FullName): protocol-lab-package.json must be paired with protocol-lab.internal.json in the same component directory.")
     }
 }
 
