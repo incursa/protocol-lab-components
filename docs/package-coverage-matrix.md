@@ -20,7 +20,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | --- | --- | --- |
 | `kestrel-http3` | source package present | source package present with explicit scenario coverage metadata |
 | `caddy-http3` | visible on public site and present in internal consumer manifests, but not packaged in this repo | added and registered `org.protocol-lab.components.implementation.caddy-http3` |
-| `nginx-http3` | present in internal consumer manifests, but not packaged in this repo | added `org.protocol-lab.components.implementation.nginx-http3` with nginx `-V` HTTP/3 module proof |
+| `nginx-http3` | present in internal consumer manifests, but not packaged in this repo | added `org.protocol-lab.components.implementation.nginx-http3`; live H3 status, 1KB, and 64KB smoke passed |
 | `incursa-http3` / `quic-dotnet-dev` | live/package-owned outside this repo | unchanged; not duplicated in component repo |
 | `msquic-dotnet` / `quic-dotnet-raw-dev` | live/package-owned outside this repo | unchanged; raw QUIC scenario and quic-go executor remain reusable component packages |
 | `aioquic-http3` | source package present | source package present with explicit scenario coverage metadata |
@@ -37,7 +37,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `kestrel-http3` | unsupported | supported | supported | supported | unsupported | unsupported | compatible target, unproven |
 | `caddy-http3` | unsupported | supported | supported | unsupported | unsupported | unsupported | compatible target, unproven |
-| `nginx-http3` | unsupported | supported | supported | skipped until live proof | unsupported | unsupported | compatible target, unproven |
+| `nginx-http3` | unsupported | supported, live proof | supported, live proof | skipped pending broader fixture promotion | unsupported | unsupported | compatible target, unproven |
 | `aioquic-http3` | unsupported | partial | unproven | unsupported | supported metadata | executor-only via separate package | compatible target, unproven |
 | `quiche-http3` | unsupported | partial | supported | supported | client-only | unsupported | compatible target, unproven |
 | `ngtcp2-http3` | unsupported | partial | supported | supported | client-only | unsupported | compatible target, unproven |
@@ -68,10 +68,10 @@ This matrix tracks reusable component package coverage for implementations and e
 | Package | Version | SHA-256 | Controller status |
 | --- | --- | --- | --- |
 | `org.protocol-lab.components.implementation.caddy-http3` | `0.1.2` | `c427787beb24b946c4152ee0c6ff21ac97d2a19ed4ff9915adcc7026dce20b52` | admitted, installed, selectable |
-| `org.protocol-lab.components.implementation.nginx-http3` | `0.1.1` | `d48b1121b2121266eff5c2d54876c83f72161f11a83e92d73b09b5574f6ee501` | admitted, installed, selectable; live package-backed job completed unsupported because worker image was not present and controller jobs do not forward target Docker build |
+| `org.protocol-lab.components.implementation.nginx-http3` | `0.1.4` | `f7a29eaeb8060d10d02a28df53428c501e446678bbe4524c360da190b1056ef5` | admitted, installed, selectable; live package-backed H3 status, 1KB, and 64KB smoke passed in `job-02ecc4eb59124657b13ea0f9d2bbd428` |
 | `org.protocol-lab.components.implementation.quic-go-http3` | `0.1.3` | `8823bf16784e017ab4c953e0232dc6e618d3fd19b707322582d097c02d6d0f55` | admitted, installed, selectable; live package-backed H3 1KB smoke passed in `job-020c0660877243b0b970578c139aefe2` |
 
-The controller also contains earlier immutable `0.1.0` and `0.1.1` uploads for `org.protocol-lab.components.implementation.caddy-http3` from the Caddy registration attempt sequence, and `0.1.0`, `0.1.1`, and `0.1.2` uploads for `org.protocol-lab.components.implementation.quic-go-http3` from the process/docker correction sequence. Use Caddy `0.1.2` and quic-go `0.1.3` as the final package versions from this repository state.
+The controller also contains earlier immutable `0.1.0` and `0.1.1` uploads for `org.protocol-lab.components.implementation.caddy-http3` from the Caddy registration attempt sequence, earlier nginx `0.1.1` and `0.1.3` uploads from the pre-Docker-worker setup sequence, and `0.1.0`, `0.1.1`, and `0.1.2` uploads for `org.protocol-lab.components.implementation.quic-go-http3` from the process/docker correction sequence. Use Caddy `0.1.2`, nginx `0.1.4`, and quic-go `0.1.3` as the final package versions from this repository state.
 
 ## Remaining Ranked Gaps
 
