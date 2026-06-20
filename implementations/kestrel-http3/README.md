@@ -6,8 +6,8 @@
 
 - Protocol family: `h3`
 - Protocol version: `http/3`
-- Test cases: `http3.core.status`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`
-- Scenarios: `http3.core.status`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`
+- Test cases: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`
+- Scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`
 
 ## Known Unsupported
 

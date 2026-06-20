@@ -53,10 +53,12 @@ supportedProtocolVersions:
   - http/3
 supportedTestCaseIds:
   - http3.core.status
+  - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
 supportedScenarios:
   - http3.core.status
+  - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
 unsupportedKnownCases:
@@ -70,6 +72,9 @@ endpoints:
   status:
     method: GET
     path: /status
+  bytes1kb:
+    method: GET
+    path: /bytes/1024
   bytes64kb:
     method: GET
     path: /bytes/65536
