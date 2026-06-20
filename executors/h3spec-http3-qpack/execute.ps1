@@ -20,10 +20,30 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$targetScheme = ''
+
+if ($HostName -match '^https?://') {
+    $uri = [Uri]$HostName
+    $targetScheme = $uri.Scheme
+    if (-not [string]::IsNullOrWhiteSpace($uri.Host)) {
+        $HostName = $uri.Host
+    }
+
+    if (-not $uri.IsDefaultPort) {
+        $Port = $uri.Port
+    }
+    elseif ($uri.Scheme -eq 'https') {
+        $Port = 443
+    }
+    elseif ($uri.Scheme -eq 'http') {
+        $Port = 80
+    }
+}
 
 foreach ($argument in $RemainingArguments) {
     if ($argument -match '^https?://') {
         $uri = [Uri]$argument
+        $targetScheme = $uri.Scheme
         if (-not [string]::IsNullOrWhiteSpace($uri.Host)) {
             $HostName = $uri.Host
         }
@@ -41,6 +61,12 @@ foreach ($argument in $RemainingArguments) {
     elseif (-not [string]::IsNullOrWhiteSpace($argument)) {
         throw "Unknown argument: $argument"
     }
+}
+
+$autoNoValidateCertificate = $false
+if (-not $NoValidateCertificate -and $targetScheme -eq 'https' -and $HostName -in @('127.0.0.1', 'localhost', '::1')) {
+    $NoValidateCertificate = $true
+    $autoNoValidateCertificate = $true
 }
 
 function Resolve-ComponentPath {
@@ -182,6 +208,7 @@ $metadata = [ordered]@{
     skip = $Skip
     timeoutMilliseconds = $TimeoutMilliseconds
     noValidateCertificate = [bool]$NoValidateCertificate
+    autoNoValidateCertificate = $autoNoValidateCertificate
     host = $HostName
     h3specTargetHost = $effectiveHostName
     port = $Port

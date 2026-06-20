@@ -2,7 +2,7 @@ schemaVersion: protocol-lab-test-executor-v1
 executor:
   id: h3spec-http3-qpack
   displayName: h3spec HTTP/3 and QPACK Test Executor
-  version: 0.1.3
+  version: 0.1.4
   protocolFamilies:
     - h3
   modes:

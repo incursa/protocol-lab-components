@@ -8,6 +8,7 @@ h3spec_executable="${H3SPEC_EXECUTABLE:-h3spec}"
 timeout_ms="${H3SPEC_TIMEOUT_MS:-5000}"
 output_root="${H3SPEC_OUTPUT_ROOT:-artifacts/h3spec-http3-qpack}"
 target_url=""
+target_scheme=""
 plan_only="${H3SPEC_PLAN_ONLY:-false}"
 mode="${H3SPEC_MODE:-focused}"
 match_values=()
@@ -50,11 +51,22 @@ from urllib.parse import urlparse
 uri = urlparse(sys.argv[1])
 host = uri.hostname or "127.0.0.1"
 port = uri.port or (443 if uri.scheme == "https" else 80)
-print(f"{host}\n{port}")
+print(f"{host}\n{port}\n{uri.scheme}")
 PY
   )"
   host_name="$(printf '%s\n' "$parsed_target" | sed -n '1p')"
   port="$(printf '%s\n' "$parsed_target" | sed -n '2p')"
+  target_scheme="$(printf '%s\n' "$parsed_target" | sed -n '3p')"
+fi
+
+auto_no_validate="false"
+if [[ "$no_validate" != "true" && "$target_scheme" == "https" ]]; then
+  case "$host_name" in
+    127.0.0.1|localhost|::1)
+      no_validate="true"
+      auto_no_validate="true"
+      ;;
+  esac
 fi
 
 if [[ "$mode" == "full" ]]; then
@@ -165,11 +177,11 @@ else
 fi
 
 python_bin="$(command -v python3 || command -v python)"
-"$python_bin" - "$metadata_path" "$host_name" "$port" "$timeout_ms" "$plan_only" "$status" "$exit_code" "$mode" "$h3spec_version" "$h3spec_executable" "$tool_manifest_path" "${match_values[@]}" <<'PY'
+"$python_bin" - "$metadata_path" "$host_name" "$port" "$timeout_ms" "$plan_only" "$status" "$exit_code" "$mode" "$h3spec_version" "$h3spec_executable" "$tool_manifest_path" "$no_validate" "$auto_no_validate" "${match_values[@]}" <<'PY'
 import json
 import sys
 
-path, host, port, timeout_ms, plan_only, status, exit_code, mode, tool_version, executable, tool_manifest, *matches = sys.argv[1:]
+path, host, port, timeout_ms, plan_only, status, exit_code, mode, tool_version, executable, tool_manifest, no_validate, auto_no_validate, *matches = sys.argv[1:]
 payload = {
     "executor": "h3spec-http3-qpack",
     "mode": mode,
@@ -184,6 +196,8 @@ payload = {
     "host": host,
     "h3specTargetHost": host,
     "port": int(port),
+    "noValidateCertificate": no_validate == "true",
+    "autoNoValidateCertificate": auto_no_validate == "true",
     "planOnly": plan_only == "true",
     "exitCode": None if exit_code == "" else int(exit_code),
     "status": status,
