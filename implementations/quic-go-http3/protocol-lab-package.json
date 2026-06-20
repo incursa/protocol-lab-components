@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.quic-go-http3",
+  "packageVersion": "0.1.2",
+  "kind": "implementation",
+  "displayName": "quic-go HTTP/3 Implementation",
+  "entryManifests": [
+    "implementations/quic-go-http3.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "quic-go-http3",
+      "displayName": "quic-go HTTP/3",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http3.core.status",
+        "http3.payload.bytes.1kb",
+        "http3.payload.bytes.64kb",
+        "http3.payload.bytes.1mb"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "http3-runtime",
+        "value": "true"
+      }
+    ]
+  }
+}

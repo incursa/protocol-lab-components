@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "go",
+        "value": "1.25.x"
+      },
+      {
+        "name": "quic-go",
+        "value": "v0.60.0"
+      }
+    ],
+    "images": [
+      {
+        "name": "quic-go-http3",
+        "image": "incursa-protocol-lab-quic-go-http3:0.1.2",
+        "baseImage": "golang:1.25-bookworm",
+        "baseImageIndexDigest": "golang@sha256:bbb255b0e131db500cf0520adc97441d2260cf629c7fa7e39e025ddf53995a24",
+        "sourceRuntime": "scratch",
+        "goToolchain": "1.25.x",
+        "module": "github.com/quic-go/quic-go",
+        "moduleVersion": "v0.60.0",
+        "sourceRepository": "https://github.com/quic-go/quic-go",
+        "sourceTag": "v0.60.0",
+        "sourceTagCommit": "7612ad1036957cde45d672bebb8b9ec9c2e9b2a7",
+        "resolvedImageId": "sha256:68ad1269e2b02439bf796f95fe4d0009a1d7eb4e7dbbd0d173cdc83f58843edd",
+        "repoDigest": "incursa-protocol-lab-quic-go-http3@sha256:68ad1269e2b02439bf796f95fe4d0009a1d7eb4e7dbbd0d173cdc83f58843edd"
+      }
+    ]
+  },
+  "commands": {
+    "buildTemplate": "docker build --pull --build-arg QUIC_GO_VERSION=v0.60.0 -f docker/quic-go-http3.Dockerfile -t incursa-protocol-lab-quic-go-http3:0.1.2 .",
+    "serverTemplate": "docker run --rm -p <port>:4433/udp incursa-protocol-lab-quic-go-http3:0.1.2 /quic-go-http3-server -listen :4433",
+    "planOnly": "pwsh ./run.ps1 -PlanOnly"
+  },
+  "knownLimitations": [
+    "Server-only HTTP/3 package; it does not provide a client role.",
+    "The package uses generated local self-signed TLS material; validation clients must explicitly allow local certificate bypass.",
+    "Header-heavy/QPACK and RFC9220 WebSocket-over-H3 fixtures are not exposed by this wrapper."
+  ]
+}
