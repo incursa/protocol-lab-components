@@ -10,8 +10,8 @@ This matrix tracks reusable component package coverage for implementations and e
 | --- | --- |
 | Component packages before this change | `aioquic-http3`, `quiche-http3`, `ngtcp2-http3`, `kestrel-http3`, `quic-go-raw-load`, `h3spec-http3-qpack`, `aioquic-rfc9220-websocket`, plus HTTP/1 packages and the raw QUIC scenario pack |
 | Public site implementation catalog | `kestrel-http3`, `incursa-http3`, `msquic-dotnet`, `caddy-http3`, `nginx-http3`, and planned `quic-go-http3` entry |
-| Live controller inventory after quic-go registration | 192 package records; `org.protocol-lab.components.implementation.quic-go-http3` versions `0.1.0`, `0.1.1`, and final `0.1.2` are installed/selectable |
-| Live controller final quic-go proof | `job-dc9b604f51cd4ffcae11f39a3214a693`; H3 1KB validation passed, benchmark succeeded, package-backed provenance recorded |
+| Live controller inventory after quic-go registration | 197 package records; `org.protocol-lab.components.implementation.quic-go-http3` versions `0.1.0`, `0.1.1`, `0.1.2`, and final `0.1.3` are installed/selectable |
+| Live controller final quic-go proof | `job-020c0660877243b0b970578c139aefe2`; H3 1KB validation passed, benchmark succeeded, package-backed provenance recorded |
 | Local source-context implementations | `quic-dotnet-dev`, `quic-dotnet-raw-dev`, `msquic-dotnet-raw-adapter-v1`, `incursa-http3` remain implementation-owned outside this repository |
 
 ## Before And After
@@ -69,9 +69,9 @@ This matrix tracks reusable component package coverage for implementations and e
 | --- | --- | --- | --- |
 | `org.protocol-lab.components.implementation.caddy-http3` | `0.1.2` | `c427787beb24b946c4152ee0c6ff21ac97d2a19ed4ff9915adcc7026dce20b52` | admitted, installed, selectable |
 | `org.protocol-lab.components.implementation.nginx-http3` | `0.1.1` | `d48b1121b2121266eff5c2d54876c83f72161f11a83e92d73b09b5574f6ee501` | admitted, installed, selectable; live package-backed job completed unsupported because worker image was not present and controller jobs do not forward target Docker build |
-| `org.protocol-lab.components.implementation.quic-go-http3` | `0.1.2` | `b94a1a01ff886ae8df55d599e43fc92f5cc6128fac1198dd69a7aa6a97a874c5` | admitted, installed, selectable; live package-backed H3 1KB smoke passed in `job-dc9b604f51cd4ffcae11f39a3214a693` |
+| `org.protocol-lab.components.implementation.quic-go-http3` | `0.1.3` | `8823bf16784e017ab4c953e0232dc6e618d3fd19b707322582d097c02d6d0f55` | admitted, installed, selectable; live package-backed H3 1KB smoke passed in `job-020c0660877243b0b970578c139aefe2` |
 
-The controller also contains earlier immutable `0.1.0` and `0.1.1` uploads for `org.protocol-lab.components.implementation.caddy-http3` from the Caddy registration attempt sequence, and `0.1.0` plus `0.1.1` uploads for `org.protocol-lab.components.implementation.quic-go-http3` from the process/docker correction sequence. Use Caddy `0.1.2` and quic-go `0.1.2` as the final package versions from this repository state.
+The controller also contains earlier immutable `0.1.0` and `0.1.1` uploads for `org.protocol-lab.components.implementation.caddy-http3` from the Caddy registration attempt sequence, and `0.1.0`, `0.1.1`, and `0.1.2` uploads for `org.protocol-lab.components.implementation.quic-go-http3` from the process/docker correction sequence. Use Caddy `0.1.2` and quic-go `0.1.3` as the final package versions from this repository state.
 
 ## Remaining Ranked Gaps
 
