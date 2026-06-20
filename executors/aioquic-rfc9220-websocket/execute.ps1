@@ -2,14 +2,42 @@
 param(
     [string]$TargetUrl = "https://host.docker.internal:4435/websocket-proof",
     [double]$TimeoutSeconds = 20,
-    [string]$Image = "incursa-protocol-lab-aioquic-rfc9220-websocket:0.1.0",
+    [string]$Image = "incursa-protocol-lab-aioquic-rfc9220-websocket:0.1.7",
     [string]$OutputRoot = "artifacts/aioquic-rfc9220-websocket",
     [string]$DockerNetwork = "",
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$RemainingArguments = @(),
     [switch]$SkipBuild,
     [switch]$PlanOnly
 )
 
 $ErrorActionPreference = 'Stop'
+
+function Resolve-ProofTargetUrl {
+    param([Parameter(Mandatory)][string]$Url)
+
+    $builder = [UriBuilder]$Url
+    if ([string]::IsNullOrWhiteSpace($builder.Path) -or $builder.Path -eq '/') {
+        $builder.Path = '/websocket-proof'
+    }
+
+    if ($builder.Host -in @('localhost', '127.0.0.1', '::1')) {
+        $builder.Host = 'host.docker.internal'
+    }
+
+    return $builder.Uri.AbsoluteUri
+}
+
+foreach ($argument in $RemainingArguments) {
+    if ($argument -match '^https?://') {
+        $TargetUrl = $argument
+    }
+    elseif (-not [string]::IsNullOrWhiteSpace($argument)) {
+        throw "Unknown argument: $argument"
+    }
+}
+
+$TargetUrl = Resolve-ProofTargetUrl -Url $TargetUrl
 
 $componentRoot = $PSScriptRoot
 $resolvedOutputRoot = if ([System.IO.Path]::IsPathRooted($OutputRoot)) { $OutputRoot } else { Join-Path $componentRoot $OutputRoot }
@@ -22,6 +50,8 @@ $stdoutPath = Join-Path $resolvedOutputRoot 'stdout.txt'
 $stderrPath = Join-Path $resolvedOutputRoot 'stderr.txt'
 $commandPath = Join-Path $resolvedOutputRoot 'command.txt'
 $resultPath = Join-Path $resolvedOutputRoot 'result.json'
+$buildStdoutPath = Join-Path $resolvedOutputRoot 'build.stdout.txt'
+$buildStderrPath = Join-Path $resolvedOutputRoot 'build.stderr.txt'
 
 Push-Location $componentRoot
 try {
@@ -71,14 +101,20 @@ try {
             status = 'planned'
             targetUrl = $TargetUrl
             image = $Image
+            tool = 'aioquic-rfc9220-websocket'
+            metrics = [ordered]@{
+                totalRequests = 0
+                successfulRequests = 0
+                failedRequests = 0
+            }
             commands = $commands.ToArray()
-        } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $resultPath
-        Write-Host "Planned aioquic RFC9220 WebSocket executor command at $commandPath"
+        } | ConvertTo-Json -Depth 5 | Tee-Object -FilePath $resultPath
+        [Console]::Error.WriteLine("Planned aioquic RFC9220 WebSocket executor command at $commandPath")
         return
     }
 
     if (-not $SkipBuild) {
-        & docker @buildArgs
+        & docker @buildArgs > $buildStdoutPath 2> $buildStderrPath
         if ($LASTEXITCODE -ne 0) {
             throw "aioquic RFC9220 WebSocket Docker build failed with exit code $LASTEXITCODE."
         }
@@ -91,15 +127,25 @@ try {
         $clientResult = Get-Content -LiteralPath $clientResultPath -Raw | ConvertFrom-Json
     }
 
-    [ordered]@{
+    $result = [ordered]@{
         status = if ($exitCode -eq 0 -and $null -ne $clientResult -and $clientResult.status -eq 'passed') { 'passed' } else { 'failed' }
         targetUrl = $TargetUrl
         image = $Image
+        tool = 'aioquic-rfc9220-websocket'
         exitCode = $exitCode
+        evidenceClass = if ($null -ne $clientResult) { $clientResult.evidenceClass } else { $null }
+        statusCode = if ($null -ne $clientResult) { $clientResult.statusCode } else { $null }
+        proofScope = if ($null -ne $clientResult) { @($clientResult.proofScope) } else { @() }
+        metrics = [ordered]@{
+            totalRequests = 1
+            successfulRequests = if ($exitCode -eq 0 -and $null -ne $clientResult -and $clientResult.status -eq 'passed') { 1 } else { 0 }
+            failedRequests = if ($exitCode -eq 0 -and $null -ne $clientResult -and $clientResult.status -eq 'passed') { 0 } else { 1 }
+        }
         clientResultPath = $clientResultPath
         stdoutPath = $stdoutPath
         stderrPath = $stderrPath
-    } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $resultPath
+    }
+    $result | ConvertTo-Json -Depth 6 | Tee-Object -FilePath $resultPath
 
     if ($exitCode -ne 0) {
         throw "aioquic RFC9220 WebSocket executor failed with exit code $exitCode. See $stderrPath"
@@ -109,7 +155,7 @@ try {
         throw "aioquic RFC9220 WebSocket executor did not produce a passed client result at $clientResultPath."
     }
 
-    Write-Host "aioquic RFC9220 WebSocket executor passed for $TargetUrl"
+    [Console]::Error.WriteLine("aioquic RFC9220 WebSocket executor passed for $TargetUrl")
 }
 finally {
     Pop-Location

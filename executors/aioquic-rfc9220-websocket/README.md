@@ -20,9 +20,9 @@
 
 - Base image: `python:3.12-slim`
 - Python package: `aioquic==1.3.0`
-- Component image tag: `incursa-protocol-lab-aioquic-rfc9220-websocket:0.1.0`
-- Component image ID: `sha256:5c897572e62ed8171373a59c9a82f88ad6ee8913c48c8b54068478c27c5a5a62`
-- Component repo digest: `incursa-protocol-lab-aioquic-rfc9220-websocket@sha256:5c897572e62ed8171373a59c9a82f88ad6ee8913c48c8b54068478c27c5a5a62`
+- Component image tag: `incursa-protocol-lab-aioquic-rfc9220-websocket:0.1.7`
+- Component image ID: `sha256:6f7c8ab6a96d011c2d6eec71e98cde0325eec16dec8546d73cefbf1c9a46e6d4`
+- Component repo digest: `incursa-protocol-lab-aioquic-rfc9220-websocket@sha256:6f7c8ab6a96d011c2d6eec71e98cde0325eec16dec8546d73cefbf1c9a46e6d4`
 - Source proof image: `incursa-http3-external-interop-aioquic:latest`
 - Source proof image ID: `sha256:b022b70e9f351326bf2951c5a56c5a00808b9f0b226a363d8b1b27014352d975`
 - Source proof: `C:\src\incursa\quic-dotnet\.artifacts\http3-websocket-external-aioquic\20260619T-rfc9220-aioquic-001\rfc9220-external-aioquic-proof.json`
@@ -47,7 +47,7 @@ Build the wrapper image:
 ```powershell
 docker build --build-arg AIOQUIC_VERSION=1.3.0 `
   -f ./executors/aioquic-rfc9220-websocket/docker/aioquic-rfc9220-websocket.Dockerfile `
-  -t incursa-protocol-lab-aioquic-rfc9220-websocket:0.1.0 `
+  -t incursa-protocol-lab-aioquic-rfc9220-websocket:0.1.7 `
   ./executors/aioquic-rfc9220-websocket
 ```
 

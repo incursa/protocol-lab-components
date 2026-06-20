@@ -11,8 +11,9 @@ This matrix tracks reusable component package coverage for implementations and e
 | Component packages before this change | `aioquic-http3`, `quiche-http3`, `ngtcp2-http3`, `kestrel-http3`, `quic-go-raw-load`, `h3spec-http3-qpack`, `aioquic-rfc9220-websocket`, plus HTTP/1 packages and the raw QUIC scenario pack |
 | Scenario packs added for controller selection | `h3spec-http3-qpack` and `aioquic-rfc9220-websocket` focused scenario packs |
 | Public site implementation catalog | `kestrel-http3`, `incursa-http3`, `msquic-dotnet`, `caddy-http3`, `nginx-http3`, and planned `quic-go-http3` entry |
-| Live controller inventory after quic-go registration | 197 package records; `org.protocol-lab.components.implementation.quic-go-http3` versions `0.1.0`, `0.1.1`, `0.1.2`, and final `0.1.3` are installed/selectable |
+| Live controller inventory after Caddy publication | 214 package records; `org.protocol-lab.components.implementation.caddy-http3` versions through final `0.1.4` are installed/selectable |
 | Live controller final quic-go proof | `job-020c0660877243b0b970578c139aefe2`; H3 1KB validation passed, benchmark succeeded, package-backed provenance recorded |
+| Live controller final Caddy proof | `job-c92b1918b59846018dcc808babd58730`; H3 status, 1KB, and 64KB validation passed, benchmark succeeded, package-backed provenance recorded |
 | Local source-context implementations | `quic-dotnet-dev`, `quic-dotnet-raw-dev`, `msquic-dotnet-raw-adapter-v1`, `incursa-http3` remain implementation-owned outside this repository |
 
 ## Before And After
@@ -39,11 +40,11 @@ This matrix tracks reusable component package coverage for implementations and e
 | Package | Raw QUIC | H3 1KB | H3 64KB | H3 large body | Header-heavy / QPACK | WebSocket-over-H3 | h3spec / QPACK executor |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `kestrel-http3` | unsupported | supported | supported | supported | unsupported | unsupported | compatible target, unproven |
-| `caddy-http3` | unsupported | supported | supported | unsupported | unsupported | unsupported | compatible target, unproven |
+| `caddy-http3` | unsupported | supported, live proof | supported, live proof | unsupported | unsupported | unsupported | compatible target, unproven |
 | `nginx-http3` | unsupported | supported, live proof | supported, live proof | skipped pending broader fixture promotion | unsupported | unsupported | compatible target, unproven |
-| `aioquic-http3` | unsupported | partial | unproven | unsupported | supported metadata | executor-only via separate package | compatible target, unproven |
-| `quiche-http3` | unsupported | partial | supported | supported | client-only | unsupported | compatible target, unproven |
-| `ngtcp2-http3` | unsupported | partial | supported | supported | client-only | unsupported | compatible target, unproven |
+| `aioquic-http3` | unsupported | supported | unproven | unsupported | supported metadata | executor-only via separate package | compatible target, unproven |
+| `quiche-http3` | unsupported | validation-failed | supported | supported | client-only | unsupported | compatible target, unproven |
+| `ngtcp2-http3` | unsupported | validation-failed | supported | supported | client-only | unsupported | compatible target, unproven |
 | `quic-go-http3` | unsupported | supported, live proof | supported metadata | supported metadata | unsupported | unsupported | compatible target, unproven |
 | `quic-go-raw-load` | supported executor | unsupported | unsupported | unsupported | unsupported | unsupported | unsupported |
 | `h3spec-http3-qpack` | unsupported | compatible target, unproven | compatible target, unproven | compatible target, unproven | supported | unsupported | supported |
@@ -73,11 +74,11 @@ This matrix tracks reusable component package coverage for implementations and e
 
 | Package | Version | SHA-256 | Controller status |
 | --- | --- | --- | --- |
-| `org.protocol-lab.components.implementation.caddy-http3` | `0.1.2` | `c427787beb24b946c4152ee0c6ff21ac97d2a19ed4ff9915adcc7026dce20b52` | admitted, installed, selectable |
+| `org.protocol-lab.components.implementation.caddy-http3` | `0.1.4` | `cf5d9af7e4daa09fadf2e2a74387b8f29c994764f5cc6bf3afa8ced99576783d` | admitted, installed, selectable; live package-backed H3 status, 1KB, and 64KB smoke passed in `job-c92b1918b59846018dcc808babd58730` |
 | `org.protocol-lab.components.implementation.nginx-http3` | `0.1.4` | `f7a29eaeb8060d10d02a28df53428c501e446678bbe4524c360da190b1056ef5` | admitted, installed, selectable; live package-backed H3 status, 1KB, and 64KB smoke passed in `job-02ecc4eb59124657b13ea0f9d2bbd428` |
 | `org.protocol-lab.components.implementation.quic-go-http3` | `0.1.3` | `8823bf16784e017ab4c953e0232dc6e618d3fd19b707322582d097c02d6d0f55` | admitted, installed, selectable; live package-backed H3 1KB smoke passed in `job-020c0660877243b0b970578c139aefe2` |
 
-The controller also contains earlier immutable `0.1.0` and `0.1.1` uploads for `org.protocol-lab.components.implementation.caddy-http3` from the Caddy registration attempt sequence, earlier nginx `0.1.1` and `0.1.3` uploads from the pre-Docker-worker setup sequence, and `0.1.0`, `0.1.1`, and `0.1.2` uploads for `org.protocol-lab.components.implementation.quic-go-http3` from the process/docker correction sequence. Use Caddy `0.1.2`, nginx `0.1.4`, and quic-go `0.1.3` as the final package versions from this repository state.
+The controller also contains earlier immutable `0.1.0`, `0.1.1`, and `0.1.2` uploads for `org.protocol-lab.components.implementation.caddy-http3` from the Caddy registration attempt sequence, earlier nginx `0.1.1` and `0.1.3` uploads from the pre-Docker-worker setup sequence, and `0.1.0`, `0.1.1`, and `0.1.2` uploads for `org.protocol-lab.components.implementation.quic-go-http3` from the process/docker correction sequence. Use Caddy `0.1.4`, nginx `0.1.4`, and quic-go `0.1.3` as the final package versions from this repository state.
 
 ## Remaining Ranked Gaps
 
@@ -85,6 +86,6 @@ The controller also contains earlier immutable `0.1.0` and `0.1.1` uploads for `
 | --- | --- | --- | --- |
 | 1 | Package-backed `quic-dotnet-dev` HTTP/3 implementation handoff in controller inventory | Highest visible first-party HTTP/3 lane | Owned outside this repository |
 | 2 | Package-backed `quic-dotnet-raw-dev` or MSQuic raw QUIC implementation handoff | Highest visible raw QUIC lane | Owned outside this repository |
-| 3 | Caddy, nginx, and quic-go HTTP/3 large-body/header-heavy fixtures | Makes public comparison rows richer | Needs broader live controller validation and deterministic fixture behavior beyond quic-go H3 1KB |
+| 3 | Caddy, nginx, and quic-go HTTP/3 large-body/header-heavy fixtures | Makes public comparison rows richer | Needs broader live controller validation and deterministic fixture behavior beyond Caddy H3 status/1KB/64KB and quic-go H3 1KB |
 | 4 | quic-go HTTP/3 client package | Useful ecosystem peer | Current package is server-only |
 | 5 | xquic HTTP/3 package | Additional ecosystem peer diversity | Deferred until local peer stability and acquisition are proven |

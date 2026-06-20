@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.aioquic-rfc9220-websocket",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "scenario-pack",
   "displayName": "aioquic RFC9220 WebSocket-over-H3 Scenario Pack",
   "entryManifests": [
@@ -58,8 +58,6 @@
     {
       "suiteId": "aioquic-rfc9220-websocket-proof",
       "displayName": "aioquic RFC9220 WebSocket-over-H3 proof suite",
-      "purpose": "proof",
-      "resultKind": "validation",
       "protocols": [
         "h3",
         "websocket"

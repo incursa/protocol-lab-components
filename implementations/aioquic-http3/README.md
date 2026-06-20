@@ -6,7 +6,7 @@
 
 - Protocol family: `h3`
 - Roles: client and server
-- Public scenarios: `http3.core.status`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`
+- Public scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`, and the RFC9220 WebSocket proof scenarios.
 - Stable external interop scenarios: `get-small`, `not-found`
 
 ## Known Unsupported
@@ -20,11 +20,11 @@
 
 - Base image: `python:3.12-slim`
 - Python package: `aioquic==1.3.0`
-- Component image tag: `incursa-protocol-lab-aioquic-http3:0.1.0`
-- Component image ID: `sha256:00ca4bff791e5beb205c35e7874c15ad025e67d4f1ded3fcc5b743459e0fc7c6`
-- Component repo digest: `incursa-protocol-lab-aioquic-http3@sha256:00ca4bff791e5beb205c35e7874c15ad025e67d4f1ded3fcc5b743459e0fc7c6`
+- Component image tag: `incursa-protocol-lab-aioquic-http3:0.1.6`
+- Component image ID: `sha256:7541ae1425ea7baf2efa34baea6d42abd888ad04082851eba982ac4d47fadad7`
+- Component repo digest: `incursa-protocol-lab-aioquic-http3@sha256:7541ae1425ea7baf2efa34baea6d42abd888ad04082851eba982ac4d47fadad7`
 - Source manifest image ID: `sha256:ef138c09ec4cb224ee283f00768eebba6b2d196d9e869809603606ce0d0c0937`
-- Local interop image ID observed during this package proof: `sha256:6f84896f71dc47f2c5c842912b99c90e6c101bf187fc7ecd997192e4f8fb8a5e`
+- Local interop image ID observed during this package proof: `sha256:7541ae1425ea7baf2efa34baea6d42abd888ad04082851eba982ac4d47fadad7`
 - Source evidence: `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184606Z\peer-tool-manifest.json`
 
 ## Scenario Evidence
@@ -48,7 +48,7 @@ Build the wrapper image:
 ```powershell
 docker build --build-arg AIOQUIC_VERSION=1.3.0 `
   -f ./implementations/aioquic-http3/docker/aioquic.Dockerfile `
-  -t incursa-protocol-lab-aioquic-http3:0.1.0 `
+  -t incursa-protocol-lab-aioquic-http3:0.1.6 `
   ./implementations/aioquic-http3
 ```
 

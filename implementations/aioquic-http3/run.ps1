@@ -2,7 +2,7 @@
 param(
     [ValidateSet('Client', 'Server')]
     [string]$Mode = 'Client',
-    [string]$Image = 'incursa-protocol-lab-aioquic-http3:0.1.2',
+    [string]$Image = 'incursa-protocol-lab-aioquic-http3:0.1.6',
     [string]$Url = 'https://host.docker.internal:8443/status',
     [int]$ExpectedStatus = 200,
     [string]$OutputPath = 'artifacts/aioquic-http3/body.bin',

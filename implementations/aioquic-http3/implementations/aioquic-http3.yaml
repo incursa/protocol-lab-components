@@ -8,7 +8,7 @@ roles:
   - server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-aioquic-http3:0.1.2
+image: incursa-protocol-lab-aioquic-http3:0.1.6
 dockerfile: docker/aioquic.Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
@@ -21,26 +21,41 @@ dockerProtocolBaseUrls:
 certificateMode: aioquic-self-signed-localhost-loopback-certificate
 protocols:
   - h3
+  - websocket
 supportedProtocols:
   - h3
+  - websocket
 supportedWorkloadFamilies:
   - http.application
+  - websocket
 supportedProtocolVersions:
   - http/3
 supportedScenarios:
   - http3.core.status
+  - http3.payload.bytes.1kb
   - http3.headers.response-headers-50x32
   - http3.protocol.qpack-repeated-headers
+  - http3.websocket.rfc9220.extended-connect
+  - http3.websocket.rfc9220.control-frames
+  - http3.websocket.rfc9220.text-echo
+  - http3.websocket.rfc9220.binary-echo
+  - http3.websocket.rfc9220.close
 supportedTestCaseIds:
   - http3.core.status
+  - http3.payload.bytes.1kb
   - http3.headers.response-headers-50x32
   - http3.protocol.qpack-repeated-headers
+  - http3.websocket.rfc9220.extended-connect
+  - http3.websocket.rfc9220.control-frames
+  - http3.websocket.rfc9220.text-echo
+  - http3.websocket.rfc9220.binary-echo
+  - http3.websocket.rfc9220.close
 scenarioCoverage:
   raw-quic:
     status: unsupported
     reason: aioquic is packaged here as an HTTP/3 peer, not a raw QUIC transport target.
   http3-1kb:
-    status: partial
+    status: supported
     scenarioId: http3.payload.bytes.1kb
     evidence: get-small external peer rows passed for client and server roles.
   http3-64kb:
@@ -56,9 +71,10 @@ scenarioCoverage:
     scenarioId: http3.protocol.qpack-repeated-headers
     note: Package advertises QPACK repeated-header scenario metadata; live package-backed proof remains separate from support metadata.
   websocket-over-h3:
-    status: executor-only
+    status: supported
+    scenarioId: http3.websocket.rfc9220.extended-connect
     executorId: aioquic-rfc9220-websocket
-    reason: WebSocket-over-H3 is packaged as a separate aioquic client executor.
+    reason: The aioquic HTTP/3 package exposes the /websocket-proof RFC9220 proof endpoint and uses the aioquic RFC9220 executor for validation.
   h3spec-qpack-executor:
     status: compatible-target-unproven
     executorId: h3spec-http3-qpack
@@ -121,15 +137,21 @@ capabilities:
   - http.client
   - http.server
   - httpStatus
+  - httpBytes
   - httpHeaders
   - h3Protocol
   - h3Qpack
+  - websocket.server
+  - rfc9220WebSocket
+endpoints:
+  bytes1kb:
+    method: GET
+    path: /bytes/1024
 unsupportedKnownCases:
   - h1
   - h2
   - h2c
   - raw-quic
-  - websocket
 artifactExports:
   - command.txt
   - stdout.txt

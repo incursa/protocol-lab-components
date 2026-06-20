@@ -1,13 +1,13 @@
 executorIdentity:
   id: aioquic-rfc9220-websocket
   name: aioquic RFC9220 WebSocket-over-H3 Test Executor
-  version: 0.1.1
+  version: 0.1.7
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.0
+  executorVersion: 0.1.7
 claimedCapabilities:
   - id: http3.websocket.rfc9220.extended-connect
     status: supported
@@ -49,33 +49,6 @@ supportedScenarioSelectors:
     expression: http3.websocket.rfc9220.binary-echo
   - selectorType: scenario-id
     expression: http3.websocket.rfc9220.close
-scenarioCoverage:
-  raw-quic:
-    status: unsupported
-    reason: Executor validates RFC9220 over HTTP/3, not raw QUIC transport.
-  http3-1kb:
-    status: unsupported
-    reason: Executor does not run HTTP/3 byte payload scenarios.
-  http3-64kb:
-    status: unsupported
-    reason: Executor does not run HTTP/3 byte payload scenarios.
-  http3-large-body:
-    status: unsupported
-    reason: Executor does not run HTTP/3 byte payload scenarios.
-  http3-header-heavy-qpack:
-    status: unsupported
-    reason: Executor does not run QPACK/header-heavy checks.
-  websocket-over-h3:
-    status: supported
-    scenarios:
-      - http3.websocket.rfc9220.extended-connect
-      - http3.websocket.rfc9220.control-frames
-      - http3.websocket.rfc9220.text-echo
-      - http3.websocket.rfc9220.binary-echo
-      - http3.websocket.rfc9220.close
-  h3spec-qpack-executor:
-    status: unsupported
-    reason: h3spec/QPACK is a separate executor package.
 supportedProtocolFamilies:
   - h3
   - websocket
@@ -135,23 +108,3 @@ telemetry:
     - raw
   export_modes:
     - artifact-bundle
-externalPeerScenarios:
-  stable:
-    - extended-connect
-    - server-ping-client-pong
-    - client-ping-server-pong
-    - text-echo
-    - binary-echo-6000
-    - close-echo
-  unsupported:
-    - server-role
-    - broad-websocket-suite
-requirementIds:
-  - REQ-QUIC-RFC9220-0017
-  - REQ-QUIC-RFC9220-0018
-  - REQ-QUIC-RFC9220-0019
-  - REQ-QUIC-RFC9220-0022
-  - REQ-QUIC-RFC9220-0030
-  - REQ-QUIC-RFC9220-0031
-executionMetadata:
-  manifest: protocol-lab.internal.json

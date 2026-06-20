@@ -12,9 +12,9 @@ from urllib.parse import urlparse
 from aioquic.asyncio import connect
 from aioquic.asyncio.protocol import QuicConnectionProtocol
 from aioquic.h3.connection import H3Connection, H3_ALPN
-from aioquic.h3.events import HeadersReceived
+from aioquic.h3.events import DataReceived, HeadersReceived
 from aioquic.quic.configuration import QuicConfiguration
-from aioquic.quic.events import ConnectionTerminated, StreamDataReceived
+from aioquic.quic.events import ConnectionTerminated
 from aioquic.quic.logger import QuicFileLogger
 
 
@@ -153,7 +153,7 @@ class Http3WebSocketClientProtocol(QuicConnectionProtocol):
     def write_message(self, opcode, payload=b""):
         if self._stream_id is None:
             raise RuntimeError("WebSocket stream is not open")
-        self._quic.send_stream_data(self._stream_id, write_frame(opcode, payload, masked=True), end_stream=False)
+        self._http.send_data(self._stream_id, write_frame(opcode, payload, masked=True), end_stream=False)
         self.transmit()
 
     def quic_event_received(self, event):
@@ -161,11 +161,6 @@ class Http3WebSocketClientProtocol(QuicConnectionProtocol):
             self._debug_print(
                 f"quic terminated error_code={event.error_code} frame_type={event.frame_type} reason={event.reason_phrase}"
             )
-        if isinstance(event, StreamDataReceived) and event.stream_id == self._stream_id and self._response_received.done():
-            for message in self._reader.feed(event.data):
-                self._message_queue.put_nowait(message)
-            return
-
         for http_event in self._http.handle_event(event):
             if isinstance(http_event, HeadersReceived) and http_event.stream_id == self._stream_id:
                 self._response_headers.extend(http_event.headers)
@@ -175,6 +170,9 @@ class Http3WebSocketClientProtocol(QuicConnectionProtocol):
                         break
                 if not self._response_received.done():
                     self._response_received.set_result(None)
+            elif isinstance(http_event, DataReceived) and http_event.stream_id == self._stream_id:
+                for message in self._reader.feed(http_event.data):
+                    self._message_queue.put_nowait(message)
 
         if self._http._settings_received and not self._settings_received.done():
             self._settings_received.set_result(None)
