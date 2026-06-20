@@ -24,6 +24,32 @@ supportedTestCaseIds:
   - http3.core.status
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
+scenarioCoverage:
+  raw-quic:
+    status: unsupported
+    reason: quiche is packaged here as an HTTP/3 peer, not a raw QUIC transport target.
+  http3-1kb:
+    status: partial
+    scenarioId: http3.payload.bytes.1kb
+    evidence: get-small external peer rows passed.
+  http3-64kb:
+    status: supported
+    scenarioId: http3.payload.bytes.64kb
+  http3-large-body:
+    status: supported
+    scenarioId: http3.payload.bytes.1mb
+    evidence: get-large external peer rows passed for client and server paths.
+  http3-header-heavy-qpack:
+    status: client-only
+    scenarioId: http3.headers.response-headers-50x32
+    evidence: many-headers passed for quiche-client__incursa-server; server row is not wired.
+  websocket-over-h3:
+    status: unsupported
+    reason: Package does not expose RFC9220 WebSocket-over-H3 behavior.
+  h3spec-qpack-executor:
+    status: compatible-target-unproven
+    executorId: h3spec-http3-qpack
+    reason: No quiche package-backed h3spec/QPACK target proof is recorded here.
 externalPeerScenarios:
   stable:
     - get-small

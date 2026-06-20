@@ -19,6 +19,7 @@ Use the component-specific wrappers for release artifacts:
 ```powershell
 pwsh ./scripts/package/Build-KestrelHttp2Package.ps1
 pwsh ./scripts/package/Build-CaddyHttp1Package.ps1
+pwsh ./scripts/package/Build-CaddyHttp3Package.ps1
 pwsh ./scripts/package/Build-NginxHttp1Package.ps1
 pwsh ./scripts/package/Build-GoHttp1ExecutorPackage.ps1
 pwsh ./scripts/package/Build-KestrelHttp3Package.ps1

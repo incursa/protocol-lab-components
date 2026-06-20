@@ -17,6 +17,33 @@ executor:
     - http3.core.status
     - http3.headers.response-headers-50x32
     - http3.protocol.qpack-repeated-headers
+  scenarioCoverage:
+    raw-quic:
+      status: unsupported
+      reason: h3spec drives HTTP/3 and QPACK conformance checks, not raw QUIC transport load.
+    http3-1kb:
+      status: compatible-target-unproven
+      scenarioId: http3.payload.bytes.1kb
+      reason: Executor can target an HTTP/3 endpoint but does not measure byte payload scenarios.
+    http3-64kb:
+      status: compatible-target-unproven
+      scenarioId: http3.payload.bytes.64kb
+      reason: Executor can target an HTTP/3 endpoint but does not measure byte payload scenarios.
+    http3-large-body:
+      status: compatible-target-unproven
+      scenarioId: http3.payload.bytes.1mb
+      reason: Executor can target an HTTP/3 endpoint but does not measure byte payload scenarios.
+    http3-header-heavy-qpack:
+      status: supported
+      scenarioId: http3.protocol.qpack-repeated-headers
+    websocket-over-h3:
+      status: unsupported
+      reason: h3spec package does not execute RFC9220 WebSocket-over-H3 checks.
+    h3spec-qpack-executor:
+      status: supported
+      tests:
+        - h3spec.http3
+        - h3spec.qpack
   supportedTestSelectors:
     - full
     - focused

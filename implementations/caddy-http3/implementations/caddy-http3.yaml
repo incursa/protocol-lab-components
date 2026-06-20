@@ -1,0 +1,122 @@
+schemaVersion: "1.0"
+id: caddy-http3
+name: Caddy HTTP/3
+description: Docker-backed Caddy HTTP/3 target for ProtocolLab HTTP application scenarios.
+family: caddy
+role: server
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-caddy-http3:0.1.2
+dockerfile: docker/Caddy.Dockerfile
+buildContext: docker
+dockerNetworkMode: published-port
+certificateMode: caddy-internal-local-ca-loopback-certificate
+roles:
+  - server
+protocols:
+  - h3
+supportedProtocols:
+  - h3
+supportedWorkloadFamilies:
+  - http.application
+supportedProtocolVersions:
+  - http/3
+supportedScenarios:
+  - http3.core.status
+  - http3.payload.bytes.1kb
+  - http3.payload.bytes.64kb
+supportedTestCaseIds:
+  - http3.core.status
+  - http3.payload.bytes.1kb
+  - http3.payload.bytes.64kb
+scenarioCoverage:
+  raw-quic:
+    status: unsupported
+    reason: Caddy is packaged here as an HTTP/3 server, not a raw QUIC transport target.
+  http3-1kb:
+    status: supported
+    scenarioId: http3.payload.bytes.1kb
+    endpoint: /bytes/1024
+  http3-64kb:
+    status: supported
+    scenarioId: http3.payload.bytes.64kb
+    endpoint: /bytes/65536
+  http3-large-body:
+    status: unsupported
+    scenarioId: http3.payload.bytes.1mb
+    reason: 1 MB response endpoint is not promoted until controller validation covers the Caddy package row.
+  http3-header-heavy-qpack:
+    status: unsupported
+    scenarioId: http3.headers.response-headers-50x32
+    reason: Caddy wrapper does not yet expose deterministic header-heavy/QPACK fixtures.
+  websocket-over-h3:
+    status: unsupported
+    scenarioId: http3.websocket.rfc9220.extended-connect
+    reason: Package does not configure a WebSocket-over-H3 endpoint.
+  h3spec-qpack-executor:
+    status: compatible-target-unproven
+    executorId: h3spec-http3-qpack
+    reason: Caddy can be used as a target endpoint, but no package-backed h3spec/QPACK proof is recorded for this package.
+unsupportedKnownCases:
+  - h1
+  - h2
+  - h2c
+  - raw-quic
+  - websocket
+ports:
+  - name: h3
+    protocol: tcp+udp
+    default: 5445
+    containerPort: 8443
+environment:
+  PLAB_HTTP_PORT: "5445"
+startup:
+  port:
+    name: h3
+    environmentVariable: PLAB_HTTP_PORT
+    default: 5445
+  readiness:
+    protocol: https
+    path: /plaintext
+    expectedStatus: 200
+    certificateValidation: disabled-for-local-caddy-internal-ca
+readinessCheck:
+  type: http
+  url: https://127.0.0.1:${PLAB_HTTP_PORT}/plaintext
+  timeoutSeconds: 30
+capabilities:
+  - http.server
+  - httpStatus
+  - httpBytes
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+endpoints:
+  status:
+    method: GET
+    path: /status
+  plaintext:
+    method: GET
+    path: /plaintext
+  json:
+    method: GET
+    path: /json
+  bytes1kb:
+    method: GET
+    path: /bytes/1024
+  bytes64kb:
+    method: GET
+    path: /bytes/65536
+shutdownBehavior: process
+artifactExports:
+  - command.txt
+  - stdout.txt
+  - stderr.txt
+  - result.json
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata:
+  manifest: protocol-lab.internal.json
+notes: Docker-only Caddy HTTP/3 lane. Keep separate from caddy-http1 so inventory can select exact protocol behavior.

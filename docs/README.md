@@ -8,6 +8,8 @@ This documentation supports the component package repository.
   and current component packages.
 - [Package scripts](../scripts/package/README.md) explain shared validation and
   packaging behavior.
+- [Package coverage matrix](package-coverage-matrix.md) records implementation
+  and executor package coverage against visible ProtocolLab comparison lanes.
 - [Contributor agreement automation](contributor-agreement-automation.md)
   records the owner setup required for the CLA workflow.
 - The QUIC/HTTP/3 parity matrix lives in

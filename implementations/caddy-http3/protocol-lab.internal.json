@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "caddy",
+        "value": "2.11.2"
+      }
+    ],
+    "images": [
+      {
+        "name": "caddy-http3",
+        "image": "incursa-protocol-lab-caddy-http3:0.1.2",
+        "baseImage": "caddy:2.11.2-alpine",
+        "baseImageIndexDigest": "caddy@sha256:834468128c7696cec0ceea6172f7d692daf645ae51983ca76e39da54a97c570d",
+        "baseImageLinuxAmd64Digest": "caddy@sha256:6d125e80883be8a2bef5f088c7535945b42cdbb8a0f5471bf36eaf18dc0638f1",
+        "sourceManifestDigest": "caddy:2.11.2-alpine manifest inspected locally on 2026-06-20"
+      }
+    ]
+  },
+  "commands": {
+    "buildTemplate": "docker build --pull -f docker/Caddy.Dockerfile -t incursa-protocol-lab-caddy-http3:0.1.2 docker",
+    "serverTemplate": "docker run --rm -p <port>:8443/tcp -p <port>:8443/udp incursa-protocol-lab-caddy-http3:0.1.2 caddy run --config /etc/caddy/Caddyfile --adapter caddyfile",
+    "planOnly": "pwsh ./run.ps1 -PlanOnly"
+  },
+  "knownLimitations": [
+    "Docker-only HTTP/3 server package; it does not provide a client role.",
+    "Caddy uses tls internal container-local certificate material; validation must record local certificate bypass where needed.",
+    "Package metadata advertises only locally wired HTTP application endpoints, not QPACK conformance or WebSocket-over-H3 support."
+  ]
+}

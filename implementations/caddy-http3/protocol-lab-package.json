@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.caddy-http3",
+  "packageVersion": "0.1.2",
+  "kind": "implementation",
+  "displayName": "Caddy HTTP/3 Implementation",
+  "entryManifests": [
+    "implementations/caddy-http3.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "caddy-http3",
+      "displayName": "Caddy HTTP/3",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http3.core.status",
+        "http3.payload.bytes.1kb",
+        "http3.payload.bytes.64kb"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "http3-runtime",
+        "value": "true"
+      }
+    ]
+  }
+}

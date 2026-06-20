@@ -50,6 +50,34 @@ supportedScenarioSelectors:
     expression: quic.transport.payload.large-1mb
   - selectorType: scenario-id
     expression: quic.transport.duplex-streams
+scenarioCoverage:
+  raw-quic:
+    status: supported
+    scenarios:
+      - quic.transport.stream-throughput.1mb
+      - quic.transport.latency.echo-1kb
+      - quic.transport.multiplex.100x64kb
+      - quic.transport.stream-limits.100x64kb
+      - quic.transport.payload.large-1mb
+      - quic.transport.duplex-streams
+  http3-1kb:
+    status: unsupported
+    reason: Raw QUIC executor does not drive HTTP/3 application requests.
+  http3-64kb:
+    status: unsupported
+    reason: Raw QUIC executor does not drive HTTP/3 application requests.
+  http3-large-body:
+    status: unsupported
+    reason: Raw QUIC executor does not drive HTTP/3 application requests.
+  http3-header-heavy-qpack:
+    status: unsupported
+    reason: Raw QUIC executor does not drive HTTP/3 header or QPACK behavior.
+  websocket-over-h3:
+    status: unsupported
+    reason: Raw QUIC executor does not implement RFC9220 WebSocket-over-H3.
+  h3spec-qpack-executor:
+    status: unsupported
+    reason: h3spec/QPACK is a separate HTTP/3 test-executor package.
 supportedProtocolFamilies:
   - quic
 supportedExecutionModes:

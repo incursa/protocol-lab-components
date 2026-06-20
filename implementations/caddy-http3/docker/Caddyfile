@@ -1,0 +1,36 @@
+{
+    admin off
+    auto_https disable_redirects
+    servers {
+        protocols h1 h2 h3
+    }
+}
+
+localhost:8443 {
+    bind 0.0.0.0
+    tls internal
+
+    header /status Content-Type "application/json"
+    respond /status "{\"protocol\":\"h3\",\"server\":\"caddy\",\"implementationId\":\"caddy-http3\"}" 200
+
+    header /plaintext Content-Type "text/plain"
+    respond /plaintext "Hello, World!" 200
+
+    header /json Content-Type "application/json"
+    respond /json "{\"message\":\"Hello, World!\"}" 200
+
+    header /protocol-lab/metadata Content-Type "application/json"
+    respond /protocol-lab/metadata "{\"implementationId\":\"caddy-http3\",\"protocol\":\"h3\",\"packageId\":\"org.protocol-lab.components.implementation.caddy-http3\",\"supportedScenarios\":[\"http3.core.status\",\"http3.payload.bytes.1kb\",\"http3.payload.bytes.64kb\"]}" 200
+
+    handle /bytes/1024 {
+        header Content-Type "application/octet-stream"
+        root * /srv
+        file_server
+    }
+
+    handle /bytes/65536 {
+        header Content-Type "application/octet-stream"
+        root * /srv
+        file_server
+    }
+}
