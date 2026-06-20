@@ -10,6 +10,12 @@ image: incursa-protocol-lab-caddy-http3:0.1.2
 dockerfile: docker/Caddy.Dockerfile
 buildContext: docker
 dockerNetworkMode: published-port
+baseUrl: https://localhost:5445
+dockerBaseUrl: https://localhost:5445
+protocolBaseUrls:
+  h3: https://localhost:5445
+dockerProtocolBaseUrls:
+  h3: https://localhost:5445
 certificateMode: caddy-internal-local-ca-loopback-certificate
 roles:
   - server
@@ -67,6 +73,7 @@ ports:
   - name: h3
     protocol: tcp+udp
     default: 5445
+    hostPort: 5445
     containerPort: 8443
 environment:
   PLAB_HTTP_PORT: "5445"
@@ -82,7 +89,7 @@ startup:
     certificateValidation: disabled-for-local-caddy-internal-ca
 readinessCheck:
   type: http
-  url: https://127.0.0.1:${PLAB_HTTP_PORT}/plaintext
+  url: /plaintext
   timeoutSeconds: 30
 capabilities:
   - http.server

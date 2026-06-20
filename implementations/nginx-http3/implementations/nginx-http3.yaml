@@ -10,6 +10,12 @@ image: incursa-protocol-lab-nginx-http3:0.1.1
 dockerfile: docker/nginx.Dockerfile
 buildContext: docker
 dockerNetworkMode: published-port
+baseUrl: https://localhost:5446
+dockerBaseUrl: https://localhost:5446
+protocolBaseUrls:
+  h3: https://localhost:5446
+dockerProtocolBaseUrls:
+  h3: https://localhost:5446
 certificateMode: nginx-self-signed-localhost-loopback-certificate
 roles:
   - server
@@ -104,6 +110,7 @@ ports:
   - name: h3
     protocol: tcp+udp
     default: 5446
+    hostPort: 5446
     containerPort: 8443
 environment:
   PLAB_HTTP_PORT: "5446"
@@ -119,7 +126,7 @@ startup:
     certificateValidation: disabled-for-local-nginx-self-signed-certificate
 readinessCheck:
   type: http
-  url: https://127.0.0.1:${PLAB_HTTP_PORT}/status
+  url: /status
   timeoutSeconds: 30
 targetCapabilityProof:
   id: nginx-http3-module
