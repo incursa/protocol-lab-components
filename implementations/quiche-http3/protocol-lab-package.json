@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.quiche-http3",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.3",
   "kind": "implementation",
   "displayName": "quiche HTTP/3 Implementation Wrapper",
   "entryManifests": [
@@ -16,6 +16,7 @@
       ],
       "scenarios": [
         "http3.core.status",
+        "http3.payload.bytes.1kb",
         "http3.payload.bytes.64kb",
         "http3.payload.bytes.1mb"
       ]

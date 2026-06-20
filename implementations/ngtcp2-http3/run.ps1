@@ -2,8 +2,8 @@
 param(
     [ValidateSet('Client', 'Server')]
     [string]$Mode = 'Client',
-    [string]$Image = 'ghcr.io/ngtcp2/ngtcp2-interop:latest',
-    [string]$Url = 'https://host.docker.internal:4433/small.txt',
+    [string]$Image = 'incursa-protocol-lab-ngtcp2-http3:0.1.2',
+    [string]$Url = 'https://host.docker.internal:4433/bytes/1024',
     [string]$HostName = 'host.docker.internal',
     [int]$PeerPort = 4433,
     [string]$OutputRoot = 'artifacts/ngtcp2-http3',
@@ -31,14 +31,8 @@ if ($Mode -eq 'Client') {
     $dockerArgs = @('run', '--rm', '-v', "${artifactRoot}:/downloads", '-v', "${artifactRoot}:/logs", '-e', 'QLOGDIR=/logs/qlog', '-e', 'SSLKEYLOGFILE=/logs/sslkeylog/keys.log')
 }
 else {
-    $wwwFullPath = if ([System.IO.Path]::IsPathRooted($WwwRoot)) { $WwwRoot } else { Join-Path $componentRoot $WwwRoot }
-    $certFullPath = if ([System.IO.Path]::IsPathRooted($CertPath)) { $CertPath } else { Join-Path $componentRoot $CertPath }
-    $keyFullPath = if ([System.IO.Path]::IsPathRooted($KeyPath)) { $KeyPath } else { Join-Path $componentRoot $KeyPath }
-    $certDirectory = Split-Path -Parent $certFullPath
-    $certFileName = Split-Path -Leaf $certFullPath
-    $keyFileName = Split-Path -Leaf $keyFullPath
-    $shellCommand = "mkdir -p /logs/qlog /logs/sslkeylog && /usr/local/bin/wsslserver --htdocs=/www --qlog-dir=/logs/qlog --no-http-dump --timeout=15s --handshake-timeout=10s 0.0.0.0 4433 /certs/$keyFileName /certs/$certFileName"
-    $dockerArgs = @('run', '--rm', '-p', "${Port}:4433/udp", '-v', "${wwwFullPath}:/www:ro", '-v', "${certDirectory}:/certs:ro", '-v', "${artifactRoot}:/logs", '-e', 'QLOGDIR=/logs/qlog', '-e', 'SSLKEYLOGFILE=/logs/sslkeylog/keys.log')
+    $shellCommand = "mkdir -p /tmp/www/bytes /tmp/certs /logs/qlog /logs/sslkeylog && perl -e 'binmode STDOUT; for (`$i = 0; `$i < 1024; `$i++) { print chr(`$i % 251) }' > /tmp/www/bytes/1024 && perl -e 'binmode STDOUT; for (`$i = 0; `$i < 65536; `$i++) { print chr(`$i % 251) }' > /tmp/www/bytes/65536 && perl -e 'binmode STDOUT; for (`$i = 0; `$i < 1048576; `$i++) { print chr(`$i % 251) }' > /tmp/www/bytes/1048576 && printf '%s\n' 'application/octet-stream 1024 65536 1048576' > /tmp/mime.types && printf '%s\n' '{`"protocol`":`"h3`",`"server`":`"ngtcp2-nghttp3`",`"implementation`":`"ngtcp2-http3`",`"utc`":`"static`",`"processId`":1}' > /tmp/www/status && openssl req -x509 -newkey rsa:2048 -nodes -subj /CN=localhost -days 3650 -keyout /tmp/certs/priv.key -out /tmp/certs/cert.pem >/tmp/certs/openssl.out 2>/tmp/certs/openssl.err && /usr/local/bin/wsslserver --htdocs=/tmp/www --mime-types-file=/tmp/mime.types --qlog-dir=/logs/qlog --no-http-dump --timeout=15s --handshake-timeout=10s 0.0.0.0 4433 /tmp/certs/priv.key /tmp/certs/cert.pem"
+    $dockerArgs = @('run', '--rm', '-p', "${Port}:4433/udp", '-v', "${artifactRoot}:/logs", '-e', 'QLOGDIR=/logs/qlog', '-e', 'SSLKEYLOGFILE=/logs/sslkeylog/keys.log')
 }
 
 if (-not [string]::IsNullOrWhiteSpace($DockerNetwork)) {

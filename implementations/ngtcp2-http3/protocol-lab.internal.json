@@ -40,21 +40,25 @@
     ],
     "images": [
       {
-        "name": "ngtcp2-nghttp3",
-        "image": "ghcr.io/ngtcp2/ngtcp2-interop:latest",
-        "resolvedImageId": "sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af",
-        "repoDigest": "ghcr.io/ngtcp2/ngtcp2-interop@sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af",
+        "name": "ngtcp2-http3",
+        "image": "incursa-protocol-lab-ngtcp2-http3:0.1.2",
+        "baseImage": "ghcr.io/ngtcp2/ngtcp2-interop:latest",
+        "resolvedImageId": "sha256:1b7c59a659c05c9e5b4c34f2907e8a6c2683bf8f083063a419b4c01bdf4ab0ef",
+        "repoDigest": "incursa-protocol-lab-ngtcp2-http3@sha256:1b7c59a659c05c9e5b4c34f2907e8a6c2683bf8f083063a419b4c01bdf4ab0ef",
+        "sourceImageId": "sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af",
+        "sourceRepoDigest": "ghcr.io/ngtcp2/ngtcp2-interop@sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af",
         "source": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184606Z/peer-tool-manifest.json"
       }
     ]
   },
   "commands": {
+    "buildTemplate": "docker build -f docker/ngtcp2-http3.Dockerfile -t incursa-protocol-lab-ngtcp2-http3:0.1.2 .",
     "defaultImageEnvironmentVariable": "HTTP3_NGTCP2_IMAGE",
     "clientTemplate": "wsslclient --download=/downloads --exit-on-all-streams-close --timeout=15s --handshake-timeout=10s --no-http-dump --qlog-dir=/logs/qlog <host> 4433 <url>",
-    "serverTemplate": "wsslserver --htdocs=/www --qlog-dir=/logs/qlog --no-http-dump --timeout=15s --handshake-timeout=10s 0.0.0.0 4433 /certs/priv.key /certs/cert.pem"
+    "serverTemplate": "generate /tmp/www/bytes fixtures, /tmp/mime.types, and /tmp/certs, then wsslserver --htdocs=/tmp/www --mime-types-file=/tmp/mime.types --qlog-dir=/logs/qlog --no-http-dump --timeout=15s --handshake-timeout=10s 0.0.0.0 4433 /tmp/certs/priv.key /tmp/certs/cert.pem"
   },
   "knownLimitations": [
-    "The interop image default entrypoint is bypassed for server rows.",
+    "The runner target image is a metadata-only derivative of ghcr.io/ngtcp2/ngtcp2-interop:latest that clears the interop entrypoint and keeps the peer binaries unchanged.",
     "The image does not expose a stable no-argument --version output; pin by image ID or repo digest.",
     "Header-heavy and split-response behavior are not wired for ngtcp2-server rows in the current external interop harness."
   ],

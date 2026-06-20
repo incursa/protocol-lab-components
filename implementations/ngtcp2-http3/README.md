@@ -2,18 +2,20 @@
 
 `ngtcp2-http3` packages the Docker-backed ngtcp2/nghttp3 client/server image used by the `quic-dotnet` HTTP/3 external interop lane.
 
-## Supported
+## Declared Coverage
 
 - Protocol family: `h3`
 - Roles: client and server
-- Public scenarios: `http3.core.status`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`
+- Public scenarios declared for runner classification: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`
+- Official 1KB row status: validation-failed; package-backed Docker target serves `/bytes/1024` over H3 with 200/1024 bytes, but `wsslserver` emits `text/plain`.
 - Stable external interop scenarios: `get-small`, `get-empty`, `get-large`, `not-found`
 
 ## Pinned Peer Image
 
-- Image: `ghcr.io/ngtcp2/ngtcp2-interop:latest`
-- Image ID: `sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af`
-- Repo digest: `ghcr.io/ngtcp2/ngtcp2-interop@sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af`
+- Runner image: `incursa-protocol-lab-ngtcp2-http3:0.1.2`
+- Base image: `ghcr.io/ngtcp2/ngtcp2-interop:latest`
+- Base image ID: `sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af`
+- Base repo digest: `ghcr.io/ngtcp2/ngtcp2-interop@sha256:f3703cc822d79f246bb44bbf89b6632438730c52b5c23aaa305c8bbda29f27af`
 - Source evidence: `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184606Z\peer-tool-manifest.json`
 
 ## Scenario Evidence
@@ -40,7 +42,7 @@ pwsh ./implementations/ngtcp2-http3/run.ps1 `
   -Mode Client `
   -HostName host.docker.internal `
   -PeerPort 4433 `
-  -Url https://host.docker.internal:4433/small.txt
+  -Url https://host.docker.internal:4433/bytes/1024
 ```
 
 ## Build Package

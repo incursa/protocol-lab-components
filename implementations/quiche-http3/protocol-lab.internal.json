@@ -40,20 +40,25 @@
     ],
     "images": [
       {
-        "name": "quiche",
-        "image": "cloudflare/quiche:latest",
-        "resolvedImageId": "sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c",
-        "repoDigest": "cloudflare/quiche@sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c",
+        "name": "quiche-http3",
+        "image": "incursa-protocol-lab-quiche-http3:0.1.3",
+        "baseImage": "cloudflare/quiche:latest",
+        "resolvedImageId": "sha256:1e13821214509846ca054af438831a7c976208158c52173547e8990c538852a6",
+        "repoDigest": "incursa-protocol-lab-quiche-http3@sha256:1e13821214509846ca054af438831a7c976208158c52173547e8990c538852a6",
+        "sourceImageId": "sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c",
+        "sourceRepoDigest": "cloudflare/quiche@sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c",
         "source": "C:/src/incursa/quic-dotnet/.artifacts/http3-external/20260619T184606Z/peer-tool-manifest.json"
       }
     ]
   },
   "commands": {
+    "buildTemplate": "docker build -f docker/quiche-http3.Dockerfile -t incursa-protocol-lab-quiche-http3:0.1.3 .",
     "defaultImageEnvironmentVariable": "HTTP3_QUICHE_IMAGE",
     "clientTemplate": "quiche-client --http-version HTTP/3 --no-verify --connect-to <ip:port> --dump-responses <dir> <url>",
-    "serverTemplate": "quiche-server --listen 0.0.0.0:4433 --cert /certs/cert.pem --key /certs/priv.key --root /www --http-version HTTP/3"
+    "serverTemplate": "generate /tmp/www/bytes fixtures and /tmp/certs, then quiche-server --listen 0.0.0.0:4433 --cert /tmp/certs/cert.pem --key /tmp/certs/priv.key --root /tmp/www --http-version HTTP/3"
   },
   "knownLimitations": [
+    "The runner target image is a metadata-only derivative of cloudflare/quiche:latest that clears the upstream entrypoint and keeps the peer binary unchanged.",
     "The image does not expose a stable --version flag; pin by image ID or repo digest.",
     "Header-heavy and split-response behavior are not wired for quiche-server rows in the current external interop harness."
   ],

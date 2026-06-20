@@ -2,8 +2,8 @@
 param(
     [ValidateSet('Client', 'Server')]
     [string]$Mode = 'Client',
-    [string]$Image = 'cloudflare/quiche:latest',
-    [string]$Url = 'https://host.docker.internal:4433/small.txt',
+    [string]$Image = 'incursa-protocol-lab-quiche-http3:0.1.3',
+    [string]$Url = 'https://host.docker.internal:4433/bytes/1024',
     [string]$ConnectTo = 'host.docker.internal:4433',
     [string]$OutputRoot = 'artifacts/quiche-http3',
     [string]$WwwRoot = 'www',
@@ -30,14 +30,8 @@ if ($Mode -eq 'Client') {
     $dockerArgs = @('run', '--rm', '-v', "${artifactRoot}:/downloads", '-e', 'QLOGDIR=/logs/qlog', '-e', 'SSLKEYLOGFILE=/logs/sslkeylog/keys.log')
 }
 else {
-    $wwwFullPath = if ([System.IO.Path]::IsPathRooted($WwwRoot)) { $WwwRoot } else { Join-Path $componentRoot $WwwRoot }
-    $certFullPath = if ([System.IO.Path]::IsPathRooted($CertPath)) { $CertPath } else { Join-Path $componentRoot $CertPath }
-    $keyFullPath = if ([System.IO.Path]::IsPathRooted($KeyPath)) { $KeyPath } else { Join-Path $componentRoot $KeyPath }
-    $certDirectory = Split-Path -Parent $certFullPath
-    $certFileName = Split-Path -Leaf $certFullPath
-    $keyFileName = Split-Path -Leaf $keyFullPath
-    $shellCommand = "mkdir -p /logs/qlog /logs/sslkeylog && quiche-server --listen 0.0.0.0:4433 --cert /certs/$certFileName --key /certs/$keyFileName --root /www --http-version HTTP/3"
-    $dockerArgs = @('run', '--rm', '-p', "${Port}:4433/udp", '-v', "${wwwFullPath}:/www:ro", '-v', "${certDirectory}:/certs:ro", '-e', 'QLOGDIR=/logs/qlog', '-e', 'SSLKEYLOGFILE=/logs/sslkeylog/keys.log')
+    $shellCommand = "mkdir -p /tmp/www/bytes /tmp/certs /logs/qlog /logs/sslkeylog && perl -e 'binmode STDOUT; for (`$i = 0; `$i < 1024; `$i++) { print chr(`$i % 251) }' > /tmp/www/bytes/1024 && perl -e 'binmode STDOUT; for (`$i = 0; `$i < 65536; `$i++) { print chr(`$i % 251) }' > /tmp/www/bytes/65536 && perl -e 'binmode STDOUT; for (`$i = 0; `$i < 1048576; `$i++) { print chr(`$i % 251) }' > /tmp/www/bytes/1048576 && printf '%s\n' '{`"protocol`":`"h3`",`"server`":`"quiche`",`"implementation`":`"quiche-http3`",`"utc`":`"static`",`"processId`":1}' > /tmp/www/status && openssl req -x509 -newkey rsa:2048 -nodes -subj /CN=localhost -days 3650 -keyout /tmp/certs/priv.key -out /tmp/certs/cert.pem >/tmp/certs/openssl.out 2>/tmp/certs/openssl.err && quiche-server --listen 0.0.0.0:4433 --cert /tmp/certs/cert.pem --key /tmp/certs/priv.key --root /tmp/www --http-version HTTP/3"
+    $dockerArgs = @('run', '--rm', '-p', "${Port}:4433/udp", '-e', 'QLOGDIR=/logs/qlog', '-e', 'SSLKEYLOGFILE=/logs/sslkeylog/keys.log')
 }
 
 if (-not [string]::IsNullOrWhiteSpace($DockerNetwork)) {

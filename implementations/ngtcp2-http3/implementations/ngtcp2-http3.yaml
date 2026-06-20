@@ -8,6 +8,17 @@ roles:
   - server
 targetKind: docker
 targetContract: process
+image: incursa-protocol-lab-ngtcp2-http3:0.1.2
+dockerfile: docker/ngtcp2-http3.Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+baseUrl: https://localhost:4433
+dockerBaseUrl: https://localhost:4433
+protocolBaseUrls:
+  h3: https://localhost:4433
+dockerProtocolBaseUrls:
+  h3: https://localhost:4433
+certificateMode: generated-self-signed-loopback-certificate
 protocols:
   - h3
 supportedProtocols:
@@ -18,10 +29,12 @@ supportedProtocolVersions:
   - http/3
 supportedScenarios:
   - http3.core.status
+  - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
 supportedTestCaseIds:
   - http3.core.status
+  - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
 scenarioCoverage:
@@ -29,9 +42,10 @@ scenarioCoverage:
     status: unsupported
     reason: ngtcp2/nghttp3 is packaged here as an HTTP/3 peer, not a raw QUIC transport target.
   http3-1kb:
-    status: partial
+    status: validation-failed
     scenarioId: http3.payload.bytes.1kb
-    evidence: get-small external peer rows passed.
+    evidence: C:/src/incursa/protocol-lab-internal/.artifacts/runs/scenario-declarations-ngtcp2-1kb-final-h3-local-v1
+    reason: Package-backed Docker target serves /bytes/1024 over H3 and returns status 200 with 1024 bytes, but wsslserver emits text/plain; the official ProtocolLab 1KB row is not accepted.
   http3-64kb:
     status: supported
     scenarioId: http3.payload.bytes.64kb
@@ -51,6 +65,11 @@ scenarioCoverage:
     executorId: h3spec-http3-qpack
     reason: No ngtcp2 package-backed h3spec/QPACK target proof is recorded here.
 externalPeerScenarios:
+  officialProtocolLabRows:
+    - scenarioId: http3.payload.bytes.1kb
+      status: validation-failed
+      artifactRun: C:/src/incursa/protocol-lab-internal/.artifacts/runs/scenario-declarations-ngtcp2-1kb-final-h3-local-v1
+      reason: wsslserver returned 200 with 1024 bytes over H3 but emitted text/plain instead of application/octet-stream.
   stable:
     - get-small
     - get-empty
@@ -80,11 +99,43 @@ ports:
   - name: h3
     protocol: udp
     default: 4433
+    hostPort: 4433
+    containerPort: 4433
+dockerCommandArguments:
+  - bash
+  - -lc
+  - >-
+    mkdir -p /tmp/www/bytes /tmp/certs /logs/qlog /logs/sslkeylog &&
+    perl -e 'binmode STDOUT; for ($i = 0; $i < 1024; $i++) { print chr($i % 251) }' > /tmp/www/bytes/1024 &&
+    perl -e 'binmode STDOUT; for ($i = 0; $i < 65536; $i++) { print chr($i % 251) }' > /tmp/www/bytes/65536 &&
+    perl -e 'binmode STDOUT; for ($i = 0; $i < 1048576; $i++) { print chr($i % 251) }' > /tmp/www/bytes/1048576 &&
+    printf '%s\n' 'application/octet-stream 1024 65536 1048576' > /tmp/mime.types &&
+    printf '%s\n' '{"protocol":"h3","server":"ngtcp2-nghttp3","implementation":"ngtcp2-http3","utc":"static","processId":1}' > /tmp/www/status &&
+    openssl req -x509 -newkey rsa:2048 -nodes -subj /CN=localhost -days 3650 -keyout /tmp/certs/priv.key -out /tmp/certs/cert.pem >/tmp/certs/openssl.out 2>/tmp/certs/openssl.err &&
+    /usr/local/bin/wsslserver --htdocs=/tmp/www --mime-types-file=/tmp/mime.types --qlog-dir=/logs/qlog --no-http-dump --timeout=15s --handshake-timeout=10s 0.0.0.0 4433 /tmp/certs/priv.key /tmp/certs/cert.pem
+startup:
+  port:
+    name: h3
+    default: 4433
+readinessCheck:
+  type: processStarted
+  url: /bytes/1024
+  timeoutSeconds: 30
 capabilities:
   - http.client
   - http.server
   - httpStatus
   - httpBytes
+endpoints:
+  bytes1kb:
+    method: GET
+    path: /bytes/1024
+  bytes64kb:
+    method: GET
+    path: /bytes/65536
+  bytes1mb:
+    method: GET
+    path: /bytes/1048576
 unsupportedKnownCases:
   - h1
   - h2

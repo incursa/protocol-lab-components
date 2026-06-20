@@ -8,6 +8,17 @@ roles:
   - server
 targetKind: docker
 targetContract: process
+image: incursa-protocol-lab-quiche-http3:0.1.3
+dockerfile: docker/quiche-http3.Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+baseUrl: https://localhost:4433
+dockerBaseUrl: https://localhost:4433
+protocolBaseUrls:
+  h3: https://localhost:4433
+dockerProtocolBaseUrls:
+  h3: https://localhost:4433
+certificateMode: generated-self-signed-loopback-certificate
 protocols:
   - h3
 supportedProtocols:
@@ -18,10 +29,12 @@ supportedProtocolVersions:
   - http/3
 supportedScenarios:
   - http3.core.status
+  - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
 supportedTestCaseIds:
   - http3.core.status
+  - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
 scenarioCoverage:
@@ -29,9 +42,10 @@ scenarioCoverage:
     status: unsupported
     reason: quiche is packaged here as an HTTP/3 peer, not a raw QUIC transport target.
   http3-1kb:
-    status: partial
+    status: validation-failed
     scenarioId: http3.payload.bytes.1kb
-    evidence: get-small external peer rows passed.
+    evidence: C:/src/incursa/protocol-lab-internal/.artifacts/runs/scenario-declarations-quiche-1kb-final-h3-local-v1
+    reason: Package-backed Docker target serves /bytes/1024 over H3 and returns status 200 with 1024 bytes, but quiche-server omits content-type; the official ProtocolLab 1KB row is not accepted.
   http3-64kb:
     status: supported
     scenarioId: http3.payload.bytes.64kb
@@ -51,6 +65,11 @@ scenarioCoverage:
     executorId: h3spec-http3-qpack
     reason: No quiche package-backed h3spec/QPACK target proof is recorded here.
 externalPeerScenarios:
+  officialProtocolLabRows:
+    - scenarioId: http3.payload.bytes.1kb
+      status: validation-failed
+      artifactRun: C:/src/incursa/protocol-lab-internal/.artifacts/runs/scenario-declarations-quiche-1kb-final-h3-local-v1
+      reason: quiche-server returned 200 with 1024 bytes over H3 but did not emit content-type application/octet-stream.
   stable:
     - get-small
     - get-empty
@@ -79,11 +98,42 @@ ports:
   - name: h3
     protocol: udp
     default: 4433
+    hostPort: 4433
+    containerPort: 4433
+dockerCommandArguments:
+  - bash
+  - -lc
+  - >-
+    mkdir -p /tmp/www/bytes /tmp/certs /logs/qlog /logs/sslkeylog &&
+    perl -e 'binmode STDOUT; for ($i = 0; $i < 1024; $i++) { print chr($i % 251) }' > /tmp/www/bytes/1024 &&
+    perl -e 'binmode STDOUT; for ($i = 0; $i < 65536; $i++) { print chr($i % 251) }' > /tmp/www/bytes/65536 &&
+    perl -e 'binmode STDOUT; for ($i = 0; $i < 1048576; $i++) { print chr($i % 251) }' > /tmp/www/bytes/1048576 &&
+    printf '%s\n' '{"protocol":"h3","server":"quiche","implementation":"quiche-http3","utc":"static","processId":1}' > /tmp/www/status &&
+    openssl req -x509 -newkey rsa:2048 -nodes -subj /CN=localhost -days 3650 -keyout /tmp/certs/priv.key -out /tmp/certs/cert.pem >/tmp/certs/openssl.out 2>/tmp/certs/openssl.err &&
+    quiche-server --listen 0.0.0.0:4433 --cert /tmp/certs/cert.pem --key /tmp/certs/priv.key --root /tmp/www --http-version HTTP/3
+startup:
+  port:
+    name: h3
+    default: 4433
+readinessCheck:
+  type: processStarted
+  url: /bytes/1024
+  timeoutSeconds: 30
 capabilities:
   - http.client
   - http.server
   - httpStatus
   - httpBytes
+endpoints:
+  bytes1kb:
+    method: GET
+    path: /bytes/1024
+  bytes64kb:
+    method: GET
+    path: /bytes/65536
+  bytes1mb:
+    method: GET
+    path: /bytes/1048576
 unsupportedKnownCases:
   - h1
   - h2

@@ -2,18 +2,20 @@
 
 `quiche-http3` packages the Docker-backed quiche client/server image used by the `quic-dotnet` HTTP/3 external interop lane.
 
-## Supported
+## Declared Coverage
 
 - Protocol family: `h3`
 - Roles: client and server
-- Public scenarios: `http3.core.status`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`
+- Public scenarios declared for runner classification: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`
+- Official 1KB row status: validation-failed; package-backed Docker target serves `/bytes/1024` over H3 with 200/1024 bytes, but `quiche-server` omits `content-type`.
 - Stable external interop scenarios: `get-small`, `get-empty`, `get-large`, `not-found`
 
 ## Pinned Peer Image
 
-- Image: `cloudflare/quiche:latest`
-- Image ID: `sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c`
-- Repo digest: `cloudflare/quiche@sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c`
+- Runner image: `incursa-protocol-lab-quiche-http3:0.1.3`
+- Base image: `cloudflare/quiche:latest`
+- Base image ID: `sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c`
+- Base repo digest: `cloudflare/quiche@sha256:9f53591499834ffd0d74eae3a67baafec3f9233725cc565852ca13139bdf3b8c`
 - Source evidence: `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184606Z\peer-tool-manifest.json`
 
 ## Scenario Evidence
@@ -39,7 +41,7 @@ Run the client against an HTTP/3 target reachable from Docker:
 ```powershell
 pwsh ./implementations/quiche-http3/run.ps1 `
   -Mode Client `
-  -Url https://host.docker.internal:4433/small.txt `
+  -Url https://host.docker.internal:4433/bytes/1024 `
   -ConnectTo host.docker.internal:4433
 ```
 
