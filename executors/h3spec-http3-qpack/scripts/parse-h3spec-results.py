@@ -15,7 +15,8 @@ FAILURE_LINE = re.compile(r"^\s*(?P<failure_id>\d+)\)\s+(?P<suite>.+?)\s+(?P<nam
 SUMMARY_LINE = re.compile(r"(?P<total>\d+)\s+examples?,\s+(?P<failures>\d+)\s+failures?")
 SECTION_TOKEN = re.compile(r"\[(?P<family>HTTP/3|QPACK|Transport|TLS)\s+(?P<section>[^\]]+)]")
 ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
-CASE_MARKER_SUFFIX = re.compile(r"\s+\[[xv]]\s*$")
+CASE_MARKER_SUFFIX = re.compile(r"\s+\[(?:x|v|✘|✔|✓)\]\s*$", re.IGNORECASE)
+FAIL_CASE_MARKER_SUFFIX = re.compile(r"\s+\[(?:x|✘)\]\s*$", re.IGNORECASE)
 RERUN_LINE = re.compile(r"^\s*To rerun use:\s+(?P<rerun>.+)$")
 
 RFC_BY_FAMILY = {
@@ -93,13 +94,14 @@ def parse_stdout(stdout: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
 
         case_match = CASE_LINE.match(line)
         if case_match:
-            name = case_match.group("name").strip()
+            raw_name = case_match.group("name").strip()
+            name = normalize_case_name(raw_name)
             ref = parse_case_reference(name)
             cases.append(
                 {
                     "suite": current_suite,
                     "name": name,
-                    "status": "fail" if case_match.group("status") else "pass",
+                    "status": "fail" if case_match.group("status") or FAIL_CASE_MARKER_SUFFIX.search(raw_name) else "pass",
                     "failureId": case_match.group("failure_id") or "",
                     **ref,
                 }

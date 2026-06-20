@@ -2,7 +2,7 @@
 set -euo pipefail
 
 mode="${PLAB_MODE:-Client}"
-image="${PLAB_IMAGE:-incursa-protocol-lab-aioquic-http3:0.1.0}"
+image="${PLAB_IMAGE:-incursa-protocol-lab-aioquic-http3:0.1.2}"
 plan_only="${PLAB_PLAN_ONLY:-0}"
 skip_build="${PLAB_SKIP_BUILD:-0}"
 artifact_root="${PLAB_ARTIFACT_ROOT:-artifacts/aioquic-http3}"

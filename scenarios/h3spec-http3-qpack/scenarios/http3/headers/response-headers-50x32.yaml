@@ -21,9 +21,26 @@ trafficShape: request-response
 implementationRole: server
 requiredCapabilities:
   - httpHeaders
+endpoint:
+  method: GET
+  path: /headers/response
+  query:
+    count: '50'
+    size: '32'
+  requestHeaders: {}
+  expectedStatus: 200
+  expectedHeaders:
+    content-type: text/plain
+  expectedHeaderPrefix: x-protocol-bench-header-
+  expectedHeaderCount: 50
+  expectedHeaderValueSize: 32
+  expectedBodyRule: exact
+  expectedBody: headers
+  expectedBodySize: 7
 validation:
   required: true
   checks:
+    - status
     - protocol:h3
     - response-headers
 artifacts:

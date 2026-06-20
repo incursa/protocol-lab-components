@@ -10,6 +10,8 @@ param(
     [string]$Mode = "focused",
     [int]$TimeoutMilliseconds = 5000,
     [string]$OutputRoot = "artifacts/h3spec-http3-qpack",
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$RemainingArguments = @(),
     [switch]$AcquireH3Spec,
     [string]$AcquireH3SpecVersion = "v0.1.13",
     [switch]$NoValidateCertificate,
@@ -18,6 +20,28 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+
+foreach ($argument in $RemainingArguments) {
+    if ($argument -match '^https?://') {
+        $uri = [Uri]$argument
+        if (-not [string]::IsNullOrWhiteSpace($uri.Host)) {
+            $HostName = $uri.Host
+        }
+
+        if (-not $uri.IsDefaultPort) {
+            $Port = $uri.Port
+        }
+        elseif ($uri.Scheme -eq 'https') {
+            $Port = 443
+        }
+        elseif ($uri.Scheme -eq 'http') {
+            $Port = 80
+        }
+    }
+    elseif (-not [string]::IsNullOrWhiteSpace($argument)) {
+        throw "Unknown argument: $argument"
+    }
+}
 
 function Resolve-ComponentPath {
     param([Parameter(Mandatory)][string]$Path)
@@ -190,6 +214,21 @@ finally {
 Invoke-H3SpecParser -StdoutPath $stdoutPath -StderrPath $stderrPath -MetadataPath $metadataPath -ResultsPath $resultsPath -ReportPath $reportPath
 
 $parsed = Get-Content -LiteralPath $resultsPath -Raw | ConvertFrom-Json
+[ordered]@{
+    tool = 'h3spec'
+    status = [string]$parsed.summary.status
+    classification = [string]$parsed.summary.classification
+    metrics = [ordered]@{
+        totalRequests = [int]$parsed.summary.selectedCases
+        successfulRequests = [int]$parsed.summary.passedCases
+        failedRequests = [int]$parsed.summary.failedCases
+    }
+    warnings = @(
+        "h3spec classification=$($parsed.summary.classification)",
+        "h3spec exitCode=$($parsed.summary.exitCode)"
+    )
+} | ConvertTo-Json -Depth 5
+
 if ($FailOnH3SpecFailures -and -not $PlanOnly) {
     if ([string]$parsed.summary.selectionStatus -eq 'no-selected-cases') {
         throw "h3spec selected no cases for the requested match filters. See $reportPath."
@@ -200,4 +239,4 @@ if ($FailOnH3SpecFailures -and -not $PlanOnly) {
     }
 }
 
-Write-Host "h3spec executor artifacts written to $resolvedOutputRoot"
+[Console]::Error.WriteLine("h3spec executor artifacts written to $resolvedOutputRoot")

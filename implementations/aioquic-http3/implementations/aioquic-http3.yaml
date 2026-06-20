@@ -8,6 +8,17 @@ roles:
   - server
 targetKind: docker
 targetContract: process
+image: incursa-protocol-lab-aioquic-http3:0.1.2
+dockerfile: docker/aioquic.Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+baseUrl: https://localhost:4433
+dockerBaseUrl: https://localhost:4433
+protocolBaseUrls:
+  h3: https://localhost:4433
+dockerProtocolBaseUrls:
+  h3: https://localhost:4433
+certificateMode: aioquic-self-signed-localhost-loopback-certificate
 protocols:
   - h3
 supportedProtocols:
@@ -89,11 +100,30 @@ ports:
   - name: h3
     protocol: udp
     default: 4433
+    hostPort: 4433
+    containerPort: 4433
+dockerCommandArguments:
+  - /usr/local/bin/aioquic-http3-server
+  - /www
+  - /certs/cert.pem
+  - /certs/priv.key
+  - "4433"
+startup:
+  port:
+    name: h3
+    default: 4433
+readinessCheck:
+  type: processStarted
+  timeoutSeconds: 30
 capabilities:
+  - h3.server
+  - quic.server
   - http.client
   - http.server
   - httpStatus
   - httpHeaders
+  - h3Protocol
+  - h3Qpack
 unsupportedKnownCases:
   - h1
   - h2

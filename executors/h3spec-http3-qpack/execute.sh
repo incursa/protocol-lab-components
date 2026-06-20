@@ -7,6 +7,7 @@ port="${H3SPEC_PORT:-4433}"
 h3spec_executable="${H3SPEC_EXECUTABLE:-h3spec}"
 timeout_ms="${H3SPEC_TIMEOUT_MS:-5000}"
 output_root="${H3SPEC_OUTPUT_ROOT:-artifacts/h3spec-http3-qpack}"
+target_url=""
 plan_only="${H3SPEC_PLAN_ONLY:-false}"
 mode="${H3SPEC_MODE:-focused}"
 match_values=()
@@ -19,6 +20,7 @@ no_validate="${H3SPEC_NO_VALIDATE:-false}"
 acquire_h3spec="${H3SPEC_ACQUIRE:-false}"
 fail_on_h3spec_failures="${H3SPEC_FAIL_ON_FAILURES:-false}"
 h3spec_version="${H3SPEC_VERSION:-v0.1.13}"
+python_bin_for_target="$(command -v python3 || command -v python)"
 
 while [[ "$#" -gt 0 ]]; do
   case "$1" in
@@ -35,9 +37,25 @@ while [[ "$#" -gt 0 ]]; do
     --acquire-h3spec) acquire_h3spec="true"; shift ;;
     --h3spec-version) h3spec_version="$2"; shift 2 ;;
     --fail-on-h3spec-failures) fail_on_h3spec_failures="true"; shift ;;
+    http://*|https://*) target_url="$1"; shift ;;
     *) echo "Unknown argument: $1" >&2; exit 2 ;;
   esac
 done
+
+if [[ -n "$target_url" ]]; then
+  parsed_target="$("$python_bin_for_target" - "$target_url" <<'PY'
+import sys
+from urllib.parse import urlparse
+
+uri = urlparse(sys.argv[1])
+host = uri.hostname or "127.0.0.1"
+port = uri.port or (443 if uri.scheme == "https" else 80)
+print(f"{host}\n{port}")
+PY
+  )"
+  host_name="$(printf '%s\n' "$parsed_target" | sed -n '1p')"
+  port="$(printf '%s\n' "$parsed_target" | sed -n '2p')"
+fi
 
 if [[ "$mode" == "full" ]]; then
   match_values=()
@@ -181,6 +199,31 @@ PY
   --json-output "$results_path" \
   --markdown-output "$report_path"
 
+"$python_bin" - "$results_path" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as handle:
+    result = json.load(handle)
+
+summary = result.get("summary", {})
+payload = {
+    "tool": "h3spec",
+    "status": summary.get("status", "unknown"),
+    "classification": summary.get("classification", "unknown"),
+    "metrics": {
+        "totalRequests": int(summary.get("selectedCases") or 0),
+        "successfulRequests": int(summary.get("passedCases") or 0),
+        "failedRequests": int(summary.get("failedCases") or 0),
+    },
+    "warnings": [
+        f"h3spec classification={summary.get('classification', 'unknown')}",
+        f"h3spec exitCode={summary.get('exitCode', '')}",
+    ],
+}
+print(json.dumps(payload, separators=(",", ":")))
+PY
+
 if [[ "$fail_on_h3spec_failures" == "true" && "$plan_only" != "true" ]]; then
   "$python_bin" - "$results_path" "$report_path" <<'PY'
 import json
@@ -197,4 +240,4 @@ if int(summary["failedCases"]) > 0 or (summary["exitCode"] not in (0, None)):
 PY
 fi
 
-echo "h3spec executor artifacts written to $output_root"
+echo "h3spec executor artifacts written to $output_root" >&2

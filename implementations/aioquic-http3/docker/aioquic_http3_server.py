@@ -4,6 +4,7 @@ import mimetypes
 import os
 import sys
 from pathlib import Path
+from urllib.parse import parse_qs, urlsplit
 
 from aioquic.asyncio import serve
 from aioquic.asyncio.protocol import QuicConnectionProtocol
@@ -27,16 +28,27 @@ class StaticHttp3ServerProtocol(QuicConnectionProtocol):
         request_headers = {name: value for name, value in headers}
         method = request_headers.get(b":method", b"").decode("ascii", errors="replace")
         raw_path = request_headers.get(b":path", b"/").decode("utf-8", errors="replace")
-        path = raw_path.split("?", 1)[0]
+        uri = urlsplit(raw_path)
+        path = uri.path
+        query = parse_qs(uri.query, keep_blank_values=True)
 
         if method != "GET":
             self._send_response(stream_id, 405, b"method not allowed", [(b"content-type", b"text/plain")])
             return
 
-        status, body, response_headers = self._resolve_response(path)
+        status, body, response_headers = self._resolve_response(path, query)
         self._send_response(stream_id, status, body, response_headers, split_payload_size=17 if path == "/split-data.bin" else None)
 
-    def _resolve_response(self, path):
+    def _resolve_response(self, path, query):
+        if path == "/headers/response":
+            count = self._parse_positive_int(query.get("count", ["50"])[0], default=50, maximum=128)
+            size = self._parse_positive_int(query.get("size", ["32"])[0], default=32, maximum=256)
+            headers = [(b"content-type", b"text/plain")]
+            value = ("x" * size).encode("ascii")
+            for index in range(count):
+                headers.append((f"x-protocol-bench-header-{index:03d}".encode("ascii"), value))
+            return 200, b"headers", headers
+
         if path == "/many-headers.txt":
             headers = [(b"content-type", b"text/plain")]
             for index in range(64):
@@ -53,6 +65,15 @@ class StaticHttp3ServerProtocol(QuicConnectionProtocol):
 
         content_type = mimetypes.guess_type(candidate.name)[0] or "application/octet-stream"
         return 200, candidate.read_bytes(), [(b"content-type", content_type.encode("ascii"))]
+
+    def _parse_positive_int(self, value, *, default, maximum):
+        try:
+            parsed = int(value)
+        except ValueError:
+            return default
+        if parsed < 0:
+            return default
+        return min(parsed, maximum)
 
     def _send_response(self, stream_id, status, body, headers, split_payload_size=None):
         response_headers = [(b":status", str(status).encode("ascii"))]
