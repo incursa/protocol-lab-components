@@ -29,6 +29,7 @@ implementations/
   caddy-http1/
   caddy-http3/
   nginx-http1/
+  nginx-http3/
   kestrel-http3/
   aioquic-http3/
   quiche-http3/
@@ -102,6 +103,7 @@ Implementation packages:
 - `org.protocol-lab.components.implementation.caddy-http1`
 - `org.protocol-lab.components.implementation.caddy-http3`
 - `org.protocol-lab.components.implementation.nginx-http1`
+- `org.protocol-lab.components.implementation.nginx-http3`
 - `org.protocol-lab.components.implementation.kestrel-http3`
 - `org.protocol-lab.components.implementation.aioquic-http3`
 - `org.protocol-lab.components.implementation.quiche-http3`
@@ -124,6 +126,8 @@ Scenario-pack packages:
 Kestrel packages are intentionally lane scoped. Keep HTTP/1, HTTP/2, and HTTP/3 as separate packages so controller inventory can select exact protocol behavior and report unsupported cells explicitly.
 
 Caddy packages follow the same lane split. `caddy-http1` and `caddy-http3` are separate packages so HTTP/1 and HTTP/3 support is never inferred across protocols.
+
+nginx packages follow the same lane split. `nginx-http1` and `nginx-http3` are separate packages, and `nginx-http3` proves `--with-http_v3_module` before serving.
 
 Incursa raw QUIC implementation packages remain implementation-owned by `quic-dotnet`. This repository packages the reusable raw QUIC scenario and executor pieces so controller jobs do not have to source them from local `protocol-lab-internal` scripts.
 

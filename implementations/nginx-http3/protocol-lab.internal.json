@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      }
+    ],
+    "images": [
+      {
+        "name": "nginx-http3",
+        "image": "incursa-protocol-lab-nginx-http3:0.1.1",
+        "baseImage": "nginx:1.29.0-alpine",
+        "baseImageDigest": "nginx@sha256:d67ea0d64d518b1bb04acde3b00f722ac3e9764b3209a9b0a98924ba35e4b779",
+        "baseImageLinuxAmd64Digest": "nginx@sha256:845b5424415de5f77dd5753cbb7c1be8bd8e44cc81f20f9705783a02f8848317",
+        "sourceVersion": "nginx/1.29.0",
+        "pinnedAlpinePackages": [
+          "openssl=3.5.7-r0"
+        ],
+        "sourceManifestDigest": "nginx:1.29.0-alpine manifest inspected locally on 2026-06-20",
+        "capabilityProof": "docker run --rm --entrypoint nginx nginx:1.29.0-alpine -V includes --with-http_v3_module"
+      }
+    ]
+  },
+  "commands": {
+    "buildTemplate": "docker build --pull -f docker/nginx.Dockerfile -t incursa-protocol-lab-nginx-http3:0.1.1 docker",
+    "moduleProofTemplate": "docker run --rm --entrypoint nginx incursa-protocol-lab-nginx-http3:0.1.1 -V",
+    "configTestTemplate": "docker run --rm incursa-protocol-lab-nginx-http3:0.1.1 nginx -t",
+    "serverTemplate": "docker run --rm -p <port>:8443/tcp -p <port>:8443/udp incursa-protocol-lab-nginx-http3:0.1.1 nginx -g 'daemon off;'",
+    "planOnly": "pwsh ./run.ps1 -PlanOnly",
+    "proofOnly": "pwsh ./run.ps1 -ProofOnly"
+  },
+  "knownLimitations": [
+    "Docker-only HTTP/3 server package; it does not provide a client role.",
+    "The wrapper fails before serving if nginx -V does not include --with-http_v3_module.",
+    "The container generates short-lived self-signed localhost certificate material at runtime; validation must record local certificate bypass where needed.",
+    "Package metadata advertises only locally wired HTTP application endpoints, not QPACK conformance, upload, streaming, or WebSocket-over-H3 support.",
+    "The 1 MB payload scenario is documented as skipped until package-backed live proof is recorded."
+  ],
+  "externalInteropEvidence": {
+    "evidenceClass": "local-package-characterization",
+    "passingRows": [
+      {
+        "target": "nginx-http3",
+        "scenarios": [
+          "get-small",
+          "not-found"
+        ],
+        "reason": "Wrapper exposes /bytes/1024 and /not-found endpoints; live package-backed proof is recorded separately when available."
+      }
+    ],
+    "skippedRows": [
+      {
+        "target": "nginx-http3",
+        "scenarios": [
+          "get-large",
+          "many-headers",
+          "split-data",
+          "upload",
+          "websocket-over-h3"
+        ],
+        "reason": "The package does not wire these fixtures or no package-backed live proof has been recorded."
+      }
+    ]
+  }
+}

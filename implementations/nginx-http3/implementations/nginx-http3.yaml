@@ -1,0 +1,165 @@
+schemaVersion: "1.0"
+id: nginx-http3
+name: nginx HTTP/3
+description: Docker-backed nginx HTTP/3 target with explicit nginx -V HTTP/3 module proof.
+family: nginx
+role: server
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-nginx-http3:0.1.1
+dockerfile: docker/nginx.Dockerfile
+buildContext: docker
+dockerNetworkMode: published-port
+certificateMode: nginx-self-signed-localhost-loopback-certificate
+roles:
+  - server
+protocols:
+  - h3
+supportedProtocols:
+  - h3
+supportedWorkloadFamilies:
+  - http.application
+supportedProtocolVersions:
+  - http/3
+supportedScenarios:
+  - http3.core.status
+  - http3.payload.bytes.1kb
+  - http3.payload.bytes.64kb
+supportedTestCaseIds:
+  - http3.core.status
+  - http3.payload.bytes.1kb
+  - http3.payload.bytes.64kb
+scenarioCoverage:
+  raw-quic:
+    status: unsupported
+    reason: nginx is packaged here as an HTTP/3 server, not a raw QUIC transport target.
+  http3-status:
+    status: supported
+    scenarioId: http3.core.status
+    endpoint: /status
+  http3-1kb:
+    status: supported
+    scenarioId: http3.payload.bytes.1kb
+    endpoint: /bytes/1024
+  http3-64kb:
+    status: supported
+    scenarioId: http3.payload.bytes.64kb
+    endpoint: /bytes/65536
+  http3-not-found:
+    status: supported
+    externalScenarioId: not-found
+    endpoint: /not-found
+    expectedStatus: 404
+  http3-large-body:
+    status: skipped
+    scenarioId: http3.payload.bytes.1mb
+    reason: 1 MB response endpoint is not promoted until package-backed live proof covers the nginx package row.
+  http3-header-heavy-qpack:
+    status: unsupported
+    scenarioId: http3.headers.response-headers-50x32
+    reason: Package does not expose deterministic header-heavy/QPACK fixtures.
+  http3-request-header-inspection:
+    status: unsupported
+    scenarioId: http3.headers.inspect-request
+    reason: Package does not expose request-header inspection fixtures.
+  http3-upload:
+    status: unsupported
+    scenarioId: http3.upload.echo.64kb
+    reason: Package does not expose upload sink, echo, or hash endpoints.
+  http3-streaming:
+    status: unsupported
+    scenarioId: http3.payload.stream.100x16kb
+    reason: Package does not expose streaming response fixtures.
+  websocket-over-h3:
+    status: unsupported
+    scenarioId: http3.websocket.rfc9220.extended-connect
+    reason: Package does not configure a WebSocket-over-H3 endpoint.
+  h3spec-qpack-executor:
+    status: compatible-target-unproven
+    executorId: h3spec-http3-qpack
+    reason: nginx can be used as a target endpoint, but no package-backed h3spec/QPACK proof is recorded for this package.
+externalPeerScenarios:
+  stable:
+    - get-small
+    - not-found
+  packageEndpoints:
+    - /status
+    - /bytes/1024
+    - /bytes/65536
+    - /not-found
+  skippedUntilProven:
+    - get-large
+    - many-headers
+    - split-data
+    - upload
+    - websocket-over-h3
+unsupportedKnownCases:
+  - h1
+  - h2
+  - h2c
+  - raw-quic
+  - websocket
+  - upload
+ports:
+  - name: h3
+    protocol: tcp+udp
+    default: 5446
+    containerPort: 8443
+environment:
+  PLAB_HTTP_PORT: "5446"
+startup:
+  port:
+    name: h3
+    environmentVariable: PLAB_HTTP_PORT
+    default: 5446
+  readiness:
+    protocol: https
+    path: /status
+    expectedStatus: 200
+    certificateValidation: disabled-for-local-nginx-self-signed-certificate
+readinessCheck:
+  type: http
+  url: https://127.0.0.1:${PLAB_HTTP_PORT}/status
+  timeoutSeconds: 30
+targetCapabilityProof:
+  id: nginx-http3-module
+  required: true
+  dockerExecArguments:
+    - nginx
+    - -V
+  expectedOutputContains: --with-http_v3_module
+capabilities:
+  - http.server
+  - httpStatus
+  - httpBytes
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+endpoints:
+  status:
+    method: GET
+    path: /status
+  bytes1kb:
+    method: GET
+    path: /bytes/1024
+  bytes64kb:
+    method: GET
+    path: /bytes/65536
+  notFound:
+    method: GET
+    path: /not-found
+    expectedStatus: 404
+shutdownBehavior: process
+artifactExports:
+  - command.txt
+  - nginx-version.txt
+  - stdout.txt
+  - stderr.txt
+  - result.json
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata:
+  manifest: protocol-lab.internal.json
+notes: Docker-only nginx HTTP/3 lane. Keep separate from nginx-http1 so inventory can select exact protocol behavior.

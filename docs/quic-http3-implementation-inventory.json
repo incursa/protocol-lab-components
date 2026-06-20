@@ -17,12 +17,11 @@
   },
   "summary": {
     "implementationCount": 19,
-    "packageableNowCount": 15,
+    "packageableNowCount": 16,
     "blockedOrDesignFirstCount": 4,
     "topNextPackageSlices": [
       "quic-go HTTP/3 server package using the existing internal placeholder plus quic-go/http3 or interop image seed.",
       "MSQuic/.NET raw QUIC adapter package extraction from the existing protocol-lab-internal adapter.",
-      "nginx HTTP/3 Docker target package with nginx -V HTTP/3 module proof preserved in internal metadata.",
       "Caddy HTTP/3 Docker target package aligned with the existing internal target and site catalog entry.",
       "xquic interop-image package for QUIC plus HTTP/3 client/server coverage."
     ]
@@ -161,16 +160,16 @@
       "displayName": "nginx QUIC/HTTP/3",
       "upstream": "https://nginx.org/en/docs/quic.html",
       "license": "nginx open source license; packaging should use external image/source terms review.",
-      "packageFeasibility": "internal-target",
-      "dockerImageAvailability": "QUIC interop runner lists ghcr.io/nginx/nginx-quic-qns:latest; protocol-lab-internal has a local nginx HTTP/3 Docker target.",
+      "packageFeasibility": "packaged",
+      "dockerImageAvailability": "ProtocolLab packages a repo-local image based on nginx:1.29.0-alpine with nginx -V HTTP/3 module proof; protocol-lab-internal also has a local nginx HTTP/3 Docker target.",
       "roles": ["server"],
       "quicRawSupport": "no; HTTP server target.",
       "http3Support": "yes; nginx documents QUIC/HTTP/3 support since 1.25.0 and Linux binary package inclusion.",
       "webSocketOverH3Support": "not packaged.",
       "benchmarkSuitability": "high for external server baseline once module proof and TLS policy are captured.",
-      "protocolLabComponentStatus": "HTTP/1 package exists in components; HTTP/3 is internal target only.",
-      "nextPackageSlice": "Create nginx-http3 component package preserving nginx -V module proof in internal metadata.",
-      "sourceRefs": ["https://nginx.org/en/docs/quic.html", "https://raw.githubusercontent.com/quic-interop/quic-interop-runner/master/implementations_quic.json", "protocol-lab-internal/implementations/nginx-http3.yaml"]
+      "protocolLabComponentStatus": "packaged HTTP/1 and HTTP/3 implementation wrappers; HTTP/3 package preserves nginx -V module proof in internal metadata.",
+      "nextPackageSlice": "Register the nginx-http3 package with the live controller and record package-backed H3 smoke evidence when worker Docker capability allows it.",
+      "sourceRefs": ["https://nginx.org/en/docs/quic.html", "https://nginx.org/en/docs/http/ngx_http_v3_module.html", "protocol-lab-components/implementations/nginx-http3/protocol-lab-package.json", "protocol-lab-internal/implementations/nginx-http3.yaml"]
     },
     {
       "id": "xquic",
