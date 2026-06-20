@@ -24,5 +24,14 @@ if [ ! -f /etc/nginx/certs/localhost.crt ] || [ ! -f /etc/nginx/certs/localhost.
     -out /etc/nginx/certs/localhost.crt >/dev/null 2>&1
 fi
 
+plab_http_port="${PLAB_HTTP_PORT:-8443}"
+case "$plab_http_port" in
+  *[!0-9]*|'')
+    printf '%s\n' "ProtocolLab nginx HTTP/3 configuration failed: PLAB_HTTP_PORT must be a numeric port." >&2
+    exit 78
+    ;;
+esac
+sed -i "s/__PLAB_HTTP_PORT__/${plab_http_port}/g" /etc/nginx/nginx.conf
+
 nginx -t
 exec "$@"

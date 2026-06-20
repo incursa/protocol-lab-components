@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-image="${PLAB_IMAGE:-incursa-protocol-lab-nginx-http3:0.1.1}"
+image="${PLAB_IMAGE:-incursa-protocol-lab-nginx-http3:0.1.4}"
 port="${PLAB_HTTP_PORT:-5446}"
 skip_build="${PLAB_SKIP_BUILD:-0}"
 plan_only="${PLAB_PLAN_ONLY:-0}"
@@ -16,7 +16,7 @@ if [ "$skip_build" != "1" ]; then
 fi
 commands+=("docker run --rm --entrypoint nginx $image -V")
 commands+=("docker run --rm $image nginx -t")
-commands+=("docker run --rm -p ${port}:8443/tcp -p ${port}:8443/udp $image nginx -g 'daemon off;'")
+commands+=("docker run --rm -p ${port}:8443/tcp -p ${port}:8443/udp -e PLAB_HTTP_PORT=${port} $image nginx -g 'daemon off;'")
 printf '%s\n' "${commands[@]}" > "$artifact_root/command.txt"
 
 if [ "$plan_only" = "1" ]; then
@@ -47,4 +47,4 @@ if [ "$proof_only" = "1" ]; then
   exit 0
 fi
 
-docker run --rm -p "${port}:8443/tcp" -p "${port}:8443/udp" "$image" nginx -g 'daemon off;'
+docker run --rm -p "${port}:8443/tcp" -p "${port}:8443/udp" -e "PLAB_HTTP_PORT=${port}" "$image" nginx -g 'daemon off;'
