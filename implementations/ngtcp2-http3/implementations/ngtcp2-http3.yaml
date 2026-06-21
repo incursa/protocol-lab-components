@@ -28,14 +28,13 @@ supportedWorkloadFamilies:
 supportedProtocolVersions:
   - http/3
 supportedScenarios:
-  - http3.core.status
-  - http3.payload.bytes.64kb
-  - http3.payload.bytes.1mb
+  - http3.external.peer-characterization
 supportedTestCaseIds:
-  - http3.core.status
-  - http3.payload.bytes.64kb
-  - http3.payload.bytes.1mb
+  - http3.external.peer-characterization
 scenarioCoverage:
+  http3.external.peer-characterization:
+    status: supported
+    reason: Characterization-only marker for the package-backed external peer rows listed below; not an official ProtocolLab benchmark scenario.
   quic.transport.stream-throughput.1mb:
     status: unsupported
     reason: ngtcp2/nghttp3 is packaged here as an HTTP/3 peer, not a raw QUIC transport target.
@@ -43,20 +42,23 @@ scenarioCoverage:
     status: unsupported
     reason: ngtcp2/nghttp3 is packaged here as an HTTP/3 peer, not a raw QUIC transport target.
   http3.core.status:
-    status: supported
+    status: validation-failed
     endpoint: /status
+    reason: wsslserver returns the JSON status body over H3 but emits content-type text/plain; the official ProtocolLab status row is not accepted.
   http3.payload.bytes.1kb:
     status: validation-failed
     scenarioId: http3.payload.bytes.1kb
     evidence: C:/src/incursa/protocol-lab-internal/.artifacts/runs/scenario-declarations-ngtcp2-1kb-final-h3-local-v1
     reason: Package-backed Docker target serves /bytes/1024 over H3 and returns status 200 with 1024 bytes, but wsslserver emits text/plain; the official ProtocolLab 1KB row is not accepted.
   http3.payload.bytes.64kb:
-    status: supported
+    status: validation-failed
     scenarioId: http3.payload.bytes.64kb
+    reason: wsslserver returns deterministic bytes over H3 but emits content-type text/plain; the official ProtocolLab payload row is not accepted.
   http3.payload.bytes.1mb:
-    status: supported
+    status: validation-failed
     scenarioId: http3.payload.bytes.1mb
-    evidence: get-large external peer rows passed after server invocation/network wiring was refined.
+    evidence: get-large external peer rows passed after server invocation/network wiring was refined, but those rows are external interop characterization and do not satisfy the official ProtocolLab payload content-type contract.
+    reason: wsslserver returns deterministic bytes over H3 but emits content-type text/plain; the official ProtocolLab payload row is not accepted.
   http3-header-heavy-qpack:
     status: client-only
     scenarioId: http3.headers.response-headers-50x32
@@ -70,10 +72,19 @@ scenarioCoverage:
     reason: No ngtcp2 package-backed h3spec/QPACK target proof is recorded here.
 externalPeerScenarios:
   officialProtocolLabRows:
+    - scenarioId: http3.core.status
+      status: validation-failed
+      reason: wsslserver returned the status body over H3 but emitted text/plain instead of application/json.
     - scenarioId: http3.payload.bytes.1kb
       status: validation-failed
       artifactRun: C:/src/incursa/protocol-lab-internal/.artifacts/runs/scenario-declarations-ngtcp2-1kb-final-h3-local-v1
       reason: wsslserver returned 200 with 1024 bytes over H3 but emitted text/plain instead of application/octet-stream.
+    - scenarioId: http3.payload.bytes.64kb
+      status: validation-failed
+      reason: wsslserver returned deterministic bytes over H3 but emitted text/plain instead of application/octet-stream.
+    - scenarioId: http3.payload.bytes.1mb
+      status: validation-failed
+      reason: wsslserver returned deterministic bytes over H3 but emitted text/plain instead of application/octet-stream.
   stable:
     - get-small
     - get-empty

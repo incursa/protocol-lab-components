@@ -6,8 +6,8 @@
 
 - Protocol family: `h3`
 - Roles: client and server
-- Public scenarios declared for runner classification: `http3.core.status`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`
-- Official 1KB row status: validation-failed; package-backed Docker target serves `/bytes/1024` over H3 with 200/1024 bytes, but `wsslserver` emits `text/plain`.
+- Public scenarios declared for runner classification: `http3.external.peer-characterization` marker only; this is not an official benchmark scenario.
+- Official ProtocolLab HTTP/3 status and payload row status: validation-failed; package-backed Docker target serves the expected bodies over H3, but `wsslserver` emits `text/plain` instead of the required scenario `content-type` values.
 - Stable external interop scenarios: `get-small`, `get-empty`, `get-large`, `not-found`
 
 ## Pinned Peer Image
@@ -26,6 +26,8 @@
 | `ngtcp2-client__incursa-server` | `get-empty`, `split-data` | pass | `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T130112Z` |
 | `incursa-client__ngtcp2-server` | `get-empty`, `get-small`, `not-found`, `get-large` | pass after earlier handshake timeouts | latest passing proofs exist under `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T130437Z` and `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184808Z`; earlier failures reported `handshake timeout` |
 | `incursa-client__ngtcp2-server` | `many-headers`, `split-data` | skipped | peer server rows are not wired for these scenarios in the current harness |
+
+External interop rows remain useful characterization evidence, but they are not accepted official ProtocolLab rows until the server under test emits the required scenario content types.
 
 ## Local Smoke
 

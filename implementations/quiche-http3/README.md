@@ -6,8 +6,8 @@
 
 - Protocol family: `h3`
 - Roles: client and server
-- Public scenarios declared for runner classification: `http3.core.status`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`
-- Official 1KB row status: validation-failed; package-backed Docker target serves `/bytes/1024` over H3 with 200/1024 bytes, but `quiche-server` omits `content-type`.
+- Public scenarios declared for runner classification: `http3.external.peer-characterization` marker only; this is not an official benchmark scenario.
+- Official ProtocolLab HTTP/3 status and payload row status: validation-failed; package-backed Docker target serves the expected bodies over H3, but `quiche-server` omits the required `content-type` headers.
 - Stable external interop scenarios: `get-small`, `get-empty`, `get-large`, `not-found`
 
 ## Pinned Peer Image
@@ -27,6 +27,8 @@
 | `incursa-client__quiche-server` | `get-empty`, `get-large` | pass | `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T130112Z`, `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T125037Z` |
 | `incursa-client__quiche-server` | `get-small`, `not-found` | pass after earlier peer-server exits | latest passing proof exists under `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T124926Z`; earlier blocker was `peer server exited before client run` in `20260619T124803Z` |
 | `incursa-client__quiche-server` | `many-headers`, `split-data` | skipped | peer server rows are not wired for these scenarios in the current harness |
+
+External interop rows remain useful characterization evidence, but they are not accepted official ProtocolLab rows until the server under test emits the required scenario content types.
 
 ## Local Smoke
 

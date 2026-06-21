@@ -28,14 +28,13 @@ supportedWorkloadFamilies:
 supportedProtocolVersions:
   - http/3
 supportedScenarios:
-  - http3.core.status
-  - http3.payload.bytes.64kb
-  - http3.payload.bytes.1mb
+  - http3.external.peer-characterization
 supportedTestCaseIds:
-  - http3.core.status
-  - http3.payload.bytes.64kb
-  - http3.payload.bytes.1mb
+  - http3.external.peer-characterization
 scenarioCoverage:
+  http3.external.peer-characterization:
+    status: supported
+    reason: Characterization-only marker for the package-backed external peer rows listed below; not an official ProtocolLab benchmark scenario.
   quic.transport.stream-throughput.1mb:
     status: unsupported
     reason: quiche is packaged here as an HTTP/3 peer, not a raw QUIC transport target.
@@ -43,20 +42,23 @@ scenarioCoverage:
     status: unsupported
     reason: quiche is packaged here as an HTTP/3 peer, not a raw QUIC transport target.
   http3.core.status:
-    status: supported
+    status: validation-failed
     endpoint: /status
+    reason: quiche-server returns the JSON status body over H3 but does not emit content-type application/json; the official ProtocolLab status row is not accepted.
   http3.payload.bytes.1kb:
     status: validation-failed
     scenarioId: http3.payload.bytes.1kb
     evidence: C:/src/incursa/protocol-lab-internal/.artifacts/runs/scenario-declarations-quiche-1kb-final-h3-local-v1
     reason: Package-backed Docker target serves /bytes/1024 over H3 and returns status 200 with 1024 bytes, but quiche-server omits content-type; the official ProtocolLab 1KB row is not accepted.
   http3.payload.bytes.64kb:
-    status: supported
+    status: validation-failed
     scenarioId: http3.payload.bytes.64kb
+    reason: quiche-server returns deterministic bytes over H3 but omits content-type application/octet-stream; the official ProtocolLab payload row is not accepted.
   http3.payload.bytes.1mb:
-    status: supported
+    status: validation-failed
     scenarioId: http3.payload.bytes.1mb
-    evidence: get-large external peer rows passed for client and server paths.
+    evidence: get-large external peer rows passed for client and server paths, but those rows are external interop characterization and do not satisfy the official ProtocolLab payload content-type contract.
+    reason: quiche-server returns deterministic bytes over H3 but omits content-type application/octet-stream; the official ProtocolLab payload row is not accepted.
   http3-header-heavy-qpack:
     status: client-only
     scenarioId: http3.headers.response-headers-50x32
@@ -70,10 +72,19 @@ scenarioCoverage:
     reason: No quiche package-backed h3spec/QPACK target proof is recorded here.
 externalPeerScenarios:
   officialProtocolLabRows:
+    - scenarioId: http3.core.status
+      status: validation-failed
+      reason: quiche-server returned the status body over H3 but did not emit content-type application/json.
     - scenarioId: http3.payload.bytes.1kb
       status: validation-failed
       artifactRun: C:/src/incursa/protocol-lab-internal/.artifacts/runs/scenario-declarations-quiche-1kb-final-h3-local-v1
       reason: quiche-server returned 200 with 1024 bytes over H3 but did not emit content-type application/octet-stream.
+    - scenarioId: http3.payload.bytes.64kb
+      status: validation-failed
+      reason: quiche-server returned deterministic bytes over H3 but did not emit content-type application/octet-stream.
+    - scenarioId: http3.payload.bytes.1mb
+      status: validation-failed
+      reason: quiche-server returned deterministic bytes over H3 but did not emit content-type application/octet-stream.
   stable:
     - get-small
     - get-empty
