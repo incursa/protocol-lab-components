@@ -1,6 +1,6 @@
 {
   "schemaVersion": "protocol-lab-quic-http3-implementation-inventory-v1",
-  "reviewedAt": "2026-06-20",
+  "reviewedAt": "2026-06-21",
   "scope": "ProtocolLab QUIC, HTTP/3, WebSocket-over-HTTP/3, and benchmark-package candidate inventory.",
   "sourceModel": {
     "ecosystemBaseline": "QUIC interop runner peers with Docker endpoint artifacts are treated as runnable candidates.",
@@ -16,11 +16,11 @@
     "blocked": "Known licensing, protocol, role, or build-practicality issue blocks an immediate package."
   },
   "summary": {
-    "implementationCount": 19,
-    "packageableNowCount": 16,
+    "implementationCount": 20,
+    "packageableNowCount": 17,
     "blockedOrDesignFirstCount": 4,
     "topNextPackageSlices": [
-      "MSQuic/.NET raw QUIC adapter package extraction from the existing protocol-lab-internal adapter.",
+      "Broader raw QUIC ecosystem targets after quic-go raw stream-throughput and multiplex package proof remains stable.",
       "Caddy and nginx large-body/header-heavy fixture expansion after current package proofs remain stable.",
       "quic-go HTTP/3 client or QPACK-focused extension package after the server baseline remains stable.",
       "xquic interop-image package for QUIC plus HTTP/3 client/server coverage."
@@ -65,15 +65,15 @@
       "upstream": "https://github.com/quic-go/quic-go",
       "license": "MIT.",
       "packageFeasibility": "packaged",
-      "dockerImageAvailability": "QUIC interop runner lists martenseemann/quic-go-interop:latest. ProtocolLab packages a quic-go raw load executor and a quic-go HTTP/3 server implementation with Docker wrapper metadata.",
+      "dockerImageAvailability": "QUIC interop runner lists martenseemann/quic-go-interop:latest. ProtocolLab packages a quic-go raw QUIC target, a quic-go raw load executor, and a quic-go HTTP/3 server implementation.",
       "roles": ["client", "server"],
       "quicRawSupport": "yes; pure Go QUIC transport.",
       "http3Support": "yes; quic-go documents HTTP/3, QPACK, HTTP Datagrams, and related extensions.",
       "webSocketOverH3Support": "not in core package; related webtransport-go covers WebTransport over HTTP/3.",
-      "benchmarkSuitability": "high for raw QUIC load generation and HTTP/3 server baseline smoke; publishable leaderboard claims still need isolated/repeated evidence.",
-      "protocolLabComponentStatus": "raw QUIC executor packaged; HTTP/3 server implementation packaged as org.protocol-lab.components.implementation.quic-go-http3 with live H3 1KB validation proof.",
-      "nextPackageSlice": "Extend the server package into broader live 64KB/1MB proof and later add client/QPACK-focused coverage if needed.",
-      "sourceRefs": ["https://github.com/quic-go/quic-go", "https://raw.githubusercontent.com/quic-interop/quic-interop-runner/master/implementations_quic.json", "protocol-lab-components/executors/quic-go-raw-load/protocol-lab-package.json", "protocol-lab-components/implementations/quic-go-http3/protocol-lab-package.json", "protocol-lab-internal/implementations/quic-go-http3.yaml"]
+      "benchmarkSuitability": "high for raw QUIC target and load generation plus HTTP/3 server baseline smoke; publishable leaderboard claims still need isolated/repeated evidence.",
+      "protocolLabComponentStatus": "raw QUIC target packaged as org.protocol-lab.components.implementation.quic-go-raw for stream throughput and multiplex scenarios; raw QUIC executor packaged; HTTP/3 server implementation packaged as org.protocol-lab.components.implementation.quic-go-http3 with live H3 1KB validation proof.",
+      "nextPackageSlice": "Extend quic-go raw only after additional raw scenarios have live package-backed proof; keep HTTP/3 expansion in the quic-go-http3 package.",
+      "sourceRefs": ["https://github.com/quic-go/quic-go", "https://raw.githubusercontent.com/quic-interop/quic-interop-runner/master/implementations_quic.json", "protocol-lab-components/implementations/quic-go-raw/protocol-lab-package.json", "protocol-lab-components/executors/quic-go-raw-load/protocol-lab-package.json", "protocol-lab-components/implementations/quic-go-http3/protocol-lab-package.json"]
     },
     {
       "id": "aioquic",

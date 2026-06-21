@@ -34,6 +34,7 @@ implementations/
   aioquic-http3/
   quiche-http3/
   ngtcp2-http3/
+  quic-go-raw/
 executors/
   http1-reference/
   http1-go-smoke/
@@ -110,6 +111,7 @@ Implementation packages:
 - `org.protocol-lab.components.implementation.aioquic-http3`
 - `org.protocol-lab.components.implementation.quiche-http3`
 - `org.protocol-lab.components.implementation.ngtcp2-http3`
+- `org.protocol-lab.components.implementation.quic-go-raw`
 
 Test-executor packages:
 
@@ -133,7 +135,7 @@ Caddy packages follow the same lane split. `caddy-http1` and `caddy-http3` are s
 
 nginx packages follow the same lane split. `nginx-http1` and `nginx-http3` are separate packages, and `nginx-http3` proves `--with-http_v3_module` before serving.
 
-Incursa raw QUIC implementation packages remain implementation-owned by `quic-dotnet`. This repository packages the reusable raw QUIC scenario and executor pieces so controller jobs do not have to source them from local `protocol-lab-internal` scripts.
+Incursa raw QUIC implementation packages remain implementation-owned by `quic-dotnet`. This repository packages the reusable raw QUIC scenario and executor pieces so controller jobs do not have to source them from local `protocol-lab-internal` scripts. The `quic-go-raw` package is a separate ecosystem target package and initially advertises only `quic.transport.stream-throughput.1mb` and `quic.transport.multiplex.100x64kb`.
 
 The h3spec/QPACK and RFC9220 WebSocket scenario packs are declarative controller selection packs. They bind the focused suites to `h3spec-http3-qpack` and `aioquic-rfc9220-websocket` respectively so live package-backed jobs do not inherit unrelated managed HTTP/3 load suites.
 

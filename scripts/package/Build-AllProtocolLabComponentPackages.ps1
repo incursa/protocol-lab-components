@@ -257,6 +257,7 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'implementations/nginx-http1'; script = 'Build-NginxHttp1Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/nginx-http3'; script = 'Build-NginxHttp3Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/quic-go-http3'; script = 'Build-QuicGoHttp3Package.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/quic-go-raw'; script = 'Build-QuicGoRawPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/aioquic-http3'; script = 'Build-AioquicHttp3Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/quiche-http3'; script = 'Build-QuicheHttp3Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/ngtcp2-http3'; script = 'Build-Ngtcp2Http3Package.ps1'; arguments = @() },

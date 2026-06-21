@@ -1,0 +1,108 @@
+schemaVersion: "1.0"
+id: quic-go-raw
+name: quic-go Raw QUIC
+description: quic-go raw QUIC transport target for ProtocolLab stream throughput and multiplexing scenarios.
+family: quic-go
+role: server
+targetKind: process
+targetContract: process
+executable: bin/linux-x64/quic-go-raw
+workingDirectory: .
+baseUrl: quic://127.0.0.1:5447/
+protocolBaseUrls:
+  quic: quic://127.0.0.1:5447/
+certificateMode: generated-self-signed-loopback-certificate
+roles:
+  - server
+protocols:
+  - quic
+supportedProtocols:
+  - quic
+supportedWorkloadFamilies:
+  - quic.transport
+supportedProtocolVersions:
+  - quic
+supportedScenarios:
+  - quic.transport.stream-throughput.1mb
+  - quic.transport.multiplex.100x64kb
+supportedTestCaseIds:
+  - quic.transport.stream-throughput.1mb
+  - quic.transport.multiplex.100x64kb
+scenarioCoverage:
+  quic.transport.stream-throughput.1mb:
+    status: supported
+    behavior: client-to-server payload receipt
+  quic.transport.multiplex.100x64kb:
+    status: supported
+    behavior: bidirectional stream echo
+  quic.transport.duplex-streams:
+    status: unsupported
+    reason: Not proven for this package yet.
+  quic.transport.latency.echo-1kb:
+    status: unsupported
+    reason: Not proven for this package yet.
+  quic.transport.stream-limits.100x64kb:
+    status: unsupported
+    reason: Not proven for this package yet.
+  quic.transport.payload.large-1mb:
+    status: unsupported
+    reason: Not proven for this package yet.
+  quic.transport.cancellation.reset-stream:
+    status: unsupported
+    reason: quic-go raw target package does not expose reset/cancellation classification.
+  http3.core.status:
+    status: unsupported
+    reason: Raw QUIC target does not expose HTTP/3 endpoints.
+  http3.payload.bytes.1kb:
+    status: unsupported
+    reason: Raw QUIC target does not expose HTTP/3 endpoints.
+  http3.payload.bytes.64kb:
+    status: unsupported
+    reason: Raw QUIC target does not expose HTTP/3 endpoints.
+  http3.payload.bytes.1mb:
+    status: unsupported
+    reason: Raw QUIC target does not expose HTTP/3 endpoints.
+unsupportedKnownCases:
+  - h1
+  - h2
+  - h2c
+  - h3
+  - websocket
+  - server-sent-events
+ports:
+  - name: quic
+    protocol: udp
+    hostPort: 5447
+    containerPort: 5447
+environment:
+  PLAB_QUIC_PORT: "5447"
+startup:
+  port:
+    name: quic
+    environmentVariable: PLAB_QUIC_PORT
+    default: 5447
+  readiness:
+    protocol: process
+    timeoutSeconds: 10
+readinessCheck:
+  type: processStarted
+  timeoutSeconds: 10
+  startupDelayMilliseconds: 750
+capabilities:
+  - quicTransport
+  - quicStreams
+  - quicMultiplexing
+entrypoint:
+  kind: process
+  path: bin/linux-x64/quic-go-raw
+  arguments: []
+  workingDirectory: .
+artifactExports:
+  - target.stdout.txt
+  - target.stderr.txt
+  - target-execution.json
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata:
+  manifest: protocol-lab.internal.json
+notes: Server-only raw QUIC package. Keep separate from quic-go HTTP/3 and quic-go raw load executor packages.

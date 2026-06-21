@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.quic-go-raw",
+  "packageVersion": "0.1.1",
+  "kind": "implementation",
+  "displayName": "quic-go Raw QUIC Implementation",
+  "entryManifests": [
+    "implementations/quic-go-raw.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "quic-go-raw",
+      "displayName": "quic-go Raw QUIC",
+      "protocols": [
+        "quic"
+      ],
+      "scenarios": [
+        "quic.transport.stream-throughput.1mb",
+        "quic.transport.multiplex.100x64kb"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "quic",
+        "value": "true"
+      }
+    ]
+  }
+}
