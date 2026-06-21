@@ -2,7 +2,7 @@ schemaVersion: protocol-lab-test-executor-v1
 executor:
   id: h3spec-http3-qpack
   displayName: h3spec HTTP/3 and QPACK Test Executor
-  version: 0.1.4
+  version: 0.1.5
   protocolFamilies:
     - h3
   modes:
@@ -18,18 +18,21 @@ executor:
     - http3.headers.response-headers-50x32
     - http3.protocol.qpack-repeated-headers
   scenarioCoverage:
-    raw-quic:
+    quic.transport.stream-throughput.1mb:
       status: unsupported
       reason: h3spec drives HTTP/3 and QPACK conformance checks, not raw QUIC transport load.
-    http3-1kb:
+    quic.transport.multiplex.100x64kb:
+      status: unsupported
+      reason: h3spec drives HTTP/3 and QPACK conformance checks, not raw QUIC transport load.
+    http3.payload.bytes.1kb:
       status: compatible-target-unproven
       scenarioId: http3.payload.bytes.1kb
       reason: Executor can target an HTTP/3 endpoint but does not measure byte payload scenarios.
-    http3-64kb:
+    http3.payload.bytes.64kb:
       status: compatible-target-unproven
       scenarioId: http3.payload.bytes.64kb
       reason: Executor can target an HTTP/3 endpoint but does not measure byte payload scenarios.
-    http3-large-body:
+    http3.payload.bytes.1mb:
       status: compatible-target-unproven
       scenarioId: http3.payload.bytes.1mb
       reason: Executor can target an HTTP/3 endpoint but does not measure byte payload scenarios.

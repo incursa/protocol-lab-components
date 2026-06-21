@@ -51,18 +51,24 @@ supportedTestCaseIds:
   - http3.websocket.rfc9220.binary-echo
   - http3.websocket.rfc9220.close
 scenarioCoverage:
-  raw-quic:
+  quic.transport.stream-throughput.1mb:
     status: unsupported
     reason: aioquic is packaged here as an HTTP/3 peer, not a raw QUIC transport target.
-  http3-1kb:
+  quic.transport.multiplex.100x64kb:
+    status: unsupported
+    reason: aioquic is packaged here as an HTTP/3 peer, not a raw QUIC transport target.
+  http3.core.status:
+    status: supported
+    endpoint: /status
+  http3.payload.bytes.1kb:
     status: supported
     scenarioId: http3.payload.bytes.1kb
     evidence: get-small external peer rows passed for client and server roles.
-  http3-64kb:
+  http3.payload.bytes.64kb:
     status: unproven
     scenarioId: http3.payload.bytes.64kb
     reason: No package-backed 64KB row is promoted for aioquic 1.3.0.
-  http3-large-body:
+  http3.payload.bytes.1mb:
     status: unsupported
     scenarioId: http3.payload.bytes.1mb
     reason: aioquic 1.3.0 large-body response completion stalls were observed.

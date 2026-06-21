@@ -1,15 +1,17 @@
 executorIdentity:
   id: curl-http3-client
   name: curl HTTP/3 Client Test Executor
-  version: 0.1.0
+  version: 0.1.1
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.0
+  executorVersion: 0.1.1
 claimedCapabilities:
   - id: http3.core.status
+    status: supported
+  - id: http3.payload.bytes.1kb
     status: supported
   - id: http3.payload.bytes.64kb
     status: supported
@@ -29,6 +31,8 @@ supportedTestSelectors:
   - selectorType: test-id
     expression: http3.core.status
   - selectorType: test-id
+    expression: http3.payload.bytes.1kb
+  - selectorType: test-id
     expression: http3.payload.bytes.64kb
   - selectorType: test-id
     expression: http3.payload.bytes.1mb
@@ -39,6 +43,8 @@ supportedTestSelectors:
 supportedScenarioSelectors:
   - selectorType: scenario-id
     expression: http3.core.status
+  - selectorType: scenario-id
+    expression: http3.payload.bytes.1kb
   - selectorType: scenario-id
     expression: http3.payload.bytes.64kb
   - selectorType: scenario-id

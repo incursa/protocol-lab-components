@@ -29,27 +29,31 @@ supportedProtocolVersions:
   - http/3
 supportedScenarios:
   - http3.core.status
-  - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
 supportedTestCaseIds:
   - http3.core.status
-  - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
 scenarioCoverage:
-  raw-quic:
+  quic.transport.stream-throughput.1mb:
     status: unsupported
     reason: quiche is packaged here as an HTTP/3 peer, not a raw QUIC transport target.
-  http3-1kb:
+  quic.transport.multiplex.100x64kb:
+    status: unsupported
+    reason: quiche is packaged here as an HTTP/3 peer, not a raw QUIC transport target.
+  http3.core.status:
+    status: supported
+    endpoint: /status
+  http3.payload.bytes.1kb:
     status: validation-failed
     scenarioId: http3.payload.bytes.1kb
     evidence: C:/src/incursa/protocol-lab-internal/.artifacts/runs/scenario-declarations-quiche-1kb-final-h3-local-v1
     reason: Package-backed Docker target serves /bytes/1024 over H3 and returns status 200 with 1024 bytes, but quiche-server omits content-type; the official ProtocolLab 1KB row is not accepted.
-  http3-64kb:
+  http3.payload.bytes.64kb:
     status: supported
     scenarioId: http3.payload.bytes.64kb
-  http3-large-body:
+  http3.payload.bytes.1mb:
     status: supported
     scenarioId: http3.payload.bytes.1mb
     evidence: get-large external peer rows passed for client and server paths.

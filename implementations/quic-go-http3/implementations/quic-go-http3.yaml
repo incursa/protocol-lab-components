@@ -44,18 +44,24 @@ supportedTestCaseIds:
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
 scenarioCoverage:
-  raw-quic:
+  quic.transport.stream-throughput.1mb:
     status: unsupported
     reason: quic-go is packaged here as an HTTP/3 server, not a raw QUIC transport target.
-  http3-1kb:
+  quic.transport.multiplex.100x64kb:
+    status: unsupported
+    reason: quic-go is packaged here as an HTTP/3 server, not a raw QUIC transport target.
+  http3.core.status:
+    status: supported
+    endpoint: /status
+  http3.payload.bytes.1kb:
     status: supported
     scenarioId: http3.payload.bytes.1kb
     endpoint: /bytes/1024
-  http3-64kb:
+  http3.payload.bytes.64kb:
     status: supported
     scenarioId: http3.payload.bytes.64kb
     endpoint: /bytes/65536
-  http3-large-body:
+  http3.payload.bytes.1mb:
     status: supported
     scenarioId: http3.payload.bytes.1mb
     endpoint: /bytes/1048576

@@ -6,7 +6,7 @@
 
 - Protocol family: `h3`
 - Roles: client and server
-- Public scenarios declared for runner classification: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`
+- Public scenarios declared for runner classification: `http3.core.status`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`
 - Official 1KB row status: validation-failed; package-backed Docker target serves `/bytes/1024` over H3 with 200/1024 bytes, but `wsslserver` emits `text/plain`.
 - Stable external interop scenarios: `get-small`, `get-empty`, `get-large`, `not-found`
 

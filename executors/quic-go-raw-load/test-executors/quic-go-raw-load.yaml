@@ -1,13 +1,13 @@
 executorIdentity:
   id: quic-go-raw-load
   name: quic-go Raw QUIC Load Executor
-  version: 0.1.0
+  version: 0.1.1
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.0
+  executorVersion: 0.1.1
 claimedCapabilities:
   - id: quic.transport.stream-throughput.1mb
     status: supported
@@ -51,22 +51,25 @@ supportedScenarioSelectors:
   - selectorType: scenario-id
     expression: quic.transport.duplex-streams
 scenarioCoverage:
-  raw-quic:
+  quic.transport.stream-throughput.1mb:
     status: supported
-    scenarios:
-      - quic.transport.stream-throughput.1mb
-      - quic.transport.latency.echo-1kb
-      - quic.transport.multiplex.100x64kb
-      - quic.transport.stream-limits.100x64kb
-      - quic.transport.payload.large-1mb
-      - quic.transport.duplex-streams
-  http3-1kb:
+  quic.transport.latency.echo-1kb:
+    status: supported
+  quic.transport.multiplex.100x64kb:
+    status: supported
+  quic.transport.stream-limits.100x64kb:
+    status: supported
+  quic.transport.payload.large-1mb:
+    status: supported
+  quic.transport.duplex-streams:
+    status: supported
+  http3.payload.bytes.1kb:
     status: unsupported
     reason: Raw QUIC executor does not drive HTTP/3 application requests.
-  http3-64kb:
+  http3.payload.bytes.64kb:
     status: unsupported
     reason: Raw QUIC executor does not drive HTTP/3 application requests.
-  http3-large-body:
+  http3.payload.bytes.1mb:
     status: unsupported
     reason: Raw QUIC executor does not drive HTTP/3 application requests.
   http3-header-heavy-qpack:

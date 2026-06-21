@@ -62,18 +62,24 @@ supportedScenarios:
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
 scenarioCoverage:
-  raw-quic:
+  quic.transport.stream-throughput.1mb:
     status: unsupported
     reason: Kestrel package is HTTP/3 only; raw QUIC remains owned by quic-dotnet implementation packages.
-  http3-1kb:
+  quic.transport.multiplex.100x64kb:
+    status: unsupported
+    reason: Kestrel package is HTTP/3 only; raw QUIC remains owned by quic-dotnet implementation packages.
+  http3.core.status:
+    status: supported
+    endpoint: /status
+  http3.payload.bytes.1kb:
     status: supported
     scenarioId: http3.payload.bytes.1kb
     endpoint: /bytes/1024
-  http3-64kb:
+  http3.payload.bytes.64kb:
     status: supported
     scenarioId: http3.payload.bytes.64kb
     endpoint: /bytes/65536
-  http3-large-body:
+  http3.payload.bytes.1mb:
     status: supported
     scenarioId: http3.payload.bytes.1mb
     endpoint: /bytes/1048576

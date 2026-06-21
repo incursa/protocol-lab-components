@@ -33,7 +33,7 @@ pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1 -RuntimeIdentifier linux-x
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.executor.quic-go-raw-load.0.1.0.<rid>.plabpkg
+org.protocol-lab.components.executor.quic-go-raw-load.0.1.1.<rid>.plabpkg
 ```
 
 ## Local Wrapper

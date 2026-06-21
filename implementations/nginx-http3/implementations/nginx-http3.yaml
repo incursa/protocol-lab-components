@@ -36,18 +36,21 @@ supportedTestCaseIds:
   - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
 scenarioCoverage:
-  raw-quic:
+  quic.transport.stream-throughput.1mb:
     status: unsupported
     reason: nginx is packaged here as an HTTP/3 server, not a raw QUIC transport target.
-  http3-status:
+  quic.transport.multiplex.100x64kb:
+    status: unsupported
+    reason: nginx is packaged here as an HTTP/3 server, not a raw QUIC transport target.
+  http3.core.status:
     status: supported
     scenarioId: http3.core.status
     endpoint: /status
-  http3-1kb:
+  http3.payload.bytes.1kb:
     status: supported
     scenarioId: http3.payload.bytes.1kb
     endpoint: /bytes/1024
-  http3-64kb:
+  http3.payload.bytes.64kb:
     status: supported
     scenarioId: http3.payload.bytes.64kb
     endpoint: /bytes/65536
@@ -56,7 +59,7 @@ scenarioCoverage:
     externalScenarioId: not-found
     endpoint: /not-found
     expectedStatus: 404
-  http3-large-body:
+  http3.payload.bytes.1mb:
     status: skipped
     scenarioId: http3.payload.bytes.1mb
     reason: 1 MB response endpoint is not promoted until package-backed live proof covers the nginx package row.

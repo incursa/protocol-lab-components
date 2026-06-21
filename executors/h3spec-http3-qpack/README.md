@@ -7,7 +7,7 @@ The executor does not start the target server. A controller or local operator mu
 ## Package
 
 - Package ID: `org.protocol-lab.components.executor.h3spec-http3-qpack`
-- Package version: `0.1.0`
+- Package version: `0.1.5`
 - Executor ID: `h3spec-http3-qpack`
 - Tool: h3spec `v0.1.13`
 - Default wrapper image: `ubuntu:24.04`
