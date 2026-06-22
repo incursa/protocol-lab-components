@@ -1,82 +1,128 @@
-schemaVersion: protocol-lab-test-executor-v1
-executor:
+executorIdentity:
   id: h3spec-http3-qpack
-  displayName: h3spec HTTP/3 and QPACK Test Executor
+  name: h3spec HTTP/3 and QPACK Test Executor
   version: 0.1.5
-  protocolFamilies:
-    - h3
-  modes:
-    - single-cell
-    - docker
-  claimedCapabilities:
-    h3spec.http3: supported
-    h3spec.qpack: supported
-    h3spec.no-selected-cases-classification: supported
-    target-server-lifecycle: unsupported
-  supportedScenarioSelectors:
-    - http3.core.status
-    - http3.headers.response-headers-50x32
-    - http3.protocol.qpack-repeated-headers
-  scenarioCoverage:
-    quic.transport.stream-throughput.1mb:
-      status: unsupported
+  vendor: Incursa
+versionCompatibility:
+  contractVersion: test-executor-v1
+  compatibleContractVersions:
+    - test-executor-v1
+  executorVersion: 0.1.5
+claimedCapabilities:
+  - id: h3spec.http3
+    status: supported
+  - id: h3spec.qpack
+    status: supported
+  - id: h3spec.no-selected-cases-classification
+    status: supported
+  - id: target-server-lifecycle
+    status: unsupported
+    metadata:
+      reason: h3spec targets an already prepared HTTP/3 endpoint.
+  - id: quic.transport.stream-throughput.1mb
+    status: unsupported
+    metadata:
       reason: h3spec drives HTTP/3 and QPACK conformance checks, not raw QUIC transport load.
-    quic.transport.multiplex.100x64kb:
-      status: unsupported
+  - id: quic.transport.multiplex.100x64kb
+    status: unsupported
+    metadata:
       reason: h3spec drives HTTP/3 and QPACK conformance checks, not raw QUIC transport load.
-    http3.payload.bytes.1kb:
-      status: compatible-target-unproven
-      scenarioId: http3.payload.bytes.1kb
-      reason: Executor can target an HTTP/3 endpoint but does not measure byte payload scenarios.
-    http3.payload.bytes.64kb:
-      status: compatible-target-unproven
-      scenarioId: http3.payload.bytes.64kb
-      reason: Executor can target an HTTP/3 endpoint but does not measure byte payload scenarios.
-    http3.payload.bytes.1mb:
-      status: compatible-target-unproven
-      scenarioId: http3.payload.bytes.1mb
-      reason: Executor can target an HTTP/3 endpoint but does not measure byte payload scenarios.
-    http3-header-heavy-qpack:
-      status: supported
-      scenarioId: http3.protocol.qpack-repeated-headers
-    websocket-over-h3:
-      status: unsupported
+  - id: websocket-over-h3
+    status: unsupported
+    metadata:
       reason: h3spec package does not execute RFC9220 WebSocket-over-H3 checks.
-    h3spec-qpack-executor:
-      status: supported
-      tests:
-        - h3spec.http3
-        - h3spec.qpack
-        - http3.core.status
-        - http3.headers.response-headers-50x32
-        - http3.protocol.qpack-repeated-headers
-  supportedTestSelectors:
-    - full
-    - focused
-    - qpack
-    - h3spec.http3
-    - h3spec.qpack
-    - http3.core.status
-    - http3.headers.response-headers-50x32
-    - http3.protocol.qpack-repeated-headers
-    - match:HTTP/3
-    - match:QPACK
-  entrypoints:
-    windows:
-      shell: pwsh
-      path: execute.ps1
-      arguments: []
-    linux:
-      shell: bash
-      path: execute.sh
-      arguments: []
-  artifacts:
-    - artifacts/h3spec-http3-qpack/h3spec-metadata.json
-    - artifacts/h3spec-http3-qpack/h3spec-results.json
-    - artifacts/h3spec-http3-qpack/h3spec-report.md
-    - artifacts/h3spec-http3-qpack/h3spec-stdout.txt
-    - artifacts/h3spec-http3-qpack/h3spec-stderr.txt
-  telemetry:
-    resultSummary: artifacts/h3spec-http3-qpack/h3spec-results.json
-    rawStdout: artifacts/h3spec-http3-qpack/h3spec-stdout.txt
-    rawStderr: artifacts/h3spec-http3-qpack/h3spec-stderr.txt
+supportedTestSelectors:
+  - selectorType: test-id
+    expression: full
+  - selectorType: test-id
+    expression: focused
+  - selectorType: test-id
+    expression: qpack
+  - selectorType: test-id
+    expression: h3spec.http3
+  - selectorType: test-id
+    expression: h3spec.qpack
+  - selectorType: test-id
+    expression: http3.core.status
+  - selectorType: test-id
+    expression: http3.headers.response-headers-50x32
+  - selectorType: test-id
+    expression: http3.protocol.qpack-repeated-headers
+  - selectorType: match
+    expression: HTTP/3
+  - selectorType: match
+    expression: QPACK
+supportedScenarioSelectors:
+  - selectorType: scenario-id
+    expression: http3.core.status
+  - selectorType: scenario-id
+    expression: http3.headers.response-headers-50x32
+  - selectorType: scenario-id
+    expression: http3.protocol.qpack-repeated-headers
+  - selectorType: scenario-id
+    expression: http3.payload.bytes.1kb
+    metadata:
+      status: compatible-target-unproven
+      reason: Executor can target an HTTP/3 endpoint but does not measure byte payload scenarios.
+  - selectorType: scenario-id
+    expression: http3.payload.bytes.64kb
+    metadata:
+      status: compatible-target-unproven
+      reason: Executor can target an HTTP/3 endpoint but does not measure byte payload scenarios.
+  - selectorType: scenario-id
+    expression: http3.payload.bytes.1mb
+    metadata:
+      status: compatible-target-unproven
+      reason: Executor can target an HTTP/3 endpoint but does not measure byte payload scenarios.
+supportedProtocolFamilies:
+  - h3
+supportedExecutionModes:
+  - single-cell
+  - docker
+requiredTargetEndpointBindings:
+  - bindingId: primary
+    purpose: test-endpoint
+    endpointType: http
+    protocols:
+      - h3
+supportedArtifactTypes:
+  - type: h3spec-metadata.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: h3spec-results.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: h3spec-report.md
+    producedByStates:
+      - stopped
+      - failed
+  - type: h3spec-stdout.txt
+    producedByStates:
+      - stopped
+      - failed
+  - type: h3spec-stderr.txt
+    producedByStates:
+      - stopped
+      - failed
+metricsAvailability:
+  available: true
+  availableKinds:
+    - validation
+    - summary
+telemetry:
+  supported: true
+  supported_contract_versions:
+    - telemetry-bundle-v1
+  supported_scopes:
+    - test-executor
+  supported_artifact_kinds:
+    - summary
+    - stdout
+    - stderr
+    - raw
+  export_modes:
+    - artifact-bundle
+executionMetadata:
+  manifest: protocol-lab.internal.json
