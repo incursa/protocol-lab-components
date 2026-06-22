@@ -265,6 +265,7 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'executors/go-http1-executor'; script = 'Build-GoHttp1ExecutorPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'executors/h3spec-http3-qpack'; script = 'Build-H3SpecHttp3QpackPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'scenarios/h3spec-http3-qpack'; script = 'Build-H3SpecHttp3QpackScenarioPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'scenarios/http3-peer-characterization'; script = 'Build-Http3PeerCharacterizationScenarioPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'executors/aioquic-rfc9220-websocket'; script = 'Build-AioquicRfc9220WebSocketPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'scenarios/aioquic-rfc9220-websocket'; script = 'Build-AioquicRfc9220WebSocketScenarioPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'executors/quic-go-raw-load'; script = 'Build-QuicGoRawLoadPackage.ps1'; arguments = @('win-x64') },

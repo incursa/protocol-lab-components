@@ -9,12 +9,14 @@ This matrix tracks reusable component package coverage for implementations and e
 | Source | Observed entries |
 | --- | --- |
 | Component packages before this change | `aioquic-http3`, `quiche-http3`, `ngtcp2-http3`, `kestrel-http3`, `quic-go-http3`, `quic-go-raw-load`, `h3spec-http3-qpack`, `aioquic-rfc9220-websocket`, plus HTTP/1 packages and the raw QUIC scenario pack |
-| Scenario packs added for controller selection | `h3spec-http3-qpack` and `aioquic-rfc9220-websocket` focused scenario packs |
+| Scenario packs added for controller selection | `h3spec-http3-qpack`, `http3-peer-characterization`, and `aioquic-rfc9220-websocket` focused scenario packs |
 | Public site implementation catalog | `kestrel-http3`, `incursa-http3`, `msquic-dotnet`, `caddy-http3`, `nginx-http3`, and planned `quic-go-http3` entry |
-| Live controller inventory after Caddy publication | 214 package records; `org.protocol-lab.components.implementation.caddy-http3` versions through final `0.1.4` are installed/selectable |
+| Live controller inventory after Caddy/nginx correction | `org.protocol-lab.components.implementation.caddy-http3` and `org.protocol-lab.components.implementation.nginx-http3` versions through final `0.1.7` are installed/selectable |
 | Live controller final quic-go proof | `job-020c0660877243b0b970578c139aefe2`; H3 1KB validation passed, benchmark succeeded, package-backed provenance recorded |
 | Live controller final quic-go raw proof | `job-43983c8c7a35400fa54767ba0be66045`; raw stream throughput and multiplex validation passed, benchmark succeeded, package-backed provenance recorded |
 | Live controller final Caddy proof | `job-c92b1918b59846018dcc808babd58730`; H3 status, 1KB, and 64KB validation passed, benchmark succeeded, package-backed provenance recorded |
+| Live controller final Caddy/nginx correction proof | `job-e30007af97354306ab7d34abbbbbab4a`; Caddy and nginx H3 status, 1KB, and 64KB validation passed, benchmark succeeded with final `0.1.7` packages; controller-host publication lacked `CLOUDFLARE_API_TOKEN`, so the staged bundle was uploaded with local Wrangler auth, queued, imported into D1, and appeared on live 1KB/64KB leaderboards |
+| Live controller peer characterization attempt | `job-8f658e39aa0446a0a05240d580daed64`; preview selected two runnable diagnostic cells for quiche `0.1.5` and ngtcp2 `0.1.4`, but the job was cancelled after remaining in `running-benchmark` on quiche cell 1 with zero completed cells |
 | Local source-context implementations | `quic-dotnet-dev`, `quic-dotnet-raw-dev`, `msquic-dotnet-raw-adapter-v1`, `incursa-http3` remain implementation-owned outside this repository |
 
 ## Before And After
@@ -35,6 +37,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | `h3spec-http3-qpack` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
 | `aioquic-rfc9220-websocket` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
 | `h3spec-http3-qpack` scenario pack | missing | added `org.protocol-lab.components.scenario.h3spec-http3-qpack` with suite `h3spec-http3-qpack-focused` bound to `h3spec-http3-qpack` |
+| `http3-peer-characterization` scenario pack | missing | added `org.protocol-lab.components.scenario.http3-peer-characterization` with suite `http3-peer-characterization` for diagnostic external peer rows |
 | `aioquic-rfc9220-websocket` scenario pack | missing | added `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket` with suite `aioquic-rfc9220-websocket-proof` bound to `aioquic-rfc9220-websocket` |
 
 ## Scenario Support
@@ -44,9 +47,9 @@ This matrix tracks reusable component package coverage for implementations and e
 | `kestrel-http3` | unsupported | supported | supported | supported | unsupported | unsupported | compatible target, unproven |
 | `caddy-http3` | unsupported | supported, live proof | supported, live proof | unsupported | unsupported | unsupported | compatible target, unproven |
 | `nginx-http3` | unsupported | supported, live proof | supported, live proof | skipped pending broader fixture promotion | unsupported | unsupported | compatible target, unproven |
-| `aioquic-http3` | unsupported | supported | unproven | unsupported | supported metadata | executor-only via separate package | compatible target, unproven |
-| `quiche-http3` | unsupported | validation-failed | supported | supported | client-only | unsupported | compatible target, unproven |
-| `ngtcp2-http3` | unsupported | validation-failed | supported | supported | client-only | unsupported | compatible target, unproven |
+| `aioquic-http3` | unsupported | supported | unproven | unsupported | supported metadata | supported via RFC9220 endpoint and executor | compatible target, unproven |
+| `quiche-http3` | unsupported | validation-failed; characterization supported | validation-failed; characterization supported | validation-failed; characterization supported | client-only | unsupported | compatible target, unproven |
+| `ngtcp2-http3` | unsupported | validation-failed; characterization supported | validation-failed; characterization supported | validation-failed; characterization supported | client-only | unsupported | compatible target, unproven |
 | `quic-go-http3` | unsupported | supported, live proof | supported metadata | supported metadata | unsupported | unsupported | compatible target, unproven |
 | `quic-go-raw` | supported target for stream throughput and multiplex only, live proof | unsupported | unsupported | unsupported | unsupported | unsupported | unsupported |
 | `quic-go-raw-load` | supported executor | unsupported | unsupported | unsupported | unsupported | unsupported | unsupported |
@@ -69,24 +72,28 @@ This matrix tracks reusable component package coverage for implementations and e
 | `org.protocol-lab.components.implementation.kestrel-http3` | `implementations/kestrel-http3` |
 | `org.protocol-lab.components.executor.quic-go-raw-load` | `executors/quic-go-raw-load` |
 | `org.protocol-lab.components.executor.h3spec-http3-qpack` | `executors/h3spec-http3-qpack` |
+| `org.protocol-lab.components.executor.curl-http3-client` | `executors/curl-http3-client` |
 | `org.protocol-lab.components.executor.aioquic-rfc9220-websocket` | `executors/aioquic-rfc9220-websocket` |
 | `org.protocol-lab.components.scenario.raw-quic-transport` | `scenarios/raw-quic-transport` |
 | `org.protocol-lab.components.scenario.h3spec-http3-qpack` | `scenarios/h3spec-http3-qpack` |
+| `org.protocol-lab.components.scenario.http3-peer-characterization` | `scenarios/http3-peer-characterization` |
 | `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket` | `scenarios/aioquic-rfc9220-websocket` |
 
 ## Registered Package
 
 | Package | Version | SHA-256 | Controller status |
 | --- | --- | --- | --- |
-| `org.protocol-lab.components.implementation.caddy-http3` | `0.1.4` | `cf5d9af7e4daa09fadf2e2a74387b8f29c994764f5cc6bf3afa8ced99576783d` | admitted, installed, selectable; live package-backed H3 status, 1KB, and 64KB smoke passed in `job-c92b1918b59846018dcc808babd58730` |
-| `org.protocol-lab.components.implementation.nginx-http3` | `0.1.4` | `f7a29eaeb8060d10d02a28df53428c501e446678bbe4524c360da190b1056ef5` | admitted, installed, selectable; live package-backed H3 status, 1KB, and 64KB smoke passed in `job-02ecc4eb59124657b13ea0f9d2bbd428` |
-| `org.protocol-lab.components.implementation.quic-go-http3` | `0.1.3` | `8823bf16784e017ab4c953e0232dc6e618d3fd19b707322582d097c02d6d0f55` | admitted, installed, selectable; live package-backed H3 1KB smoke passed in `job-020c0660877243b0b970578c139aefe2` |
+| `org.protocol-lab.components.implementation.caddy-http3` | `0.1.7` | `96b3c8d1859ef927dcaee0866d4b5b73e35f5a4d61a897a2d35dc8d59f28fa2d` | admitted, installed, selectable; live package-backed H3 status, 1KB, and 64KB smoke passed in `job-e30007af97354306ab7d34abbbbbab4a`; 1MB remains unsupported until package-backed live proof covers it |
+| `org.protocol-lab.components.implementation.nginx-http3` | `0.1.7` | `a1bc60a99a5a8c96684d9ede91b93a0b393f6174b89d9bc8d103759e8d6a9175` | admitted, installed, selectable; live package-backed H3 status, 1KB, and 64KB smoke passed in `job-e30007af97354306ab7d34abbbbbab4a`; 1MB remains skipped/not declared until package-backed live proof covers it |
+| `org.protocol-lab.components.implementation.quic-go-http3` | `0.1.4` | `c8ab6aad32280abd3da20ce5c6a0422eb8c23147c9423387b274150ffba534a1` | admitted, installed, selectable; prior live package-backed H3 1KB smoke passed with `0.1.3` in `job-020c0660877243b0b970578c139aefe2`; rerun `0.1.4` before claiming updated live proof |
 | `org.protocol-lab.components.implementation.quic-go-raw` | `0.1.1` | `93d7127beacc812de5042cc6b8f51d7681c6b6f378ead7dd730ab25f6e3d598c` | admitted, installed, selectable; live package-backed raw stream throughput and multiplex smoke passed in `job-43983c8c7a35400fa54767ba0be66045` |
-| `org.protocol-lab.components.implementation.aioquic-http3` | `0.1.6` | `42364df528eec501862ac349bc11124fbd7b38ea0f25d2bb6a27e7390f9b9de6` | admitted, installed, selectable; live package-backed H3 1KB smoke passed in `scenario-declarations-aioquic-1kb-final-h3-local-v1` |
-| `org.protocol-lab.components.implementation.quiche-http3` | `0.1.3` | `cfdf7e506712497032bd7614c32f7bfe7bef5634a383257ead004d92460f512b` | admitted, installed, selectable; live package-backed H3 1KB smoke is validation-failed in `scenario-declarations-quiche-1kb-final-h3-local-v1` because `content-type` is missing |
-| `org.protocol-lab.components.implementation.ngtcp2-http3` | `0.1.2` | `84fcb9cfbffe6ca9e0b1faa5876d49196deb096ca0fc8ecc34689bbc261dcdbb` | admitted, installed, selectable; live package-backed H3 1KB smoke is validation-failed in `scenario-declarations-ngtcp2-1kb-final-h3-local-v1` because `content-type` is `text/plain` |
+| `org.protocol-lab.components.implementation.aioquic-http3` | `0.1.7` | `18c3214b6292756ea5222ae80270b81703218f3644ffd85240bfa1b84690dd02` | admitted, installed, selectable; earlier live package-backed H3 1KB smoke passed with `0.1.6` in `scenario-declarations-aioquic-1kb-final-h3-local-v1`; rerun `0.1.7` before claiming updated live proof |
+| `org.protocol-lab.components.implementation.quiche-http3` | `0.1.5` | `870844a8ce4b36d975d3dcd4de1f12507a53720c395142605b7158ab8fa5c003` | admitted, installed, selectable; official H3 payload rows remain validation-failed because `content-type` is missing; `http3.external.peer-characterization` is the supported package-backed scenario, but `job-8f658e39aa0446a0a05240d580daed64` produced no completed live evidence |
+| `org.protocol-lab.components.implementation.ngtcp2-http3` | `0.1.4` | `339340e1f1bccd3554a904ab661592749dd3922628f7f223492c9a6dbb04a67c` | admitted, installed, selectable; official H3 payload rows remain validation-failed because `content-type` is `text/plain`; `http3.external.peer-characterization` is the supported package-backed scenario, but `job-8f658e39aa0446a0a05240d580daed64` did not reach this cell before cancellation |
+| `org.protocol-lab.components.executor.curl-http3-client` | `0.1.4` | `37b8d5227c67e2ebdb6e5ce7f0dc06ca492d2a1124b38b481719d9ecb13b4a88` | admitted, installed, selectable; supports `http3.external.peer-characterization` as diagnostic executor coverage |
+| `org.protocol-lab.components.scenario.http3-peer-characterization` | `0.1.0` | `0c9d284493d6c2e39035535a6255411e495a135a957f555707e4fd740a7402e8` | admitted, installed, selectable; diagnostic scenario pack, not an official payload benchmark |
 
-The controller also contains earlier immutable `0.1.0`, `0.1.1`, and `0.1.2` uploads for `org.protocol-lab.components.implementation.caddy-http3` from the Caddy registration attempt sequence, earlier nginx `0.1.1` and `0.1.3` uploads from the pre-Docker-worker setup sequence, `0.1.0`, `0.1.1`, and `0.1.2` uploads for `org.protocol-lab.components.implementation.quic-go-http3` from the process/docker correction sequence, an earlier `0.1.0` upload for `org.protocol-lab.components.implementation.quic-go-raw` with the wrong readiness token, earlier `0.1.4` and `0.1.5` uploads for `org.protocol-lab.components.implementation.aioquic-http3`, earlier `0.1.1` and `0.1.2` uploads for `org.protocol-lab.components.implementation.quiche-http3`, and earlier `0.1.1` uploads for `org.protocol-lab.components.implementation.ngtcp2-http3`. Use Caddy `0.1.4`, nginx `0.1.4`, quic-go HTTP/3 `0.1.3`, quic-go raw `0.1.1`, aioquic `0.1.6`, quiche `0.1.3`, and ngtcp2 `0.1.2` as the final package versions from this repository state.
+The controller also contains earlier immutable `0.1.0`, `0.1.1`, `0.1.2`, `0.1.4`, `0.1.5`, and overbroad `0.1.6` uploads for `org.protocol-lab.components.implementation.caddy-http3`, earlier nginx `0.1.1`, `0.1.3`, `0.1.4`, `0.1.5`, and overbroad `0.1.6` uploads, `0.1.0`, `0.1.1`, `0.1.2`, and `0.1.3` uploads for `org.protocol-lab.components.implementation.quic-go-http3` from the process/docker correction sequence, an earlier `0.1.0` upload for `org.protocol-lab.components.implementation.quic-go-raw` with the wrong readiness token, earlier `0.1.4`, `0.1.5`, and `0.1.6` uploads for `org.protocol-lab.components.implementation.aioquic-http3`, earlier `0.1.1`, `0.1.2`, and `0.1.3` uploads for `org.protocol-lab.components.implementation.quiche-http3`, and earlier `0.1.1` and `0.1.2` uploads for `org.protocol-lab.components.implementation.ngtcp2-http3`. Do not use the Caddy/nginx `0.1.6` uploads for ranking: they declared 1MB but the live worker could not prove those rows because the matching target images were not available. Use Caddy `0.1.7` and nginx `0.1.7` for the Caddy/nginx rows from this pass; quic-go HTTP/3 `0.1.4`, aioquic `0.1.7`, quiche `0.1.5`, ngtcp2 `0.1.4`, curl `0.1.4`, and `http3-peer-characterization` `0.1.0` are admitted/selectable, but only the rows with completed jobs above have live proof.
 
 ## Remaining Ranked Gaps
 

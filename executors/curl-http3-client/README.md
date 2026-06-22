@@ -6,7 +6,8 @@
 
 - Protocol family: `h3`
 - Role: client test executor
-- Public scenarios/tests: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`
+- Public scenarios/tests: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`, `http3.external.peer-characterization`
+- Characterization support: `http3.external.peer-characterization` is diagnostic external-peer evidence and is not an official payload benchmark.
 - External interop scenarios: `get-small`, `get-empty`, `get-large`, `not-found`, `many-headers`, `split-data`
 
 ## Pinned Peer Image

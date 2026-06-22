@@ -32,10 +32,6 @@
       {
         "name": "docker",
         "value": "true"
-      },
-      {
-        "name": "curl-http3",
-        "value": "true"
       }
     ],
     "images": [

@@ -1,0 +1,25 @@
+id: http3-peer-characterization
+name: ProtocolLab HTTP/3 peer characterization
+description: Diagnostic HTTP/3 external peer characterization selection for package-backed implementation rows that are useful as interop evidence but are not official payload benchmarks.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: diagnostic
+scenarios:
+  - http3.external.peer-characterization
+protocol: h3
+defaults:
+  durationSeconds: 10
+  warmupSeconds: 1
+  repetitions: 1
+  connections: 1
+  streamsPerConnection: 1
+counterCapture:
+  enabledByDefault: true
+  tool: ""
+notes: Peer-characterization evidence remains diagnostic and must not be ranked on official HTTP/3 payload leaderboards.
+tags:
+  - http3
+  - h3
+  - external-peer
+  - characterization
+  - diagnostic

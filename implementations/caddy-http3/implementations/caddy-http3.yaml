@@ -56,7 +56,7 @@ scenarioCoverage:
   http3.payload.bytes.1mb:
     status: unsupported
     scenarioId: http3.payload.bytes.1mb
-    reason: 1 MB response endpoint is not promoted until controller validation covers the Caddy package row.
+    reason: 1 MB response endpoint is not promoted until a package-backed live controller row validates it.
   http3-header-heavy-qpack:
     status: unsupported
     scenarioId: http3.headers.response-headers-50x32

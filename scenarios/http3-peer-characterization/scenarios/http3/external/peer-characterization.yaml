@@ -1,0 +1,84 @@
+schemaVersion: "1.0"
+id: http3.external.peer-characterization
+title: HTTP/3 External Peer Characterization
+name: HTTP/3 External Peer Characterization
+family: http3.external
+description: Characterize HTTP/3 peer interoperability with package-backed external implementations using smoke requests and diagnostic artifacts. This scenario records useful peer behavior but is not an official payload benchmark.
+status: experimental
+kind: interopValidation
+layer: protocol
+protocol: h3
+roles:
+  - client
+  - server
+requires:
+  capabilities:
+    - h3.client
+    - h3.server
+    - external-peer
+  protocols:
+    - h3
+  roles:
+    - client
+    - server
+trafficShape: request-response
+implementationRole: server
+requiredCapabilities:
+  - h3ExternalPeer
+endpoint:
+  method: GET
+  path: /
+  query: {}
+  requestHeaders: {}
+  requestBodyGeneration: none
+  expectedStatus: 200
+validation:
+  required: true
+  checks:
+    - peer-handshake
+    - response-status
+    - protocol:h3
+  http:
+    expectedStatus: 200
+    expectedProtocol: h3
+  http3:
+    requireAlpn: h3
+benchmarkCompat:
+  compatibleLoadShapes:
+    - smoke
+    - diagnostic
+  primaryMetrics: []
+  notes: Characterization rows are diagnostic interoperability evidence and must not be ranked as official http3.payload.* benchmark rows.
+artifacts:
+  required:
+    - validation.json
+    - result.json
+    - executor.stdout.txt
+    - executor.stderr.txt
+  optional:
+    - peer-tool-manifest.json
+    - response-sample
+    - protocol-diagnostic-artifact
+    - qlog
+    - sslkeylog
+comparability:
+  requires:
+    - exact external peer scenario
+    - declared implementation package provenance
+    - declared test executor package provenance
+    - diagnostic disclosure
+  notes: Compare peer-characterization rows only with other http3.external.peer-characterization rows that use compatible peers, executor behavior, network profile, and load profile.
+networkProfile: clean
+requiredMetrics: []
+artifactRequirements:
+  - validation.json
+  - result.json
+  - executor.stdout.txt
+  - executor.stderr.txt
+tags:
+  - http
+  - h3
+  - http3
+  - external-peer
+  - characterization
+  - diagnostic

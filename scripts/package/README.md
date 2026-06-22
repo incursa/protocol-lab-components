@@ -48,6 +48,7 @@ pwsh ./scripts/package/Build-QuicheHttp3Package.ps1
 pwsh ./scripts/package/Build-Ngtcp2Http3Package.ps1
 pwsh ./scripts/package/Build-AioquicRfc9220WebSocketScenarioPackage.ps1
 pwsh ./scripts/package/Build-H3SpecHttp3QpackScenarioPackage.ps1
+pwsh ./scripts/package/Build-Http3PeerCharacterizationScenarioPackage.ps1
 pwsh ./scripts/package/Build-RawQuicScenarioPackage.ps1
 pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1
 ```

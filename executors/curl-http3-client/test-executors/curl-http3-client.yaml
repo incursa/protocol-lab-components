@@ -1,13 +1,13 @@
 executorIdentity:
   id: curl-http3-client
   name: curl HTTP/3 Client Test Executor
-  version: 0.1.1
+  version: 0.1.4
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.1
+  executorVersion: 0.1.4
 claimedCapabilities:
   - id: http3.core.status
     status: supported
@@ -21,12 +21,19 @@ claimedCapabilities:
     status: supported
   - id: http3.protocol.qpack-repeated-headers
     status: supported
+  - id: http3.external.peer-characterization
+    status: supported
   - id: h1
     status: unsupported
   - id: h2
     status: unsupported
   - id: server-role
     status: unsupported
+scenarioCoverage:
+  http3.external.peer-characterization:
+    scenarioId: http3.external.peer-characterization
+    status: supported
+    reason: diagnostic external peer characterization rows are supported by the curl HTTP/3 client wrapper and must not be interpreted as official payload benchmark support.
 supportedTestSelectors:
   - selectorType: test-id
     expression: http3.core.status
@@ -40,6 +47,8 @@ supportedTestSelectors:
     expression: http3.headers.response-headers-50x32
   - selectorType: test-id
     expression: http3.protocol.qpack-repeated-headers
+  - selectorType: test-id
+    expression: http3.external.peer-characterization
 supportedScenarioSelectors:
   - selectorType: scenario-id
     expression: http3.core.status
@@ -53,6 +62,8 @@ supportedScenarioSelectors:
     expression: http3.headers.response-headers-50x32
   - selectorType: scenario-id
     expression: http3.protocol.qpack-repeated-headers
+  - selectorType: scenario-id
+    expression: http3.external.peer-characterization
 supportedProtocolFamilies:
   - h3
 supportedExecutionModes:

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.caddy-http3",
-  "packageVersion": "0.1.5",
+  "packageVersion": "0.1.7",
   "kind": "implementation",
   "displayName": "Caddy HTTP/3 Implementation",
   "entryManifests": [

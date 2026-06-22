@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.scenario.http3-peer-characterization",
+  "packageVersion": "0.1.0",
+  "kind": "scenario-pack",
+  "displayName": "HTTP/3 Peer Characterization Scenario Pack",
+  "entryManifests": [
+    "scenarios/http3/external/peer-characterization.yaml",
+    "suites/http3-peer-characterization.yaml"
+  ],
+  "providedScenarios": [
+    {
+      "scenarioId": "http3.external.peer-characterization",
+      "displayName": "HTTP/3 External Peer Characterization",
+      "protocols": [
+        "h3"
+      ]
+    }
+  ],
+  "providedSuites": [
+    {
+      "suiteId": "http3-peer-characterization",
+      "displayName": "HTTP/3 peer characterization",
+      "purpose": "diagnostic",
+      "resultKind": "diagnostic",
+      "protocols": [
+        "h3"
+      ],
+      "testExecutors": [
+        "curl-http3-client"
+      ]
+    }
+  ]
+}

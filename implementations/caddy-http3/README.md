@@ -13,7 +13,7 @@
 
 - raw QUIC transport
 - HTTP/1 and HTTP/2 package behavior
-- HTTP/3 large body until package-backed validation covers the row
+- HTTP/3 large body until package-backed live validation covers the row
 - deterministic header-heavy/QPACK fixtures
 - WebSocket-over-H3
 - h3spec/QPACK conformance proof for this target
