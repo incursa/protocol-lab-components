@@ -6,15 +6,18 @@ implementation and from the `quic-go-raw-load` executor package.
 
 Package ID: `org.protocol-lab.components.implementation.quic-go-raw`
 
-Initial supported scenarios:
+Supported scenarios:
 
 - `quic.transport.stream-throughput.1mb`
 - `quic.transport.multiplex.100x64kb`
+- `quic.transport.duplex-streams`
 
 Unsupported until proven:
 
 - HTTP/3 scenarios
-- raw QUIC latency, stream-limit, large-payload, duplex, and cancellation lanes
+- raw QUIC latency, stream-limit, large-payload, and cancellation lanes
+
+The package's 64 KiB echo behavior is the duplex lane proof.
 
 The target listens on `quic://127.0.0.1:5447/` by default, uses ALPN
 `plab-raw-quic`, and honors `PROTOCOL_LAB_TARGET_BIND_ADDRESS`,

@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"io"
+	"reflect"
 	"testing"
 	"time"
 
@@ -32,7 +34,27 @@ func TestParseOptionsUsesProtocolLabBindEnvironment(t *testing.T) {
 	}
 }
 
-func TestServerEchoesMultiplexPayload(t *testing.T) {
+func TestWriteMetadataIncludesSupportedScenarios(t *testing.T) {
+	var buf bytes.Buffer
+
+	writeMetadata(&buf, options{alpn: defaultALPN}, "127.0.0.1:5447")
+
+	var got metadata
+	if err := json.Unmarshal(buf.Bytes(), &got); err != nil {
+		t.Fatalf("json.Unmarshal failed: %v", err)
+	}
+
+	want := []string{
+		"quic.transport.stream-throughput.1mb",
+		"quic.transport.multiplex.100x64kb",
+		"quic.transport.duplex-streams",
+	}
+	if !reflect.DeepEqual(got.SupportedScenarios, want) {
+		t.Fatalf("supportedScenarios = %v, want %v", got.SupportedScenarios, want)
+	}
+}
+
+func TestServerEchoesDuplexPayload(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

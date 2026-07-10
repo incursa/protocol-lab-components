@@ -36,6 +36,11 @@ const (
 )
 
 var quicGoVersion = "v0.60.0"
+var supportedScenarios = []string{
+	"quic.transport.stream-throughput.1mb",
+	"quic.transport.multiplex.100x64kb",
+	"quic.transport.duplex-streams",
+}
 
 type options struct {
 	listen        string
@@ -205,19 +210,16 @@ func handleStream(stream streamReadWriteCloser, opts options) {
 
 func writeMetadata(writer io.Writer, opts options, listen string) {
 	value := metadata{
-		Status:           "ready",
-		ImplementationID: implementationID,
-		PackageID:        packageID,
-		Protocol:         "quic",
-		ALPN:             opts.alpn,
-		Listen:           listen,
-		AdvertiseHost:    opts.advertiseHost,
-		QuicGoVersion:    quicGoVersion,
-		ProcessID:        os.Getpid(),
-		SupportedScenarios: []string{
-			"quic.transport.stream-throughput.1mb",
-			"quic.transport.multiplex.100x64kb",
-		},
+		Status:             "ready",
+		ImplementationID:   implementationID,
+		PackageID:          packageID,
+		Protocol:           "quic",
+		ALPN:               opts.alpn,
+		Listen:             listen,
+		AdvertiseHost:      opts.advertiseHost,
+		QuicGoVersion:      quicGoVersion,
+		ProcessID:          os.Getpid(),
+		SupportedScenarios: supportedScenarios,
 	}
 	_ = json.NewEncoder(writer).Encode(value)
 }
