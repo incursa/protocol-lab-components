@@ -1,7 +1,7 @@
 schemaVersion: "1.0"
 id: quic-go-raw
 name: quic-go Raw QUIC
-description: quic-go raw QUIC transport target for ProtocolLab stream throughput, multiplexing, and duplex scenarios.
+description: quic-go raw QUIC transport target for ProtocolLab stream throughput, multiplexing, connection churn, cold handshake, and duplex scenarios.
 family: quic-go
 role: server
 targetKind: process
@@ -25,11 +25,15 @@ supportedProtocolVersions:
 supportedScenarios:
   - quic.transport.stream-throughput.1mb
   - quic.transport.multiplex.100x64kb
+  - quic.transport.connection-churn
   - quic.transport.duplex-streams
+  - quic.transport.handshake-cold
 supportedTestCaseIds:
   - quic.transport.stream-throughput.1mb
   - quic.transport.multiplex.100x64kb
+  - quic.transport.connection-churn
   - quic.transport.duplex-streams
+  - quic.transport.handshake-cold
 scenarioCoverage:
   quic.transport.stream-throughput.1mb:
     status: supported
@@ -37,9 +41,15 @@ scenarioCoverage:
   quic.transport.multiplex.100x64kb:
     status: supported
     behavior: bidirectional stream echo
+  quic.transport.connection-churn:
+    status: supported
+    behavior: fresh connection per operation with bidirectional echo
   quic.transport.duplex-streams:
     status: supported
     behavior: bidirectional 64KiB stream echo
+  quic.transport.handshake-cold:
+    status: supported
+    behavior: fresh QUIC connection with no stream requirement
   quic.transport.latency.echo-1kb:
     status: unsupported
     reason: Not proven for this package yet.
@@ -92,6 +102,7 @@ readinessCheck:
   startupDelayMilliseconds: 750
 capabilities:
   - quicTransport
+  - quicHandshake
   - quicStreams
   - quicMultiplexing
   - quicDuplex

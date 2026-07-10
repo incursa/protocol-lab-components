@@ -49,7 +49,9 @@ func TestWriteMetadataIncludesSupportedScenarios(t *testing.T) {
 	want := []string{
 		"quic.transport.stream-throughput.1mb",
 		"quic.transport.multiplex.100x64kb",
+		"quic.transport.connection-churn",
 		"quic.transport.duplex-streams",
+		"quic.transport.handshake-cold",
 	}
 	if !reflect.DeepEqual(got.SupportedScenarios, want) {
 		t.Fatalf("supportedScenarios = %v, want %v", got.SupportedScenarios, want)
@@ -103,6 +105,86 @@ func TestServerEchoesDuplexPayload(t *testing.T) {
 	}
 }
 
+func TestServerAcceptsColdHandshakeWithoutOpeningStream(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	listener, err := quic.ListenAddr("127.0.0.1:0", mustTLSConfig(defaultALPN), &quic.Config{
+		MaxIncomingStreams: 128,
+	})
+	if err != nil {
+		t.Fatalf("ListenAddr failed: %v", err)
+	}
+	defer listener.Close()
+
+	go func() {
+		_ = serveListener(ctx, listener, options{alpn: defaultALPN, echoMaxBytes: defaultEchoMaxSize})
+	}()
+
+	conn, err := quic.DialAddr(
+		context.Background(),
+		listener.Addr().String(),
+		&tls.Config{InsecureSkipVerify: true, NextProtos: []string{defaultALPN}},
+		&quic.Config{MaxIdleTimeout: 10 * time.Second})
+	if err != nil {
+		t.Fatalf("DialAddr failed: %v", err)
+	}
+	if err := conn.CloseWithError(0, ""); err != nil {
+		t.Fatalf("CloseWithError failed: %v", err)
+	}
+}
+
+func TestServerHandlesConnectionChurnWithFreshConnections(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	listener, err := quic.ListenAddr("127.0.0.1:0", mustTLSConfig(defaultALPN), &quic.Config{
+		MaxIncomingStreams: 128,
+	})
+	if err != nil {
+		t.Fatalf("ListenAddr failed: %v", err)
+	}
+	defer listener.Close()
+
+	go func() {
+		_ = serveListener(ctx, listener, options{alpn: defaultALPN, echoMaxBytes: defaultEchoMaxSize})
+	}()
+
+	for i := 0; i < 3; i++ {
+		conn, err := quic.DialAddr(
+			context.Background(),
+			listener.Addr().String(),
+			&tls.Config{InsecureSkipVerify: true, NextProtos: []string{defaultALPN}},
+			&quic.Config{MaxIdleTimeout: 10 * time.Second})
+		if err != nil {
+			t.Fatalf("DialAddr iteration %d failed: %v", i, err)
+		}
+
+		payload := bytes.Repeat([]byte{byte(0x40 + i)}, 1024)
+		stream, err := conn.OpenStreamSync(context.Background())
+		if err != nil {
+			t.Fatalf("OpenStreamSync iteration %d failed: %v", i, err)
+		}
+		if _, err := stream.Write(payload); err != nil {
+			t.Fatalf("Write iteration %d failed: %v", i, err)
+		}
+		if err := stream.Close(); err != nil {
+			t.Fatalf("Close write side iteration %d failed: %v", i, err)
+		}
+
+		echo, err := io.ReadAll(stream)
+		if err != nil {
+			t.Fatalf("ReadAll iteration %d failed: %v", i, err)
+		}
+		if !bytes.Equal(echo, payload) {
+			t.Fatalf("echo payload mismatch on iteration %d: got %d bytes", i, len(echo))
+		}
+		if err := conn.CloseWithError(0, ""); err != nil {
+			t.Fatalf("CloseWithError iteration %d failed: %v", i, err)
+		}
+	}
+}
+
 func TestServerAcceptsLargeClientToServerPayloadWithoutEcho(t *testing.T) {
 	stream := &fakeStream{reader: bytes.NewReader(bytes.Repeat([]byte{0x7}, 1024*1024))}
 	handleStream(stream, options{echoMaxBytes: defaultEchoMaxSize})
@@ -126,13 +208,29 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	}
 
 	var packageManifest struct {
-		PackageVersion string `json:"packageVersion"`
+		PackageVersion          string `json:"packageVersion"`
+		ProvidedImplementations []struct {
+			Scenarios []string `json:"scenarios"`
+		} `json:"providedImplementations"`
 	}
 	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
 		t.Fatalf("unmarshal package manifest: %v", err)
 	}
-	if packageManifest.PackageVersion != "0.1.3" {
-		t.Fatalf("packageVersion = %q, want 0.1.3", packageManifest.PackageVersion)
+	if packageManifest.PackageVersion != "0.1.4" {
+		t.Fatalf("packageVersion = %q, want 0.1.4", packageManifest.PackageVersion)
+	}
+	if len(packageManifest.ProvidedImplementations) != 1 {
+		t.Fatalf("providedImplementations length = %d, want 1", len(packageManifest.ProvidedImplementations))
+	}
+	wantPackageScenarios := []string{
+		"quic.transport.stream-throughput.1mb",
+		"quic.transport.multiplex.100x64kb",
+		"quic.transport.connection-churn",
+		"quic.transport.duplex-streams",
+		"quic.transport.handshake-cold",
+	}
+	if !reflect.DeepEqual(packageManifest.ProvidedImplementations[0].Scenarios, wantPackageScenarios) {
+		t.Fatalf("providedImplementations[0].scenarios = %v, want %v", packageManifest.ProvidedImplementations[0].Scenarios, wantPackageScenarios)
 	}
 
 	internalManifestBytes, err := os.ReadFile(internalManifestPath)
@@ -212,6 +310,15 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	}
 	if bytes.Contains(implementationManifestBytes, []byte("bin/windows-x64/quic-go-raw.exe")) {
 		t.Fatal("implementation YAML should not advertise a Windows executable")
+	}
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.connection-churn")) {
+		t.Fatal("implementation YAML does not advertise quic.transport.connection-churn")
+	}
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.handshake-cold")) {
+		t.Fatal("implementation YAML does not advertise quic.transport.handshake-cold")
+	}
+	if !bytes.Contains(implementationManifestBytes, []byte("  - quicHandshake")) {
+		t.Fatal("implementation YAML does not advertise quicHandshake capability")
 	}
 }
 
