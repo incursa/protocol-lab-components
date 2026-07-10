@@ -45,7 +45,7 @@
     "images": [
       {
         "name": "quic-go-http3",
-        "image": "incursa-protocol-lab-quic-go-http3:0.1.3",
+        "image": "incursa-protocol-lab-quic-go-http3:0.1.4",
         "baseImage": "golang:1.25-bookworm",
         "baseImageIndexDigest": "golang@sha256:bbb255b0e131db500cf0520adc97441d2260cf629c7fa7e39e025ddf53995a24",
         "sourceRuntime": "scratch",
@@ -55,14 +55,14 @@
         "sourceRepository": "https://github.com/quic-go/quic-go",
         "sourceTag": "v0.60.0",
         "sourceTagCommit": "7612ad1036957cde45d672bebb8b9ec9c2e9b2a7",
-        "resolvedImageId": "sha256:68ad1269e2b02439bf796f95fe4d0009a1d7eb4e7dbbd0d173cdc83f58843edd",
-        "repoDigest": "incursa-protocol-lab-quic-go-http3@sha256:68ad1269e2b02439bf796f95fe4d0009a1d7eb4e7dbbd0d173cdc83f58843edd"
+        "resolvedImageId": "sha256:e21aadc269c36f0e4c03195c1ad839ed0be4bf59f3bed160044132d6a50c052d",
+        "repoDigest": "incursa-protocol-lab-quic-go-http3@sha256:e21aadc269c36f0e4c03195c1ad839ed0be4bf59f3bed160044132d6a50c052d"
       }
     ]
   },
   "commands": {
-    "buildTemplate": "docker build --pull --build-arg QUIC_GO_VERSION=v0.60.0 -f docker/quic-go-http3.Dockerfile -t incursa-protocol-lab-quic-go-http3:0.1.3 .",
-    "serverTemplate": "docker run --rm -p <port>:4433/udp incursa-protocol-lab-quic-go-http3:0.1.3 /quic-go-http3-server -listen :4433",
+    "buildTemplate": "docker build --pull --build-arg QUIC_GO_VERSION=v0.60.0 -f docker/quic-go-http3.Dockerfile -t incursa-protocol-lab-quic-go-http3:0.1.4 .",
+    "serverTemplate": "docker run --rm -p <port>:4433/udp incursa-protocol-lab-quic-go-http3:0.1.4 /quic-go-http3-server -listen :4433",
     "planOnly": "pwsh ./run.ps1 -PlanOnly"
   },
   "knownLimitations": [

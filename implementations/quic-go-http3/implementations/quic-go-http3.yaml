@@ -12,7 +12,7 @@ commandArguments:
   - runtimes/linux-x64/run-quic-go-http3-server.sh
   - --listen
   - :5446
-image: incursa-protocol-lab-quic-go-http3:0.1.3
+image: incursa-protocol-lab-quic-go-http3:0.1.4
 dockerfile: docker/quic-go-http3.Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
@@ -38,11 +38,13 @@ supportedScenarios:
   - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
+  - http3.payload.stream.100x16kb
 supportedTestCaseIds:
   - http3.core.status
   - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
+  - http3.payload.stream.100x16kb
 scenarioCoverage:
   quic.transport.stream-throughput.1mb:
     status: unsupported
@@ -65,6 +67,11 @@ scenarioCoverage:
     status: supported
     scenarioId: http3.payload.bytes.1mb
     endpoint: /bytes/1048576
+  http3-streaming:
+    status: supported
+    scenarioId: http3.payload.stream.100x16kb
+    endpoint: /stream/bytes?chunks=100&size=16384&delayMs=0
+    behavior: streams 100 deterministic 16 KiB chunks without prebuffering the full body.
   http3-header-heavy-qpack:
     status: unsupported
     scenarioId: http3.headers.response-headers-50x32
@@ -109,6 +116,7 @@ capabilities:
   - http.server
   - httpStatus
   - httpBytes
+  - httpStreaming
 entrypoint:
   kind: pwsh
   path: run.ps1
@@ -139,6 +147,9 @@ endpoints:
   bytes1mb:
     method: GET
     path: /bytes/1048576
+  streamBytes100x16kb:
+    method: GET
+    path: /stream/bytes?chunks=100&size=16384&delayMs=0
 shutdownBehavior: process
 artifactExports:
   - command.txt
@@ -149,4 +160,4 @@ qlogSupport: false
 sslKeyLogSupport: false
 executionMetadata:
   manifest: protocol-lab.internal.json
-notes: Server-only quic-go HTTP/3 lane. Keep separate from the quic-go raw load executor package.
+notes: Server-only quic-go HTTP/3 lane. Keep separate from the quic-go raw load executor package. The streaming route writes 100 deterministic 16 KiB chunks without prebuffering the full 1.6 MiB body.

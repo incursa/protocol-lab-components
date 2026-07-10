@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -9,11 +10,14 @@ import (
 	"crypto/x509/pkix"
 	"encoding/json"
 	"encoding/pem"
+	"errors"
 	"flag"
+	"fmt"
 	"log"
 	"math/big"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -25,6 +29,11 @@ import (
 const (
 	implementationID = "quic-go-http3"
 	packageID        = "org.protocol-lab.components.implementation.quic-go-http3"
+
+	streamBytesPath          = "/stream/bytes"
+	streamBytesCanonicalURL  = "chunks=100&size=16384&delayMs=0"
+	streamBytesCanonicalRows = 100
+	streamBytesChunkSize     = 16 * 1024
 )
 
 var quicGoVersion = "v0.60.0"
@@ -79,6 +88,7 @@ func routes() http.Handler {
 				"http3.payload.bytes.1kb",
 				"http3.payload.bytes.64kb",
 				"http3.payload.bytes.1mb",
+				"http3.payload.stream.100x16kb",
 			},
 			"unsupportedKnownCases": []string{"h1", "h2", "h2c", "raw-quic", "websocket", "server-sent-events"},
 		})
@@ -91,6 +101,7 @@ func routes() http.Handler {
 	mux.HandleFunc("/bytes/64kb", textHandler(bytes64KB, "application/octet-stream"))
 	mux.HandleFunc("/bytes/1048576", textHandler(bytes1MB, "application/octet-stream"))
 	mux.HandleFunc("/bytes/1mb", textHandler(bytes1MB, "application/octet-stream"))
+	mux.HandleFunc(streamBytesPath, streamBytesHandler)
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "not found", http.StatusNotFound)
 	})
@@ -104,6 +115,102 @@ func textHandler(body string, contentType string) http.HandlerFunc {
 		w.Header().Set("Content-Length", strconvLen(body))
 		_, _ = w.Write([]byte(body))
 	}
+}
+
+func streamBytesHandler(w http.ResponseWriter, r *http.Request) {
+	params, err := parseStreamBytesParams(r.URL.Query())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.WriteHeader(http.StatusOK)
+
+	if err := streamBytes(r.Context(), w, params); err != nil {
+		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+			return
+		}
+
+		log.Printf("failed to stream response body: %v", err)
+	}
+}
+
+type streamBytesParams struct {
+	chunks  int
+	size    int
+	delayMs int
+}
+
+func parseStreamBytesParams(query url.Values) (streamBytesParams, error) {
+	params := streamBytesParams{
+		chunks:  streamBytesCanonicalRows,
+		size:    streamBytesChunkSize,
+		delayMs: 0,
+	}
+
+	if value := query.Get("chunks"); value != "" {
+		parsed, err := strconv.Atoi(value)
+		if err != nil || parsed <= 0 {
+			return streamBytesParams{}, fmt.Errorf("invalid chunks query parameter")
+		}
+
+		params.chunks = parsed
+	}
+
+	if value := query.Get("size"); value != "" {
+		parsed, err := strconv.Atoi(value)
+		if err != nil || parsed <= 0 {
+			return streamBytesParams{}, fmt.Errorf("invalid size query parameter")
+		}
+
+		params.size = parsed
+	}
+
+	if value := query.Get("delayMs"); value != "" {
+		parsed, err := strconv.Atoi(value)
+		if err != nil || parsed < 0 {
+			return streamBytesParams{}, fmt.Errorf("invalid delayMs query parameter")
+		}
+
+		params.delayMs = parsed
+	}
+
+	if params.chunks != streamBytesCanonicalRows || params.size != streamBytesChunkSize || params.delayMs != 0 {
+		return streamBytesParams{}, fmt.Errorf("unsupported stream query; expected %s", streamBytesCanonicalURL)
+	}
+
+	return params, nil
+}
+
+func streamBytes(ctx context.Context, w http.ResponseWriter, params streamBytesParams) error {
+	chunk := deterministicChunk(params.size)
+
+	flusher, _ := w.(http.Flusher)
+	for chunkIndex := 0; chunkIndex < params.chunks; chunkIndex++ {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+
+		if _, err := w.Write(chunk); err != nil {
+			return err
+		}
+
+		if flusher != nil {
+			flusher.Flush()
+		}
+	}
+
+	return nil
+}
+
+func deterministicChunk(size int) []byte {
+	chunk := make([]byte, size)
+	for i := range chunk {
+		chunk[i] = byte(i % 251)
+	}
+
+	return chunk
 }
 
 func writeJSON(w http.ResponseWriter, status int, value any) {

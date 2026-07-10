@@ -6,8 +6,9 @@
 
 - Protocol family: `h3`
 - Role: server
-- Public scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`
-- Endpoints: `/health`, `/status`, `/protocol-lab/metadata`, `/plaintext`, `/json`, `/bytes/1024`, `/bytes/65536`, `/bytes/1048576`
+- Public scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`, `http3.payload.stream.100x16kb`
+- Endpoints: `/health`, `/status`, `/protocol-lab/metadata`, `/plaintext`, `/json`, `/bytes/1024`, `/bytes/65536`, `/bytes/1048576`, `/stream/bytes?chunks=100&size=16384&delayMs=0`
+- Capabilities: `http.server`, `httpStatus`, `httpBytes`, `httpStreaming`
 - Not-found behavior: any unmapped path returns HTTP status `404`
 
 ## Known Unsupported
@@ -26,7 +27,7 @@
 - Builder image: `golang:1.25-bookworm`
 - Builder image digest: `golang@sha256:bbb255b0e131db500cf0520adc97441d2260cf629c7fa7e39e025ddf53995a24`
 - Runtime image: `scratch`
-- Component image tag: `incursa-protocol-lab-quic-go-http3:0.1.3`
+- Component image tag: `incursa-protocol-lab-quic-go-http3:0.1.4`
 - Component image ID: `sha256:68ad1269e2b02439bf796f95fe4d0009a1d7eb4e7dbbd0d173cdc83f58843edd`
 - Component repo digest: `incursa-protocol-lab-quic-go-http3@sha256:68ad1269e2b02439bf796f95fe4d0009a1d7eb4e7dbbd0d173cdc83f58843edd`
 - Certificate mode: generated self-signed loopback certificate
@@ -45,7 +46,7 @@ Build the wrapper image:
 docker build --pull `
   --build-arg QUIC_GO_VERSION=v0.60.0 `
   -f ./implementations/quic-go-http3/docker/quic-go-http3.Dockerfile `
-  -t incursa-protocol-lab-quic-go-http3:0.1.3 `
+  -t incursa-protocol-lab-quic-go-http3:0.1.4 `
   ./implementations/quic-go-http3
 ```
 
@@ -62,6 +63,7 @@ https://localhost:5446/health
 https://localhost:5446/bytes/1024
 https://localhost:5446/bytes/65536
 https://localhost:5446/bytes/1048576
+https://localhost:5446/stream/bytes?chunks=100&size=16384&delayMs=0
 ```
 
 Linux/macOS plan-only smoke:
