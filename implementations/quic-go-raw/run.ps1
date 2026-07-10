@@ -13,8 +13,18 @@ New-Item -ItemType Directory -Force -Path $artifactRoot | Out-Null
 
 $commandPath = Join-Path $artifactRoot 'command.txt'
 $resultPath = Join-Path $artifactRoot 'result.json'
-$binaryPath = Join-Path $componentRoot 'bin/linux-x64/quic-go-raw'
-$command = "$binaryPath"
+if ($IsWindows) {
+    $binaryRelativePath = 'bin/windows-x64/quic-go-raw.exe'
+}
+elseif ($IsLinux) {
+    $binaryRelativePath = 'bin/linux-x64/quic-go-raw'
+}
+else {
+    throw 'quic-go-raw only supports Windows and Linux hosts.'
+}
+
+$binaryPath = Join-Path $componentRoot $binaryRelativePath
+$command = $binaryRelativePath
 
 Set-Content -LiteralPath $commandPath -Value $command
 

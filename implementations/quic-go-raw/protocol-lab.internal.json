@@ -10,6 +10,16 @@
         "arguments": [],
         "workingDirectory": "."
       }
+    },
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "process",
+        "path": "bin/windows-x64/quic-go-raw.exe",
+        "arguments": [],
+        "workingDirectory": "."
+      }
     }
   ],
   "dependencies": {
@@ -33,8 +43,8 @@
     ]
   },
   "commands": {
-    "buildTemplate": "go build -trimpath -ldflags '-s -w -X main.quicGoVersion=v0.60.0' -o bin/linux-x64/quic-go-raw ./source/cmd/quic-go-raw",
-    "serverTemplate": "bin/linux-x64/quic-go-raw",
+    "buildTemplate": "pwsh ../../scripts/package/Build-QuicGoRawPackage.ps1",
+    "serverTemplate": "pwsh ./run.ps1",
     "planOnly": "pwsh ./run.ps1 -PlanOnly"
   },
   "knownLimitations": [

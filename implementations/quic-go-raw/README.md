@@ -6,6 +6,11 @@ implementation and from the `quic-go-raw-load` executor package.
 
 Package ID: `org.protocol-lab.components.implementation.quic-go-raw`
 
+The package archive carries both `bin/linux-x64/quic-go-raw` and
+`bin/windows-x64/quic-go-raw.exe`. `run.sh` selects the Linux binary, `run.ps1`
+selects the Windows binary, and the public YAML keeps the Linux executable as
+the canonical implementation entrypoint.
+
 Supported scenarios:
 
 - `quic.transport.stream-throughput.1mb`

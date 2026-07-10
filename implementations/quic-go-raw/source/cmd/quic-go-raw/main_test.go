@@ -6,6 +6,8 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"io"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 	"time"
@@ -110,6 +112,106 @@ func TestServerAcceptsLargeClientToServerPayloadWithoutEcho(t *testing.T) {
 	}
 	if !stream.closed {
 		t.Fatal("stream was not closed")
+	}
+}
+
+func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
+	packageManifestPath := filepath.Join("..", "..", "..", "protocol-lab-package.json")
+	internalManifestPath := filepath.Join("..", "..", "..", "protocol-lab.internal.json")
+	implementationManifestPath := filepath.Join("..", "..", "..", "implementations", "quic-go-raw.yaml")
+
+	packageManifestBytes, err := os.ReadFile(packageManifestPath)
+	if err != nil {
+		t.Fatalf("read package manifest: %v", err)
+	}
+
+	var packageManifest struct {
+		PackageVersion string `json:"packageVersion"`
+	}
+	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
+		t.Fatalf("unmarshal package manifest: %v", err)
+	}
+	if packageManifest.PackageVersion != "0.1.3" {
+		t.Fatalf("packageVersion = %q, want 0.1.3", packageManifest.PackageVersion)
+	}
+
+	internalManifestBytes, err := os.ReadFile(internalManifestPath)
+	if err != nil {
+		t.Fatalf("read internal manifest: %v", err)
+	}
+
+	var internalManifest struct {
+		Environments []struct {
+			OS         string `json:"os"`
+			Arch       string `json:"arch"`
+			Entrypoint struct {
+				Kind             string   `json:"kind"`
+				Path             string   `json:"path"`
+				Arguments        []string `json:"arguments"`
+				WorkingDirectory string   `json:"workingDirectory"`
+			} `json:"entrypoint"`
+		} `json:"environments"`
+		Commands struct {
+			BuildTemplate  string `json:"buildTemplate"`
+			ServerTemplate string `json:"serverTemplate"`
+			PlanOnly       string `json:"planOnly"`
+		} `json:"commands"`
+	}
+	if err := json.Unmarshal(internalManifestBytes, &internalManifest); err != nil {
+		t.Fatalf("unmarshal internal manifest: %v", err)
+	}
+
+	if got, want := len(internalManifest.Environments), 2; got != want {
+		t.Fatalf("environments length = %d, want %d", got, want)
+	}
+
+	wantEnvironments := map[string]string{
+		"linux/x64":   "bin/linux-x64/quic-go-raw",
+		"windows/x64": "bin/windows-x64/quic-go-raw.exe",
+	}
+	for _, environment := range internalManifest.Environments {
+		key := environment.OS + "/" + environment.Arch
+		wantPath, ok := wantEnvironments[key]
+		if !ok {
+			t.Fatalf("unexpected environment %s", key)
+		}
+		if environment.Entrypoint.Kind != "process" {
+			t.Fatalf("environment %s kind = %q, want process", key, environment.Entrypoint.Kind)
+		}
+		if environment.Entrypoint.Path != wantPath {
+			t.Fatalf("environment %s path = %q, want %q", key, environment.Entrypoint.Path, wantPath)
+		}
+		if len(environment.Entrypoint.Arguments) != 0 {
+			t.Fatalf("environment %s arguments = %v, want none", key, environment.Entrypoint.Arguments)
+		}
+		if environment.Entrypoint.WorkingDirectory != "." {
+			t.Fatalf("environment %s workingDirectory = %q, want .", key, environment.Entrypoint.WorkingDirectory)
+		}
+		delete(wantEnvironments, key)
+	}
+	if len(wantEnvironments) != 0 {
+		t.Fatalf("missing environments: %v", wantEnvironments)
+	}
+
+	if internalManifest.Commands.BuildTemplate != "pwsh ../../scripts/package/Build-QuicGoRawPackage.ps1" {
+		t.Fatalf("buildTemplate = %q, want repo package builder", internalManifest.Commands.BuildTemplate)
+	}
+	if internalManifest.Commands.ServerTemplate != "pwsh ./run.ps1" {
+		t.Fatalf("serverTemplate = %q, want pwsh ./run.ps1", internalManifest.Commands.ServerTemplate)
+	}
+	if internalManifest.Commands.PlanOnly != "pwsh ./run.ps1 -PlanOnly" {
+		t.Fatalf("planOnly = %q, want pwsh ./run.ps1 -PlanOnly", internalManifest.Commands.PlanOnly)
+	}
+
+	implementationManifestBytes, err := os.ReadFile(implementationManifestPath)
+	if err != nil {
+		t.Fatalf("read implementation manifest: %v", err)
+	}
+	if !bytes.Contains(implementationManifestBytes, []byte("executable: bin/linux-x64/quic-go-raw")) {
+		t.Fatal("implementation YAML does not retain the canonical Linux executable")
+	}
+	if bytes.Contains(implementationManifestBytes, []byte("bin/windows-x64/quic-go-raw.exe")) {
+		t.Fatal("implementation YAML should not advertise a Windows executable")
 	}
 }
 
