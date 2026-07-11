@@ -112,6 +112,34 @@ Get-ChildItem -LiteralPath $componentRoot -Recurse -File -Force | Where-Object {
     Copy-Item -LiteralPath $_.FullName -Destination $destinationPath -Force
 }
 
+$embeddedProvenance = [ordered]@{
+    schemaVersion = 'protocol-lab.package-build-provenance.v1'
+    generatedAtUtc = [DateTimeOffset]::UtcNow.ToString('O')
+    parityEligible = $workingTreeClean
+    source = [ordered]@{
+        repository = $sourceRepository
+        commitSha = $sourceCommit
+        workingTreeClean = $workingTreeClean
+        dirtyState = if ($workingTreeClean) { 'clean' } else { 'dirty' }
+        dirtyEntries = if ($workingTreeClean) { @() } else { @($sourceStatus -split "`n" | Where-Object { $_ }) }
+        componentPath = [System.IO.Path]::GetRelativePath($repositoryRoot, $componentRoot).Replace('\', '/')
+    }
+    build = [ordered]@{
+        configuration = $BuildConfiguration
+        runtimeIdentifier = $RuntimeIdentifier
+        operatingSystem = [System.Runtime.InteropServices.RuntimeInformation]::OSDescription
+        processArchitecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString()
+        powershell = $PSVersionTable.PSVersion.ToString()
+        dotnet = Get-OptionalToolVersion -Name 'dotnet' -Arguments @('--version')
+        go = Get-OptionalToolVersion -Name 'go' -Arguments @('version')
+    }
+    package = [ordered]@{
+        packageId = $packageId
+        packageVersion = $packageVersion
+    }
+}
+$embeddedProvenance | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $stagingRoot 'package-build-provenance.json') -Encoding utf8NoBOM
+
 Remove-Item -LiteralPath $candidateArtifactPath -Force -ErrorAction SilentlyContinue
 Compress-Archive -Path (Join-Path $stagingRoot '*') -DestinationPath $candidateArtifactPath -Force
 

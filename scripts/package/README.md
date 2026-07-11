@@ -63,6 +63,12 @@ required by default. `-AllowDirtySource` exists only for diagnostic iteration;
 such attestations set `parityEligible=false` and cannot support source/package
 parity or publication.
 
+The same source and build identity is embedded as
+`package-build-provenance.json` inside the package so a worker can carry the
+source lineage into materialization and parity evidence. The external
+attestation adds the artifact SHA-256 and local materialization path, which
+cannot be embedded without creating a self-referential hash.
+
 Validate a retained artifact and its attestation with:
 
 ```powershell
