@@ -9,6 +9,9 @@ targetContract: process
 executable: run.ps1
 project: src/KestrelHttp2.csproj
 workingDirectory: .
+baseUrl: http://127.0.0.1:8082
+protocolBaseUrls:
+  h2: http://127.0.0.1:8082
 dockerNetworkMode: published-port
 certificateMode: none
 roles:
