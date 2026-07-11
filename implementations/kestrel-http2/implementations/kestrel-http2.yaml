@@ -46,7 +46,7 @@ startup:
     expectedStatus: 200
 readinessCheck:
   type: http
-  url: http://127.0.0.1:${PLAB_HTTP_PORT}/health
+  url: http://127.0.0.1:8082/health
   timeoutSeconds: 10
 capabilities:
   - http.server
