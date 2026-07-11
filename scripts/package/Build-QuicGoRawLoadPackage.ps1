@@ -85,7 +85,7 @@ $oldGoArch = [Environment]::GetEnvironmentVariable('GOARCH', 'Process')
 try {
     [Environment]::SetEnvironmentVariable('GOOS', $rid.goOs, 'Process')
     [Environment]::SetEnvironmentVariable('GOARCH', $rid.goArch, 'Process')
-    & go -C $sourceRoot build -trimpath -o $binaryPath ./cmd/quic-go-raw-load
+    & go -C $sourceRoot build -buildvcs=false -trimpath -o $binaryPath ./cmd/quic-go-raw-load
     if ($LASTEXITCODE -ne 0) {
         throw "go build failed with exit code $LASTEXITCODE."
     }
@@ -120,7 +120,11 @@ $executionManifest.dependencies.requiresGo = $false
 $executionManifest.dependencies.requiredCapabilities = @()
 $executionManifest | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $packageRoot 'protocol-lab.internal.json') -Encoding utf8
 
-Remove-Item -LiteralPath $artifactPath -Force -ErrorAction SilentlyContinue
-Compress-Archive -Path (Join-Path $packageRoot '*') -DestinationPath $artifactPath -Force
-
-Write-Host "Created $artifactPath"
+& (Join-Path $PSScriptRoot 'Build-ProtocolLabComponentPackage.ps1') `
+    -Root $Root `
+    -OutputRoot $OutputRoot `
+    -ComponentPath $packageRoot `
+    -SourceComponentPath $componentRoot `
+    -ArtifactSuffix $RuntimeIdentifier `
+    -BuildConfiguration Release `
+    -RuntimeIdentifier $RuntimeIdentifier

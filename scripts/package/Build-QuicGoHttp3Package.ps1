@@ -25,6 +25,7 @@ try {
     Push-Location $stagedSource
     try {
         & go build `
+            -buildvcs=false `
             -trimpath `
             -ldflags '-s -w -X main.quicGoVersion=v0.60.0' `
             -o (Join-Path $runtimeRoot 'quic-go-http3-server') `

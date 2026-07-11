@@ -11,6 +11,12 @@ param(
 
     [string]$RuntimeIdentifier = 'portable',
 
+    [string]$SourceComponentPath,
+
+    [string]$ArtifactSuffix = '',
+
+    [switch]$IncludeReadme,
+
     [switch]$AllowDirtySource
 )
 
@@ -97,6 +103,15 @@ else {
 
 $componentRoot = (Resolve-Path $componentRoot).Path
 $repositoryRoot = (Resolve-Path $Root).Path
+$sourceComponentRoot = if ([string]::IsNullOrWhiteSpace($SourceComponentPath)) {
+    $componentRoot
+}
+elseif ([System.IO.Path]::IsPathRooted($SourceComponentPath)) {
+    (Resolve-Path $SourceComponentPath).Path
+}
+else {
+    (Resolve-Path (Join-Path $Root $SourceComponentPath)).Path
+}
 $sourceRepository = Invoke-GitText -RepositoryRoot $repositoryRoot -Arguments @('config', '--get', 'remote.origin.url')
 $sourceCommit = Invoke-GitText -RepositoryRoot $repositoryRoot -Arguments @('rev-parse', 'HEAD')
 $sourceCommitTimestamp = Invoke-GitText -RepositoryRoot $repositoryRoot -Arguments @('show', '-s', '--format=%cI', 'HEAD')
@@ -119,8 +134,9 @@ if ([string]::IsNullOrWhiteSpace($packageId) -or [string]::IsNullOrWhiteSpace($p
 }
 
 New-Item -ItemType Directory -Force -Path $OutputRoot | Out-Null
-$stagingRoot = Join-Path $OutputRoot ("stage/" + ($packageId -replace '[^A-Za-z0-9_.-]', '_'))
-$artifactPath = Join-Path $OutputRoot "$packageId.$packageVersion.plabpkg"
+$normalizedArtifactSuffix = if ([string]::IsNullOrWhiteSpace($ArtifactSuffix)) { '' } elseif ($ArtifactSuffix.StartsWith('.')) { $ArtifactSuffix } else { ".$ArtifactSuffix" }
+$stagingRoot = Join-Path $OutputRoot ("stage/" + (($packageId + $normalizedArtifactSuffix) -replace '[^A-Za-z0-9_.-]', '_'))
+$artifactPath = Join-Path $OutputRoot "$packageId.$packageVersion$normalizedArtifactSuffix.plabpkg"
 $candidateArtifactPath = "$artifactPath.building"
 $attestationPath = "$artifactPath.build-attestation.json"
 
@@ -129,13 +145,15 @@ New-Item -ItemType Directory -Force -Path $stagingRoot | Out-Null
 
 $excludedNames = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 @(
-    'README.md',
     'package.protocol-lab.json',
     'bin',
     'obj',
     'artifacts',
     'packages'
 ) | ForEach-Object { [void]$excludedNames.Add($_) }
+if (-not $IncludeReadme) {
+    [void]$excludedNames.Add('README.md')
+}
 
 Get-ChildItem -LiteralPath $componentRoot -Recurse -File -Force | Where-Object {
     $relativePath = [System.IO.Path]::GetRelativePath($componentRoot, $_.FullName)
@@ -160,7 +178,7 @@ $embeddedProvenance = [ordered]@{
         workingTreeClean = $workingTreeClean
         dirtyState = if ($workingTreeClean) { 'clean' } else { 'dirty' }
         dirtyEntries = if ($workingTreeClean) { @() } else { @($sourceStatus -split "`n" | Where-Object { $_ }) }
-        componentPath = [System.IO.Path]::GetRelativePath($repositoryRoot, $componentRoot).Replace('\', '/')
+        componentPath = [System.IO.Path]::GetRelativePath($repositoryRoot, $sourceComponentRoot).Replace('\', '/')
     }
     build = [ordered]@{
         configuration = $BuildConfiguration
@@ -206,7 +224,7 @@ $attestation = [ordered]@{
         workingTreeClean = $workingTreeClean
         dirtyState = if ($workingTreeClean) { 'clean' } else { 'dirty' }
         dirtyEntries = if ($workingTreeClean) { @() } else { @($sourceStatus -split "`n" | Where-Object { $_ }) }
-        componentPath = [System.IO.Path]::GetRelativePath($repositoryRoot, $componentRoot).Replace('\', '/')
+        componentPath = [System.IO.Path]::GetRelativePath($repositoryRoot, $sourceComponentRoot).Replace('\', '/')
     }
     build = [ordered]@{
         configuration = $BuildConfiguration

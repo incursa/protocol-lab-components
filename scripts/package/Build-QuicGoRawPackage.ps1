@@ -70,7 +70,7 @@ function Invoke-GoBuild {
         [Environment]::SetEnvironmentVariable('GOOS', $GoOs, 'Process')
         [Environment]::SetEnvironmentVariable('GOARCH', $GoArch, 'Process')
         [Environment]::SetEnvironmentVariable('CGO_ENABLED', '0', 'Process')
-        & go -C $sourceRoot build -trimpath -ldflags '-s -w -X main.quicGoVersion=v0.60.0' -o $OutputPath ./cmd/quic-go-raw
+        & go -C $sourceRoot build -buildvcs=false -trimpath -ldflags '-s -w -X main.quicGoVersion=v0.60.0' -o $OutputPath ./cmd/quic-go-raw
         if ($LASTEXITCODE -ne 0) {
             throw "go build failed for $GoOs/$GoArch with exit code $LASTEXITCODE."
         }
@@ -120,8 +120,14 @@ $executionManifest.commands.serverTemplate = 'pwsh ./run.ps1'
 $executionManifest.commands.planOnly = 'pwsh ./run.ps1 -PlanOnly'
 $executionManifest | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $packageRoot 'protocol-lab.internal.json') -Encoding utf8
 
-Remove-Item -LiteralPath $artifactPath -Force -ErrorAction SilentlyContinue
-Compress-Archive -Path (Join-Path $packageRoot '*') -DestinationPath $artifactPath -Force
+& (Join-Path $PSScriptRoot 'Build-ProtocolLabComponentPackage.ps1') `
+    -Root $Root `
+    -OutputRoot $OutputRoot `
+    -ComponentPath $packageRoot `
+    -SourceComponentPath $componentRoot `
+    -BuildConfiguration Release `
+    -RuntimeIdentifier 'linux-x64+windows-x64' `
+    -IncludeReadme
 
 $archive = $null
 try {
@@ -146,5 +152,3 @@ finally {
         $archive.Dispose()
     }
 }
-
-Write-Host "Created $artifactPath"

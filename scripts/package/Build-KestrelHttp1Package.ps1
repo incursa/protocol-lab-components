@@ -76,7 +76,11 @@ if ($executionManifest.environments.Count -ne 1) {
 $packageManifest | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $packageRoot 'protocol-lab-package.json') -Encoding utf8
 $executionManifest | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $packageRoot 'protocol-lab.internal.json') -Encoding utf8
 
-Remove-Item -LiteralPath $artifactPath -Force -ErrorAction SilentlyContinue
-Compress-Archive -Path (Join-Path $packageRoot '*') -DestinationPath $artifactPath -Force
-
-Write-Host "Created $artifactPath"
+& (Join-Path $PSScriptRoot 'Build-ProtocolLabComponentPackage.ps1') `
+    -Root $Root `
+    -OutputRoot $OutputRoot `
+    -ComponentPath $packageRoot `
+    -SourceComponentPath $componentRoot `
+    -ArtifactSuffix $RuntimeIdentifier `
+    -BuildConfiguration $Configuration `
+    -RuntimeIdentifier $RuntimeIdentifier
