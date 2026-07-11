@@ -6,7 +6,7 @@ family: kestrel
 role: server
 targetKind: process
 targetContract: process
-executable: run.ps1
+executable: dotnet
 project: src/KestrelHttp2.csproj
 workingDirectory: .
 baseUrl: http://127.0.0.1:8082
