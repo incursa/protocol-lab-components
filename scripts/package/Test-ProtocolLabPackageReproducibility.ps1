@@ -21,8 +21,13 @@ foreach ($directory in @($first, $second)) {
 & $builder -Root $Root -ComponentPath $ComponentPath -OutputRoot $first -BuildConfiguration $BuildConfiguration -RuntimeIdentifier $RuntimeIdentifier
 & $builder -Root $Root -ComponentPath $ComponentPath -OutputRoot $second -BuildConfiguration $BuildConfiguration -RuntimeIdentifier $RuntimeIdentifier
 
-$firstPackage = Get-ChildItem -LiteralPath $first -Filter '*.plabpkg' -File | Select-Object -Single
-$secondPackage = Get-ChildItem -LiteralPath $second -Filter '*.plabpkg' -File | Select-Object -Single
+$firstPackages = @(Get-ChildItem -LiteralPath $first -Filter '*.plabpkg' -File)
+$secondPackages = @(Get-ChildItem -LiteralPath $second -Filter '*.plabpkg' -File)
+if ($firstPackages.Count -ne 1 -or $secondPackages.Count -ne 1) {
+    throw 'Reproducibility check requires exactly one package in each output root.'
+}
+$firstPackage = $firstPackages[0]
+$secondPackage = $secondPackages[0]
 $firstHash = (Get-FileHash -LiteralPath $firstPackage.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
 $secondHash = (Get-FileHash -LiteralPath $secondPackage.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
 if ($firstHash -ne $secondHash) {
