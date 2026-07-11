@@ -25,7 +25,7 @@ pwsh ./scenarios/raw-quic-transport/validate.ps1
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.scenario.raw-quic-transport.0.1.1.plabpkg
+org.protocol-lab.components.scenario.raw-quic-transport.0.1.2.plabpkg
 ```
 
 ## Packaged Scenarios
@@ -39,9 +39,9 @@ org.protocol-lab.components.scenario.raw-quic-transport.0.1.1.plabpkg
 - `quic.transport.cancellation.reset-stream`
 - `quic.transport.cold-handshake`
 - `quic.transport.stream-churn`
-- `quic.transport.resumption.resumed`
-- `quic.transport.resumption.rejected`
-- `quic.transport.0-rtt.accepted`
-- `quic.transport.0-rtt.rejected`
+- `quic.transport.resumption-rejected`
+- `quic.transport.resumed-handshake`
+- `quic.transport.zero-rtt-accepted`
+- `quic.transport.zero-rtt-rejected`
 
-The smoke suite includes only scenarios currently supported by `quic-go-raw-load`. The cancellation manifest remains an explicit pending lane, and the cold-handshake, stream-churn, resumption, and 0-RTT contracts are packaged here without claiming executor support yet.
+The smoke suite includes only scenarios currently supported by `quic-go-raw-load`. The cancellation manifest remains an explicit pending lane, and the cold-handshake, stream-churn, resumption-rejected, resumed-handshake, zero-rtt-accepted, and zero-rtt-rejected contracts are packaged here without claiming executor support yet.

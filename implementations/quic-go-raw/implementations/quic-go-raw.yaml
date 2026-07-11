@@ -50,18 +50,18 @@ scenarioCoverage:
   quic.transport.cold-handshake:
     status: supported
     behavior: fresh QUIC connection with no application stream requirement
-  quic.transport.resumption.resumed:
+  quic.transport.resumption-rejected:
     status: unsupported
-    reason: quic-go raw target package does not currently expose a resumable session proof path.
-  quic.transport.resumption.rejected:
+    reason: quic-go raw target package does not currently expose a resumption rejection proof path.
+  quic.transport.resumed-handshake:
     status: unsupported
-    reason: quic-go raw target package does not currently expose a resumable session rejection proof path.
-  quic.transport.0-rtt.accepted:
+    reason: quic-go raw target package does not currently expose a resumable handshake proof path.
+  quic.transport.zero-rtt-accepted:
     status: unsupported
-    reason: quic-go raw target package does not currently expose an executable 0-RTT acceptance proof path.
-  quic.transport.0-rtt.rejected:
+    reason: quic-go raw target package does not currently expose an executable zero-RTT acceptance proof path.
+  quic.transport.zero-rtt-rejected:
     status: unsupported
-    reason: quic-go raw target package does not currently expose an executable 0-RTT rejection proof path.
+    reason: quic-go raw target package does not currently expose an executable zero-RTT rejection proof path.
   quic.transport.latency.echo-1kb:
     status: unsupported
     reason: Not proven for this package yet.
@@ -131,4 +131,4 @@ qlogSupport: false
 sslKeyLogSupport: false
 executionMetadata:
   manifest: protocol-lab.internal.json
-notes: Server-only raw QUIC package. Keep separate from quic-go HTTP/3 and quic-go raw load executor packages. Resumption and 0-RTT remain unsupported until executable proof exists.
+notes: Server-only raw QUIC package. Keep separate from quic-go HTTP/3 and quic-go raw load executor packages. quic.transport.resumption-rejected, quic.transport.resumed-handshake, quic.transport.zero-rtt-accepted, and quic.transport.zero-rtt-rejected remain unsupported until executable proof exists.

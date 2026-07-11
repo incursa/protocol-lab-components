@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.raw-quic-transport",
-  "packageVersion": "0.1.1",
+  "packageVersion": "0.1.2",
   "kind": "scenario-pack",
   "displayName": "Raw QUIC Transport Scenario Pack",
   "entryManifests": [
@@ -14,10 +14,10 @@
     "scenarios/quic/transport/cancellation-reset-stream.yaml",
     "scenarios/quic/transport/cold-handshake.yaml",
     "scenarios/quic/transport/stream-churn.yaml",
-    "scenarios/quic/transport/resumption-resumed.yaml",
     "scenarios/quic/transport/resumption-rejected.yaml",
-    "scenarios/quic/transport/0-rtt-accepted.yaml",
-    "scenarios/quic/transport/0-rtt-rejected.yaml",
+    "scenarios/quic/transport/resumed-handshake.yaml",
+    "scenarios/quic/transport/zero-rtt-accepted.yaml",
+    "scenarios/quic/transport/zero-rtt-rejected.yaml",
     "suites/raw-quic-transport-v1-smoke.yaml"
   ],
   "providedScenarios": [
@@ -85,29 +85,29 @@
       ]
     },
     {
-      "scenarioId": "quic.transport.resumption.resumed",
-      "displayName": "QUIC Resumption Resumed",
-      "protocols": [
-        "quic"
-      ]
-    },
-    {
-      "scenarioId": "quic.transport.resumption.rejected",
+      "scenarioId": "quic.transport.resumption-rejected",
       "displayName": "QUIC Resumption Rejected",
       "protocols": [
         "quic"
       ]
     },
     {
-      "scenarioId": "quic.transport.0-rtt.accepted",
-      "displayName": "QUIC 0-RTT Accepted",
+      "scenarioId": "quic.transport.resumed-handshake",
+      "displayName": "QUIC Resumed Handshake",
       "protocols": [
         "quic"
       ]
     },
     {
-      "scenarioId": "quic.transport.0-rtt.rejected",
-      "displayName": "QUIC 0-RTT Rejected",
+      "scenarioId": "quic.transport.zero-rtt-accepted",
+      "displayName": "QUIC Zero-RTT Accepted",
+      "protocols": [
+        "quic"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.zero-rtt-rejected",
+      "displayName": "QUIC Zero-RTT Rejected",
       "protocols": [
         "quic"
       ]

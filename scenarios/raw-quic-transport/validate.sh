@@ -14,10 +14,10 @@ required_files=(
   "scenarios/quic/transport/cancellation-reset-stream.yaml"
   "scenarios/quic/transport/cold-handshake.yaml"
   "scenarios/quic/transport/stream-churn.yaml"
-  "scenarios/quic/transport/resumption-resumed.yaml"
   "scenarios/quic/transport/resumption-rejected.yaml"
-  "scenarios/quic/transport/0-rtt-accepted.yaml"
-  "scenarios/quic/transport/0-rtt-rejected.yaml"
+  "scenarios/quic/transport/resumed-handshake.yaml"
+  "scenarios/quic/transport/zero-rtt-accepted.yaml"
+  "scenarios/quic/transport/zero-rtt-rejected.yaml"
   "suites/raw-quic-transport-v1-smoke.yaml"
 )
 

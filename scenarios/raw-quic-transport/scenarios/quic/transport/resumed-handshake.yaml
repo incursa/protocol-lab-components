@@ -1,9 +1,9 @@
 schemaVersion: "1.0"
-id: quic.transport.resumption-rejected
-title: QUIC Resumption Rejected
-name: QUIC Resumption Rejected
+id: quic.transport.resumed-handshake
+title: QUIC Resumed Handshake
+name: QUIC Resumed Handshake
 family: quic.transport
-description: Validate that a QUIC server rejects session resumption and falls back to a fresh handshake without attempting 0-RTT early data.
+description: Validate a QUIC handshake that resumes a prior session without attempting 0-RTT early data as a transport scenario independent of HTTP/3 application semantics.
 status: stable
 kind: protocolValidation
 layer: transport
@@ -25,7 +25,7 @@ requiredCapabilities:
   - quicHandshake
   - quicResumption
 quicTransport:
-  behavior: resumption-rejected
+  behavior: resumed-handshake
   connectionCount: 1
   streamType: none
   streamCount: 0
@@ -35,14 +35,14 @@ quicTransport:
 validation:
   required: true
   checks:
-    - resumption-attempt-rejected
-    - fresh-handshake-completes-after-rejection
+    - resumed-handshake-completes
+    - session-resumption-uses-previous-state
     - zero-early-data-attempted
     - protocol:quic
   quic:
     handshakeMustComplete: true
     session:
-      resumptionState: rejected
+      resumptionState: resumed
       earlyData: not-attempted
       replaySafety: not-applicable
 benchmark:
@@ -71,7 +71,7 @@ artifacts:
   optional:
     - protocol-diagnostic-artifact
     - counters
-networkProfile: loss-1pct
+networkProfile: rtt-75ms
 requiredMetrics:
   - quic.handshake.durationMs
   - quic.connection.successCount
@@ -84,4 +84,3 @@ tags:
   - quic
   - handshake
   - resumption
-  - rejected

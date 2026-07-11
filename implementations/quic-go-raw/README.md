@@ -23,7 +23,7 @@ Supported scenarios:
 Unsupported until proven:
 
 - HTTP/3 scenarios
-- raw QUIC latency, stream-limit, large-payload, cancellation, resumption, and 0-RTT lanes
+- raw QUIC latency, stream-limit, large-payload, cancellation, `quic.transport.resumption-rejected`, `quic.transport.resumed-handshake`, `quic.transport.zero-rtt-accepted`, and `quic.transport.zero-rtt-rejected` lanes
 
 The package covers cold handshake, stream churn, and stream echo lanes.
 

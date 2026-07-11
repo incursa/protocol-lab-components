@@ -216,8 +216,8 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
 		t.Fatalf("unmarshal package manifest: %v", err)
 	}
-	if packageManifest.PackageVersion != "0.1.5" {
-		t.Fatalf("packageVersion = %q, want 0.1.5", packageManifest.PackageVersion)
+	if packageManifest.PackageVersion != "0.1.6" {
+		t.Fatalf("packageVersion = %q, want 0.1.6", packageManifest.PackageVersion)
 	}
 	if len(packageManifest.ProvidedImplementations) != 1 {
 		t.Fatalf("providedImplementations length = %d, want 1", len(packageManifest.ProvidedImplementations))
@@ -317,17 +317,17 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.cold-handshake")) {
 		t.Fatal("implementation YAML does not advertise quic.transport.cold-handshake")
 	}
-	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.resumption.resumed")) {
-		t.Fatal("implementation YAML does not mark quic.transport.resumption.resumed unsupported")
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.resumption-rejected")) {
+		t.Fatal("implementation YAML does not mark quic.transport.resumption-rejected unsupported")
 	}
-	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.resumption.rejected")) {
-		t.Fatal("implementation YAML does not mark quic.transport.resumption.rejected unsupported")
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.resumed-handshake")) {
+		t.Fatal("implementation YAML does not mark quic.transport.resumed-handshake unsupported")
 	}
-	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.0-rtt.accepted")) {
-		t.Fatal("implementation YAML does not mark quic.transport.0-rtt.accepted unsupported")
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.zero-rtt-accepted")) {
+		t.Fatal("implementation YAML does not mark quic.transport.zero-rtt-accepted unsupported")
 	}
-	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.0-rtt.rejected")) {
-		t.Fatal("implementation YAML does not mark quic.transport.0-rtt.rejected unsupported")
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.zero-rtt-rejected")) {
+		t.Fatal("implementation YAML does not mark quic.transport.zero-rtt-rejected unsupported")
 	}
 	if !bytes.Contains(implementationManifestBytes, []byte("  - quicHandshake")) {
 		t.Fatal("implementation YAML does not advertise quicHandshake capability")
