@@ -127,4 +127,5 @@ $executionManifest | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-P
     -SourceComponentPath $componentRoot `
     -ArtifactSuffix $RuntimeIdentifier `
     -BuildConfiguration Release `
-    -RuntimeIdentifier $RuntimeIdentifier
+    -RuntimeIdentifier $RuntimeIdentifier `
+    -PreparedPackageRoot

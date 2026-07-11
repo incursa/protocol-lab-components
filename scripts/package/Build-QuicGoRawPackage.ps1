@@ -127,7 +127,8 @@ $executionManifest | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-P
     -SourceComponentPath $componentRoot `
     -BuildConfiguration Release `
     -RuntimeIdentifier 'linux-x64+windows-x64' `
-    -IncludeReadme
+    -IncludeReadme `
+    -PreparedPackageRoot
 
 $archive = $null
 try {

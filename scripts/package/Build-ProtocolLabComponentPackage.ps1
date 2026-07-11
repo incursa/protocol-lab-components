@@ -17,6 +17,8 @@ param(
 
     [switch]$IncludeReadme,
 
+    [switch]$PreparedPackageRoot,
+
     [switch]$AllowDirtySource
 )
 
@@ -146,11 +148,13 @@ New-Item -ItemType Directory -Force -Path $stagingRoot | Out-Null
 $excludedNames = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 @(
     'package.protocol-lab.json',
-    'bin',
-    'obj',
     'artifacts',
     'packages'
 ) | ForEach-Object { [void]$excludedNames.Add($_) }
+if (-not $PreparedPackageRoot) {
+    [void]$excludedNames.Add('bin')
+    [void]$excludedNames.Add('obj')
+}
 if (-not $IncludeReadme) {
     [void]$excludedNames.Add('README.md')
 }
