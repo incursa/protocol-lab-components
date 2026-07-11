@@ -43,6 +43,7 @@ jobs:
           if-no-files-found: error
           path: |
             artifacts/packages/*.plabpkg
+            artifacts/packages/*.plabpkg.build-attestation.json
             artifacts/packages/package-index.json
             artifacts/packages/package-index.md
             artifacts/packages/SHA256SUMS.txt

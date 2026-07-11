@@ -109,6 +109,22 @@ function Get-PackageArtifactInspection {
     )
 
     $hash = Get-FileHash -LiteralPath $Artifact.FullName -Algorithm SHA256
+    $attestationPath = "$($Artifact.FullName).build-attestation.json"
+    if (-not (Test-Path -LiteralPath $attestationPath -PathType Leaf)) {
+        throw "$($Artifact.Name): missing build attestation '$attestationPath'."
+    }
+
+    & (Join-Path $PSScriptRoot 'Test-ProtocolLabPackageBuildAttestation.ps1') `
+        -PackagePath $Artifact.FullName `
+        -AttestationPath $attestationPath `
+        -RequireParityEligible
+    if ($LASTEXITCODE -is [int] -and $LASTEXITCODE -ne 0) {
+        throw "$($Artifact.Name): build attestation validation failed with exit code $LASTEXITCODE."
+    }
+
+    $attestationFile = Get-Item -LiteralPath $attestationPath
+    $attestationHash = Get-FileHash -LiteralPath $attestationPath -Algorithm SHA256
+    $attestation = Get-Content -LiteralPath $attestationPath -Raw | ConvertFrom-Json
     $zip = [System.IO.Compression.ZipFile]::OpenRead($Artifact.FullName)
     try {
         $publicManifestEntry = $zip.Entries | Where-Object { $_.FullName -eq 'protocol-lab-package.json' } | Select-Object -First 1
@@ -157,6 +173,14 @@ function Get-PackageArtifactInspection {
             builderScript = $Build.script
             buildArguments = ConvertTo-StringArray -Value $Build.arguments
             sourceComponentPath = $Build.componentPath
+            buildAttestation = [ordered]@{
+                status = 'passed'
+                artifactName = $attestationFile.Name
+                artifactPath = Get-RelativePath -BasePath $Root -Path $attestationFile.FullName
+                sha256 = $attestationHash.Hash.ToLowerInvariant()
+                parityEligible = [bool]$attestation.parityEligible
+                sourceCommitSha = [string]$attestation.source.commitSha
+            }
             archiveInspection = [ordered]@{
                 hasPublicManifest = $true
                 hasInternalManifest = $true
@@ -180,11 +204,11 @@ function Write-PackageIndexMarkdown {
     [void]$lines.Add('')
     [void]$lines.Add(('Generated at: `{0}`' -f $Index.generatedAtUtc))
     [void]$lines.Add('')
-    [void]$lines.Add('| Package | Version | Kind | Artifact | SHA-256 |')
-    [void]$lines.Add('| --- | --- | --- | --- | --- |')
+    [void]$lines.Add('| Package | Version | Kind | Artifact | SHA-256 | Build attestation |')
+    [void]$lines.Add('| --- | --- | --- | --- | --- | --- |')
 
     foreach ($package in $Index.packages) {
-        [void]$lines.Add(('| `{0}` | `{1}` | `{2}` | `{3}` | `{4}` |' -f $package.packageId, $package.packageVersion, $package.kind, $package.artifactName, $package.sha256))
+        [void]$lines.Add(('| `{0}` | `{1}` | `{2}` | `{3}` | `{4}` | `{5}` |' -f $package.packageId, $package.packageVersion, $package.kind, $package.artifactName, $package.sha256, $package.buildAttestation.artifactName))
     }
 
     $lines | Set-Content -LiteralPath $Path -Encoding utf8
@@ -206,6 +230,8 @@ function Write-ValidationSummaryMarkdown {
     [void]$lines.Add(('| Manifest validation | `{0}` |' -f $Summary.manifestValidation.status))
     [void]$lines.Add(('| Package archive inspection | `{0}` |' -f $Summary.archiveInspection.status))
     [void]$lines.Add(('| Built artifact count | `{0}` |' -f $Summary.archiveInspection.artifactCount))
+    [void]$lines.Add(('| Build attestation validation | `{0}` |' -f $Summary.buildAttestationValidation.status))
+    [void]$lines.Add(('| Valid build attestations | `{0}` |' -f $Summary.buildAttestationValidation.attestationCount))
     [void]$lines.Add('')
     [void]$lines.Add('## Builders')
     [void]$lines.Add('')
@@ -229,6 +255,7 @@ New-Item -ItemType Directory -Force -Path $OutputRoot | Out-Null
 
 if ($Clean) {
     Get-ChildItem -LiteralPath $OutputRoot -File -Filter '*.plabpkg' -ErrorAction SilentlyContinue | Remove-Item -Force
+    Get-ChildItem -LiteralPath $OutputRoot -File -Filter '*.plabpkg.build-attestation.json' -ErrorAction SilentlyContinue | Remove-Item -Force
     foreach ($generatedFile in @(
         'package-index.json',
         'package-index.md',
@@ -331,6 +358,11 @@ foreach ($artifact in $uniqueBuiltArtifacts) {
     [void]$packageInspections.Add((Get-PackageArtifactInspection -Artifact $artifact -Root $Root -OutputRoot $OutputRoot -Build $matchingBuild))
 }
 
+$attestationFiles = @(Get-ChildItem -LiteralPath $OutputRoot -File -Filter '*.plabpkg.build-attestation.json' | Sort-Object Name)
+if ($attestationFiles.Count -ne $packageInspections.Count) {
+    throw "Build attestation count $($attestationFiles.Count) does not match package count $($packageInspections.Count)."
+}
+
 $commit = $null
 try {
     $commit = (& git -C $Root rev-parse HEAD).Trim()
@@ -374,6 +406,24 @@ $summary = [ordered]@{
                     hasInternalManifest = $_.archiveInspection.hasInternalManifest
                     entryCount = $_.archiveInspection.entryCount
                     status = 'passed'
+                }
+            }
+        )
+    }
+    buildAttestationValidation = [ordered]@{
+        status = 'passed'
+        packageCount = $packageInspections.Count
+        attestationCount = $attestationFiles.Count
+        requireParityEligible = $true
+        artifacts = @(
+            $packageInspections | ForEach-Object {
+                [ordered]@{
+                    packageArtifactName = $_.artifactName
+                    attestationArtifactName = $_.buildAttestation.artifactName
+                    attestationSha256 = $_.buildAttestation.sha256
+                    parityEligible = $_.buildAttestation.parityEligible
+                    sourceCommitSha = $_.buildAttestation.sourceCommitSha
+                    status = $_.buildAttestation.status
                 }
             }
         )

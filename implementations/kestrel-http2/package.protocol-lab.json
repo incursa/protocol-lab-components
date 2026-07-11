@@ -1,7 +1,7 @@
 {
   "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
   "packageKind": "implementation",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "component": {
     "name": "kestrel-http2",
     "family": "kestrel",

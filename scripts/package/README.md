@@ -25,11 +25,16 @@ component wrapper, inspects each archive for the required public/internal
 manifest split, and writes these outputs under `artifacts/packages/`:
 
 - `.plabpkg` files for each package artifact
+- `.plabpkg.build-attestation.json` files for each package artifact
 - `package-index.json`
 - `package-index.md`
 - `SHA256SUMS.txt`
 - `package-validation-summary.json`
 - `package-validation-summary.md`
+
+Package production fails unless every package has exactly one valid,
+parity-eligible clean-source build attestation. The package index and validation
+summary record each attestation artifact, its SHA-256, and source commit.
 
 Use the component-specific wrappers when iterating on one package:
 
