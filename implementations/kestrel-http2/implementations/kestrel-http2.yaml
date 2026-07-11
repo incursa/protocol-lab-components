@@ -45,9 +45,9 @@ startup:
     path: /health
     expectedStatus: 200
 readinessCheck:
-  type: http
-  url: http://127.0.0.1:8082/health
+  type: processStarted
   timeoutSeconds: 10
+  startupDelayMilliseconds: 750
 capabilities:
   - http.server
   - httpPlaintext
