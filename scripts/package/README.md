@@ -78,10 +78,21 @@ pwsh ./scripts/package/Test-ProtocolLabPackageBuildAttestation.ps1 `
   -RequireParityEligible
 ```
 
-The attestation identifies one retained immutable artifact. It does not claim
-that rebuilding the same clean commit produces byte-identical ZIP bytes; prove
-that separately with two independent output roots before making a reproducible-
-build claim.
+The shared builder writes archive entries in stable ordinal order, uses a fixed
+ZIP timestamp and encoding, and bases embedded provenance time on the source
+commit. For the same clean commit, configuration, runtime identifier, and
+recorded toolchain, rebuilding produces byte-identical package bytes. Verify
+that invariant, including the same-root immutable no-op, with:
+
+```powershell
+pwsh ./scripts/package/Test-ProtocolLabPackageReproducibility.ps1 `
+  -ComponentPath implementations/kestrel-http2 `
+  -BuildConfiguration Release `
+  -RuntimeIdentifier win-x64
+```
+
+The external attestation timestamp is intentionally not embedded in the archive
+and therefore does not affect package SHA-256.
 
 ## Versioning Policy
 

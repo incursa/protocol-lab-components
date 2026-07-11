@@ -52,6 +52,42 @@ function Get-OptionalToolVersion {
     return (($output -join "`n").Trim())
 }
 
+function New-DeterministicZipArchive {
+    param(
+        [Parameter(Mandatory)][string]$SourceRoot,
+        [Parameter(Mandatory)][string]$DestinationPath
+    )
+
+    $fixedTimestamp = [DateTimeOffset]::new(1980, 1, 1, 0, 0, 0, [TimeSpan]::Zero)
+    $archiveStream = [System.IO.File]::Open($DestinationPath, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
+    try {
+        $archive = [System.IO.Compression.ZipArchive]::new($archiveStream, [System.IO.Compression.ZipArchiveMode]::Create, $true, [System.Text.UTF8Encoding]::new($false))
+        try {
+            $files = @(Get-ChildItem -LiteralPath $SourceRoot -Recurse -File -Force | Sort-Object { [System.IO.Path]::GetRelativePath($SourceRoot, $_.FullName).Replace('\', '/') })
+            foreach ($file in $files) {
+                $entryName = [System.IO.Path]::GetRelativePath($SourceRoot, $file.FullName).Replace('\', '/')
+                $entry = $archive.CreateEntry($entryName, [System.IO.Compression.CompressionLevel]::Optimal)
+                $entry.LastWriteTime = $fixedTimestamp
+                $entryStream = $entry.Open()
+                $sourceStream = [System.IO.File]::OpenRead($file.FullName)
+                try {
+                    $sourceStream.CopyTo($entryStream)
+                }
+                finally {
+                    $sourceStream.Dispose()
+                    $entryStream.Dispose()
+                }
+            }
+        }
+        finally {
+            $archive.Dispose()
+        }
+    }
+    finally {
+        $archiveStream.Dispose()
+    }
+}
+
 $componentRoot = if ([System.IO.Path]::IsPathRooted($ComponentPath)) {
     $ComponentPath
 }
@@ -63,6 +99,7 @@ $componentRoot = (Resolve-Path $componentRoot).Path
 $repositoryRoot = (Resolve-Path $Root).Path
 $sourceRepository = Invoke-GitText -RepositoryRoot $repositoryRoot -Arguments @('config', '--get', 'remote.origin.url')
 $sourceCommit = Invoke-GitText -RepositoryRoot $repositoryRoot -Arguments @('rev-parse', 'HEAD')
+$sourceCommitTimestamp = Invoke-GitText -RepositoryRoot $repositoryRoot -Arguments @('show', '-s', '--format=%cI', 'HEAD')
 $sourceStatus = Invoke-GitText -RepositoryRoot $repositoryRoot -Arguments @('status', '--porcelain=v1', '--untracked-files=normal') -AllowEmpty
 $workingTreeClean = [string]::IsNullOrWhiteSpace($sourceStatus)
 if (-not $workingTreeClean -and -not $AllowDirtySource) {
@@ -114,7 +151,8 @@ Get-ChildItem -LiteralPath $componentRoot -Recurse -File -Force | Where-Object {
 
 $embeddedProvenance = [ordered]@{
     schemaVersion = 'protocol-lab.package-build-provenance.v1'
-    generatedAtUtc = [DateTimeOffset]::UtcNow.ToString('O')
+    generatedAtUtc = ([DateTimeOffset]::Parse($sourceCommitTimestamp)).ToUniversalTime().ToString('O')
+    timestampBasis = 'source-commit'
     parityEligible = $workingTreeClean
     source = [ordered]@{
         repository = $sourceRepository
@@ -141,7 +179,7 @@ $embeddedProvenance = [ordered]@{
 $embeddedProvenance | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $stagingRoot 'package-build-provenance.json') -Encoding utf8NoBOM
 
 Remove-Item -LiteralPath $candidateArtifactPath -Force -ErrorAction SilentlyContinue
-Compress-Archive -Path (Join-Path $stagingRoot '*') -DestinationPath $candidateArtifactPath -Force
+New-DeterministicZipArchive -SourceRoot $stagingRoot -DestinationPath $candidateArtifactPath
 
 $candidateHash = (Get-FileHash -LiteralPath $candidateArtifactPath -Algorithm SHA256).Hash.ToLowerInvariant()
 if (Test-Path -LiteralPath $artifactPath -PathType Leaf) {
@@ -188,7 +226,7 @@ $attestation = [ordered]@{
         immutableIdentity = "$packageId@$packageVersion#$materializedHash"
     }
     claimBoundary = if ($workingTreeClean) {
-        'This attestation identifies one retained immutable package artifact built from the recorded clean commit. It does not claim byte-reproducible rebuilds.'
+        'This attestation identifies a deterministic immutable package archive for the recorded clean commit, configuration, runtime, and toolchain.'
     }
     else {
         'Diagnostic-only dirty-source build. This artifact is not eligible for source/package parity or publication.'
