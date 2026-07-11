@@ -11,6 +11,12 @@ $requiredFiles = @(
     "scenarios/quic/transport/payload-large-1mb.yaml",
     "scenarios/quic/transport/duplex-streams.yaml",
     "scenarios/quic/transport/cancellation-reset-stream.yaml",
+    "scenarios/quic/transport/cold-handshake.yaml",
+    "scenarios/quic/transport/stream-churn.yaml",
+    "scenarios/quic/transport/resumption-resumed.yaml",
+    "scenarios/quic/transport/resumption-rejected.yaml",
+    "scenarios/quic/transport/0-rtt-accepted.yaml",
+    "scenarios/quic/transport/0-rtt-rejected.yaml",
     "suites/raw-quic-transport-v1-smoke.yaml"
 )
 

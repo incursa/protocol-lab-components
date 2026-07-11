@@ -1,0 +1,70 @@
+schemaVersion: "1.0"
+title: QUIC Stream Churn
+status: stable
+kind: protocolValidation
+layer: transport
+roles:
+  - server
+requires:
+  capabilities:
+    - quic.server
+  protocols:
+    - quic
+  roles:
+    - server
+trafficShape: bidirectional-stream
+id: quic.transport.stream-churn
+name: QUIC Stream Churn
+family: quic.transport
+description: Validate and benchmark rapid QUIC stream open-and-close churn on a single connection.
+protocol: quic
+implementationRole: server
+requiredCapabilities:
+  - quicTransport
+  - quicStreams
+quicTransport:
+  behavior: stream-churn
+  connectionCount: 1
+  streamType: bidirectional
+  streamCount: 100
+  payloadSizeBytes: 1024
+  payloadDirection: client-to-server
+  openPattern: sequential
+  expectedBytes: 102400
+validation:
+  required: true
+  checks:
+    - unsupported-until-quic-validator
+    - sequential-stream-churn-completes
+benchmark:
+  warmupSeconds: 5
+  durationSeconds: 30
+  repetitions: 1
+  connections:
+    - 1
+  streamsPerConnection:
+    - 100
+benchmarkCompat:
+  compatibleLoadShapes:
+    - fixed-path-request-response
+  primaryMetrics:
+    - requestsPerSecond
+    - errorRate
+artifacts:
+  required:
+    - validation.json
+    - result.json
+  optional:
+    - qlog
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - quic.stream.completedStreams
+  - quic.stream.bytesSent
+artifactRequirements:
+  - load-tool.stdout.txt
+  - load-tool.stderr.txt
+tags:
+  - quic
+  - streams
+  - churn

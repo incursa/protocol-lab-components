@@ -49,9 +49,9 @@ func TestWriteMetadataIncludesSupportedScenarios(t *testing.T) {
 	want := []string{
 		"quic.transport.stream-throughput.1mb",
 		"quic.transport.multiplex.100x64kb",
-		"quic.transport.connection-churn",
+		"quic.transport.stream-churn",
 		"quic.transport.duplex-streams",
-		"quic.transport.handshake-cold",
+		"quic.transport.cold-handshake",
 	}
 	if !reflect.DeepEqual(got.SupportedScenarios, want) {
 		t.Fatalf("supportedScenarios = %v, want %v", got.SupportedScenarios, want)
@@ -216,8 +216,8 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
 		t.Fatalf("unmarshal package manifest: %v", err)
 	}
-	if packageManifest.PackageVersion != "0.1.4" {
-		t.Fatalf("packageVersion = %q, want 0.1.4", packageManifest.PackageVersion)
+	if packageManifest.PackageVersion != "0.1.5" {
+		t.Fatalf("packageVersion = %q, want 0.1.5", packageManifest.PackageVersion)
 	}
 	if len(packageManifest.ProvidedImplementations) != 1 {
 		t.Fatalf("providedImplementations length = %d, want 1", len(packageManifest.ProvidedImplementations))
@@ -225,9 +225,9 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	wantPackageScenarios := []string{
 		"quic.transport.stream-throughput.1mb",
 		"quic.transport.multiplex.100x64kb",
-		"quic.transport.connection-churn",
+		"quic.transport.stream-churn",
 		"quic.transport.duplex-streams",
-		"quic.transport.handshake-cold",
+		"quic.transport.cold-handshake",
 	}
 	if !reflect.DeepEqual(packageManifest.ProvidedImplementations[0].Scenarios, wantPackageScenarios) {
 		t.Fatalf("providedImplementations[0].scenarios = %v, want %v", packageManifest.ProvidedImplementations[0].Scenarios, wantPackageScenarios)
@@ -311,11 +311,23 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if bytes.Contains(implementationManifestBytes, []byte("bin/windows-x64/quic-go-raw.exe")) {
 		t.Fatal("implementation YAML should not advertise a Windows executable")
 	}
-	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.connection-churn")) {
-		t.Fatal("implementation YAML does not advertise quic.transport.connection-churn")
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.stream-churn")) {
+		t.Fatal("implementation YAML does not advertise quic.transport.stream-churn")
 	}
-	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.handshake-cold")) {
-		t.Fatal("implementation YAML does not advertise quic.transport.handshake-cold")
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.cold-handshake")) {
+		t.Fatal("implementation YAML does not advertise quic.transport.cold-handshake")
+	}
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.resumption.resumed")) {
+		t.Fatal("implementation YAML does not mark quic.transport.resumption.resumed unsupported")
+	}
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.resumption.rejected")) {
+		t.Fatal("implementation YAML does not mark quic.transport.resumption.rejected unsupported")
+	}
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.0-rtt.accepted")) {
+		t.Fatal("implementation YAML does not mark quic.transport.0-rtt.accepted unsupported")
+	}
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.0-rtt.rejected")) {
+		t.Fatal("implementation YAML does not mark quic.transport.0-rtt.rejected unsupported")
 	}
 	if !bytes.Contains(implementationManifestBytes, []byte("  - quicHandshake")) {
 		t.Fatal("implementation YAML does not advertise quicHandshake capability")

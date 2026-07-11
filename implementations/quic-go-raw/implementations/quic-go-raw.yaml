@@ -1,7 +1,7 @@
 schemaVersion: "1.0"
 id: quic-go-raw
 name: quic-go Raw QUIC
-description: quic-go raw QUIC transport target for ProtocolLab stream throughput, multiplexing, connection churn, cold handshake, and duplex scenarios.
+description: quic-go raw QUIC transport target for ProtocolLab stream throughput, multiplexing, stream churn, cold handshake, and duplex scenarios.
 family: quic-go
 role: server
 targetKind: process
@@ -25,15 +25,15 @@ supportedProtocolVersions:
 supportedScenarios:
   - quic.transport.stream-throughput.1mb
   - quic.transport.multiplex.100x64kb
-  - quic.transport.connection-churn
+  - quic.transport.stream-churn
   - quic.transport.duplex-streams
-  - quic.transport.handshake-cold
+  - quic.transport.cold-handshake
 supportedTestCaseIds:
   - quic.transport.stream-throughput.1mb
   - quic.transport.multiplex.100x64kb
-  - quic.transport.connection-churn
+  - quic.transport.stream-churn
   - quic.transport.duplex-streams
-  - quic.transport.handshake-cold
+  - quic.transport.cold-handshake
 scenarioCoverage:
   quic.transport.stream-throughput.1mb:
     status: supported
@@ -41,15 +41,27 @@ scenarioCoverage:
   quic.transport.multiplex.100x64kb:
     status: supported
     behavior: bidirectional stream echo
-  quic.transport.connection-churn:
+  quic.transport.stream-churn:
     status: supported
-    behavior: fresh connection per operation with bidirectional echo
+    behavior: sequential stream open-and-close churn with bidirectional echo
   quic.transport.duplex-streams:
     status: supported
     behavior: bidirectional 64KiB stream echo
-  quic.transport.handshake-cold:
+  quic.transport.cold-handshake:
     status: supported
-    behavior: fresh QUIC connection with no stream requirement
+    behavior: fresh QUIC connection with no application stream requirement
+  quic.transport.resumption.resumed:
+    status: unsupported
+    reason: quic-go raw target package does not currently expose a resumable session proof path.
+  quic.transport.resumption.rejected:
+    status: unsupported
+    reason: quic-go raw target package does not currently expose a resumable session rejection proof path.
+  quic.transport.0-rtt.accepted:
+    status: unsupported
+    reason: quic-go raw target package does not currently expose an executable 0-RTT acceptance proof path.
+  quic.transport.0-rtt.rejected:
+    status: unsupported
+    reason: quic-go raw target package does not currently expose an executable 0-RTT rejection proof path.
   quic.transport.latency.echo-1kb:
     status: unsupported
     reason: Not proven for this package yet.
@@ -119,4 +131,4 @@ qlogSupport: false
 sslKeyLogSupport: false
 executionMetadata:
   manifest: protocol-lab.internal.json
-notes: Server-only raw QUIC package. Keep separate from quic-go HTTP/3 and quic-go raw load executor packages.
+notes: Server-only raw QUIC package. Keep separate from quic-go HTTP/3 and quic-go raw load executor packages. Resumption and 0-RTT remain unsupported until executable proof exists.

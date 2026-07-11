@@ -49,7 +49,7 @@
   },
   "knownLimitations": [
     "Server-only raw QUIC transport package; it does not provide HTTP/3.",
-    "The package advertises stream throughput, 100-stream multiplexing, connection churn, cold handshake, and duplex scenarios.",
+    "The package advertises stream throughput, 100-stream multiplexing, stream churn, cold handshake, and duplex scenarios; resumption and 0-RTT remain unsupported until executable proof exists.",
     "The package uses generated local self-signed TLS material and ALPN plab-raw-quic."
   ]
 }

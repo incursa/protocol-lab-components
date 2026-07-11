@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.raw-quic-transport",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "scenario-pack",
   "displayName": "Raw QUIC Transport Scenario Pack",
   "entryManifests": [
@@ -12,6 +12,12 @@
     "scenarios/quic/transport/payload-large-1mb.yaml",
     "scenarios/quic/transport/duplex-streams.yaml",
     "scenarios/quic/transport/cancellation-reset-stream.yaml",
+    "scenarios/quic/transport/cold-handshake.yaml",
+    "scenarios/quic/transport/stream-churn.yaml",
+    "scenarios/quic/transport/resumption-resumed.yaml",
+    "scenarios/quic/transport/resumption-rejected.yaml",
+    "scenarios/quic/transport/0-rtt-accepted.yaml",
+    "scenarios/quic/transport/0-rtt-rejected.yaml",
     "suites/raw-quic-transport-v1-smoke.yaml"
   ],
   "providedScenarios": [
@@ -60,6 +66,48 @@
     {
       "scenarioId": "quic.transport.cancellation.reset-stream",
       "displayName": "QUIC Stream Cancellation",
+      "protocols": [
+        "quic"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.cold-handshake",
+      "displayName": "QUIC Cold Handshake",
+      "protocols": [
+        "quic"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.stream-churn",
+      "displayName": "QUIC Stream Churn",
+      "protocols": [
+        "quic"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.resumption.resumed",
+      "displayName": "QUIC Resumption Resumed",
+      "protocols": [
+        "quic"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.resumption.rejected",
+      "displayName": "QUIC Resumption Rejected",
+      "protocols": [
+        "quic"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.0-rtt.accepted",
+      "displayName": "QUIC 0-RTT Accepted",
+      "protocols": [
+        "quic"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.0-rtt.rejected",
+      "displayName": "QUIC 0-RTT Rejected",
       "protocols": [
         "quic"
       ]
