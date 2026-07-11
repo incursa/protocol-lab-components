@@ -56,6 +56,27 @@ pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1
 All wrappers call `Build-ProtocolLabComponentPackage.ps1`, which reads each component's `protocol-lab-package.json` and writes a `.plabpkg` under `artifacts/packages/`.
 Compiled payload wrappers may stage a runtime-specific package before compression while preserving the same package manifest layout and artifact root.
 
+The shared builder also writes `<package>.build-attestation.json` with the exact
+source repository and commit, dirty state, build configuration, runtime/tool
+versions, package identity, SHA-256, and materialization path. Clean source is
+required by default. `-AllowDirtySource` exists only for diagnostic iteration;
+such attestations set `parityEligible=false` and cannot support source/package
+parity or publication.
+
+Validate a retained artifact and its attestation with:
+
+```powershell
+pwsh ./scripts/package/Test-ProtocolLabPackageBuildAttestation.ps1 `
+  -PackagePath <path-to.plabpkg> `
+  -AttestationPath <path-to.plabpkg.build-attestation.json> `
+  -RequireParityEligible
+```
+
+The attestation identifies one retained immutable artifact. It does not claim
+that rebuilding the same clean commit produces byte-identical ZIP bytes; prove
+that separately with two independent output roots before making a reproducible-
+build claim.
+
 ## Versioning Policy
 
 Package versions come from each component's `protocol-lab-package.json`
@@ -74,3 +95,8 @@ identity tuple is immutable. Changing package contents requires a new
 `packageVersion`; rebuilding a previously uploaded `packageId` and
 `packageVersion` with different bytes must be treated as a different local build
 that is not a replacement for the uploaded artifact.
+
+The shared builder enforces the same rule locally: it refuses to replace an
+existing package path when the candidate SHA-256 differs. Use an empty output
+root for an independent reproducibility experiment or increment the package
+version for changed contents.
