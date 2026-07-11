@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">ProtocolLab mark — white</title>
+  <desc id="desc">A chamfered Measurement Gate with two protocol lanes, a central datum, and an inner calibration line.</desc>
+  <g transform="translate(0 0) scale(1)">
+    <path d="M25 6H14L6 14V23 M39 6H50L58 14V23 M58 41V50L50 58H39 M25 58H14L6 50V41" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path d="M25 13H17L13 17V23 M39 13H47L51 17V23 M51 41V47L47 51H39 M25 51H17L13 47V41" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path d="M2 28H25 M39 28H62 M2 36H25 M39 36H62" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="square"/>
+    <path d="M32 2V11 M32 25V39 M32 53V62" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="square"/>
+  </g>
+</svg>

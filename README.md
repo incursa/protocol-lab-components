@@ -1,6 +1,13 @@
-# Protocol Lab Components
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/brand/protocol-lab-readme-header-white.svg">
+    <img src="./assets/brand/protocol-lab-readme-header.svg" width="430" alt="ProtocolLab">
+  </picture>
+</p>
 
-This repository owns Protocol Lab components that are useful outside the core public contract repo:
+# ProtocolLab Components
+
+This repository owns ProtocolLab components that are useful outside the core public contract repo:
 
 - non-Incursa implementation adapters
 - reference implementation wrappers
@@ -8,7 +15,7 @@ This repository owns Protocol Lab components that are useful outside the core pu
 - shared toolchain pins used to build those packages
 - package scripts and manifest templates
 
-The default ownership model is a component monorepo. Kestrel HTTP/1, Kestrel HTTP/2, Caddy HTTP/1, and small alternate executors should not each become a new repository just because they produce separate Protocol Lab packages. They share package conventions, release plumbing, validation scripts, and usually the same maintainers.
+The default ownership model is a component monorepo. Kestrel HTTP/1, Kestrel HTTP/2, Caddy HTTP/1, and small alternate executors should not each become a new repository just because they produce separate ProtocolLab packages. They share package conventions, release plumbing, validation scripts, and usually the same maintainers.
 
 Separate repositories should be created only when there is a concrete boundary that makes shared operation more expensive than useful:
 
@@ -55,7 +62,7 @@ scripts/
 templates/
 ```
 
-`implementations/` contains runnable server/client wrappers that expose a Protocol Lab implementation package.
+`implementations/` contains runnable server/client wrappers that expose a ProtocolLab implementation package.
 
 `executors/` contains test-executor packages. These may be reference executors, smoke executors, or compatibility checks. Executors are not fallback implementations; package consumers should select them explicitly.
 
@@ -144,6 +151,20 @@ Incursa raw QUIC implementation packages remain implementation-owned by `quic-do
 The h3spec/QPACK and RFC9220 WebSocket scenario packs are declarative controller selection packs. They bind the focused suites to `h3spec-http3-qpack` and `aioquic-rfc9220-websocket` respectively so live package-backed jobs do not inherit unrelated managed HTTP/3 load suites.
 
 The HTTP/3 peer characterization scenario pack is diagnostic. It gives external peer wrappers such as quiche and ngtcp2 a package-backed scenario identity without promoting validation-failed official `http3.payload.*` rows.
+
+## Brand Assets
+
+This repository reuses the official ProtocolLab identity for repository
+presentation. The public
+[`incursa/protocol-lab`](https://github.com/incursa/protocol-lab) repository is
+the source of truth for the brand, its usage guidance, and its licensing
+terms. The files under [`assets/brand/`](assets/brand/) are not component
+package payloads and do not change package behavior.
+
+The repository's code and documentation are licensed under Apache-2.0. The
+ProtocolLab name, Measurement Gate logo and symbol, and files under
+`assets/brand/` are separate proprietary brand assets and are not licensed
+under Apache-2.0. See the local [brand asset license boundary](assets/brand/LICENSE.md).
 
 ## License
 
