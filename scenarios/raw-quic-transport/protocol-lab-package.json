@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.raw-quic-transport",
-  "packageVersion": "0.1.5",
+  "packageVersion": "0.1.6",
   "kind": "scenario-pack",
   "displayName": "Raw QUIC Transport Scenario Pack",
   "entryManifests": [
@@ -11,6 +11,7 @@
     "scenarios/quic/transport/stream-limits-100-streams.yaml",
     "scenarios/quic/transport/payload-large-1mb.yaml",
     "scenarios/quic/transport/duplex-streams.yaml",
+    "scenarios/quic/transport/duplex-streams-peer-matrix.yaml",
     "scenarios/quic/transport/cancellation-reset-stream.yaml",
     "scenarios/quic/transport/handshake-cold.yaml",
     "scenarios/quic/transport/stream-churn.yaml",
@@ -65,6 +66,13 @@
     {
       "scenarioId": "quic.transport.duplex-streams",
       "displayName": "QUIC Duplex Streams",
+      "protocols": [
+        "quic"
+      ]
+    },
+    {
+      "scenarioId": "quic.transport.duplex-streams-peer-matrix",
+      "displayName": "QUIC Duplex Streams Peer Matrix",
       "protocols": [
         "quic"
       ]

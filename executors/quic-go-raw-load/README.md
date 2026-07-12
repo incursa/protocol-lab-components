@@ -33,7 +33,7 @@ pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1 -RuntimeIdentifier linux-x
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.executor.quic-go-raw-load.0.1.1.<rid>.plabpkg
+org.protocol-lab.components.executor.quic-go-raw-load.0.1.2.<rid>.plabpkg
 ```
 
 ## Local Wrapper
@@ -52,5 +52,6 @@ pwsh ./executors/quic-go-raw-load/execute.ps1 --sni localhost --alpn plab-raw-qu
 - `quic.transport.stream-limits.100x64kb`
 - `quic.transport.payload.large-1mb`
 - `quic.transport.duplex-streams`
+- `quic.transport.duplex-streams-peer-matrix`
 
 `quic.transport.cancellation.reset-stream` is declared by the scenario pack as pending. The current load executor does not yet drive reset/cancellation classification.

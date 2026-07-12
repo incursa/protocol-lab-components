@@ -11,6 +11,7 @@ scenarios:
   - quic.transport.stream-limits.100x64kb
   - quic.transport.payload.large-1mb
   - quic.transport.duplex-streams
+  - quic.transport.duplex-streams-peer-matrix
 protocol: quic
 defaults:
   durationSeconds: 10

@@ -1,13 +1,13 @@
 executorIdentity:
   id: quic-go-raw-load
   name: quic-go Raw QUIC Load Executor
-  version: 0.1.1
+  version: 0.1.2
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.1
+  executorVersion: 0.1.2
 claimedCapabilities:
   - id: quic.transport.stream-throughput.1mb
     status: supported
@@ -20,6 +20,8 @@ claimedCapabilities:
   - id: quic.transport.payload.large-1mb
     status: supported
   - id: quic.transport.duplex-streams
+    status: supported
+  - id: quic.transport.duplex-streams-peer-matrix
     status: supported
   - id: quic.transport.cancellation.reset-stream
     status: unsupported
@@ -37,6 +39,8 @@ supportedTestSelectors:
     expression: quic.transport.payload.large-1mb
   - selectorType: test-id
     expression: quic.transport.duplex-streams
+  - selectorType: test-id
+    expression: quic.transport.duplex-streams-peer-matrix
 supportedScenarioSelectors:
   - selectorType: scenario-id
     expression: quic.transport.stream-throughput.1mb
@@ -50,6 +54,8 @@ supportedScenarioSelectors:
     expression: quic.transport.payload.large-1mb
   - selectorType: scenario-id
     expression: quic.transport.duplex-streams
+  - selectorType: scenario-id
+    expression: quic.transport.duplex-streams-peer-matrix
 scenarioCoverage:
   quic.transport.stream-throughput.1mb:
     status: supported
@@ -62,6 +68,8 @@ scenarioCoverage:
   quic.transport.payload.large-1mb:
     status: supported
   quic.transport.duplex-streams:
+    status: supported
+  quic.transport.duplex-streams-peer-matrix:
     status: supported
   http3.payload.bytes.1kb:
     status: unsupported

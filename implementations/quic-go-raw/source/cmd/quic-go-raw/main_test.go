@@ -51,6 +51,7 @@ func TestWriteMetadataIncludesSupportedScenarios(t *testing.T) {
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.stream-churn",
 		"quic.transport.duplex-streams",
+		"quic.transport.duplex-streams-peer-matrix",
 		"quic.transport.handshake-cold",
 	}
 	if !reflect.DeepEqual(got.SupportedScenarios, want) {
@@ -216,8 +217,8 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
 		t.Fatalf("unmarshal package manifest: %v", err)
 	}
-	if packageManifest.PackageVersion != "0.1.7" {
-		t.Fatalf("packageVersion = %q, want 0.1.7", packageManifest.PackageVersion)
+	if packageManifest.PackageVersion != "0.1.8" {
+		t.Fatalf("packageVersion = %q, want 0.1.8", packageManifest.PackageVersion)
 	}
 	if len(packageManifest.ProvidedImplementations) != 1 {
 		t.Fatalf("providedImplementations length = %d, want 1", len(packageManifest.ProvidedImplementations))
@@ -227,6 +228,7 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.stream-churn",
 		"quic.transport.duplex-streams",
+		"quic.transport.duplex-streams-peer-matrix",
 		"quic.transport.handshake-cold",
 	}
 	if !reflect.DeepEqual(packageManifest.ProvidedImplementations[0].Scenarios, wantPackageScenarios) {
