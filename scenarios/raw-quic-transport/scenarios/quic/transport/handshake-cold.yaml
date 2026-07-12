@@ -1,5 +1,6 @@
 schemaVersion: "1.0"
 id: quic.transport.handshake-cold
+version: "1.0"
 title: QUIC Cold Handshake
 name: QUIC Cold Handshake
 family: quic.transport
