@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "protocol-lab.specification-requirement.v1",
+  "requirementId": "REQ-QUIC-RFC9000-0897",
+  "documentId": "rfc9000",
+  "title": "Use TLS for the QUIC version 1 handshake",
+  "summary": "QUIC version 1 is required to use TLS as its cryptographic handshake protocol.",
+  "sourceLocator": {
+    "section": "15",
+    "sourceUnit": "RFC9000-S15-B4-P4-S1",
+    "url": "https://www.rfc-editor.org/rfc/rfc9000.html#section-15"
+  },
+  "normativeLevel": "MUST",
+  "roles": ["endpoint"],
+  "applicabilityConditions": ["The negotiated QUIC version is version 1."],
+  "protocolVersions": ["quic-v1"],
+  "featureIds": ["quic.handshake.tls"],
+  "testability": "indirectly-observable",
+  "tags": ["handshake", "tls"],
+  "reviewState": "proposed",
+  "notes": "A completed handshake alone exercises this requirement but does not isolate the complete TLS binding."
+}

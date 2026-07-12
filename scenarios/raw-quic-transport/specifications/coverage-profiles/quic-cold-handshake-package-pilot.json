@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "protocol-lab.specification-coverage-profile.v1",
+  "profileId": "quic-cold-handshake-package-pilot",
+  "profileVersion": "0.1.0",
+  "title": "QUIC package cold-handshake pilot",
+  "protocol": "quic",
+  "scope": "A proposed profile for reviewing package-local mapping and evidence behavior around the cold-handshake scenario.",
+  "nonGoals": [
+    "It is not a complete RFC 9000 profile.",
+    "It is not a QUIC conformance score or certification surface.",
+    "It does not declare that an executor currently supports the scenario."
+  ],
+  "catalogId": "quic-rfc9000-cold-handshake-pilot",
+  "catalogVersion": "0.1.0",
+  "requirementIds": ["REQ-QUIC-RFC9000-0271", "REQ-QUIC-RFC9000-0897"],
+  "requiredRelationships": ["exercises", "observes"],
+  "scenarioIds": ["quic.transport.cold-handshake"],
+  "roles": ["server", "endpoint"],
+  "applicabilityAssumptions": ["A future selected executor negotiates QUIC version 1 and emits the mapped check outcomes."],
+  "reviewState": "proposed"
+}

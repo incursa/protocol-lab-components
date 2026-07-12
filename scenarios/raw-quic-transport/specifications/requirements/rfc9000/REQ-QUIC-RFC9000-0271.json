@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "protocol-lab.specification-requirement.v1",
+  "requirementId": "REQ-QUIC-RFC9000-0271",
+  "documentId": "rfc9000",
+  "title": "Proceed with a valid Initial packet",
+  "summary": "A server is required to continue the handshake after receiving an Initial packet that satisfies the protocol requirements.",
+  "sourceLocator": {
+    "section": "5.2.2",
+    "sourceUnit": "RFC9000-S5P2P2-B4-P4-S1",
+    "url": "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
+  },
+  "normativeLevel": "MUST",
+  "roles": ["server"],
+  "applicabilityConditions": ["The received packet is an Initial packet that conforms to the applicable protocol requirements."],
+  "protocolVersions": ["quic-v1"],
+  "featureIds": ["quic.handshake.initial"],
+  "testability": "conditionally-testable",
+  "tags": ["handshake", "initial"],
+  "reviewState": "proposed",
+  "notes": "Imported from the existing RFC 9000 requirement identity and RFCXML-derived source-unit address; ProtocolLab mapping review is pending."
+}

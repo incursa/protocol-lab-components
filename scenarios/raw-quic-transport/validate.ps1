@@ -17,7 +17,13 @@ $requiredFiles = @(
     "scenarios/quic/transport/resumed-handshake.yaml",
     "scenarios/quic/transport/zero-rtt-accepted.yaml",
     "scenarios/quic/transport/zero-rtt-rejected.yaml",
-    "suites/raw-quic-transport-v1-smoke.yaml"
+    "suites/raw-quic-transport-v1-smoke.yaml",
+    "specifications/documents/rfc9000.json",
+    "specifications/requirements/rfc9000/REQ-QUIC-RFC9000-0271.json",
+    "specifications/requirements/rfc9000/REQ-QUIC-RFC9000-0897.json",
+    "specifications/catalogs/quic-rfc9000-cold-handshake-pilot.json",
+    "specifications/scenario-mappings/quic.transport.cold-handshake.json",
+    "specifications/coverage-profiles/quic-cold-handshake-package-pilot.json"
 )
 
 foreach ($relativePath in $requiredFiles) {

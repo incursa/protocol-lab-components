@@ -67,6 +67,10 @@ templates/
 `executors/` contains test-executor packages. These may be reference executors, smoke executors, or compatibility checks. Executors are not fallback implementations; package consumers should select them explicitly.
 
 `scenarios/` contains scenario-pack packages. Scenario packs publish scenario and suite manifests without carrying implementation or load-generator payloads.
+Scenario packs may also carry package-relative specification documents,
+requirements, catalogs, scenario mappings, and named coverage profiles. Their
+presence declares mapping inputs only; it does not declare an implementation
+outcome or conformance result.
 
 `toolchains/` pins shared build inputs such as .NET SDK versions, Go versions, container base images, and external binary versions.
 

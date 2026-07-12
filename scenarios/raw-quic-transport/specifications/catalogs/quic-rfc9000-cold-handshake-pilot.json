@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "protocol-lab.specification-catalog.v1",
+  "catalogId": "quic-rfc9000-cold-handshake-pilot",
+  "catalogVersion": "0.1.0",
+  "protocols": ["quic"],
+  "completeness": "partial",
+  "scope": "Proposed RFC 9000 mapping inputs for the package-local cold-handshake scenario.",
+  "excludedScope": [
+    "This catalog is not the complete set of RFC 9000 requirements.",
+    "This catalog does not establish implementation conformance or certification."
+  ],
+  "documentIds": ["rfc9000"],
+  "requirementIds": ["REQ-QUIC-RFC9000-0271", "REQ-QUIC-RFC9000-0897"],
+  "documentPaths": ["specifications/documents/rfc9000.json"],
+  "requirementPaths": [
+    "specifications/requirements/rfc9000/REQ-QUIC-RFC9000-0271.json",
+    "specifications/requirements/rfc9000/REQ-QUIC-RFC9000-0897.json"
+  ],
+  "reviewState": "proposed"
+}

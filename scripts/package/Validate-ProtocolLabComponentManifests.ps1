@@ -93,6 +93,7 @@ $publicAllowedProperties = @(
     'providedTestExecutors',
     'providedScenarios',
     'providedSuites',
+    'providedSpecificationCoverage',
     'dependencies'
 )
 
@@ -250,6 +251,10 @@ foreach ($file in $publicManifestFiles) {
                 if (-not (Test-StringArray -Value $provided.tests)) {
                     $errors.Add("$($file.FullName): provided test executor '$providedId' must declare one or more test IDs.")
                 }
+
+                if ($provided.PSObject.Properties.Name.Contains('checkIds') -and -not (Test-StringArray -Value $provided.checkIds)) {
+                    $errors.Add("$($file.FullName): provided test executor '$providedId' checkIds must contain one or more exact check IDs when declared.")
+                }
             }
         }
 
@@ -278,6 +283,44 @@ foreach ($file in $publicManifestFiles) {
                 $errors.Add("$($file.FullName): provided scenario '$providedId' must declare one or more protocols.")
             }
         }
+
+        $specificationCoverageEntries = if ($manifest.PSObject.Properties.Name.Contains('providedSpecificationCoverage')) {
+            @($manifest.providedSpecificationCoverage)
+        }
+        else {
+            @()
+        }
+        foreach ($coverage in $specificationCoverageEntries) {
+            Test-AllowedProperties `
+                -Value $coverage `
+                -Allowed @('catalogId', 'catalogVersion', 'catalogPath', 'mappingPaths', 'profilePaths') `
+                -Context "$($file.FullName): providedSpecificationCoverage entry"
+
+            if (-not (Test-Token -Value ([string]$coverage.catalogId))) {
+                $errors.Add("$($file.FullName): providedSpecificationCoverage entry is missing a valid catalogId.")
+            }
+            if ([string]::IsNullOrWhiteSpace([string]$coverage.catalogVersion)) {
+                $errors.Add("$($file.FullName): providedSpecificationCoverage entry is missing catalogVersion.")
+            }
+
+            $coveragePaths = @([string]$coverage.catalogPath) + @($coverage.mappingPaths) + @($coverage.profilePaths)
+            if (-not (Test-StringArray -Value $coverage.mappingPaths)) {
+                $errors.Add("$($file.FullName): specification coverage '$($coverage.catalogId)' must declare one or more mappingPaths.")
+            }
+            foreach ($coveragePathValue in $coveragePaths) {
+                $coveragePath = [string]$coveragePathValue
+                if (-not (Test-RelativePackagePath -Path $coveragePath) -or $coveragePath -notmatch '^specifications/') {
+                    $errors.Add("$($file.FullName): specification coverage path '$coveragePath' must be package-relative and under specifications/.")
+                    continue
+                }
+                if ($coveragePath -notin @($manifest.entryManifests)) {
+                    $errors.Add("$($file.FullName): specification coverage path '$coveragePath' must also appear in entryManifests.")
+                }
+                if (-not (Test-Path -LiteralPath (Join-Path $file.DirectoryName $coveragePath) -PathType Leaf)) {
+                    $errors.Add("$($file.FullName): specification coverage path '$coveragePath' does not exist beside the package manifest.")
+                }
+            }
+        }
     }
 
     if ($manifest.PSObject.Properties.Name.Contains('dependencies')) {
@@ -304,7 +347,8 @@ $internalPublicFields = @(
     'providedImplementations',
     'providedTestExecutors',
     'providedScenarios',
-    'providedSuites'
+    'providedSuites',
+    'providedSpecificationCoverage'
 )
 
 foreach ($file in $internalManifestFiles) {
