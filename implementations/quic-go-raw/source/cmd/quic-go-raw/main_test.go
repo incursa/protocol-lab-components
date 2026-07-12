@@ -51,7 +51,7 @@ func TestWriteMetadataIncludesSupportedScenarios(t *testing.T) {
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.stream-churn",
 		"quic.transport.duplex-streams",
-		"quic.transport.cold-handshake",
+		"quic.transport.handshake-cold",
 	}
 	if !reflect.DeepEqual(got.SupportedScenarios, want) {
 		t.Fatalf("supportedScenarios = %v, want %v", got.SupportedScenarios, want)
@@ -216,8 +216,8 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
 		t.Fatalf("unmarshal package manifest: %v", err)
 	}
-	if packageManifest.PackageVersion != "0.1.6" {
-		t.Fatalf("packageVersion = %q, want 0.1.6", packageManifest.PackageVersion)
+	if packageManifest.PackageVersion != "0.1.7" {
+		t.Fatalf("packageVersion = %q, want 0.1.7", packageManifest.PackageVersion)
 	}
 	if len(packageManifest.ProvidedImplementations) != 1 {
 		t.Fatalf("providedImplementations length = %d, want 1", len(packageManifest.ProvidedImplementations))
@@ -227,7 +227,7 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.stream-churn",
 		"quic.transport.duplex-streams",
-		"quic.transport.cold-handshake",
+		"quic.transport.handshake-cold",
 	}
 	if !reflect.DeepEqual(packageManifest.ProvidedImplementations[0].Scenarios, wantPackageScenarios) {
 		t.Fatalf("providedImplementations[0].scenarios = %v, want %v", packageManifest.ProvidedImplementations[0].Scenarios, wantPackageScenarios)
@@ -314,8 +314,8 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.stream-churn")) {
 		t.Fatal("implementation YAML does not advertise quic.transport.stream-churn")
 	}
-	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.cold-handshake")) {
-		t.Fatal("implementation YAML does not advertise quic.transport.cold-handshake")
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.handshake-cold")) {
+		t.Fatal("implementation YAML does not advertise quic.transport.handshake-cold")
 	}
 	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.resumption-rejected")) {
 		t.Fatal("implementation YAML does not mark quic.transport.resumption-rejected unsupported")

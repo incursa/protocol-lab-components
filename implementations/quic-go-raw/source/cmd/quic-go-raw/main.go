@@ -41,7 +41,7 @@ var supportedScenarios = []string{
 	"quic.transport.multiplex.100x64kb",
 	"quic.transport.stream-churn",
 	"quic.transport.duplex-streams",
-	"quic.transport.cold-handshake",
+	"quic.transport.handshake-cold",
 }
 
 type options struct {

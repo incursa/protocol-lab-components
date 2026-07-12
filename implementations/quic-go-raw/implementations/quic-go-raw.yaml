@@ -27,13 +27,13 @@ supportedScenarios:
   - quic.transport.multiplex.100x64kb
   - quic.transport.stream-churn
   - quic.transport.duplex-streams
-  - quic.transport.cold-handshake
+  - quic.transport.handshake-cold
 supportedTestCaseIds:
   - quic.transport.stream-throughput.1mb
   - quic.transport.multiplex.100x64kb
   - quic.transport.stream-churn
   - quic.transport.duplex-streams
-  - quic.transport.cold-handshake
+  - quic.transport.handshake-cold
 scenarioCoverage:
   quic.transport.stream-throughput.1mb:
     status: supported
@@ -47,7 +47,7 @@ scenarioCoverage:
   quic.transport.duplex-streams:
     status: supported
     behavior: bidirectional 64KiB stream echo
-  quic.transport.cold-handshake:
+  quic.transport.handshake-cold:
     status: supported
     behavior: fresh QUIC connection with no application stream requirement
   quic.transport.resumption-rejected:

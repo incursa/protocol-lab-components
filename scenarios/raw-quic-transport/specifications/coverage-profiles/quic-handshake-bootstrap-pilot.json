@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "protocol-lab.specification-coverage-profile.v1",
+  "profileId": "quic-handshake-bootstrap-pilot",
+  "profileVersion": "0.1.0",
+  "title": "QUIC handshake bootstrap pilot",
+  "protocol": "quic",
+  "scope": "A proposed pilot profile for reviewing mapping and evidence behavior around the existing cold QUIC version 1 handshake scenario.",
+  "nonGoals": [
+    "It is not a complete RFC 9000 profile.",
+    "It is not a QUIC conformance score or certification surface."
+  ],
+  "catalogId": "quic-rfc9000-handshake-pilot",
+  "catalogVersion": "0.1.0",
+  "requirementIds": [
+    "REQ-QUIC-RFC9000-0271",
+    "REQ-QUIC-RFC9000-0897"
+  ],
+  "requiredRelationships": ["exercises", "observes"],
+  "scenarioIds": ["quic.transport.handshake-cold"],
+  "roles": ["server", "endpoint"],
+  "applicabilityAssumptions": ["The selected target and executor negotiate QUIC version 1."],
+  "reviewState": "proposed",
+  "notes": "The profile is a contract pilot only and must not be used to infer requirement passes from an overall scenario pass."
+}

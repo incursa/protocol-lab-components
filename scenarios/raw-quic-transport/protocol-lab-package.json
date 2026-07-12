@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.raw-quic-transport",
-  "packageVersion": "0.1.3",
+  "packageVersion": "0.1.4",
   "kind": "scenario-pack",
   "displayName": "Raw QUIC Transport Scenario Pack",
   "entryManifests": [
@@ -12,7 +12,7 @@
     "scenarios/quic/transport/payload-large-1mb.yaml",
     "scenarios/quic/transport/duplex-streams.yaml",
     "scenarios/quic/transport/cancellation-reset-stream.yaml",
-    "scenarios/quic/transport/cold-handshake.yaml",
+    "scenarios/quic/transport/handshake-cold.yaml",
     "scenarios/quic/transport/stream-churn.yaml",
     "scenarios/quic/transport/resumption-rejected.yaml",
     "scenarios/quic/transport/resumed-handshake.yaml",
@@ -22,9 +22,9 @@
     "specifications/documents/rfc9000.json",
     "specifications/requirements/rfc9000/REQ-QUIC-RFC9000-0271.json",
     "specifications/requirements/rfc9000/REQ-QUIC-RFC9000-0897.json",
-    "specifications/catalogs/quic-rfc9000-cold-handshake-pilot.json",
-    "specifications/scenario-mappings/quic.transport.cold-handshake.json",
-    "specifications/coverage-profiles/quic-cold-handshake-package-pilot.json"
+    "specifications/catalogs/quic-rfc9000-handshake-pilot.json",
+    "specifications/scenario-mappings/quic.transport.handshake-cold.json",
+    "specifications/coverage-profiles/quic-handshake-bootstrap-pilot.json"
   ],
   "providedScenarios": [
     {
@@ -77,7 +77,7 @@
       ]
     },
     {
-      "scenarioId": "quic.transport.cold-handshake",
+      "scenarioId": "quic.transport.handshake-cold",
       "displayName": "QUIC Cold Handshake",
       "protocols": [
         "quic"
@@ -135,14 +135,14 @@
   ],
   "providedSpecificationCoverage": [
     {
-      "catalogId": "quic-rfc9000-cold-handshake-pilot",
+      "catalogId": "quic-rfc9000-handshake-pilot",
       "catalogVersion": "0.1.0",
-      "catalogPath": "specifications/catalogs/quic-rfc9000-cold-handshake-pilot.json",
+      "catalogPath": "specifications/catalogs/quic-rfc9000-handshake-pilot.json",
       "mappingPaths": [
-        "specifications/scenario-mappings/quic.transport.cold-handshake.json"
+        "specifications/scenario-mappings/quic.transport.handshake-cold.json"
       ],
       "profilePaths": [
-        "specifications/coverage-profiles/quic-cold-handshake-package-pilot.json"
+        "specifications/coverage-profiles/quic-handshake-bootstrap-pilot.json"
       ]
     }
   ]

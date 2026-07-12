@@ -1,33 +1,32 @@
 {
   "schemaVersion": "protocol-lab.scenario-requirement-mapping.v1",
-  "mappingId": "mapping.quic.transport.cold-handshake",
+  "mappingId": "mapping.quic.transport.handshake-cold",
   "mappingVersion": "0.1.0",
-  "scenarioId": "quic.transport.cold-handshake",
+  "scenarioId": "quic.transport.handshake-cold",
   "scenarioVersion": "1.0",
   "protocol": "quic",
-  "catalogId": "quic-rfc9000-cold-handshake-pilot",
+  "catalogId": "quic-rfc9000-handshake-pilot",
   "catalogVersion": "0.1.0",
   "relationships": [
     {
       "requirementId": "REQ-QUIC-RFC9000-0271",
       "relationship": "exercises",
-      "checkIds": ["handshake-completes"],
+      "checkIds": ["handshake-completes", "fresh-session-handshake"],
       "roles": ["server"],
       "applicabilityConditions": ["The executor supplies a valid QUIC version 1 Initial packet."],
       "requiredEvidence": ["validation.json", "protocol-diagnostic-artifact"],
-      "limitations": ["The packaged scenario still declares unsupported-until-quic-validator, and handshake completion would not independently prove every condition that makes an Initial packet conforming."]
+      "limitations": ["The existing coarse handshake check does not independently prove every condition that makes an Initial packet conforming."]
     },
     {
       "requirementId": "REQ-QUIC-RFC9000-0897",
       "relationship": "observes",
-      "checkIds": ["handshake-completes"],
+      "checkIds": ["handshake-completes", "protocol:quic"],
       "roles": ["endpoint"],
       "applicabilityConditions": ["The negotiated QUIC version is version 1."],
       "requiredEvidence": ["protocol-diagnostic-artifact"],
-      "limitations": ["The packaged scenario has no direct TLS-binding check, and handshake completion would not isolate the requirement."
-      ]
+      "limitations": ["Handshake completion does not isolate or fully validate the TLS binding requirement."]
     }
   ],
   "reviewState": "proposed",
-  "notes": "Mapping intent only. No executor support or requirement outcome is declared by this package."
+  "notes": "This mapping intentionally produces no directly validated requirement until check-level isolation and review exist."
 }

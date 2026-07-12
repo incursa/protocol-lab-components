@@ -12,7 +12,7 @@ required_files=(
   "scenarios/quic/transport/payload-large-1mb.yaml"
   "scenarios/quic/transport/duplex-streams.yaml"
   "scenarios/quic/transport/cancellation-reset-stream.yaml"
-  "scenarios/quic/transport/cold-handshake.yaml"
+  "scenarios/quic/transport/handshake-cold.yaml"
   "scenarios/quic/transport/stream-churn.yaml"
   "scenarios/quic/transport/resumption-rejected.yaml"
   "scenarios/quic/transport/resumed-handshake.yaml"
