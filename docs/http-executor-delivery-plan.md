@@ -541,8 +541,39 @@ return `unsupported`, while unknown identities fail closed with exit code 2.
 
 The superseded `0.2.0` source and package hashes are retained in Git history at
 commit `6fa37faa919e17af8ff8df7af4b81ac92fd82fa4`; they are not current authority
-parity evidence. Clean `0.2.1` source, package hashes, and extracted evidence
-roots are recorded in the follow-up evidence commit after clean rebuild.
+parity evidence. Clean `0.2.1` source commit
+`ffa9cc56d970a638ffac1dcca11ec988078df157` produced parity-eligible package
+hashes: scenario
+`c1021c39da39b7fdc4830a90f137d9a194f4ad6021cc79ab94d54fff3422cb86`,
+executor `decc7f34309bcc2250bf974f277cfb2aac7c0b77a6105c6a1874b46f3b2f4883`,
+and target `f7acec275fab8cbefac81bfeb4845c5f67c83898b7e6adb302ea43e801de37ce`.
+All three attestations report clean, parity-eligible source and pass
+`Test-ProtocolLabPackageBuildAttestation.ps1 -RequireParityEligible`.
+
+The six authority hashes are extended CONNECT
+`59640ee041d85d36ef484c915658e96f7772207637069e36e190cb6a74c4950a`,
+control frames
+`f08929cde090744524fb880805adbfd892d96f663ad080b3cf4c2b5f83c2d645`,
+text echo
+`9b1b3a9cb0639b37bfaa5319d9e4a4368cd074ed60673944e574317b3be6038c`,
+binary echo
+`167efd8e61b5b9d1a3d7d5bfee3fa8f38c7fabc6dfe94635d01f7ff640b1ef03`,
+close `15d2f7b1a0e00ab5bfee3aa890d6a351e6d06cb38db8bda74ace315b42225303`,
+and fragmented binary echo
+`76bb1c269d42b5ba53742bf5c69e8f2728427406946a7cf2802023f482959725`.
+The package parity test checks these bytes and the exact v2 fields consumed by
+both executor and target.
+
+Clean archives are under
+`artifacts/rfc9220-authority-parity-clean-ffa9cc5`; the extracted Windows proof
+is under `artifacts/rfc9220-authority-parity-clean-ffa9cc5-win-smoke`; and the
+extracted Linux-wrapper proof is under
+`artifacts/rfc9220-authority-parity-clean-ffa9cc5-linux-smoke`. The Windows
+proof used `Test-AioquicRfc9220WebSocketThreePackageSmoke.ps1`; the Linux proof
+ran the extracted `execute.sh` for each exact ID against the extracted target
+image. Each entrypoint completed six operations with zero failures and zero
+timeouts. Windows checked all 19 unsupported IDs and Linux sampled the RFC8441
+boundary; both rejected an unknown RFC9220 ID with exit code 2.
 All six exact identities completed one operation with zero failures and zero
 timeouts on both operating-system entrypoints. The new cell proves TLS 1.3,
 ALPN `h3`, HTTP/3 Extended CONNECT, `SETTINGS_ENABLE_CONNECT_PROTOCOL=1`, no
@@ -556,6 +587,26 @@ the unchanged HTTP/3 status endpoint, extracted image builds, package-v2
 manifests, license presence, and all three clean attestations passed. This is
 local diagnostic component evidence only; runner admission, publication,
 comparison, and ranking remain out of scope.
+
+The remaining explicit `unsupported` identities are `websocket.echo`,
+`http1.websocket.rfc6455.cleartext.upgrade`,
+`http1.websocket.rfc6455.cleartext.control-frames`,
+`http1.websocket.rfc6455.cleartext.text-echo`,
+`http1.websocket.rfc6455.cleartext.binary-echo`,
+`http1.websocket.rfc6455.cleartext.close`,
+`http1.websocket.rfc6455.tls.upgrade`,
+`http1.websocket.rfc6455.tls.control-frames`,
+`http1.websocket.rfc6455.tls.text-echo`,
+`http1.websocket.rfc6455.tls.binary-echo`,
+`http1.websocket.rfc6455.tls.close`,
+`http1.websocket.rfc6455.tls.subprotocol-text-echo`,
+`http1.websocket.rfc6455.tls.permessage-deflate-binary-echo`,
+`http2.websocket.rfc8441.extended-connect`,
+`http2.websocket.rfc8441.control-frames`,
+`http2.websocket.rfc8441.text-echo`,
+`http2.websocket.rfc8441.binary-echo`,
+`http2.websocket.rfc8441.close`, and
+`http2.websocket.rfc8441.multi-message-text-echo`. No identity is substituted.
 
 ## Verification floor
 
