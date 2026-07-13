@@ -2,54 +2,72 @@ package main
 
 import "testing"
 
-func TestCanonicalFrameByteScopes(t *testing.T) {
-	frame := canonicalFrame()
-	if err := validateCanonicalFrame(frame); err != nil {
-		t.Fatal(err)
+func TestCanonicalScenarioByteScopes(t *testing.T) {
+	expected := map[string]struct{ payload, protobuf, frame string }{
+		"grpc.h2.unary.echo":           {"394394b5f0e91a21d1e932f9ed55e098c8b05f3668f77134eeee843fef1d1758", "c2046bce7238a2a9cae159ba85a75e93f07c74073fe7b83d2be713caef717cb4", "98f1fce70c79cf7da3649fc3ecfc77a975c1427c9f8afcd1a41d85559164525a"},
+		"grpc.h2.unary.empty":          {"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "8855508aade16ec573d21e6a485dfd0a7624085c1a14b5ecdd6485de0c6839a4"},
+		"grpc.h2.unary.fixed-metadata": {"394394b5f0e91a21d1e932f9ed55e098c8b05f3668f77134eeee843fef1d1758", "c2046bce7238a2a9cae159ba85a75e93f07c74073fe7b83d2be713caef717cb4", "98f1fce70c79cf7da3649fc3ecfc77a975c1427c9f8afcd1a41d85559164525a"},
+		"grpc.h2.unary.gzip":           {"9b6ce55f379e9771551de6939556a7e6b949814ae27c2f5cfd5dbeb378ce7c2a", "0a685639b341882d59f7b7da8308517b2b7862047846d3294b4ba9e8d48a4322", ""},
+		"grpc.h2.unary.large":          {"b8824ab1d764167b60ec900ed95085d72dc8768660469a74effe79a0c22154e6", "18a46662a9a9321dc00af0b2f75b603a5a21416e6ea321b033b94d5c14769640", "f67e1ff2509e0ae9a59ee55eeed9d72ff6dd170798bcff37cce6c3d2bd6a9f2a"},
 	}
-	if len(frame) != 136 || len(frame[5:]) != 131 || len(frame[8:]) != 128 {
-		t.Fatalf("unexpected byte scopes: %d/%d/%d", len(frame), len(frame[5:]), len(frame[8:]))
-	}
-	if sha256Hex(frame) != expectedFrameHash || sha256Hex(frame[5:]) != expectedProtobufHash || sha256Hex(frame[8:]) != expectedPayloadHash {
-		t.Fatal("canonical hash constants drifted")
+	for _, id := range supportedScenarioIDs {
+		t.Run(id, func(t *testing.T) {
+			s, ok := specFor(id)
+			if !ok {
+				t.Fatal("missing spec")
+			}
+			frame, err := encodeFrame(encodeProtobuf(s.payload), s.compression)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := validateResponseFrame(frame, s); err != nil {
+				t.Fatal(err)
+			}
+			e := expected[id]
+			if s.payloadHash != e.payload || s.protobufHash != e.protobuf || (e.frame != "" && s.frameHash != e.frame) {
+				t.Fatalf("public byte-scope hash drift for %s", id)
+			}
+		})
 	}
 }
-
-func TestSelectionRejectsScenarioSubstitution(t *testing.T) {
-	setExactSelection(t)
-	t.Setenv("PLAB_SCENARIO_ID", "grpc.h2.server-streaming.echo")
-	if err := validateSelection(); err == nil {
-		t.Fatal("unsupported scenario was accepted")
-	}
-}
-
 func TestSelectionAcceptsExactIdentities(t *testing.T) {
-	setExactSelection(t)
-	if err := validateSelection(); err != nil {
+	s, _ := specFor("grpc.h2.unary.empty")
+	setSelection(t, s.id, loadProfileDiagnostic)
+	if _, err := validateSelection(s); err != nil {
 		t.Fatal(err)
 	}
 }
 
-func TestSelectionRejectsMissingIdentity(t *testing.T) {
-	setExactSelection(t)
-	t.Setenv("PLAB_LOAD_GENERATOR_ID", "")
-	if err := validateSelection(); err == nil {
-		t.Fatal("missing load-generator identity was accepted")
+func TestFixedMetadataResultCarriesExactRequestProof(t *testing.T) {
+	s, _ := specFor("grpc.h2.unary.fixed-metadata")
+	result := baseResult(s, loadProfileDiagnostic)
+	if result.Request["requestInitialTextMetadata"] != "protocol-lab" || result.Request["requestInitialBinaryMetadata"] != "AAECAw==" || result.Request["requestInitialBinaryMetadataDecodedSha256"] != sha256Hex([]byte{0, 1, 2, 3}) {
+		t.Fatal("fixed request metadata proof is incomplete")
 	}
 }
-
-func TestSelectionRejectsLoadSubstitution(t *testing.T) {
-	setExactSelection(t)
-	t.Setenv("PLAB_CONCURRENCY", "2")
-	if err := validateSelection(); err == nil {
-		t.Fatal("unsupported load shape was accepted")
+func TestSelectionRejectsScenarioSubstitution(t *testing.T) {
+	s, _ := specFor("grpc.h2.unary.empty")
+	setSelection(t, "grpc.h2.unary.echo", loadProfileDiagnostic)
+	if _, err := validateSelection(s); err == nil {
+		t.Fatal("scenario substitution accepted")
 	}
 }
-
-func setExactSelection(t *testing.T) {
+func TestKnownUnsupportedAndUnknownAreDistinct(t *testing.T) {
+	if !contains(knownUnsupportedScenarioIDs, "grpc.h2.server-streaming.echo") {
+		t.Fatal("known unsupported missing")
+	}
+	if contains(knownUnsupportedScenarioIDs, "grpc.h2.not-real") {
+		t.Fatal("unknown classified as known")
+	}
+}
+func setSelection(t *testing.T, scenario, profile string) {
 	t.Helper()
-	values := map[string]string{"PLAB_EXECUTOR_ID": executorID, "PLAB_EXECUTOR_VERSION": executorVersion, "PLAB_LOAD_GENERATOR_ID": loadGeneratorID, "PLAB_LOAD_GENERATOR_VERSION": loadGeneratorVersion, "PLAB_SCENARIO_ID": scenarioID, "PLAB_LOAD_PROFILE_ID": loadProfileID, "PLAB_PROTOCOL": "h2", "PLAB_PROTOCOL_VARIANT": protocolVariant, "PLAB_CONNECTIONS": "1", "PLAB_CONCURRENCY": "1", "PLAB_STREAMS_PER_CONNECTION": "1", "PLAB_DURATION_SECONDS": "5", "PLAB_WARMUP_SECONDS": "1", "PLAB_REPETITION": "1"}
-	for name, value := range values {
-		t.Setenv(name, value)
+	duration, warmup := "5", "1"
+	if profile == loadProfileDiagnostic {
+		duration, warmup = "10", "0"
+	}
+	values := map[string]string{"PLAB_EXECUTOR_ID": executorID, "PLAB_EXECUTOR_VERSION": executorVersion, "PLAB_LOAD_GENERATOR_ID": loadGeneratorID, "PLAB_LOAD_GENERATOR_VERSION": loadGeneratorVersion, "PLAB_SCENARIO_ID": scenario, "PLAB_LOAD_PROFILE_ID": profile, "PLAB_PROTOCOL": "h2", "PLAB_PROTOCOL_VARIANT": protocolVariant, "PLAB_CONNECTIONS": "1", "PLAB_CONCURRENCY": "1", "PLAB_STREAMS_PER_CONNECTION": "1", "PLAB_DURATION_SECONDS": duration, "PLAB_WARMUP_SECONDS": warmup, "PLAB_REPETITION": "1"}
+	for k, v := range values {
+		t.Setenv(k, v)
 	}
 }

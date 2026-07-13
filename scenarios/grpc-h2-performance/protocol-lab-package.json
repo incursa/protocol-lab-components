@@ -1,19 +1,29 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.grpc-h2-performance",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.2.0",
   "kind": "scenario-pack",
   "displayName": "gRPC over HTTP/2 Performance Scenario Pack",
   "entryManifests": [
     "scenarios/grpc/h2/unary-echo.yaml",
+    "scenarios/grpc/h2/unary-empty.yaml",
+    "scenarios/grpc/h2/unary-fixed-metadata.yaml",
+    "scenarios/grpc/h2/unary-gzip.yaml",
+    "scenarios/grpc/h2/unary-large.yaml",
     "suites/grpc-h2-performance-smoke.yaml",
-    "load-profiles/grpc-h2-smoke.yaml"
+    "suites/grpc-h2-contract-breadth-smoke.yaml",
+    "load-profiles/grpc-h2-smoke.yaml",
+    "load-profiles/grpc-h2-diagnostic.yaml"
   ],
   "providedScenarios": [
     {
       "scenarioId": "grpc.h2.unary.echo",
       "displayName": "gRPC over HTTP/2 Unary Echo",
       "protocols": ["h2"]
-    }
+    },
+    {"scenarioId":"grpc.h2.unary.empty","displayName":"gRPC over HTTP/2 Unary Empty Message","protocols":["h2"]},
+    {"scenarioId":"grpc.h2.unary.fixed-metadata","displayName":"gRPC over HTTP/2 Unary Fixed Metadata","protocols":["h2"]},
+    {"scenarioId":"grpc.h2.unary.gzip","displayName":"gRPC over HTTP/2 Unary Gzip","protocols":["h2"]},
+    {"scenarioId":"grpc.h2.unary.large","displayName":"gRPC over HTTP/2 Unary One-Mebibyte Message","protocols":["h2"]}
   ]
 }
