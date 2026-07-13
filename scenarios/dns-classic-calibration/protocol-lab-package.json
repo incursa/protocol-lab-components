@@ -1,0 +1,14 @@
+{
+  "schemaVersion":"protocol-lab-package-v2",
+  "packageId":"org.protocol-lab.components.scenario.dns-classic-calibration",
+  "packageVersion":"0.1.0",
+  "kind":"scenario-pack",
+  "displayName":"Classic DNS Calibration Diagnostic Scenario Pack",
+  "entryManifests":["scenarios/dns/classic/query-a-udp.yaml","scenarios/dns/classic/query-a-tcp.yaml","scenarios/dns/classic/udp-truncated-tcp-retry.yaml","suites/dns-classic-calibration-diagnostic-smoke.yaml","load-profiles/dns-classic-diagnostic.yaml","fixtures/canonical-plab-test-a-v2.json","fixtures/canonical-dnskey-plab-test-large-edns-dnssec-shaped.json"],
+  "providedScenarios":[
+    {"scenarioId":"dns.classic.udp.query.a","displayName":"Classic DNS UDP Deterministic A Calibration","protocols":["dns-udp"]},
+    {"scenarioId":"dns.classic.tcp.query.a","displayName":"Classic DNS TCP Deterministic A Calibration","protocols":["dns-tcp"]},
+    {"scenarioId":"dns.classic.udp-truncated-tcp-retry","displayName":"Classic DNS UDP Truncation to TCP Retry Calibration","protocols":["dns-udp","dns-tcp"]}
+  ],
+  "providedSuites":[{"suiteId":"dns-classic-calibration-diagnostic-smoke","displayName":"Classic DNS Calibration Diagnostic Smoke"}]
+}

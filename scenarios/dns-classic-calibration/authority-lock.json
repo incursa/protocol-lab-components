@@ -1,0 +1,13 @@
+{
+  "repository":"https://github.com/incursa/protocol-lab",
+  "commit":"8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574",
+  "files":{
+    "scenarios/dns/classic/query-a-udp.yaml":"8175c6a40af6fd3e7979c46f4af3a5a4e5d40a3c804257bebed2e8445bb0cfdd",
+    "scenarios/dns/classic/query-a-tcp.yaml":"b8f079fc3bed708b4618ddadd82f7ca55b8774f56a32174710a83294cbb98275",
+    "scenarios/dns/classic/udp-truncated-tcp-retry.yaml":"eaad1cd680ceed6567715b81a60fe51291f73d8c48464f7fac7c358118b915cd",
+    "suites/dns-classic-calibration-diagnostic-smoke.yaml":"f3f36e3c1b7c4516119ace6edbbd220be1958139ba45d6de7c1c1520863392af",
+    "load-profiles/dns-classic-diagnostic.yaml":"e2ab2c907c2c2bf5ed536ef7a49442e87663fdbceb0aa4f8b81dd00c4e1706c7",
+    "fixtures/canonical-plab-test-a-v2.json":"81d1c0a46ab190a163f6a80f87b84d61446c9c358a145a76d001e33ce14377b2",
+    "fixtures/canonical-dnskey-plab-test-large-edns-dnssec-shaped.json":"4ebd58015693d0fe142bab91d63d0a385bb4ef2c18e076bc9d644e438f4ff05b"
+  }
+}
