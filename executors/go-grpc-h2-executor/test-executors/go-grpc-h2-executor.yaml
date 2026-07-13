@@ -1,28 +1,28 @@
 executorIdentity:
   id: go-grpc-h2-executor
   name: Go gRPC over HTTP/2 Executor
-  version: 0.2.0
+  version: 0.3.0
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions: [test-executor-v1]
-  executorVersion: 0.2.0
+  executorVersion: 0.3.0
 claimedCapabilities:
   - {id: grpc.h2.unary.echo, status: supported}
   - {id: grpc.h2.unary.empty, status: supported}
   - {id: grpc.h2.unary.fixed-metadata, status: supported}
   - {id: grpc.h2.unary.gzip, status: supported}
   - {id: grpc.h2.unary.large, status: supported}
+  - {id: grpc.h2.server-streaming.echo, status: supported}
+  - {id: grpc.h2.client-streaming.echo, status: supported}
+  - {id: grpc.h2.bidi-streaming.echo, status: supported}
   - {id: grpc-h2-smoke, status: supported}
   - {id: grpc-h2-diagnostic, status: supported}
   - {id: exact-tls13-alpn-h2-proof, status: supported}
   - {id: pre-established-reused-channel-proof, status: supported}
   - {id: deterministic-payload-protobuf-frame-hashes, status: supported}
-  - {id: grpc.h2.bidi-streaming.echo, status: unsupported}
   - {id: grpc.h2.client-cancellation, status: unsupported}
-  - {id: grpc.h2.client-streaming.echo, status: unsupported}
   - {id: grpc.h2.deadline-exceeded, status: unsupported}
-  - {id: grpc.h2.server-streaming.echo, status: unsupported}
   - {id: grpc.h2.trailers-only-status, status: unsupported}
   - {id: grpc.h2.unary.echo-new-channel, status: unsupported}
 supportedTestSelectors:
@@ -31,12 +31,18 @@ supportedTestSelectors:
   - {selectorType: test-id, expression: grpc.h2.unary.fixed-metadata}
   - {selectorType: test-id, expression: grpc.h2.unary.gzip}
   - {selectorType: test-id, expression: grpc.h2.unary.large}
+  - {selectorType: test-id, expression: grpc.h2.server-streaming.echo}
+  - {selectorType: test-id, expression: grpc.h2.client-streaming.echo}
+  - {selectorType: test-id, expression: grpc.h2.bidi-streaming.echo}
 supportedScenarioSelectors:
   - {selectorType: scenario-id, expression: grpc.h2.unary.echo}
   - {selectorType: scenario-id, expression: grpc.h2.unary.empty}
   - {selectorType: scenario-id, expression: grpc.h2.unary.fixed-metadata}
   - {selectorType: scenario-id, expression: grpc.h2.unary.gzip}
   - {selectorType: scenario-id, expression: grpc.h2.unary.large}
+  - {selectorType: scenario-id, expression: grpc.h2.server-streaming.echo}
+  - {selectorType: scenario-id, expression: grpc.h2.client-streaming.echo}
+  - {selectorType: scenario-id, expression: grpc.h2.bidi-streaming.echo}
 supportedProtocolFamilies: [h2]
 supportedExecutionModes: [single-cell, process]
 requiredTargetEndpointBindings:

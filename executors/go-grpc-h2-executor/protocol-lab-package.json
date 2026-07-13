@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.go-grpc-h2-executor",
-  "packageVersion": "0.2.0",
+  "packageVersion": "0.3.0",
   "kind": "test-executor",
   "displayName": "Go gRPC over HTTP/2 Executor",
   "entryManifests": ["test-executors/go-grpc-h2-executor.yaml"],
@@ -9,8 +9,8 @@
     "testExecutorId": "go-grpc-h2-executor",
     "displayName": "Go gRPC over HTTP/2 Executor",
     "protocols": ["h2"],
-    "scenarios": ["grpc.h2.unary.echo", "grpc.h2.unary.empty", "grpc.h2.unary.fixed-metadata", "grpc.h2.unary.gzip", "grpc.h2.unary.large"],
-    "tests": ["grpc.h2.unary.echo", "grpc.h2.unary.empty", "grpc.h2.unary.fixed-metadata", "grpc.h2.unary.gzip", "grpc.h2.unary.large"]
+    "scenarios": ["grpc.h2.unary.echo", "grpc.h2.unary.empty", "grpc.h2.unary.fixed-metadata", "grpc.h2.unary.gzip", "grpc.h2.unary.large", "grpc.h2.server-streaming.echo", "grpc.h2.client-streaming.echo", "grpc.h2.bidi-streaming.echo"],
+    "tests": ["grpc.h2.unary.echo", "grpc.h2.unary.empty", "grpc.h2.unary.fixed-metadata", "grpc.h2.unary.gzip", "grpc.h2.unary.large", "grpc.h2.server-streaming.echo", "grpc.h2.client-streaming.echo", "grpc.h2.bidi-streaming.echo"]
   }],
   "dependencies": {}
 }

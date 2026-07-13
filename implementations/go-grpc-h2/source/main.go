@@ -21,8 +21,9 @@ import (
 
 const (
 	implementationID      = "go-grpc-h2"
-	implementationVersion = "0.2.0"
+	implementationVersion = "0.3.0"
 	maxFrameBytes         = 1048585
+	streamMessageCount    = 100
 )
 
 func main() {
@@ -35,11 +36,11 @@ func main() {
 		fatal(err)
 	}
 	tlsConfig := &tls.Config{Certificates: []tls.Certificate{certificate}, MinVersion: tls.VersionTLS13, MaxVersion: tls.VersionTLS13, NextProtos: []string{"h2"}}
-	server := &http.Server{Addr: *listen, Handler: http.HandlerFunc(handleUnary), TLSConfig: tlsConfig}
+	server := &http.Server{Addr: *listen, Handler: http.HandlerFunc(handleRPC), TLSConfig: tlsConfig}
 	if err := http2.ConfigureServer(server, &http2.Server{}); err != nil {
 		fatal(err)
 	}
-	ready := map[string]any{"implementationId": implementationID, "implementationVersion": implementationVersion, "listenAddress": *listen, "protocol": "grpc-over-h2", "tlsVersion": "TLS1.3", "alpn": "h2", "scenarioIds": []string{"grpc.h2.unary.echo", "grpc.h2.unary.empty", "grpc.h2.unary.fixed-metadata", "grpc.h2.unary.gzip", "grpc.h2.unary.large"}}
+	ready := map[string]any{"implementationId": implementationID, "implementationVersion": implementationVersion, "listenAddress": *listen, "protocol": "grpc-over-h2", "tlsVersion": "TLS1.3", "alpn": "h2", "scenarioIds": []string{"grpc.h2.unary.echo", "grpc.h2.unary.empty", "grpc.h2.unary.fixed-metadata", "grpc.h2.unary.gzip", "grpc.h2.unary.large", "grpc.h2.server-streaming.echo", "grpc.h2.client-streaming.echo", "grpc.h2.bidi-streaming.echo"}}
 	encoded, _ := json.Marshal(ready)
 	fmt.Fprintln(os.Stdout, string(encoded))
 	if err := server.ListenAndServeTLS("", ""); err != nil && !errors.Is(err, http.ErrServerClosed) {
@@ -47,7 +48,7 @@ func main() {
 	}
 }
 
-func handleUnary(w http.ResponseWriter, r *http.Request) {
+func handleRPC(w http.ResponseWriter, r *http.Request) {
 	if r.ProtoMajor != 2 || r.TLS == nil || r.TLS.Version != tls.VersionTLS13 || r.TLS.NegotiatedProtocol != "h2" {
 		http.Error(w, "exact TLS 1.3 with HTTP/2 ALPN h2 required", http.StatusHTTPVersionNotSupported)
 		return
@@ -57,7 +58,7 @@ func handleUnary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	method := strings.TrimPrefix(r.URL.Path, "/protocollab.performance.v1.EchoService/")
-	if method != "UnaryEcho" && method != "UnaryGzip" && method != "UnaryFixedMetadata" {
+	if method != "UnaryEcho" && method != "UnaryGzip" && method != "UnaryFixedMetadata" && method != "ServerStreamingEcho" && method != "ClientStreamingEcho" && method != "BidirectionalStreamingEcho" {
 		http.NotFound(w, r)
 		return
 	}
@@ -75,6 +76,10 @@ func handleUnary(w http.ResponseWriter, r *http.Request) {
 	}
 	if method == "UnaryFixedMetadata" && (r.Header.Get("x-plab-text") != "protocol-lab" || !matchesBinaryMetadata(r.Header.Get("x-plab-bin-bin"))) {
 		writeGRPCError(w, "3", "fixed request metadata mismatch")
+		return
+	}
+	if method == "ServerStreamingEcho" || method == "ClientStreamingEcho" || method == "BidirectionalStreamingEcho" {
+		handleStreaming(w, r, method)
 		return
 	}
 	body, err := io.ReadAll(io.LimitReader(r.Body, maxFrameBytes+1))
@@ -107,6 +112,123 @@ func handleUnary(w http.ResponseWriter, r *http.Request) {
 	if method == "UnaryFixedMetadata" {
 		w.Header().Set("x-plab-bin-bin", "AAECAw==")
 	}
+}
+
+func handleStreaming(w http.ResponseWriter, r *http.Request, method string) {
+	if method == "BidirectionalStreamingEcho" {
+		handleBidirectionalStreaming(w, r)
+		return
+	}
+	expectedRequests := 1
+	if method == "ClientStreamingEcho" {
+		expectedRequests = streamMessageCount
+	}
+	requestFrames := make([][]byte, 0, expectedRequests)
+	for index := 0; index < expectedRequests; index++ {
+		frame, protobuf, payload, err := readIdentityFrame(r.Body)
+		if err != nil || !validStreamingPayload(payload, protobuf) {
+			writeGRPCError(w, "3", "invalid deterministic streaming request")
+			return
+		}
+		requestFrames = append(requestFrames, frame)
+	}
+	var extra [1]byte
+	if n, err := r.Body.Read(extra[:]); n != 0 || (err != nil && !errors.Is(err, io.EOF)) {
+		writeGRPCError(w, "3", "stream request count or half-close mismatch")
+		return
+	}
+	w.Header().Set("Content-Type", "application/grpc+proto")
+	w.Header().Set("grpc-encoding", "identity")
+	w.Header().Set("Trailer", "grpc-status, grpc-message")
+	w.WriteHeader(http.StatusOK)
+	flusher, _ := w.(http.Flusher)
+	writeFrame := func(frame []byte) bool {
+		if _, err := w.Write(frame); err != nil {
+			return false
+		}
+		if flusher != nil {
+			flusher.Flush()
+		}
+		return true
+	}
+	switch method {
+	case "ServerStreamingEcho":
+		for index := 0; index < streamMessageCount; index++ {
+			if !writeFrame(requestFrames[0]) {
+				return
+			}
+		}
+	case "ClientStreamingEcho":
+		if !writeFrame(requestFrames[len(requestFrames)-1]) {
+			return
+		}
+	}
+	w.Header().Set("grpc-status", "0")
+	w.Header().Set("grpc-message", "")
+}
+
+func handleBidirectionalStreaming(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/grpc+proto")
+	w.Header().Set("grpc-encoding", "identity")
+	w.Header().Set("Trailer", "grpc-status, grpc-message")
+	flusher, _ := w.(http.Flusher)
+	responseStarted := false
+	for index := 0; index < streamMessageCount; index++ {
+		frame, protobuf, payload, err := readIdentityFrame(r.Body)
+		if err != nil || !validStreamingPayload(payload, protobuf) {
+			if !responseStarted {
+				w.WriteHeader(http.StatusOK)
+			}
+			w.Header().Set("grpc-status", "3")
+			w.Header().Set("grpc-message", "invalid deterministic bidirectional request")
+			return
+		}
+		if !responseStarted {
+			w.WriteHeader(http.StatusOK)
+			responseStarted = true
+		}
+		if _, err := w.Write(frame); err != nil {
+			return
+		}
+		if flusher != nil {
+			flusher.Flush()
+		}
+	}
+	var extra [1]byte
+	if n, err := r.Body.Read(extra[:]); n != 0 || (err != nil && !errors.Is(err, io.EOF)) {
+		w.Header().Set("grpc-status", "3")
+		w.Header().Set("grpc-message", "bidirectional request count or half-close mismatch")
+		return
+	}
+	w.Header().Set("grpc-status", "0")
+	w.Header().Set("grpc-message", "")
+}
+
+func readIdentityFrame(reader io.Reader) ([]byte, []byte, []byte, error) {
+	header := make([]byte, 5)
+	if _, err := io.ReadFull(reader, header); err != nil {
+		return nil, nil, nil, err
+	}
+	if header[0] != 0 {
+		return nil, nil, nil, errors.New("streaming compression flag mismatch")
+	}
+	length := int(binary.BigEndian.Uint32(header[1:]))
+	if length < 0 || length > maxFrameBytes-5 {
+		return nil, nil, nil, errors.New("streaming frame length out of range")
+	}
+	protobuf := make([]byte, length)
+	if _, err := io.ReadFull(reader, protobuf); err != nil {
+		return nil, nil, nil, err
+	}
+	payload, err := decodeProtobuf(protobuf)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	return append(header, protobuf...), protobuf, payload, nil
+}
+
+func validStreamingPayload(payload, protobuf []byte) bool {
+	return len(payload) == 1024 && bytes.Equal(payload, bytes.Repeat([]byte{'B'}, 1024)) && len(protobuf) == 1027
 }
 
 func matchesBinaryMetadata(value string) bool {

@@ -15,11 +15,13 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"math"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -30,9 +32,9 @@ import (
 
 const (
 	executorID                  = "go-grpc-h2-executor"
-	executorVersion             = "0.2.0"
+	executorVersion             = "0.3.0"
 	loadGeneratorID             = "go-x-net-http2-grpc-load"
-	loadGeneratorVersion        = "0.2.0"
+	loadGeneratorVersion        = "0.3.0"
 	loadProfileSmoke            = "grpc-h2-smoke"
 	loadProfileDiagnostic       = "grpc-h2-diagnostic"
 	protocolVariant             = "grpc-over-h2-tls-alpn"
@@ -43,15 +45,16 @@ const (
 )
 
 type scenarioSpec struct {
-	id, method, path, compression, metadataProfile string
-	payload                                        []byte
-	payloadHash, protobufHash, frameHash           string
-	protobufBytes, frameBytes                      int
-	deadline                                       time.Duration
+	id, method, path, rpcType, compression, metadataProfile string
+	payload                                                 []byte
+	payloadHash, protobufHash, frameHash                    string
+	protobufBytes, frameBytes                               int
+	requestCount, responseCount                             int
+	deadline                                                time.Duration
 }
 
-var supportedScenarioIDs = []string{"grpc.h2.unary.echo", "grpc.h2.unary.empty", "grpc.h2.unary.fixed-metadata", "grpc.h2.unary.gzip", "grpc.h2.unary.large"}
-var knownUnsupportedScenarioIDs = []string{"grpc.h2.bidi-streaming.echo", "grpc.h2.client-cancellation", "grpc.h2.client-streaming.echo", "grpc.h2.deadline-exceeded", "grpc.h2.server-streaming.echo", "grpc.h2.trailers-only-status", "grpc.h2.unary.echo-new-channel"}
+var supportedScenarioIDs = []string{"grpc.h2.unary.echo", "grpc.h2.unary.empty", "grpc.h2.unary.fixed-metadata", "grpc.h2.unary.gzip", "grpc.h2.unary.large", "grpc.h2.server-streaming.echo", "grpc.h2.client-streaming.echo", "grpc.h2.bidi-streaming.echo"}
+var knownUnsupportedScenarioIDs = []string{"grpc.h2.client-cancellation", "grpc.h2.deadline-exceeded", "grpc.h2.trailers-only-status", "grpc.h2.unary.echo-new-channel"}
 
 func specFor(id string) (scenarioSpec, bool) {
 	switch id {
@@ -67,9 +70,15 @@ func specFor(id string) (scenarioSpec, bool) {
 		payload := bytes.Repeat([]byte{'B'}, 1024)
 		protobuf := encodeProtobuf(payload)
 		frame, _ := encodeFrame(protobuf, "gzip")
-		return scenarioSpec{id: id, method: "UnaryGzip", path: "/protocollab.performance.v1.EchoService/UnaryGzip", compression: "gzip", metadataProfile: "fixed-empty-user-metadata", payload: payload, payloadHash: sha256Hex(payload), protobufHash: sha256Hex(protobuf), frameHash: sha256Hex(frame), protobufBytes: len(protobuf), frameBytes: len(frame), deadline: 5 * time.Second}, true
+		return scenarioSpec{id: id, method: "UnaryGzip", path: "/protocollab.performance.v1.EchoService/UnaryGzip", rpcType: "unary", compression: "gzip", metadataProfile: "fixed-empty-user-metadata", payload: payload, payloadHash: sha256Hex(payload), protobufHash: sha256Hex(protobuf), frameHash: sha256Hex(frame), protobufBytes: len(protobuf), frameBytes: len(frame), requestCount: 1, responseCount: 1, deadline: 5 * time.Second}, true
 	case "grpc.h2.unary.large":
 		return makeIdentitySpec(id, "UnaryEcho", bytes.Repeat([]byte{'L'}, 1<<20), 10*time.Second), true
+	case "grpc.h2.server-streaming.echo":
+		return makeStreamingSpec(id, "ServerStreamingEcho", "server-streaming", 1, 100), true
+	case "grpc.h2.client-streaming.echo":
+		return makeStreamingSpec(id, "ClientStreamingEcho", "client-streaming", 100, 1), true
+	case "grpc.h2.bidi-streaming.echo":
+		return makeStreamingSpec(id, "BidirectionalStreamingEcho", "bidirectional-streaming", 100, 100), true
 	default:
 		return scenarioSpec{}, false
 	}
@@ -78,25 +87,39 @@ func specFor(id string) (scenarioSpec, bool) {
 func makeIdentitySpec(id, method string, payload []byte, deadline time.Duration) scenarioSpec {
 	protobuf := encodeProtobuf(payload)
 	frame, _ := encodeFrame(protobuf, "identity")
-	return scenarioSpec{id: id, method: method, path: "/protocollab.performance.v1.EchoService/" + method, compression: "identity", metadataProfile: "fixed-empty-user-metadata", payload: payload, payloadHash: sha256Hex(payload), protobufHash: sha256Hex(protobuf), frameHash: sha256Hex(frame), protobufBytes: len(protobuf), frameBytes: len(frame), deadline: deadline}
+	return scenarioSpec{id: id, method: method, path: "/protocollab.performance.v1.EchoService/" + method, rpcType: "unary", compression: "identity", metadataProfile: "fixed-empty-user-metadata", payload: payload, payloadHash: sha256Hex(payload), protobufHash: sha256Hex(protobuf), frameHash: sha256Hex(frame), protobufBytes: len(protobuf), frameBytes: len(frame), requestCount: 1, responseCount: 1, deadline: deadline}
+}
+
+func makeStreamingSpec(id, method, rpcType string, requestCount, responseCount int) scenarioSpec {
+	payload := bytes.Repeat([]byte{'B'}, 1024)
+	protobuf := encodeProtobuf(payload)
+	frame, _ := encodeFrame(protobuf, "identity")
+	return scenarioSpec{id: id, method: method, path: "/protocollab.performance.v1.EchoService/" + method, rpcType: rpcType, compression: "identity", metadataProfile: "fixed-empty-user-metadata", payload: payload, payloadHash: sha256Hex(payload), protobufHash: sha256Hex(protobuf), frameHash: sha256Hex(frame), protobufBytes: len(protobuf), frameBytes: len(frame), requestCount: requestCount, responseCount: responseCount, deadline: 15 * time.Second}
 }
 
 type rpcObservation struct {
-	HTTPStatus             int    `json:"httpStatus"`
-	HTTPVersion            string `json:"httpVersion"`
-	ContentType            string `json:"contentType"`
-	TrailersPresent        bool   `json:"trailersPresent"`
-	GRPCStatus             string `json:"grpcStatus"`
-	GRPCEncoding           string `json:"grpcEncoding"`
-	ResponseFrameBytes     int    `json:"responseFrameBytes"`
-	ResponseFrameHash      string `json:"responseFrameSha256"`
-	ResponseInitialText    string `json:"responseInitialTextMetadata,omitempty"`
-	ResponseTrailingBinary string `json:"responseTrailingBinaryMetadata,omitempty"`
-	LatencyNanos           int64  `json:"latencyNanos"`
-	Passed                 bool   `json:"passed"`
-	TimedOut               bool   `json:"timedOut"`
-	Error                  string `json:"error,omitempty"`
-	ResponseFrame          []byte `json:"-"`
+	HTTPStatus              int     `json:"httpStatus"`
+	HTTPVersion             string  `json:"httpVersion"`
+	ContentType             string  `json:"contentType"`
+	TrailersPresent         bool    `json:"trailersPresent"`
+	GRPCStatus              string  `json:"grpcStatus"`
+	GRPCEncoding            string  `json:"grpcEncoding"`
+	ResponseFrameBytes      int     `json:"responseFrameBytes"`
+	ResponseFrameHash       string  `json:"responseFrameSha256"`
+	RequestMessageCount     int     `json:"requestMessageCount"`
+	ResponseMessageCount    int     `json:"responseMessageCount"`
+	ClientHalfClosed        bool    `json:"clientHalfClosed"`
+	OrderedEcho             bool    `json:"orderedEcho"`
+	StreamComplete          bool    `json:"streamComplete"`
+	TimeToFirstMessageNanos int64   `json:"timeToFirstMessageNanos,omitempty"`
+	MessageArrivalNanos     []int64 `json:"-"`
+	ResponseInitialText     string  `json:"responseInitialTextMetadata,omitempty"`
+	ResponseTrailingBinary  string  `json:"responseTrailingBinaryMetadata,omitempty"`
+	LatencyNanos            int64   `json:"latencyNanos"`
+	Passed                  bool    `json:"passed"`
+	TimedOut                bool    `json:"timedOut"`
+	Error                   string  `json:"error,omitempty"`
+	ResponseFrame           []byte  `json:"-"`
 }
 
 type executionResult struct {
@@ -176,65 +199,66 @@ func main() {
 	encoded, _ := json.Marshal(result)
 	fmt.Fprintln(os.Stdout, string(encoded))
 	if err != nil || !result.Passed {
-		fatal(1, "gRPC/H2 unary validity gate failed")
+		fatal(1, "gRPC/H2 validity gate failed")
 	}
 }
 
 func execute(targetURL, rootPath string, timeout time.Duration, spec scenarioSpec, loadProfileID string) (executionResult, []byte, []byte, []byte, error) {
 	result := baseResult(spec, loadProfileID)
 	frame, _ := encodeFrame(encodeProtobuf(spec.payload), spec.compression)
+	requestFrames := bytes.Repeat(frame, spec.requestCount)
 	parsed, err := url.Parse(targetURL)
 	if err != nil || parsed.Scheme != "https" || parsed.Host == "" {
-		return result, frame, nil, nil, errors.New("target URL must be an absolute https URL")
+		return result, requestFrames, nil, nil, errors.New("target URL must be an absolute https URL")
 	}
 	rootPEM, err := os.ReadFile(rootPath)
 	if err != nil {
-		return result, frame, nil, nil, err
+		return result, requestFrames, nil, nil, err
 	}
 	if sha256Hex(rootPEM) != expectedRootPEMHash {
-		return result, frame, nil, nil, errors.New("trusted root certificate hash mismatch")
+		return result, requestFrames, nil, nil, errors.New("trusted root certificate hash mismatch")
 	}
 	roots := x509.NewCertPool()
 	if !roots.AppendCertsFromPEM(rootPEM) {
-		return result, frame, nil, nil, errors.New("trusted root certificate could not be parsed")
+		return result, requestFrames, nil, nil, errors.New("trusted root certificate could not be parsed")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	raw, err := (&net.Dialer{Timeout: timeout}).DialContext(ctx, "tcp", parsed.Host)
 	if err != nil {
-		return result, frame, nil, nil, err
+		return result, requestFrames, nil, nil, err
 	}
 	counted := &countingConn{Conn: raw}
 	defer counted.Close()
 	tlsConn := tls.Client(counted, &tls.Config{RootCAs: roots, ServerName: "grpc.plab.test", MinVersion: tls.VersionTLS13, MaxVersion: tls.VersionTLS13, NextProtos: []string{"h2"}})
 	if err := tlsConn.HandshakeContext(ctx); err != nil {
-		return result, frame, nil, nil, err
+		return result, requestFrames, nil, nil, err
 	}
 	state := tlsConn.ConnectionState()
 	if state.Version != tls.VersionTLS13 || state.NegotiatedProtocol != "h2" || !state.NegotiatedProtocolIsMutual || len(state.PeerCertificates) != 1 {
-		return result, frame, nil, nil, errors.New("exact TLS 1.3, mutual ALPN h2, and one authenticated leaf certificate are required")
+		return result, requestFrames, nil, nil, errors.New("exact TLS 1.3, mutual ALPN h2, and one authenticated leaf certificate are required")
 	}
 	leaf := state.PeerCertificates[0]
 	leafHash, spkiHash := sha256Hex(leaf.Raw), sha256Hex(leaf.RawSubjectPublicKeyInfo)
 	if leafHash != expectedLeafCertificateHash || spkiHash != expectedLeafSPKIHash {
-		return result, frame, nil, leaf.Raw, errors.New("authenticated leaf certificate identity mismatch")
+		return result, requestFrames, nil, leaf.Raw, errors.New("authenticated leaf certificate identity mismatch")
 	}
 	transport := &http2.Transport{}
 	channel, err := transport.NewClientConn(tlsConn)
 	if err != nil {
-		return result, frame, nil, leaf.Raw, err
+		return result, requestFrames, nil, leaf.Raw, err
 	}
 	defer channel.Close()
 	warmupCompleted := false
 	if loadProfileID == loadProfileSmoke {
-		warmup := invoke(context.Background(), channel, parsed, frame, timeout, spec)
+		warmup := invoke(context.Background(), channel, parsed, requestFrames, timeout, spec)
 		if !warmup.Passed {
-			return result, frame, nil, leaf.Raw, fmt.Errorf("pre-established channel warmup failed: %s", warmup.Error)
+			return result, requestFrames, nil, leaf.Raw, fmt.Errorf("pre-established channel warmup failed: %s", warmup.Error)
 		}
 		warmupCompleted = true
 	}
 	readBefore, writtenBefore := counted.totals()
-	observation := invoke(context.Background(), channel, parsed, frame, timeout, spec)
+	observation := invoke(context.Background(), channel, parsed, requestFrames, timeout, spec)
 	readAfter, writtenAfter := counted.totals()
 	networkBytes := (readAfter - readBefore) + (writtenAfter - writtenBefore)
 	result.Observation = observation
@@ -252,38 +276,50 @@ func execute(targetURL, rootPath string, timeout time.Duration, spec scenarioSpe
 	if observation.LatencyNanos > 0 && completed == 1 {
 		rate = float64(time.Second) / float64(observation.LatencyNanos)
 	}
-	result.Metrics = map[string]any{"rpcsPerSecond": rate, "bytesPerSecond": func() float64 {
+	messageRate := 0.0
+	if observation.LatencyNanos > 0 && completed == 1 {
+		messageRate = float64(spec.requestCount+spec.responseCount) * float64(time.Second) / float64(observation.LatencyNanos)
+	}
+	messageLatencies := observation.MessageArrivalNanos
+	if len(messageLatencies) == 0 {
+		messageLatencies = []int64{observation.LatencyNanos}
+	}
+	result.Metrics = map[string]any{"rpcsPerSecond": rate, "messagesPerSecond": messageRate, "bytesPerSecond": func() float64 {
 		if observation.LatencyNanos > 0 {
 			return float64(networkBytes) * float64(time.Second) / float64(observation.LatencyNanos)
 		}
 		return 0
-	}(), "completedOperations": completed, "failedOperations": failed, "deadlineExceededOperations": 0, "cancelledOperations": 0, "timedOutOperations": timedOut, "effectiveConcurrency": 1, "effectiveStreams": 1, "rpcLatencyMeanMilliseconds": latencyMS, "rpcLatencyP50Milliseconds": latencyMS, "rpcLatencyP75Milliseconds": latencyMS, "rpcLatencyP90Milliseconds": latencyMS, "rpcLatencyP95Milliseconds": latencyMS, "rpcLatencyP99Milliseconds": latencyMS, "totalTransferredBytes": networkBytes, "networkBytesRead": readAfter - readBefore, "networkBytesWritten": writtenAfter - writtenBefore, "grpcMessageFrameBytesBidirectional": spec.frameBytes + observation.ResponseFrameBytes}
-	responseProtobuf, responsePayload, decodeErr := decodeFrame(observation.ResponseFrame, spec.compression)
-	result.Response = map[string]any{"count": 1, "payloadBytes": len(responsePayload), "payloadSha256": sha256Hex(responsePayload), "serializedProtobufBytes": len(responseProtobuf), "serializedProtobufSha256": sha256Hex(responseProtobuf), "grpcFrameBytes": observation.ResponseFrameBytes, "grpcFrameSha256": observation.ResponseFrameHash, "httpStatus": observation.HTTPStatus, "contentType": observation.ContentType, "trailersPresent": observation.TrailersPresent, "grpcStatus": observation.GRPCStatus, "grpcEncoding": observation.GRPCEncoding, "metadataProfile": spec.metadataProfile}
+	}(), "completedOperations": completed, "failedOperations": failed, "deadlineExceededOperations": 0, "cancelledOperations": 0, "timedOutOperations": timedOut, "effectiveConcurrency": 1, "effectiveStreams": 1, "rpcLatencyMeanMilliseconds": latencyMS, "rpcLatencyP50Milliseconds": latencyMS, "rpcLatencyP75Milliseconds": latencyMS, "rpcLatencyP90Milliseconds": latencyMS, "rpcLatencyP95Milliseconds": latencyMS, "rpcLatencyP99Milliseconds": latencyMS, "messageLatencyMeanMilliseconds": meanMilliseconds(messageLatencies), "messageLatencyP50Milliseconds": percentileMilliseconds(messageLatencies, 0.50), "messageLatencyP75Milliseconds": percentileMilliseconds(messageLatencies, 0.75), "messageLatencyP90Milliseconds": percentileMilliseconds(messageLatencies, 0.90), "messageLatencyP95Milliseconds": percentileMilliseconds(messageLatencies, 0.95), "messageLatencyP99Milliseconds": percentileMilliseconds(messageLatencies, 0.99), "messageLatencyScope": "rpc-start-to-ordered-response-message-arrival", "timeToFirstMessageMilliseconds": float64(observation.TimeToFirstMessageNanos) / float64(time.Millisecond), "totalTransferredBytes": networkBytes, "networkBytesRead": readAfter - readBefore, "networkBytesWritten": writtenAfter - writtenBefore, "grpcMessageFrameBytesBidirectional": spec.requestCount*spec.frameBytes + observation.ResponseFrameBytes}
+	result.Response = map[string]any{"count": observation.ResponseMessageCount, "payloadBytesPerMessage": len(spec.payload), "payloadSha256": spec.payloadHash, "serializedProtobufBytesPerMessage": spec.protobufBytes, "serializedProtobufSha256": spec.protobufHash, "grpcFrameBytesPerMessage": spec.frameBytes, "grpcFrameSha256": spec.frameHash, "aggregateGrpcFrameBytes": observation.ResponseFrameBytes, "aggregateGrpcFramesSha256": observation.ResponseFrameHash, "httpStatus": observation.HTTPStatus, "contentType": observation.ContentType, "trailersPresent": observation.TrailersPresent, "grpcStatus": observation.GRPCStatus, "grpcEncoding": observation.GRPCEncoding, "metadataProfile": spec.metadataProfile, "streamComplete": observation.StreamComplete, "orderedEcho": observation.OrderedEcho}
+	if spec.responseCount == 1 {
+		result.Response["payloadBytes"] = len(spec.payload)
+		result.Response["serializedProtobufBytes"] = spec.protobufBytes
+		result.Response["grpcFrameBytes"] = spec.frameBytes
+	}
 	if spec.metadataProfile == "fixed-ascii-and-binary-metadata-v1" {
 		result.Response["responseInitialTextMetadata"] = observation.ResponseInitialText
 		result.Response["responseTrailingBinaryMetadata"] = observation.ResponseTrailingBinary
 		result.Response["responseTrailingBinaryMetadataDecodedSha256"] = sha256Hex([]byte{0, 1, 2, 3})
 	}
-	result.Passed = observation.Passed && decodeErr == nil && completed == 1 && failed == 0 && timedOut == 0
+	result.Passed = observation.Passed && completed == 1 && failed == 0 && timedOut == 0
 	result.Validation = map[string]any{"passed": result.Passed, "checks": validationChecks(spec)}
 	if !result.Passed {
-		return result, frame, observation.ResponseFrame, leaf.Raw, errors.New(observation.Error)
+		return result, requestFrames, observation.ResponseFrame, leaf.Raw, errors.New(observation.Error)
 	}
-	return result, frame, observation.ResponseFrame, leaf.Raw, nil
+	return result, requestFrames, observation.ResponseFrame, leaf.Raw, nil
 }
 
 type roundTripper interface {
 	RoundTrip(*http.Request) (*http.Response, error)
 }
 
-func invoke(parent context.Context, channel roundTripper, parsed *url.URL, frame []byte, timeout time.Duration, spec scenarioSpec) rpcObservation {
+func invoke(parent context.Context, channel roundTripper, parsed *url.URL, requestFrames []byte, timeout time.Duration, spec scenarioSpec) rpcObservation {
 	r := rpcObservation{}
 	ctx, cancel := context.WithTimeout(parent, timeout)
 	defer cancel()
 	u := *parsed
 	u.Path, u.RawQuery, u.Fragment = spec.path, "", ""
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), bytes.NewReader(frame))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), bytes.NewReader(requestFrames))
 	if err != nil {
 		r.Error = err.Error()
 		return r
@@ -306,7 +342,7 @@ func invoke(parent context.Context, channel roundTripper, parsed *url.URL, frame
 		return r
 	}
 	defer resp.Body.Close()
-	body, readErr := io.ReadAll(resp.Body)
+	body, messageArrivalNanos, responseCount, readErr := readAndValidateResponseFrames(resp.Body, spec, started)
 	r.ResponseFrame = body
 	r.LatencyNanos = time.Since(started).Nanoseconds()
 	r.HTTPStatus, r.HTTPVersion = resp.StatusCode, resp.Proto
@@ -317,6 +353,15 @@ func invoke(parent context.Context, channel roundTripper, parsed *url.URL, frame
 	r.GRPCStatus = resp.Trailer.Get("grpc-status")
 	r.ResponseTrailingBinary = resp.Trailer.Get("x-plab-bin-bin")
 	r.ResponseFrameBytes, r.ResponseFrameHash = len(body), sha256Hex(body)
+	r.RequestMessageCount = spec.requestCount
+	r.ResponseMessageCount = responseCount
+	r.ClientHalfClosed = spec.requestCount > 1
+	r.OrderedEcho = responseCount == spec.responseCount
+	r.StreamComplete = readErr == nil && responseCount == spec.responseCount
+	r.MessageArrivalNanos = messageArrivalNanos
+	if len(messageArrivalNanos) > 0 {
+		r.TimeToFirstMessageNanos = messageArrivalNanos[0]
+	}
 	problems := []string{}
 	if readErr != nil {
 		problems = append(problems, readErr.Error())
@@ -333,8 +378,11 @@ func invoke(parent context.Context, channel roundTripper, parsed *url.URL, frame
 	if r.GRPCStatus != "0" || !r.TrailersPresent {
 		problems = append(problems, "missing successful gRPC trailers")
 	}
-	if err := validateResponseFrame(body, spec); err != nil {
-		problems = append(problems, err.Error())
+	if responseCount != spec.responseCount {
+		problems = append(problems, fmt.Sprintf("expected %d response messages, observed %d", spec.responseCount, responseCount))
+	}
+	if (spec.rpcType == "client-streaming" || spec.rpcType == "bidirectional-streaming") && !r.ClientHalfClosed {
+		problems = append(problems, "client half-close was not proven")
 	}
 	if spec.compression == "gzip" && r.GRPCEncoding != "gzip" {
 		problems = append(problems, "gzip response encoding not proven")
@@ -451,13 +499,43 @@ func validateResponseFrame(frame []byte, spec scenarioSpec) error {
 	return nil
 }
 
+func readAndValidateResponseFrames(reader io.Reader, spec scenarioSpec, started time.Time) ([]byte, []int64, int, error) {
+	var aggregate bytes.Buffer
+	arrivalNanos := make([]int64, 0, spec.responseCount)
+	for index := 0; index < spec.responseCount; index++ {
+		header := make([]byte, 5)
+		if _, err := io.ReadFull(reader, header); err != nil {
+			return aggregate.Bytes(), arrivalNanos, index, fmt.Errorf("response message %d header: %w", index, err)
+		}
+		length := int(binary.BigEndian.Uint32(header[1:]))
+		if length < 0 || length > 2<<20 {
+			return aggregate.Bytes(), arrivalNanos, index, fmt.Errorf("response message %d length is out of range", index)
+		}
+		message := make([]byte, length)
+		if _, err := io.ReadFull(reader, message); err != nil {
+			return aggregate.Bytes(), arrivalNanos, index, fmt.Errorf("response message %d body: %w", index, err)
+		}
+		frame := append(header, message...)
+		if err := validateResponseFrame(frame, spec); err != nil {
+			return aggregate.Bytes(), arrivalNanos, index, fmt.Errorf("response message %d: %w", index, err)
+		}
+		arrivalNanos = append(arrivalNanos, time.Since(started).Nanoseconds())
+		aggregate.Write(frame)
+	}
+	var extra [1]byte
+	if n, err := reader.Read(extra[:]); n != 0 || (err != nil && !errors.Is(err, io.EOF)) {
+		return aggregate.Bytes(), arrivalNanos, spec.responseCount, errors.New("response stream contains unexpected data after the canonical message count")
+	}
+	return aggregate.Bytes(), arrivalNanos, spec.responseCount, nil
+}
+
 func baseResult(spec scenarioSpec, loadProfileID string) executionResult {
 	duration, warmup := 5, 1
 	if loadProfileID == loadProfileDiagnostic {
 		duration, warmup = 10, 0
 	}
 	frame, _ := encodeFrame(encodeProtobuf(spec.payload), spec.compression)
-	request := map[string]any{"count": 1, "payloadBytes": len(spec.payload), "payloadSha256": spec.payloadHash, "serializedProtobufBytes": spec.protobufBytes, "serializedProtobufSha256": spec.protobufHash, "grpcFrameBytes": len(frame), "grpcFrameSha256": sha256Hex(frame), "compression": spec.compression, "metadataProfile": spec.metadataProfile, "method": spec.method, "path": spec.path}
+	request := map[string]any{"count": spec.requestCount, "payloadBytes": len(spec.payload), "payloadBytesPerMessage": len(spec.payload), "payloadSha256": spec.payloadHash, "serializedProtobufBytes": spec.protobufBytes, "serializedProtobufBytesPerMessage": spec.protobufBytes, "serializedProtobufSha256": spec.protobufHash, "grpcFrameBytes": len(frame), "grpcFrameBytesPerMessage": len(frame), "grpcFrameSha256": sha256Hex(frame), "aggregateGrpcFrameBytes": spec.requestCount * len(frame), "aggregateGrpcFramesSha256": sha256Hex(bytes.Repeat(frame, spec.requestCount)), "compression": spec.compression, "metadataProfile": spec.metadataProfile, "method": spec.method, "path": spec.path, "rpcType": spec.rpcType, "clientHalfCloseRequired": spec.requestCount > 1}
 	if spec.metadataProfile == "fixed-ascii-and-binary-metadata-v1" {
 		request["requestInitialTextMetadata"] = "protocol-lab"
 		request["requestInitialBinaryMetadata"] = "AAECAw=="
@@ -466,7 +544,7 @@ func baseResult(spec scenarioSpec, loadProfileID string) executionResult {
 	return executionResult{SchemaVersion: "protocol-lab.grpc-h2-executor-result.v1", ExecutorID: executorID, ExecutorVersion: executorVersion, LoadGeneratorID: loadGeneratorID, LoadGeneratorVersion: loadGeneratorVersion, ScenarioID: spec.id, LoadProfileID: loadProfileID, ServiceContractSha256: serviceContractDigest, Request: request, RequestedLoad: map[string]any{"connections": 1, "concurrency": 1, "streamsPerConnection": 1, "durationSeconds": duration, "warmupSeconds": warmup, "repetition": 1}, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": 1, "concurrency": 1, "streamsPerConnection": 1, "activeStreams": 1, "durationSeconds": duration, "warmupSeconds": warmup, "repetition": 1}, Response: map[string]any{}, Metrics: map[string]any{"completedOperations": 0, "failedOperations": 1, "deadlineExceededOperations": 0, "cancelledOperations": 0, "timedOutOperations": 0}, Validation: map[string]any{"passed": false}, Artifacts: []string{"validation.json", "protocol-proof.json", "grpc-summary.json", "result.json", "executor-identity.json", "load-generator-identity.json", "grpc-request-frame.bin", "grpc-response-frame.bin", "tls-peer-certificate.der", "gzip-encoder-provenance.json"}}
 }
 func validationChecks(s scenarioSpec) []string {
-	checks := []string{"tls-version:1.3", "alpn:h2", "no-fallback", "pre-established-channel", "channel-reused", "request-count:1", "response-count:1", "payload-sha256", "protobuf-sha256", "http-status:200", "content-type:application/grpc+proto", "trailers-present", "grpc-status:0", "zero-failures", "zero-deadlines", "zero-cancellations", "zero-timeouts"}
+	checks := []string{"tls-version:1.3", "alpn:h2", "no-fallback", "pre-established-channel", "channel-reused", fmt.Sprintf("request-count:%d", s.requestCount), fmt.Sprintf("response-count:%d", s.responseCount), "payload-sha256", "protobuf-sha256", "http-status:200", "content-type:application/grpc+proto", "trailers-present", "grpc-status:0", "zero-failures", "zero-deadlines", "zero-cancellations", "zero-timeouts"}
 	if s.compression == "gzip" {
 		checks = append(checks, "grpc-encoding:gzip", "compressed-flag:1", "decompress-success", "gzip-encoder-provenance")
 	} else {
@@ -474,6 +552,15 @@ func validationChecks(s scenarioSpec) []string {
 	}
 	if s.metadataProfile == "fixed-ascii-and-binary-metadata-v1" {
 		checks = append(checks, "request-ascii-metadata", "request-binary-metadata-decoded-bytes", "response-initial-ascii-metadata", "response-trailing-binary-metadata-decoded-bytes")
+	}
+	if s.requestCount > 1 {
+		checks = append(checks, "client-half-close")
+	}
+	if s.responseCount > 1 {
+		checks = append(checks, "stream-complete")
+	}
+	if s.rpcType == "bidirectional-streaming" {
+		checks = append(checks, "ordered-one-to-one-echo")
 	}
 	return checks
 }
@@ -507,7 +594,7 @@ func validateSelection(spec scenarioSpec) (string, error) {
 	if profile != loadProfileSmoke && profile != loadProfileDiagnostic {
 		return "", fmt.Errorf("PLAB_LOAD_PROFILE_ID %q is unsupported", profile)
 	}
-	if profile == loadProfileSmoke && spec.id != "grpc.h2.unary.echo" {
+	if profile == loadProfileSmoke && spec.id != "grpc.h2.unary.echo" && spec.id != "grpc.h2.server-streaming.echo" && spec.id != "grpc.h2.client-streaming.echo" && spec.id != "grpc.h2.bidi-streaming.echo" {
 		return "", fmt.Errorf("%s is not bound to %s", profile, spec.id)
 	}
 	expectedDuration, expectedWarmup := "5", "1"
@@ -570,5 +657,21 @@ func writeJSON(path string, value any) error {
 		return err
 	}
 	return os.WriteFile(path, append(raw, '\n'), 0o644)
+}
+func meanMilliseconds(values []int64) float64 {
+	var total int64
+	for _, value := range values {
+		total += value
+	}
+	return float64(total) / float64(len(values)) / float64(time.Millisecond)
+}
+func percentileMilliseconds(values []int64, quantile float64) float64 {
+	copyValues := append([]int64(nil), values...)
+	slices.Sort(copyValues)
+	index := int(math.Ceil(quantile*float64(len(copyValues)))) - 1
+	if index < 0 {
+		index = 0
+	}
+	return float64(copyValues[index]) / float64(time.Millisecond)
 }
 func fatal(code int, message string) { fmt.Fprintln(os.Stderr, message); os.Exit(code) }

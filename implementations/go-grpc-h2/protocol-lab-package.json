@@ -1,15 +1,15 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.go-grpc-h2",
-  "packageVersion": "0.2.0",
+  "packageVersion": "0.3.0",
   "kind": "implementation",
-  "displayName": "Go gRPC over HTTP/2 Unary Target",
+  "displayName": "Go gRPC over HTTP/2 Target",
   "entryManifests": ["implementations/go-grpc-h2.yaml"],
   "providedImplementations": [{
     "implementationId": "go-grpc-h2",
-    "displayName": "Go gRPC over HTTP/2 Unary Target",
+    "displayName": "Go gRPC over HTTP/2 Target",
     "protocols": ["h2"],
-    "scenarios": ["grpc.h2.unary.echo", "grpc.h2.unary.empty", "grpc.h2.unary.fixed-metadata", "grpc.h2.unary.gzip", "grpc.h2.unary.large"]
+    "scenarios": ["grpc.h2.unary.echo", "grpc.h2.unary.empty", "grpc.h2.unary.fixed-metadata", "grpc.h2.unary.gzip", "grpc.h2.unary.large", "grpc.h2.server-streaming.echo", "grpc.h2.client-streaming.echo", "grpc.h2.bidi-streaming.echo"]
   }],
   "dependencies": {}
 }

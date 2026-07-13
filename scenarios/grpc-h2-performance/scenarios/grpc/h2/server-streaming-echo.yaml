@@ -1,0 +1,60 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: grpc.h2.server-streaming.echo
+title: gRPC over HTTP/2 Server-Streaming Echo
+description: Receive 100 deterministic 1 KiB response messages from one server-streaming RPC.
+status: draft
+kind: workload
+layer: application
+protocol: h2
+family: grpc
+semanticTemplateId: grpc.server-streaming.echo
+protocolStack: [grpc, h2, tls, tcp]
+upstreamStandards: [https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md, https://www.rfc-editor.org/rfc/rfc9113]
+roles: [client, server]
+requires: {capabilities: [grpc.client, grpc.server, grpc.server-streaming], protocols: [h2, grpc], roles: [client, server]}
+trafficShape: streaming-download
+grpc:
+  binding: grpc-over-h2
+  alpn: h2
+  serviceContractId: protocollab.performance.v1.EchoService
+  serviceContractSha256: b7b987814f8af5cd4f15c03989b9c309c1c0ec643972ae32668304d71502120f
+  serviceContractCanonicalization: json-sort-keys-utf8-no-whitespace-v1
+  scheme: https
+  httpMethod: POST
+  authority: grpc.plab.test
+  service: protocollab.performance.v1.EchoService
+  method: ServerStreamingEcho
+  path: /protocollab.performance.v1.EchoService/ServerStreamingEcho
+  rpcType: server-streaming
+  compression: identity
+  metadataPolicy: fixed-empty-user-metadata
+  deadlineMilliseconds: 10000
+  connectionLifecycle: pre-established-channel
+  measuredWindow: rpc-operation
+  requestContentType: application/grpc+proto
+  responseContentType: application/grpc+proto
+  te: trailers
+  trailersRequired: true
+  expectedGrpcStatus: 0
+  grpcEncoding: identity
+  grpcAcceptEncoding: identity
+  retryPolicy: disabled
+  hedgingPolicy: disabled
+  waitForReady: false
+  effectiveHttp2SettingsRequired: true
+  byteAccounting: {hashScope: per-message, grpcFrameIncludesPrefix: true, totalTransferredBytesScope: bidirectional-on-wire-transport-bytes-including-protocol-overhead}
+  messageFraming: {compressedFlag: 0, lengthPrefixBytes: 4, byteOrder: network, lengthValueSource: serializedProtobufBytes, dataFrameBoundariesDefineMessageBoundaries: false}
+  request: {count: 1, payloadGenerator: repeated-octet, payloadOctet: 66, payloadBytes: 1024, payloadSha256: 9b6ce55f379e9771551de6939556a7e6b949814ae27c2f5cfd5dbeb378ce7c2a, serializedProtobufBytes: 1027, serializedProtobufSha256: 0a685639b341882d59f7b7da8308517b2b7862047846d3294b4ba9e8d48a4322, grpcFrameBytes: 1032, grpcFrameSha256: 5027e498c899a73e723e4abc3a12416e375826f4de8a7dbb38d066193ad4e93e}
+  response: {count: 100, payloadGenerator: repeated-octet, payloadOctet: 66, payloadBytes: 1024, payloadSha256: 9b6ce55f379e9771551de6939556a7e6b949814ae27c2f5cfd5dbeb378ce7c2a, serializedProtobufBytes: 1027, serializedProtobufSha256: 0a685639b341882d59f7b7da8308517b2b7862047846d3294b4ba9e8d48a4322, grpcFrameBytes: 1032, grpcFrameSha256: 5027e498c899a73e723e4abc3a12416e375826f4de8a7dbb38d066193ad4e93e}
+executionProfile: {transportSecurity: tls, protocolVariant: grpc-over-h2-tls-alpn, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+validation:
+  required: true
+  checks: [protocol:h2, alpn:h2, no-fallback, endpoint, http-status:200, content-type:application/grpc+proto, grpc-status:0, trailers-present, response-count:100, response-size, payload-sha256, protobuf-sha256, grpc-frame-sha256, stream-complete, zero-unexpected-failures, zero-deadline-exceeded, zero-cancellations, zero-timeouts]
+  protocol: {requested: grpc-over-h2, expectedObserved: grpc-over-h2, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic, regression, comparison, channel-reuse], primaryMetrics: [messagesPerSecond, bytesPerSecond, rpcLatencyP95, failedOperations, timedOutOperations]}
+requiredMetrics: [messagesPerSecond, bytesPerSecond, timeToFirstMessage, rpcLatencyP50, rpcLatencyP95, rpcLatencyP99, completedOperations, failedOperations, deadlineExceededOperations, cancelledOperations, timedOutOperations, totalTransferredBytes, effectiveConcurrency, effectiveStreams]
+artifacts: {required: [validation.json, protocol-proof.json, grpc-summary.json, result.json, load.stdout.log, load.stderr.log], optional: [http2-frame-summary.json, target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [grpc-web, grpc-over-h3, message-count-mismatch]}
+networkProfile: clean
+tags: [grpc, h2, server-streaming, echo]

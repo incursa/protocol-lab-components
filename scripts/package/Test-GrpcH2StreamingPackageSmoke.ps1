@@ -2,7 +2,7 @@
 param(
     [string]$Root = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,
     [string]$PackageDirectory = (Join-Path $Root 'artifacts/packages'),
-    [string]$OutputRoot = (Join-Path $Root 'artifacts/grpc-h2-unary-breadth-smoke'),
+    [string]$OutputRoot = (Join-Path $Root 'artifacts/grpc-h2-streaming-smoke'),
     [int]$Port = 19445
 )
 
@@ -35,11 +35,10 @@ $target = Start-Process -FilePath (Join-Path $targetRoot 'bin/win-x64/go-grpc-h2
 Start-Sleep -Milliseconds 750
 try {
     $scenarios = @(
-        @{ id = 'grpc.h2.unary.echo'; profile = 'grpc-h2-smoke'; duration = '5'; warmup = '1' },
-        @{ id = 'grpc.h2.unary.empty'; profile = 'grpc-h2-diagnostic'; duration = '10'; warmup = '0' },
-        @{ id = 'grpc.h2.unary.fixed-metadata'; profile = 'grpc-h2-diagnostic'; duration = '10'; warmup = '0' },
-        @{ id = 'grpc.h2.unary.gzip'; profile = 'grpc-h2-diagnostic'; duration = '10'; warmup = '0' },
-        @{ id = 'grpc.h2.unary.large'; profile = 'grpc-h2-diagnostic'; duration = '10'; warmup = '0' }
+        @{ id = 'grpc.h2.unary.echo'; requests = 1; responses = 1 },
+        @{ id = 'grpc.h2.server-streaming.echo'; requests = 1; responses = 100 },
+        @{ id = 'grpc.h2.client-streaming.echo'; requests = 100; responses = 1 },
+        @{ id = 'grpc.h2.bidi-streaming.echo'; requests = 100; responses = 100 }
     )
     foreach ($scenario in $scenarios) {
         $env:PLAB_EXECUTOR_ID = 'go-grpc-h2-executor'
@@ -47,28 +46,29 @@ try {
         $env:PLAB_LOAD_GENERATOR_ID = 'go-x-net-http2-grpc-load'
         $env:PLAB_LOAD_GENERATOR_VERSION = '0.3.0'
         $env:PLAB_SCENARIO_ID = $scenario.id
-        $env:PLAB_LOAD_PROFILE_ID = $scenario.profile
+        $env:PLAB_LOAD_PROFILE_ID = 'grpc-h2-smoke'
         $env:PLAB_PROTOCOL = 'h2'
         $env:PLAB_PROTOCOL_VARIANT = 'grpc-over-h2-tls-alpn'
         $env:PLAB_CONNECTIONS = '1'
         $env:PLAB_CONCURRENCY = '1'
         $env:PLAB_STREAMS_PER_CONNECTION = '1'
-        $env:PLAB_DURATION_SECONDS = $scenario.duration
-        $env:PLAB_WARMUP_SECONDS = $scenario.warmup
+        $env:PLAB_DURATION_SECONDS = '5'
+        $env:PLAB_WARMUP_SECONDS = '1'
         $env:PLAB_REPETITION = '1'
         $artifactRoot = Join-Path $OutputRoot ("evidence/" + $scenario.id.Replace('.', '-'))
         New-Item -ItemType Directory -Force -Path $artifactRoot | Out-Null
-        $stdout = Join-Path $artifactRoot 'load.stdout.log'
-        $stderr = Join-Path $artifactRoot 'load.stderr.log'
         $process = Start-Process -FilePath (Join-Path $executorRoot 'bin/win-x64/go-grpc-h2-executor.exe') `
             -WorkingDirectory $executorRoot -ArgumentList @('--target-url', "https://127.0.0.1:$Port", '--output-dir', $artifactRoot) `
-            -Wait -PassThru -WindowStyle Hidden -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+            -Wait -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $artifactRoot 'load.stdout.log') -RedirectStandardError (Join-Path $artifactRoot 'load.stderr.log')
         if ($process.ExitCode -ne 0) { throw "$($scenario.id) executor exited $($process.ExitCode)." }
         $result = Get-Content -LiteralPath (Join-Path $artifactRoot 'result.json') -Raw | ConvertFrom-Json
-        if ($result.passed -ne $true -or $result.scenarioId -ne $scenario.id -or $result.metrics.completedOperations -ne 1 -or $result.metrics.failedOperations -ne 0 -or $result.metrics.timedOutOperations -ne 0) {
-            throw "$($scenario.id) extracted-package evidence failed the exact outcome gate."
+        if ($result.passed -ne $true -or $result.scenarioId -ne $scenario.id -or $result.request.count -ne $scenario.requests -or $result.response.count -ne $scenario.responses -or $result.metrics.completedOperations -ne 1 -or $result.metrics.failedOperations -ne 0 -or $result.metrics.timedOutOperations -ne 0) {
+            throw "$($scenario.id) extracted-package evidence failed the exact outcome/cardinality gate."
         }
-        Write-Host "$($scenario.id): completed=1 failed=0 timedOut=0"
+        if ($scenario.requests -gt 1 -and $result.observation.clientHalfClosed -ne $true) { throw "$($scenario.id) did not prove client half-close." }
+        if ($scenario.responses -gt 1 -and $result.observation.streamComplete -ne $true) { throw "$($scenario.id) did not prove stream completion." }
+        if ($scenario.id -eq 'grpc.h2.bidi-streaming.echo' -and $result.observation.orderedEcho -ne $true) { throw "$($scenario.id) did not prove ordered echo." }
+        Write-Host "$($scenario.id): requests=$($scenario.requests) responses=$($scenario.responses) completed=1 failed=0 timedOut=0"
     }
 }
 finally {
