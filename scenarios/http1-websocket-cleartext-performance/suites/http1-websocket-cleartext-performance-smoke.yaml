@@ -1,0 +1,10 @@
+id: http1-websocket-cleartext-performance-smoke
+name: HTTP/1.1 cleartext WebSocket performance contract smoke suite
+description: Fast RFC 6455 cleartext establishment, control-frame, echo, and close validity selection.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: websocket-smoke
+scenarios: [http1.websocket.rfc6455.cleartext.upgrade, http1.websocket.rfc6455.cleartext.control-frames, http1.websocket.rfc6455.cleartext.text-echo, http1.websocket.rfc6455.cleartext.binary-echo, http1.websocket.rfc6455.cleartext.close]
+protocol: h1
+notes: Exact cleartext ws over HTTP/1.1 Upgrade proof is required; TLS substitution is not allowed.
+tags: [http1, websocket, cleartext, ws, smoke, non-publishable]

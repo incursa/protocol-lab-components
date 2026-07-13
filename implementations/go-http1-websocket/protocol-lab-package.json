@@ -1,0 +1,15 @@
+{
+  "schemaVersion":"protocol-lab-package-v2",
+  "packageId":"org.protocol-lab.components.implementation.go-http1-websocket",
+  "packageVersion":"0.1.0",
+  "kind":"implementation",
+  "displayName":"Go HTTP/1.1 Cleartext WebSocket Origin",
+  "entryManifests":["implementations/go-http1-websocket.yaml"],
+  "providedImplementations":[{
+    "implementationId":"go-http1-websocket",
+    "displayName":"Go HTTP/1.1 Cleartext WebSocket Origin",
+    "protocols":["h1"],
+    "scenarios":["http1.websocket.rfc6455.cleartext.upgrade","http1.websocket.rfc6455.cleartext.control-frames","http1.websocket.rfc6455.cleartext.text-echo","http1.websocket.rfc6455.cleartext.binary-echo","http1.websocket.rfc6455.cleartext.close"]
+  }],
+  "dependencies":{}
+}

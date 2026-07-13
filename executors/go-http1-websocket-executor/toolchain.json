@@ -1,0 +1,4 @@
+{
+  "executor":{"language":"go","module":"org.protocol-lab.components.executor.go-http1-websocket-executor","buildFlags":["-buildvcs=false","-trimpath"]},
+  "loadGenerator":{"id":"go-http1-websocket-load","version":"0.1.0","engineModule":"net + raw RFC 6455 framing","engineModuleVersion":"Go standard library","license":"BSD-3-Clause","source":"https://pkg.go.dev/net"}
+}

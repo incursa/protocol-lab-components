@@ -1,0 +1,13 @@
+{
+  "repository": "https://github.com/incursa/protocol-lab",
+  "commit": "8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574",
+  "files": {
+    "load-profiles/websocket-smoke.yaml": "f2005bfa254815f7d4975aefc39f0b9a6da79b0d2507178775cd4b0b3032c645",
+    "scenarios/http1/websocket/rfc6455-cleartext-binary-echo.yaml": "e31c862bd246c544f3e75d3da4f9c66468fe6bb5d35c14c308b9ea6d668aab17",
+    "scenarios/http1/websocket/rfc6455-cleartext-close.yaml": "0f204cef7ed4ead345877740cfd69e725535a3b8da7cbf35ddd985a3fcaa9dc7",
+    "scenarios/http1/websocket/rfc6455-cleartext-control-frames.yaml": "3a0d4b9a0d317d6fddfdb89bbf7d2ad04b48dcc26adfebb7915b7ece2d072922",
+    "scenarios/http1/websocket/rfc6455-cleartext-text-echo.yaml": "5341ec1c0391c1dbe9499e9ece79c0b0f562201c62b2e7b786f45114bd8705ae",
+    "scenarios/http1/websocket/rfc6455-cleartext-upgrade.yaml": "a20acf683d34470e91af71ddcde5230a48f225ddca1eb3caa30e1de2d343feac",
+    "suites/http1-websocket-cleartext-performance-smoke.yaml": "61259c3c44602f74b22665789874dcd72d3c41b4090277427a08802407ce8557"
+  }
+}

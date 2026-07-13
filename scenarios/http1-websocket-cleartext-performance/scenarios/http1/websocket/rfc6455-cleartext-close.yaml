@@ -1,0 +1,28 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: http1.websocket.rfc6455.cleartext.close
+title: RFC 6455 WebSocket HTTP/1.1 Cleartext Close
+description: Validate clean close-code echo after a cleartext WebSocket session on HTTP/1.1.
+status: draft
+kind: protocolValidation
+layer: application
+protocol: h1
+family: websocket
+semanticTemplateId: websocket.connection.close
+protocolStack: [websocket, h1, tcp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc6455, https://www.rfc-editor.org/rfc/rfc9112]
+roles: [client, server]
+requires: {capabilities: [websocket.client, websocket.server, websocket.close], protocols: [h1], roles: [client, server]}
+trafficShape: connection-lifecycle
+websocket: {binding: http1-upgrade, standard: rfc6455, scheme: ws, path: /websocket, subprotocol: null, operation: close, messageType: none, messageBytes: 0, messageCount: 0, fragmentation: none, masking: client-required, closeCode: 1000, authority: websocket.plab.test, extensions: none, bootstrapPolicy: rfc6455-http1-upgrade, closeReasonPolicy: empty-utf8-reason, connectionLifecycle: pre-established-connection-per-operation, measuredWindow: closing-handshake, handshake: {binding: http1-upgrade, requestMethod: GET, requestVersion: HTTP/1.1, requestHeaders: {host: websocket.plab.test, upgrade: websocket, connection: Upgrade, secWebSocketKeyPolicy: fresh-random-16-octets-per-opening-handshake, secWebSocketVersion: "13", originPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false}, responseStatus: 101, responseHeaders: {upgrade: websocket, connection: Upgrade, secWebSocketAcceptPolicy: base64-sha1-runtime-key-plus-rfc6455-guid, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false}}}
+executionProfile: {transportSecurity: cleartext, protocolVariant: websocket-h1-cleartext-upgrade, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+validation:
+  required: true
+  checks: [protocol:h1, scheme:ws, transport-security:cleartext, no-subprotocol, no-extensions, sec-websocket-accept, sec-websocket-key, sec-websocket-version:13, request-method:GET, no-fallback, endpoint:/websocket, connection-established, close-sent:1000, close-received:1000, clean-completion, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: websocket-over-h1-cleartext, expectedObserved: websocket-over-h1-cleartext, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic], primaryMetrics: [closeLatencyP95, completedOperations, failedOperations]}
+requiredMetrics: [closeLatencyP50, closeLatencyP95, closeLatencyP99, completedOperations, failedOperations, timedOutOperations]
+artifacts: {required: [validation.json, protocol-proof.json, websocket-summary.json, result.json, load.stdout.log, load.stderr.log], optional: [frame-summary.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [tls-required, h2-or-h3-substitution]}
+networkProfile: clean
+tags: [http1, websocket, rfc6455, cleartext, ws, close]

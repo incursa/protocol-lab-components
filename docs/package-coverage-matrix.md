@@ -43,6 +43,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | `go-http2-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-http2-executor@0.3.0`; exact h2c smoke, diagnostic, and `16/128/8` balanced-round-robin comparison shapes |
 | `go-tls13-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-tls13-executor@0.1.0`; exact TLS 1.3 full-handshake smoke only |
 | `dotnet-sslstream-tls13` | missing | local diagnostic package `org.protocol-lab.components.implementation.dotnet-sslstream-tls13@0.1.0`; independent library-backed TLS 1.3 target |
+| HTTP/1.1 cleartext WebSocket three-package lane | missing | local diagnostic scenario, executor, and independent origin packages at `0.1.0`; exact five-ID RFC 6455 smoke passes, while all adjacent WebSocket identities fail closed as unsupported |
 
 ## Scenario Support
 
@@ -82,6 +83,9 @@ This matrix tracks reusable component package coverage for implementations and e
 | `org.protocol-lab.components.executor.go-http2-executor` | `executors/go-http2-executor` |
 | `org.protocol-lab.components.executor.go-tls13-executor` | `executors/go-tls13-executor` |
 | `org.protocol-lab.components.implementation.dotnet-sslstream-tls13` | `implementations/dotnet-sslstream-tls13` |
+| `org.protocol-lab.components.implementation.go-http1-websocket` | `implementations/go-http1-websocket` |
+| `org.protocol-lab.components.executor.go-http1-websocket-executor` | `executors/go-http1-websocket-executor` |
+| `org.protocol-lab.components.scenario.http1-websocket-cleartext-performance` | `scenarios/http1-websocket-cleartext-performance` |
 | `org.protocol-lab.components.scenario.raw-quic-transport` | `scenarios/raw-quic-transport` |
 | `org.protocol-lab.components.scenario.h3spec-http3-qpack` | `scenarios/h3spec-http3-qpack` |
 | `org.protocol-lab.components.scenario.http3-peer-characterization` | `scenarios/http3-peer-characterization` |
