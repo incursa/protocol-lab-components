@@ -1,0 +1,37 @@
+schemaVersion: "1.0"
+id: go-http1-websocket-tls
+name: Go HTTP/1.1 TLS WebSocket Origin
+description: Independent exact RFC 6455 origin serving deterministic TLS 1.3 workloads only.
+family: go-websocket
+role: origin-server
+targetKind: process
+targetContract: process
+executable: bin/linux-x64/go-http1-websocket-tls
+workingDirectory: .
+baseUrl: https://127.0.0.1:18443
+protocolBaseUrls: {h1: https://127.0.0.1:18443}
+roles: [origin-server]
+protocols: [h1, tls]
+supportedProtocols: [h1, tls]
+supportedWorkloadFamilies: [websocket]
+supportedProtocolVersions: [HTTP/1.1, RFC6455, TLS1.3]
+supportedScenarios: [http1.websocket.rfc6455.tls.upgrade, http1.websocket.rfc6455.tls.control-frames, http1.websocket.rfc6455.tls.text-echo, http1.websocket.rfc6455.tls.binary-echo, http1.websocket.rfc6455.tls.close]
+supportedTestCaseIds: [http1.websocket.rfc6455.tls.upgrade, http1.websocket.rfc6455.tls.control-frames, http1.websocket.rfc6455.tls.text-echo, http1.websocket.rfc6455.tls.binary-echo, http1.websocket.rfc6455.tls.close]
+scenarioCoverage:
+  http1.websocket.rfc6455.tls.upgrade: {status: supported, behavior: exact TLS 1.3 and HTTP/1.1 RFC 6455 Upgrade with clean close}
+  http1.websocket.rfc6455.tls.control-frames: {status: supported, behavior: exact masked ping and unmasked deterministic pong over a reused TLS WebSocket}
+  http1.websocket.rfc6455.tls.text-echo: {status: supported, behavior: exact unfragmented protocol-lab UTF-8 echo over a reused TLS WebSocket}
+  http1.websocket.rfc6455.tls.binary-echo: {status: supported, behavior: exact unfragmented repeated-octet 1 KiB echo over a reused TLS WebSocket}
+  http1.websocket.rfc6455.tls.close: {status: supported, behavior: close code 1000 with empty UTF-8 reason over TLS 1.3}
+unsupportedKnownCases: [websocket.echo, http1.websocket.rfc6455.cleartext.upgrade, http1.websocket.rfc6455.cleartext.control-frames, http1.websocket.rfc6455.cleartext.text-echo, http1.websocket.rfc6455.cleartext.binary-echo, http1.websocket.rfc6455.cleartext.close, http1.websocket.rfc6455.tls.subprotocol-text-echo, http1.websocket.rfc6455.tls.permessage-deflate-binary-echo, http2.websocket.rfc8441.extended-connect, http2.websocket.rfc8441.control-frames, http2.websocket.rfc8441.text-echo, http2.websocket.rfc8441.binary-echo, http2.websocket.rfc8441.close, http2.websocket.rfc8441.multi-message-text-echo, http3.websocket.rfc9220.extended-connect, http3.websocket.rfc9220.control-frames, http3.websocket.rfc9220.text-echo, http3.websocket.rfc9220.binary-echo, http3.websocket.rfc9220.close, http3.websocket.rfc9220.fragmented-binary-echo]
+ports: [{name: websocket-tls, protocol: tcp, default: 18443, hostPort: 18443, containerPort: 18443}]
+environment: {PLAB_TARGET_PORT: "18443"}
+startup: {port: {name: websocket-tls, environmentVariable: PLAB_TARGET_PORT, default: 18443}, readiness: {protocol: process, timeoutSeconds: 10}}
+readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 250}
+capabilities: [websocket.server, websocket.rfc6455, websocket.text-echo, websocket.binary-echo, websocket.control-frames, websocket.close, tls.server, tls1.3, alpn.http1.1]
+entrypoint: {kind: process, path: bin/linux-x64/go-http1-websocket-tls, arguments: [], workingDirectory: .}
+shutdownBehavior: graceful-termination
+artifactExports: []
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Package-local authenticated test certificate; cleartext, TLS 1.2, Extended CONNECT, extensions, subprotocols, fragmentation, WebTransport, and noncanonical payloads are rejected.

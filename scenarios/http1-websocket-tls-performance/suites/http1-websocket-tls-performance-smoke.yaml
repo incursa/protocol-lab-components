@@ -1,0 +1,10 @@
+id: http1-websocket-tls-performance-smoke
+name: HTTP/1.1 TLS WebSocket performance contract smoke suite
+description: Fast RFC 6455 TLS 1.3 establishment, control-frame, echo, and close validity selection.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: websocket-smoke
+scenarios: [http1.websocket.rfc6455.tls.upgrade, http1.websocket.rfc6455.tls.control-frames, http1.websocket.rfc6455.tls.text-echo, http1.websocket.rfc6455.tls.binary-echo, http1.websocket.rfc6455.tls.close]
+protocol: h1
+notes: Exact TLS 1.3 wss over HTTP/1.1 Upgrade proof with http/1.1 ALPN is required; cleartext substitution is not allowed.
+tags: [http1, websocket, tls, tls1.3, wss, smoke, non-publishable]

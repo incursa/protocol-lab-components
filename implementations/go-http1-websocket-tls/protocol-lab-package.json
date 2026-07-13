@@ -1,0 +1,15 @@
+{
+  "schemaVersion":"protocol-lab-package-v2",
+  "packageId":"org.protocol-lab.components.implementation.go-http1-websocket-tls",
+  "packageVersion":"0.1.0",
+  "kind":"implementation",
+  "displayName":"Go HTTP/1.1 TLS WebSocket Origin",
+  "entryManifests":["implementations/go-http1-websocket-tls.yaml"],
+  "providedImplementations":[{
+    "implementationId":"go-http1-websocket-tls",
+    "displayName":"Go HTTP/1.1 TLS WebSocket Origin",
+    "protocols":["h1","tls"],
+    "scenarios":["http1.websocket.rfc6455.tls.upgrade","http1.websocket.rfc6455.tls.control-frames","http1.websocket.rfc6455.tls.text-echo","http1.websocket.rfc6455.tls.binary-echo","http1.websocket.rfc6455.tls.close"]
+  }],
+  "dependencies":{}
+}

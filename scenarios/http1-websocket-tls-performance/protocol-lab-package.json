@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.scenario.http1-websocket-tls-performance",
+  "packageVersion": "0.1.0",
+  "kind": "scenario-pack",
+  "displayName": "HTTP/1.1 TLS WebSocket Performance Smoke Scenario Pack",
+  "entryManifests": [
+    "scenarios/http1/websocket/rfc6455-tls-upgrade.yaml",
+    "scenarios/http1/websocket/rfc6455-tls-control-frames.yaml",
+    "scenarios/http1/websocket/rfc6455-tls-text-echo.yaml",
+    "scenarios/http1/websocket/rfc6455-tls-binary-echo.yaml",
+    "scenarios/http1/websocket/rfc6455-tls-close.yaml",
+    "suites/http1-websocket-tls-performance-smoke.yaml",
+    "load-profiles/websocket-smoke.yaml"
+  ],
+  "providedScenarios": [
+    {"scenarioId":"http1.websocket.rfc6455.tls.upgrade","displayName":"RFC 6455 HTTP/1.1 TLS Upgrade","protocols":["h1","tls"]},
+    {"scenarioId":"http1.websocket.rfc6455.tls.control-frames","displayName":"RFC 6455 HTTP/1.1 TLS Control Frames","protocols":["h1","tls"]},
+    {"scenarioId":"http1.websocket.rfc6455.tls.text-echo","displayName":"RFC 6455 HTTP/1.1 TLS Text Echo","protocols":["h1","tls"]},
+    {"scenarioId":"http1.websocket.rfc6455.tls.binary-echo","displayName":"RFC 6455 HTTP/1.1 TLS Binary Echo","protocols":["h1","tls"]},
+    {"scenarioId":"http1.websocket.rfc6455.tls.close","displayName":"RFC 6455 HTTP/1.1 TLS Close","protocols":["h1","tls"]}
+  ],
+  "providedSuites": [{"suiteId":"http1-websocket-tls-performance-smoke","displayName":"HTTP/1.1 TLS WebSocket Performance Smoke","protocols":["h1","tls"]}]
+}
