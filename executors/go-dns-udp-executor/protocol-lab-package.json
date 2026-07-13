@@ -1,0 +1,10 @@
+{
+  "schemaVersion":"protocol-lab-package-v2",
+  "packageId":"org.protocol-lab.components.executor.go-dns-udp-executor",
+  "packageVersion":"0.1.0",
+  "kind":"test-executor",
+  "displayName":"Go Classic DNS UDP Test Executor",
+  "entryManifests":["test-executors/go-dns-udp-executor.yaml"],
+  "providedTestExecutors":[{"testExecutorId":"go-dns-udp-executor","displayName":"Go Classic DNS UDP Test Executor","protocols":["dns-udp"],"scenarios":["dns.classic.udp.query.a","dns.classic.udp-truncated-tcp-retry"],"tests":["dns.classic.udp.query.a","dns.classic.udp-truncated-tcp-retry"]}],
+  "dependencies":{}
+}

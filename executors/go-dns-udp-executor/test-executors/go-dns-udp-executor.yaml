@@ -1,0 +1,39 @@
+executorIdentity: {id: go-dns-udp-executor, name: Go Classic DNS UDP Test Executor, version: 0.1.0, vendor: Incursa}
+versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.1.0}
+claimedCapabilities:
+  - {id: dns.classic.udp.query.a, status: supported}
+  - {id: dns.classic.udp-truncated-tcp-retry, status: supported}
+  - {id: dns-classic-diagnostic, status: supported}
+  - {id: exact-dns-udp-proof, status: supported}
+  - {id: exact-udp-tc-tcp-retry-proof, status: supported}
+  - {id: dns.classic.tcp.query.a, status: unsupported}
+  - {id: dns.dot.query.a, status: unsupported}
+  - {id: dns.doh2.query.a, status: unsupported}
+  - {id: dns.doh3.get.a, status: unsupported}
+  - {id: dns.doh3.query.a, status: unsupported}
+  - {id: dns.doh3.query.aaaa, status: unsupported}
+  - {id: dns.doh3.query.cname-chain, status: unsupported}
+  - {id: dns.doh3.query.large-dnssec-shaped, status: unsupported}
+  - {id: dns.doh3.query.nodata, status: unsupported}
+  - {id: dns.doh3.query.nxdomain, status: unsupported}
+  - {id: dns.doq.query.a, status: unsupported}
+supportedTestSelectors: [{selectorType: test-id, expression: dns.classic.udp.query.a}, {selectorType: test-id, expression: dns.classic.udp-truncated-tcp-retry}]
+supportedScenarioSelectors: [{selectorType: scenario-id, expression: dns.classic.udp.query.a}, {selectorType: scenario-id, expression: dns.classic.udp-truncated-tcp-retry}]
+supportedProtocolFamilies: [dns-udp]
+supportedExecutionModes: [single-cell, process]
+requiredTargetEndpointBindings: [{bindingId: primary, purpose: test-endpoint, endpointType: udp, protocols: [dns-udp]}]
+supportedArtifactTypes: &artifacts
+  - {type: validation.json, producedByStates: [stopped, failed]}
+  - {type: result.json, producedByStates: [stopped, failed]}
+  - {type: protocol-proof.json, producedByStates: [stopped, failed]}
+  - {type: dns-wire-summary.json, producedByStates: [stopped, failed]}
+  - {type: dns-classic-executor-result.json, producedByStates: [stopped, failed]}
+  - {type: dns-load-summary.json, producedByStates: [stopped, failed]}
+  - {type: dns-warmup-summary.json, producedByStates: [stopped, failed]}
+  - {type: executor-identity.json, producedByStates: [stopped, failed]}
+  - {type: load-generator-identity.json, producedByStates: [stopped, failed]}
+  - {type: load.stdout.log, producedByStates: [stopped, failed]}
+  - {type: load.stderr.log, producedByStates: [stopped, failed]}
+metricsAvailability: {available: true, availableKinds: [validation, queries-per-second, latency-percentiles, operation-outcomes, retry-count, bytes]}
+parser: {id: protocol-lab-dns-classic-udp-json, type: protocol-lab-dns-classic-udp-json, preservesRawOutput: true}
+telemetry: {supported: true, supported_contract_versions: [telemetry-bundle-v1], supported_scopes: [test-executor, load-generator], supported_artifact_kinds: [summary, metrics, stdout, stderr, raw], export_modes: [inline, artifact-bundle]}

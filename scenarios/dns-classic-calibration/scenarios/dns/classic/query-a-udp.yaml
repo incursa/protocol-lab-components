@@ -1,0 +1,42 @@
+schemaVersion: "2.0"
+version: "2.0.0"
+id: dns.classic.udp.query.a
+title: Classic DNS UDP Deterministic A Calibration
+description: Diagnostic-only bare-datagram calibration using the canonical local A fixture.
+status: draft
+kind: diagnostic
+layer: application
+protocol: dns
+family: dns
+semanticTemplateId: dns.query.a.plab-test
+protocolStack: [dns, udp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc1035, https://www.rfc-editor.org/rfc/rfc6761, https://www.rfc-editor.org/rfc/rfc5737]
+roles: [client, authoritative-server]
+requires: {capabilities: [dns.client, dns.authoritative-server, dns.udp], protocols: [dns], roles: [client, authoritative-server]}
+trafficShape: request-response
+dns:
+  fixtureId: dns.plab-test-a-v2.canonical
+  transport: udp
+  authorityMode: local-fixture-authoritative
+  cacheState: disabled
+  alpn: none
+  connectionReuse: reuse
+  endpoint: {host: dns.plab.test, port: 53, serverName: dns.plab.test, addressResolution: runner-provided-local-binding}
+  authorityPolicy: {zone: plab.test., authoritativeAnswer: true, recursionDesired: false, recursionAvailable: false, externalUpstream: prohibited, outOfZoneResponse: REFUSED, unknownNameResponse: NXDOMAIN, existingNameUnknownTypeResponse: NOERROR-NODATA}
+  framing: {kind: bare-dns-message-datagram, canonicalQueryMessageLength: 27, canonicalResponseMessageLength: 43}
+  query: {name: plab.test., type: A, class: IN, wireLength: 27, normalizedWireSha256: c46b9fb76019b5a644d0884b17e816cb7c3076275d9468c27d180f70488eb8ec}
+  expectedResponse: {rcode: NOERROR, answer: 192.0.2.1, ttl: 0, answerCount: 1, authorityCount: 0, additionalCount: 0, truncated: false, wireLength: 43, normalizedWireSha256: 9d488461675ad5ab9f74c7b203861e1ad17521e413a407a25e6611012a595620}
+  runtimeIdPolicy: {messageId: unique-among-outstanding-queries, canonicalHashNormalization: set-message-id-to-zero}
+  responseNormalization: {rawResponseEqualityRequired: false, compressionMayDiffer: true, procedure: [parse-dns-message, canonical-reserialize, compare-normalized-sha256]}
+  operationPolicy: {timeoutSource: load-profile.dns.queryTimeoutMilliseconds, retries: 0, onTimeout: abandon-query-and-record}
+executionProfile: {transportSecurity: cleartext, protocolVariant: dns-udp-datagram, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode, platformProvenanceRequired: true, accelerationProvenanceRequired: true}
+validation:
+  required: true
+  checks: [protocol:dns, transport:udp, port:53, bare-dns-message-datagram, query-identity, response-question, response-aa-set, response-ra-clear, response-tc-clear, rcode:NOERROR, normalized-wire-length:43, normalized-wire-sha256, zero-retries, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: dns-udp, expectedObserved: dns-udp, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic], primaryMetrics: [queriesPerSecond, queryLatencyP50, queryLatencyP95, queryLatencyP99, failedOperations, timedOutOperations]}
+requiredMetrics: [queriesPerSecond, queryLatencyMean, queryLatencyP50, queryLatencyP95, queryLatencyP99, completedOperations, malformedOperations, retryCount, failedOperations, timedOutOperations, totalTransferredBytes, effectiveConcurrency]
+artifacts: {required: [validation.json, protocol-proof.json, dns-wire-summary.json, result.json, load.stdout.log, load.stderr.log], optional: [packet-summary.json, target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [public-recursive-resolver, benchmark-ranking]}
+networkProfile: clean
+tags: [dns, classic-dns, udp, diagnostic, non-publishable]

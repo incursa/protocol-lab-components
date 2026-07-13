@@ -1,0 +1,10 @@
+id: dns-classic-calibration-diagnostic-smoke
+name: Classic DNS UDP TCP calibration diagnostic smoke suite
+description: Representative UDP datagram, TCP framing, and UDP truncation-to-TCP retry calibration.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: dns-classic-diagnostic
+scenarios: [dns.classic.udp.query.a, dns.classic.tcp.query.a, dns.classic.udp-truncated-tcp-retry]
+protocol: dns
+notes: Diagnostic-only and non-publishable; these identities are not comparable secure-DNS transport results.
+tags: [dns, classic-dns, udp, tcp, truncation, smoke, non-publishable]

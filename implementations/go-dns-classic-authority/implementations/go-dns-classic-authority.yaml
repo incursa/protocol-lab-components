@@ -1,0 +1,39 @@
+schemaVersion: "1.0"
+id: go-dns-classic-authority
+name: Go Classic DNS Local Fixture Authority
+description: Local authoritative UDP and TCP target for the exact classic DNS v2 A and large truncation fixtures; recursion, cache, and external upstream paths are absent.
+family: go-dns
+role: authoritative-server
+targetKind: process
+targetContract: process
+executable: bin/linux-x64/go-dns-classic-authority
+workingDirectory: .
+baseUrl: udp://127.0.0.1:15353
+protocolBaseUrls: {dns-udp: udp://127.0.0.1:15353, dns-tcp: tcp://127.0.0.1:15353}
+roles: [authoritative-server]
+protocols: [dns-udp, dns-tcp]
+supportedProtocols: [dns-udp, dns-tcp]
+supportedWorkloadFamilies: [dns.classic]
+supportedProtocolVersions: [DNS/UDP, DNS/TCP]
+supportedScenarios: [dns.classic.udp.query.a, dns.classic.tcp.query.a, dns.classic.udp-truncated-tcp-retry]
+supportedTestCaseIds: [dns.classic.udp.query.a, dns.classic.tcp.query.a, dns.classic.udp-truncated-tcp-retry]
+scenarioCoverage:
+  dns.classic.udp.query.a: {status: supported, behavior: bare UDP datagram with runtime ID and canonical normalized A response}
+  dns.classic.tcp.query.a: {status: supported, behavior: two-octet network-order framing with runtime ID and canonical normalized A response}
+  dns.classic.udp-truncated-tcp-retry: {status: supported, behavior: 45-byte TC UDP answer followed by the caller's new-ID identical-question TCP request and 630-byte full response}
+  dns.dot.query.a: {status: unsupported, reason: TLS is absent from this classic diagnostic target.}
+  dns.doh2.query.a: {status: unsupported, reason: HTTP is absent from this classic diagnostic target.}
+  dns.doh3.query.a: {status: unsupported, reason: HTTP/3 is absent from this classic diagnostic target.}
+  dns.doq.query.a: {status: unsupported, reason: QUIC is absent from this classic diagnostic target.}
+unsupportedKnownCases: [dns.dot.query.a, dns.doh2.query.a, dns.doh3.get.a, dns.doh3.query.a, dns.doh3.query.aaaa, dns.doh3.query.cname-chain, dns.doh3.query.large-dnssec-shaped, dns.doh3.query.nodata, dns.doh3.query.nxdomain, dns.doq.query.a]
+ports: [{name: dns-classic, protocol: udp-tcp, default: 15353, hostPort: 15353, containerPort: 15353}]
+environment: {PLAB_DNS_CLASSIC_PORT: "15353"}
+startup: {port: {name: dns-classic, environmentVariable: PLAB_DNS_CLASSIC_PORT, default: 15353}, readiness: {protocol: process, timeoutSeconds: 10}}
+readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 250}
+capabilities: [dns.authoritative-server, dns.udp, dns.tcp, dns.truncation-retry, dns.local-fixture-only]
+entrypoint: {kind: process, path: bin/linux-x64/go-dns-classic-authority, arguments: [], workingDirectory: .}
+shutdownBehavior: graceful-termination
+artifactExports: []
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Diagnostic-only fixture target. It has no resolver, recursive, cache, external-upstream, TLS, HTTP, or QUIC path.
