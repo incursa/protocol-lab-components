@@ -1,0 +1,44 @@
+schemaVersion: "2.0"
+version: "2.0.0"
+id: dns.doh3.query.nodata
+title: DNS over HTTPS HTTP/3 Deterministic NOERROR NODATA Query
+description: POST the representative existing-name unknown-type fixture over exact HTTP/3.
+status: draft
+kind: workload
+layer: application
+protocol: doh3
+family: dns.secure
+semanticTemplateId: dns.query.nodata.plab-test-txt
+protocolStack: [dns, doh, h3, quic, tls1.3]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc1035, https://www.rfc-editor.org/rfc/rfc2308, https://www.rfc-editor.org/rfc/rfc8484, https://www.rfc-editor.org/rfc/rfc9114, https://www.rfc-editor.org/rfc/rfc9846]
+roles: [client, authoritative-server]
+requires: {capabilities: [dns.client, dns.authoritative-server, dns.doh3], protocols: [doh3], roles: [client, authoritative-server]}
+trafficShape: request-response
+dns:
+  fixtureId: dns.plab-test-txt-nodata.canonical
+  transport: doh3
+  authorityMode: local-fixture-authoritative
+  cacheState: disabled
+  alpn: h3
+  connectionReuse: reuse
+  endpoint: {host: dns.plab.test, port: 443, serverName: dns.plab.test, addressResolution: runner-provided-local-binding}
+  tlsPolicy: {profileId: plab-secure-dns-tls13-v1, version: tls1.3, resumptionPolicy: not-offered, earlyData: not-attempted, alpn: h3, certificateProfile: plab-secure-dns-single-leaf-p256-v1, cipherSuite: TLS_AES_128_GCM_SHA256, keyExchangeGroup: x25519, signatureScheme: ecdsa_secp256r1_sha256, peerAuthentication: server-certificate-required, connectionLifecycle: pre-established-full-authenticated-connection, measuredWindow: dns-query-response}
+  authorityPolicy: {zone: plab.test., authoritativeAnswer: true, recursionDesired: false, recursionAvailable: false, externalUpstream: prohibited, outOfZoneResponse: REFUSED, unknownNameResponse: NXDOMAIN, existingNameUnknownTypeResponse: NOERROR-NODATA}
+  framing: {kind: bare-dns-message-body, requestBodyLength: 27, canonicalResponseLength: 104}
+  http: {version: h3, method: POST, scheme: https, authority: dns.plab.test, path: /dns-query, expectedStatus: 200, requestHeaders: {accept: application/dns-message, contentType: application/dns-message, cacheControl: no-cache}, responseHeaders: {contentType: application/dns-message, cacheControl: no-store}, bodyFraming: bare-dns-message-body}
+  query: {name: plab.test., type: TXT, class: IN, wireLength: 27, normalizedWireSha256: 81902ef4d65703055001add4228c06b683f93f3506bc896963d7334d6fcedeef}
+  expectedResponse: {rcode: NOERROR, answer: null, ttl: null, answerCount: 0, authorityCount: 1, additionalCount: 0, truncated: false, wireLength: 104, normalizedWireSha256: dcd160b39184623116b119ef1e83470d3ced747e4e9a4d488316a57e08847c7c}
+  runtimeIdPolicy: {messageId: zero, canonicalHashNormalization: identity}
+  responseNormalization: {rawResponseEqualityRequired: false, compressionMayDiffer: true, procedure: [parse-dns-message, canonical-reserialize, compare-normalized-sha256]}
+  operationPolicy: {timeoutSource: load-profile.dns.queryTimeoutMilliseconds, retries: 0, onTimeout: cancel-operation-and-record}
+executionProfile: {transportSecurity: tls, protocolVariant: doh-h3-quic, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode, platformProvenanceRequired: true, accelerationProvenanceRequired: true}
+validation:
+  required: true
+  checks: [protocol:h3, protocol:doh, method:POST, query-type:TXT, response-section-counts:1-0-1-0, authority-soa, rcode:NOERROR, answer-count:0, normalized-wire-length:104, normalized-wire-sha256, zero-retries, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: doh3, expectedObserved: doh3, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic, connection-reuse], primaryMetrics: [queriesPerSecond, queryLatencyP50, queryLatencyP95, queryLatencyP99, failedOperations, timedOutOperations]}
+requiredMetrics: [queriesPerSecond, queryLatencyMean, queryLatencyP50, queryLatencyP95, queryLatencyP99, timeToFirstByte, connectionLatency, completedOperations, malformedOperations, retryCount, failedOperations, timedOutOperations, totalTransferredBytes, effectiveConcurrency, effectiveStreams]
+artifacts: {required: [validation.json, protocol-proof.json, dns-wire-summary.json, http-summary.json, quic-summary.json, tls-negotiation.json, result.json, load.stdout.log, load.stderr.log], optional: [qlog, target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [http2-fallback, public-recursive-resolver]}
+networkProfile: clean
+tags: [dns, doh, h3, semantic-breadth, nodata]

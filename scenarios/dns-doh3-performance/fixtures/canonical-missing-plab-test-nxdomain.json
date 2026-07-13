@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "protocol-lab.dns-wire-fixture.v2",
+  "fixtureId": "dns.missing-plab-test-nxdomain.canonical",
+  "description": "Canonical authoritative NXDOMAIN response with a zero-TTL SOA authority record.",
+  "semanticKind": "negative-name",
+  "upstreamStandards": ["https://www.rfc-editor.org/rfc/rfc1035", "https://www.rfc-editor.org/rfc/rfc2308", "https://www.rfc-editor.org/rfc/rfc6761"],
+  "question": {"name": "missing.plab.test.", "type": "A", "class": "IN"},
+  "messages": {
+    "query": {"messageId": 0, "flags": [], "sectionCounts": {"question": 1, "answer": 0, "authority": 0, "additional": 0}, "bareWire": {"hex": "000000000001000000000000076d697373696e6704706c616204746573740000010001", "lengthBytes": 35, "sha256": "c3631fbb40f06d7230de8cd5f22f5950e2fb728b02bd8724cdcaaee8fb33b5c4"}},
+    "canonicalResponse": {
+      "messageId": 0, "flags": ["QR", "AA"], "responseCode": "NXDOMAIN", "sectionCounts": {"question": 1, "answer": 0, "authority": 1, "additional": 0}, "answers": [],
+      "authorities": [{"owner": "plab.test.", "type": "SOA", "class": "IN", "ttlSeconds": 0, "rdata": "ns.plab.test. hostmaster.plab.test. 1 3600 600 86400 0"}],
+      "bareWire": {"hex": "000084030001000000010000076d697373696e6704706c61620474657374000001000104706c616204746573740000060001000000000038026e7304706c61620474657374000a686f73746d617374657204706c61620474657374000000000100000e10000002580001518000000000", "lengthBytes": 112, "sha256": "587769ddca87bf6e758044ecfe73e847e635eace1ce1ea8a5cd38b1c225d8d23"}
+    }
+  },
+  "transportFraming": {
+    "dot": {"framing": "length-prefixed-dns-message", "lengthPrefixOctets": 2, "byteOrder": "network", "canonicalQueryWireHex": "0023000000000001000000000000076d697373696e6704706c616204746573740000010001", "canonicalResponseWireHex": "0070000084030001000000010000076d697373696e6704706c61620474657374000001000104706c616204746573740000060001000000000038026e7304706c61620474657374000a686f73746d617374657204706c61620474657374000000000100000e10000002580001518000000000"},
+    "doq": {"framing": "length-prefixed-dns-message", "lengthPrefixOctets": 2, "byteOrder": "network", "canonicalQueryWireHex": "0023000000000001000000000000076d697373696e6704706c616204746573740000010001", "canonicalResponseWireHex": "0070000084030001000000010000076d697373696e6704706c61620474657374000001000104706c616204746573740000060001000000000038026e7304706c61620474657374000a686f73746d617374657204706c61620474657374000000000100000e10000002580001518000000000"},
+    "doh2": {"framing": "bare-dns-message-body", "mediaType": "application/dns-message", "queryBodySource": "messages.query.bareWire.hex", "responseBodySource": "messages.canonicalResponse.bareWire.hex"}, "doh3": {"framing": "bare-dns-message-body", "mediaType": "application/dns-message", "queryBodySource": "messages.query.bareWire.hex", "responseBodySource": "messages.canonicalResponse.bareWire.hex"},
+    "udp": {"framing": "bare-dns-message-datagram", "querySource": "messages.query.bareWire.hex", "responseSource": "messages.canonicalResponse.bareWire.hex"},
+    "tcp": {"framing": "length-prefixed-dns-message", "lengthPrefixOctets": 2, "byteOrder": "network", "canonicalQueryWireHex": "0023000000000001000000000000076d697373696e6704706c616204746573740000010001", "canonicalResponseWireHex": "0070000084030001000000010000076d697373696e6704706c61620474657374000001000104706c616204746573740000060001000000000038026e7304706c61620474657374000a686f73746d617374657204706c61620474657374000000000100000e10000002580001518000000000"}
+  },
+  "runtimeIdPolicy": {"doh2": {"messageId": "zero", "canonicalHashNormalization": "identity"}, "doh3": {"messageId": "zero", "canonicalHashNormalization": "identity"}, "doq": {"messageId": "zero", "canonicalHashNormalization": "identity"}, "dot": {"messageId": "unique-among-outstanding-queries", "canonicalHashNormalization": "set-message-id-to-zero"}, "udp": {"messageId": "unique-among-outstanding-queries", "canonicalHashNormalization": "set-message-id-to-zero"}, "tcp": {"messageId": "unique-among-outstanding-queries", "canonicalHashNormalization": "set-message-id-to-zero"}},
+  "responseNormalization": {"rawResponseEqualityRequired": false, "compressionMayDiffer": true, "procedure": ["parse-dns-message", "canonical-reserialize", "compare-normalized-sha256"]}
+}

@@ -1,0 +1,42 @@
+schemaVersion: "1.0"
+id: go-dns-doh3
+name: Go DNS-over-HTTPS HTTP/3 Local Fixture Authority
+description: Exact local-only DoH3 authority for the seven committed deterministic DNS fixtures.
+family: go-secure-dns
+role: authoritative-server
+targetKind: process
+targetContract: process
+executable: bin/linux-x64/go-dns-doh3
+workingDirectory: .
+baseUrl: https://127.0.0.1:18533/dns-query
+protocolBaseUrls: {doh3: https://127.0.0.1:18533/dns-query}
+certificateMode: plab-secure-dns-single-leaf-p256-v1
+roles: [authoritative-server]
+protocols: [doh3]
+supportedProtocols: [doh3]
+supportedProtocolVersions: [HTTP/3, QUICv1, TLS1.3]
+supportedScenarios: [dns.doh3.query.a, dns.doh3.get.a, dns.doh3.query.aaaa, dns.doh3.query.cname-chain, dns.doh3.query.large-dnssec-shaped, dns.doh3.query.nodata, dns.doh3.query.nxdomain]
+supportedTestCaseIds: [dns.doh3.query.a, dns.doh3.get.a, dns.doh3.query.aaaa, dns.doh3.query.cname-chain, dns.doh3.query.large-dnssec-shaped, dns.doh3.query.nodata, dns.doh3.query.nxdomain]
+scenarioCoverage:
+  dns.doh3.query.a: {status: supported, behavior: exact POST A fixture}
+  dns.doh3.get.a: {status: supported, behavior: exact unpadded-base64url GET A fixture}
+  dns.doh3.query.aaaa: {status: supported, behavior: exact POST AAAA fixture}
+  dns.doh3.query.cname-chain: {status: supported, behavior: exact POST CNAME-chain fixture}
+  dns.doh3.query.large-dnssec-shaped: {status: supported, behavior: exact 630-byte structural fixture without signature-validity claim}
+  dns.doh3.query.nodata: {status: supported, behavior: exact POST NOERROR/NODATA fixture}
+  dns.doh3.query.nxdomain: {status: supported, behavior: exact POST NXDOMAIN fixture}
+  dns.doh2.query.a: {status: unsupported, reason: DoH2 is a separate evidence lane.}
+  dns.doq.query.a: {status: unsupported, reason: DoQ is a separate evidence lane.}
+  dns.dot.query.a: {status: unsupported, reason: DoT is a separate evidence lane.}
+unsupportedKnownCases: [dns.classic.tcp.query.a, dns.classic.udp-truncated-tcp-retry, dns.classic.udp.query.a, dns.doh2.query.a, dns.doq.query.a, dns.dot.query.a]
+ports: [{name: doh3, protocol: udp, default: 18533, hostPort: 18533, containerPort: 18533}]
+environment: {PLAB_DOH3_LISTEN: "127.0.0.1:18533"}
+startup: {port: {name: doh3, environmentVariable: PLAB_DOH3_PORT, default: 18533}, readiness: {protocol: process, timeoutSeconds: 10}}
+readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 500}
+capabilities: [dns.authoritative-server, dns.doh3, dns.local-fixture-only, quic-v1, tls13, http3]
+entrypoint: {kind: process, path: bin/linux-x64/go-dns-doh3, arguments: [], workingDirectory: .}
+shutdownBehavior: graceful-termination
+artifactExports: []
+qlogSupport: false
+sslKeyLogSupport: false
+notes: No resolver, recursion, upstream, cache, HTTP/2, HTTP/1.1, DoQ, DoT, UDP DNS, or TCP DNS fallback exists.

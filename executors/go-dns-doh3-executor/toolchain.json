@@ -1,0 +1,1 @@
+{"schemaVersion":"protocol-lab-toolchain-v1","language":"go","goVersion":"1.25.0","modules":[{"name":"github.com/quic-go/quic-go","version":"v0.60.0"},{"name":"github.com/miekg/dns","version":"v1.1.68"}]}

@@ -1,0 +1,10 @@
+id: dns-doh3-performance-comparison
+name: DNS over HTTPS HTTP/3 performance comparison candidate suite
+description: Non-publishable DoH3 comparison selection.
+purpose: benchmark
+resultKind: benchmark
+loadProfileId: secure-dns-comparison
+scenarios: [dns.doh3.query.a]
+protocol: doh3
+notes: DoH3 results compare only with matched DoH3 results using the same local authority, disabled cache, QUIC connection reuse, and 32 total concurrent streams.
+tags: [dns, doh, h3, comparison, non-publishable]

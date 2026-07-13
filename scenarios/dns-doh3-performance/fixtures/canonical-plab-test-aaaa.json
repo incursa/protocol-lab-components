@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "protocol-lab.dns-wire-fixture.v2",
+  "fixtureId": "dns.plab-test-aaaa.canonical",
+  "description": "Canonical plab.test. IN AAAA query and authoritative documentation-prefix response.",
+  "semanticKind": "positive-answer",
+  "upstreamStandards": [
+    "https://www.rfc-editor.org/rfc/rfc1035",
+    "https://www.rfc-editor.org/rfc/rfc3596",
+    "https://www.rfc-editor.org/rfc/rfc3849"
+  ],
+  "question": {"name": "plab.test.", "type": "AAAA", "class": "IN"},
+  "messages": {
+    "query": {
+      "messageId": 0,
+      "flags": [],
+      "sectionCounts": {"question": 1, "answer": 0, "authority": 0, "additional": 0},
+      "bareWire": {
+        "hex": "00000000000100000000000004706c6162047465737400001c0001",
+        "lengthBytes": 27,
+        "sha256": "71a4f6add06b9f00589f84add45f19dc12b91699436287f8dbefb73f01931b69"
+      }
+    },
+    "canonicalResponse": {
+      "messageId": 0,
+      "flags": ["QR", "AA"],
+      "responseCode": "NOERROR",
+      "sectionCounts": {"question": 1, "answer": 1, "authority": 0, "additional": 0},
+      "answers": [{"owner": "plab.test.", "type": "AAAA", "class": "IN", "ttlSeconds": 0, "rdata": "2001:db8::1"}],
+      "bareWire": {
+        "hex": "00008400000100010000000004706c6162047465737400001c0001c00c001c000100000000001020010db8000000000000000000000001",
+        "lengthBytes": 55,
+        "sha256": "6ab207b08c4dd2c1a902d8d15276e79f6ec6916b043f25a3df851b146d7b072c"
+      }
+    }
+  },
+  "transportFraming": {
+    "dot": {"framing": "length-prefixed-dns-message", "lengthPrefixOctets": 2, "byteOrder": "network", "canonicalQueryWireHex": "001b00000000000100000000000004706c6162047465737400001c0001", "canonicalResponseWireHex": "003700008400000100010000000004706c6162047465737400001c0001c00c001c000100000000001020010db8000000000000000000000001"},
+    "doq": {"framing": "length-prefixed-dns-message", "lengthPrefixOctets": 2, "byteOrder": "network", "canonicalQueryWireHex": "001b00000000000100000000000004706c6162047465737400001c0001", "canonicalResponseWireHex": "003700008400000100010000000004706c6162047465737400001c0001c00c001c000100000000001020010db8000000000000000000000001"},
+    "doh2": {"framing": "bare-dns-message-body", "mediaType": "application/dns-message", "queryBodySource": "messages.query.bareWire.hex", "responseBodySource": "messages.canonicalResponse.bareWire.hex"},
+    "doh3": {"framing": "bare-dns-message-body", "mediaType": "application/dns-message", "queryBodySource": "messages.query.bareWire.hex", "responseBodySource": "messages.canonicalResponse.bareWire.hex"},
+    "udp": {"framing": "bare-dns-message-datagram", "querySource": "messages.query.bareWire.hex", "responseSource": "messages.canonicalResponse.bareWire.hex"},
+    "tcp": {"framing": "length-prefixed-dns-message", "lengthPrefixOctets": 2, "byteOrder": "network", "canonicalQueryWireHex": "001b00000000000100000000000004706c6162047465737400001c0001", "canonicalResponseWireHex": "003700008400000100010000000004706c6162047465737400001c0001c00c001c000100000000001020010db8000000000000000000000001"}
+  },
+  "runtimeIdPolicy": {
+    "doh2": {"messageId": "zero", "canonicalHashNormalization": "identity"},
+    "doh3": {"messageId": "zero", "canonicalHashNormalization": "identity"},
+    "doq": {"messageId": "zero", "canonicalHashNormalization": "identity"},
+    "dot": {"messageId": "unique-among-outstanding-queries", "canonicalHashNormalization": "set-message-id-to-zero"},
+    "udp": {"messageId": "unique-among-outstanding-queries", "canonicalHashNormalization": "set-message-id-to-zero"},
+    "tcp": {"messageId": "unique-among-outstanding-queries", "canonicalHashNormalization": "set-message-id-to-zero"}
+  },
+  "responseNormalization": {"rawResponseEqualityRequired": false, "compressionMayDiffer": true, "procedure": ["parse-dns-message", "canonical-reserialize", "compare-normalized-sha256"]}
+}
