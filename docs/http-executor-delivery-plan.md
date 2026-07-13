@@ -514,6 +514,41 @@ Status: the original five-ID `0.1.0` package and runner lane remains complete. C
 - runner proof at commit `d1cdde34e7f4644ab2c5cb3f18fd20167c94d65e`: subprotocol `75,324` completed and deflate `9,063`, both with zero failures/timeouts; both public Protocol Execution Result v2 documents pass schema validation and all `16/16` artifact hashes verify. The separate `0.1.0` regression completed upgrade `2,712`, control frames `84,533`, text echo `79,731`, binary echo `69,523`, and close `2,686`, all with zero failures/timeouts and schema/hash-valid evidence;
 - artifact roots: `C:\shared\src\incursa\.artifacts\http1-websocket-tls-diagnostics-clean-packages`, `C:\shared\src\incursa\.artifacts\http1-websocket-tls-subprotocol-clean-smoke`, `C:\shared\src\incursa\.artifacts\http1-websocket-tls-permessage-deflate-clean-smoke`, `C:\shared\src\incursa\.artifacts\http1-websocket-tls-five-id-clean-regression`, and `C:\shared\src\incursa\.artifacts\http1-websocket-tls-diagnostics-runner-evidence`. This remains local diagnostic evidence only; comparison, publication, and ranking are not implied.
 
+#### E8f — HTTP/3 RFC 9220 fragmented binary diagnostic
+
+Component version `0.2.0` extends the existing aioquic RFC 9220 package family
+without creating a generic WebSocket lane. The scenario package
+`org.protocol-lab.components.scenario.aioquic-rfc9220-websocket@0.2.0`
+authority-locks exact `http3.websocket.rfc9220.fragmented-binary-echo` bytes to
+public commit `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`; the executor is
+`org.protocol-lab.components.executor.aioquic-rfc9220-websocket@0.2.0`; and
+the target is `org.protocol-lab.components.implementation.aioquic-http3@0.2.0`.
+The five established RFC 9220 identities remain independently selectable.
+Exact selection is mandatory: 19 generic, HTTP/1.1, and RFC 8441 identities
+return `unsupported`, while unknown identities fail closed with exit code 2.
+
+Clean source commit `9349af37e426b9abf2e77dacaf08c1a056aaefb9`
+produced parity-eligible package hashes: scenario
+`210d93439c279b3b460b8942e11a5722f44a11c518e5ec8d4191d3bb43520b17`,
+executor `bf7a651b0a4aa094b7c549790dc947d8ad18105da31606e0a0793217047c7c3f`,
+and target `9294bbfa2290270272645b73f1458dbea9011fe035a05fd163508e172612c1ad`.
+Extracted Windows evidence is under
+`artifacts/rfc9220-fragmented-clean-9349af3-win-smoke`; extracted Linux wrapper
+evidence is under `artifacts/rfc9220-fragmented-clean-9349af3-linux-smoke`.
+All six exact identities completed one operation with zero failures and zero
+timeouts on both operating-system entrypoints. The new cell proves TLS 1.3,
+ALPN `h3`, HTTP/3 Extended CONNECT, `SETTINGS_ENABLE_CONNECT_PROTOCOL=1`, no
+fallback or forbidden WebSocket headers, client masking, frame payloads
+`[1024, 2048, 2928]`, binary/continuation/continuation opcodes, FIN
+`false/false/true`, no interleaved control frames, exact ordered reassembly of
+6000 `0xA5` bytes with SHA-256
+`8f8d8f75d55c80475ffb0c12b1ede7083d6df689e8ef04f05176c5050873bfb7`,
+exact echo, and clean code-1000 close. Package-local client and target tests,
+the unchanged HTTP/3 status endpoint, extracted image builds, package-v2
+manifests, license presence, and all three clean attestations passed. This is
+local diagnostic component evidence only; runner admission, publication,
+comparison, and ranking remain out of scope.
+
 ## Verification floor
 
 For every components slice:
