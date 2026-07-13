@@ -1,7 +1,7 @@
 executorIdentity:
   id: go-tls13-executor
   name: Go TLS 1.3 Test Executor
-  version: 0.2.0
+  version: 0.3.0
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
@@ -17,20 +17,26 @@ claimedCapabilities:
   - {id: accepted-psk-single-use-ticket-proof, status: supported}
   - {id: unmeasured-source-session-per-measured-operation, status: supported}
   - {id: tls.0rtt, status: unsupported}
-  - {id: tls.record.throughput, status: unsupported}
+  - {id: tls.record.throughput, status: supported}
+  - {id: tls.record.coverage, status: supported}
+  - {id: deterministic-repeated-octet-payload-hash, status: supported}
+  - {id: encrypted-record-delta-observation, status: supported}
   - {id: tls.handshake.full.tls12, status: unsupported}
   - {id: tls.handshake.full.chacha20, status: unsupported}
   - {id: tls.handshake.mutual-auth, status: unsupported}
   - {id: tls.early-data.accepted, status: unsupported}
   - {id: tls.early-data.rejected, status: unsupported}
   - {id: tls.key-update.diagnostic, status: unsupported}
-  - {id: tls.record.coverage, status: unsupported}
 supportedTestSelectors:
   - {selectorType: test-id, expression: tls.handshake.full}
   - {selectorType: test-id, expression: tls.handshake.resumed}
+  - {selectorType: test-id, expression: tls.record.throughput}
+  - {selectorType: test-id, expression: tls.record.coverage}
 supportedScenarioSelectors:
   - {selectorType: scenario-id, expression: tls.handshake.full}
   - {selectorType: scenario-id, expression: tls.handshake.resumed}
+  - {selectorType: scenario-id, expression: tls.record.throughput}
+  - {selectorType: scenario-id, expression: tls.record.coverage}
 supportedProtocolFamilies: [tls]
 supportedExecutionModes: [single-cell, process]
 requiredTargetEndpointBindings:
@@ -42,13 +48,15 @@ supportedArtifactTypes:
   - {type: protocol-proof.json, producedByStates: [stopped, failed]}
   - {type: tls-negotiation.json, producedByStates: [stopped, failed]}
   - {type: resumption-proof.json, producedByStates: [stopped, failed]}
+  - {type: record-coverage.json, producedByStates: [stopped, failed]}
+  - {type: payload-hash.json, producedByStates: [stopped, failed]}
   - {type: tls-topology.json, producedByStates: [stopped, failed]}
   - {type: tls-executor-result.json, producedByStates: [stopped, failed]}
   - {type: tls-load-summary.json, producedByStates: [stopped, failed]}
   - {type: connection-and-handshake-latency.json, producedByStates: [stopped, failed]}
 metricsAvailability:
   available: true
-  availableKinds: [validation, handshakes-per-second, latency-percentiles, operation-outcomes, tls-negotiation]
+  availableKinds: [validation, handshakes-per-second, bytes-per-second, latency-percentiles, total-transferred-bytes, operation-outcomes, tls-negotiation, record-observation]
 parser:
   id: protocol-lab-tls-json
   type: protocol-lab-tls-json

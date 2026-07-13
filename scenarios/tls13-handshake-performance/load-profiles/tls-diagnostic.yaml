@@ -1,0 +1,13 @@
+schemaVersion: protocol-lab.load-profile.v2
+version: 2.0.0
+id: tls-diagnostic
+title: TLS Bounded Diagnostic
+status: experimental
+purpose: diagnostic
+description: Single-operation diagnostic pressure for TLS compatibility, early-data, KeyUpdate, and record-coverage contracts.
+durationSeconds: 10
+warmupSeconds: 0
+repetitions: 1
+tls: {connections: 1, concurrency: 1, totalOperations: 1, operationRateLimitPerSecond: 1, operationTimeoutMilliseconds: 15000}
+evidence: {minimumTier: diagnostic, publishable: false}
+artifacts: {required: [load.stdout.log, load.stderr.log, validation.json, protocol-proof.json, result.json], optional: [tls-negotiation.json, packet-summary.json]}

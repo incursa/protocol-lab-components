@@ -10,7 +10,7 @@ import (
 
 func TestTLSHandshakeSmokeConfigIsExact(t *testing.T) {
 	t.Setenv("PLAB_SCENARIO_ID", fullScenarioID)
-	t.Setenv("PLAB_LOAD_PROFILE_ID", loadProfileID)
+	t.Setenv("PLAB_LOAD_PROFILE_ID", tlsSmokeProfileID)
 	t.Setenv("PLAB_CONNECTIONS", "1")
 	t.Setenv("PLAB_CONCURRENCY", "1")
 	t.Setenv("PLAB_DURATION_SECONDS", "5")
@@ -32,7 +32,7 @@ func TestTLSHandshakeSmokeConfigIsExact(t *testing.T) {
 
 func TestTLSResumedHandshakeSmokeConfigIsExact(t *testing.T) {
 	t.Setenv("PLAB_SCENARIO_ID", resumedScenarioID)
-	t.Setenv("PLAB_LOAD_PROFILE_ID", loadProfileID)
+	t.Setenv("PLAB_LOAD_PROFILE_ID", tlsSmokeProfileID)
 	t.Setenv("PLAB_CONNECTIONS", "1")
 	t.Setenv("PLAB_CONCURRENCY", "1")
 	t.Setenv("PLAB_DURATION_SECONDS", "5")
@@ -45,6 +45,65 @@ func TestTLSResumedHandshakeSmokeConfigIsExact(t *testing.T) {
 	}
 	if config.ScenarioID != resumedScenarioID {
 		t.Fatalf("unexpected scenario: %+v", config)
+	}
+}
+
+func TestTLSRecordThroughputSmokeConfigIsExact(t *testing.T) {
+	t.Setenv("PLAB_SCENARIO_ID", recordThroughputScenarioID)
+	t.Setenv("PLAB_LOAD_PROFILE_ID", tlsSmokeProfileID)
+	t.Setenv("PLAB_CONNECTIONS", "1")
+	t.Setenv("PLAB_CONCURRENCY", "1")
+	t.Setenv("PLAB_DURATION_SECONDS", "5")
+	t.Setenv("PLAB_WARMUP_SECONDS", "1")
+	t.Setenv("PLAB_REPETITION", "1")
+	t.Setenv("PLAB_REQUEST_TIMEOUT_SECONDS", "5")
+	config, err := loadConfigFromEnvironment()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if config.ApplicationDataBytes != 1048576 {
+		t.Fatalf("unexpected config: %+v", config)
+	}
+}
+
+func TestTLSRecordCoverageDiagnosticConfigIsExact(t *testing.T) {
+	t.Setenv("PLAB_SCENARIO_ID", recordCoverageScenarioID)
+	t.Setenv("PLAB_LOAD_PROFILE_ID", tlsDiagnosticProfileID)
+	t.Setenv("PLAB_CONNECTIONS", "1")
+	t.Setenv("PLAB_CONCURRENCY", "1")
+	t.Setenv("PLAB_TOTAL_OPERATIONS", "1")
+	t.Setenv("PLAB_DURATION_SECONDS", "10")
+	t.Setenv("PLAB_WARMUP_SECONDS", "0")
+	t.Setenv("PLAB_REPETITION", "1")
+	t.Setenv("PLAB_REQUEST_TIMEOUT_SECONDS", "15")
+	config, err := loadConfigFromEnvironment()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if config.TotalOperations != 1 {
+		t.Fatalf("unexpected config: %+v", config)
+	}
+}
+
+func TestCanonicalPayloadHashes(t *testing.T) {
+	for size, expected := range map[int]string{
+		1024:    "e8fb68ce4d4d002dba40c0a459d96807c96ded1c2fdefae3f56f8a0c06a4fecf",
+		65536:   "944044fe482bc4e91085c15c5a923a1b9e02eac98d3bce04997d6dbecd2a5b8d",
+		1048576: "bf63d8a95fcc2e64619813aae35fdcbe871fdd9264caa3f365eb3aed0f679129",
+	} {
+		if actual := payloadHash(size); actual != expected {
+			t.Fatalf("size=%d actual=%s", size, actual)
+		}
+	}
+}
+
+func TestRecordParserHandlesSplitRecords(t *testing.T) {
+	record := []byte{23, 3, 3, 0, 3, 1, 2, 3}
+	var parser tlsRecordParser
+	parser.feed(record[:4])
+	parser.feed(record[4:])
+	if parser.count != 1 || parser.bytes != len(record) {
+		t.Fatalf("parser=%+v", parser)
 	}
 }
 

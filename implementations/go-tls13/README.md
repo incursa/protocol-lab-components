@@ -1,11 +1,11 @@
 # Go TLS 1.3 Target
 
-`go-tls13@0.1.0` is a process target for exact `tls.handshake.full` and
-`tls.handshake.resumed` execution. It fixes TLS 1.3, ALPN
-`protocol-lab-tls`, X25519, `TLS_AES_128_GCM_SHA256`, and the public
-`plab-single-leaf-p256-v1` certificate identity. One shared `crypto/tls`
-configuration retains server ticket keys across connections.
+`go-tls13@0.2.0` preserves exact full and accepted-PSK resumed handshakes and
+adds deterministic TLS record transfer. A package-selected record scenario
+accepts only the canonical size/direction cases, serves or validates repeated
+`0x5a` application bytes, and acknowledges client-to-server payloads with
+their exact SHA-256.
 
-The executor owns proof of the full source session, one-time ticket
-consumption, accepted resumption, warmup isolation, and zero application
-bytes. Every other committed TLS scenario remains unsupported.
+The process pins TLS 1.3, X25519, `TLS_AES_128_GCM_SHA256`, ALPN
+`protocol-lab-tls`, and the public test certificate. Unsupported scenario
+identities are never substituted with a supported handshake or transfer path.

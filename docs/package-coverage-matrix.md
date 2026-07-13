@@ -41,9 +41,9 @@ This matrix tracks reusable component package coverage for implementations and e
 | `aioquic-rfc9220-websocket` scenario pack | missing | added `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket` with suite `aioquic-rfc9220-websocket-proof` bound to `aioquic-rfc9220-websocket` |
 | `go-http1-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-http1-executor@0.3.0`; exact HTTP/1.1 validation plus pinned `oha@1.15.0` load generation |
 | `go-http2-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-http2-executor@0.3.0`; exact h2c smoke, diagnostic, and `16/128/8` balanced-round-robin comparison shapes |
-| `go-tls13-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-tls13-executor@0.2.0`; exact TLS 1.3 full and accepted single-use PSK-resumed handshake smoke only; all other committed TLS identities fail closed as explicit `unsupported` |
+| `go-tls13-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-tls13-executor@0.3.0`; exact TLS 1.3 full/resumed handshakes plus deterministic record throughput and six-case record coverage; remaining committed TLS identities fail closed as explicit `unsupported` |
 | `dotnet-sslstream-tls13` | missing | local diagnostic package `org.protocol-lab.components.implementation.dotnet-sslstream-tls13@0.1.0`; independent library-backed TLS 1.3 target |
-| `go-tls13` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-tls13@0.1.0`; independent Go `crypto/tls` target for exact TLS 1.3 full and accepted PSK-resumed handshakes |
+| `go-tls13` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-tls13@0.2.0`; independent Go `crypto/tls` target for exact TLS 1.3 full/resumed handshakes and deterministic record transfers |
 
 ## Scenario Support
 

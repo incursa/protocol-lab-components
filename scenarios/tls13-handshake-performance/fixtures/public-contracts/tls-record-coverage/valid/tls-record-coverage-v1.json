@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "protocol-lab.tls-record-coverage.v1",
+  "profileId": "plab-tls-record-coverage-v1",
+  "payloadGenerator": "repeated-octet",
+  "payloadOctet": 90,
+  "cases": [
+    {"caseId":"client-to-server-1kib","direction":"client-to-server","applicationDataBytes":1024,"payloadSha256":"e8fb68ce4d4d002dba40c0a459d96807c96ded1c2fdefae3f56f8a0c06a4fecf","measuredWindow":"application-data-transfer"},
+    {"caseId":"server-to-client-1kib","direction":"server-to-client","applicationDataBytes":1024,"payloadSha256":"e8fb68ce4d4d002dba40c0a459d96807c96ded1c2fdefae3f56f8a0c06a4fecf","measuredWindow":"application-data-transfer"},
+    {"caseId":"client-to-server-64kib","direction":"client-to-server","applicationDataBytes":65536,"payloadSha256":"944044fe482bc4e91085c15c5a923a1b9e02eac98d3bce04997d6dbecd2a5b8d","measuredWindow":"application-data-transfer"},
+    {"caseId":"server-to-client-64kib","direction":"server-to-client","applicationDataBytes":65536,"payloadSha256":"944044fe482bc4e91085c15c5a923a1b9e02eac98d3bce04997d6dbecd2a5b8d","measuredWindow":"application-data-transfer"},
+    {"caseId":"client-to-server-1mib","direction":"client-to-server","applicationDataBytes":1048576,"payloadSha256":"bf63d8a95fcc2e64619813aae35fdcbe871fdd9264caa3f365eb3aed0f679129","measuredWindow":"application-data-transfer"},
+    {"caseId":"server-to-client-1mib","direction":"server-to-client","applicationDataBytes":1048576,"payloadSha256":"bf63d8a95fcc2e64619813aae35fdcbe871fdd9264caa3f365eb3aed0f679129","measuredWindow":"application-data-transfer"}
+  ]
+}
