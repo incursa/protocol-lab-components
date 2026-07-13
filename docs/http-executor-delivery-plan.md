@@ -394,16 +394,23 @@ handshake with zero failures and zero timeouts. Both proved the exact suite,
 X25519, ALPN, canonical DER/SPKI certificate hashes, `didResume: false`, no
 session-state or early-data offer, and zero application bytes. All nine other
 committed TLS identities return explicit `unsupported`; an unknown identity
-fails closed. The dirty-source diagnostic package hashes from the decisive
-Windows proof are scenario
-`401e2600c653555f4b238096f9233d8bdab8b9164c16ae1d038c13d3abb2f142`,
-executor `e1b3b37684adda6a1e6ba046e5d683f1e7685b9e1385b0fb0e6e0b1d80ae95d7`,
-and target `979b9d3325ab378622faeac4c8e92c80c693f3c076f25d8e1ee773395104ec30`.
-The Linux executor and target diagnostics are respectively
-`4d4f68930f84939670d4c3a6d0d233f753af52ac5ffdc9f225a9cf58e8b90ad1`
-and `497b37fd89b7c23fab0583e8f986decc842dab45e2e9cdbdbfba587c7530e706`.
-These local cells remain diagnostic and non-publishable; no generic uTLS, TLS,
-comparison, or ranking support is implied.
+fails closed. Clean component source commit
+`61af6713b99149dcc29fe1d22d35977cfec78e89` produced parity-eligible packages:
+portable scenario
+`92a317509a7d5e25a9145c4b53b697254a6a3c9e14e4e4b9464379b91a13b083`;
+Windows executor
+`7e4307713f4ba2614e124f552cc722e6c150b18bd3ecb43fad9885c7a80f0bb9`
+and target
+`76e5855adbdc3a42368152f053f3403772664cfe1960b13972612bc0bdbe82ae`;
+Linux executor
+`f141d1e904e68fdfa0102557fae0c8e4540e7e8d9e722833510be73648e3953b`
+and target
+`736d25dc5df8dc2c6a7fe7ba5d2771df81c3768d2ea261e3df6e2b876a924a77`.
+The exact extracted evidence roots are
+`artifacts/tls13-chacha20-clean-win-smoke` and
+`artifacts/tls13-chacha20-clean-linux-smoke` within the isolated component
+worktree. These local cells remain diagnostic and non-publishable; no generic
+uTLS, TLS, comparison, or ranking support is implied.
 
 #### E8b — gRPC over HTTP/2 unary after TLS/ALPN
 
