@@ -3,6 +3,9 @@
   "commit": "8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574",
   "files": {
     "fixtures/public-contracts/tls/valid/tls13-p256-profile-v1.json": "56eb9eb4124da0e7d69cafaffb67ec0e2b4014318eee97880849937ae71a858c",
+    "fixtures/public-contracts/tls-record-coverage/valid/tls-record-coverage-v1.json": "759771a589857ab034328611895842fca337d56808b8a7b9ba428220d577cd99",
+    "fixtures/public-contracts/tls-profile-v2/valid/tls13-aes128gcm-p256-server-auth-v2.json": "6da293573d86a3521b9fe8d768d757f0a67a14d55859211ed43154a72fddbf46",
+    "load-profiles/tls-diagnostic.yaml": "2bd9c53844fe77990a8b9888e5e260ea6979b193ef7537aba5b24b40f8253599",
     "load-profiles/tls-smoke.yaml": "c01fc33bf945911744c387715ccec7bbf47b2c7cfb3da4c3ac6af71e122d71a6",
     "scenarios/tls/diagnostic/key-update.yaml": "10d9324acc0437fbefc6a3b29cb68937f45f52ff058d7a2111025180235ad9e7",
     "scenarios/tls/early-data/accepted.yaml": "2f11fe6d69b5dc568b5c1a9c6549c3114de19101eb5ba0eaecd8403bfec6af78",
@@ -14,6 +17,7 @@
     "scenarios/tls/handshake/resumed.yaml": "919c4cb0dbf75e70578f512e74502b424859153e71225fd9b84157f4765cb4a5",
     "scenarios/tls/record/coverage.yaml": "cd5864a7251f4d7d0ab74446e2292a223cb6fe966419a22992822494d1cc4106",
     "scenarios/tls/record/throughput.yaml": "ae9fae3a0d46e4dea451d5f59d3f3cb487159fe3e9af1980531021c551343922",
-    "suites/tls-performance-smoke.yaml": "ecbeea03f8dcb1ef590807d47158113c96f320e8fa1f764b0969348d4a555caa"
+    "suites/tls-performance-smoke.yaml": "ecbeea03f8dcb1ef590807d47158113c96f320e8fa1f764b0969348d4a555caa",
+    "suites/tls-contract-breadth-smoke.yaml": "9fffac5d3ade02f6d4c6ea69e03c25e3ff7811a67b400489d03d86455749d1b2"
   }
 }

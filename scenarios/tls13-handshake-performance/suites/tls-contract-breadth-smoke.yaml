@@ -1,0 +1,10 @@
+id: tls-contract-breadth-smoke
+name: TLS bounded contract breadth smoke suite
+description: Bounded compatibility, cipher, peer-authentication, and record-coverage contract selection.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: tls-smoke
+scenarios: [tls.handshake.full.tls12, tls.handshake.full.chacha20, tls.handshake.mutual-auth, tls.record.coverage]
+protocol: tls
+notes: Profile variants are separate validity cells and are never aggregated into one comparison group.
+tags: [tls, compatibility, profiles, record-coverage, non-publishable]

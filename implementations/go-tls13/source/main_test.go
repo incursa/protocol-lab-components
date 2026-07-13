@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestConfiguredListenAddressPrefersExactEnvironment(t *testing.T) {
 	t.Setenv("PLAB_LISTEN_ADDRESS", "127.0.0.1:19443")
@@ -11,7 +14,16 @@ func TestConfiguredListenAddressPrefersExactEnvironment(t *testing.T) {
 }
 
 func TestTargetIdentityIsStable(t *testing.T) {
-	if implementationID != "go-tls13" || implementationVersion != "0.1.0" || alpn != "protocol-lab-tls" {
+	if implementationID != "go-tls13" || implementationVersion != "0.2.0" || alpn != "protocol-lab-tls" {
 		t.Fatal("target identity changed")
+	}
+}
+
+func TestSupportedScenariosIncludeExactRecordIdentities(t *testing.T) {
+	joined := strings.Join(supportedScenarios, ",")
+	for _, scenario := range []string{"tls.record.throughput", "tls.record.coverage"} {
+		if !strings.Contains(joined, scenario) {
+			t.Fatalf("missing %s", scenario)
+		}
 	}
 }
