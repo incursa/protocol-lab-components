@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.go-tls13-mtls",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Go TLS 1.3 Mutual Authentication Target",
+  "entryManifests": ["implementations/go-tls13-mtls.yaml"],
+  "providedImplementations": [{
+    "implementationId": "go-tls13-mtls",
+    "displayName": "Go crypto/tls TLS 1.3 Mutual Authentication",
+    "protocols": ["tls"],
+    "scenarios": ["tls.handshake.mutual-auth"]
+  }],
+  "dependencies": {}
+}

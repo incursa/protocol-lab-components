@@ -42,8 +42,10 @@ This matrix tracks reusable component package coverage for implementations and e
 | `go-http1-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-http1-executor@0.3.0`; exact HTTP/1.1 validation plus pinned `oha@1.15.0` load generation |
 | `go-http2-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-http2-executor@0.3.0`; exact h2c smoke, diagnostic, and `16/128/8` balanced-round-robin comparison shapes |
 | `go-tls13-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-tls13-executor@0.3.0`; exact TLS 1.3 full/resumed handshakes plus deterministic record throughput and six-case record coverage; remaining committed TLS identities fail closed as explicit `unsupported` |
+| `go-tls13-mtls-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-tls13-mtls-executor@0.1.0`; exact TLS 1.3 mutual-authentication handshake with pinned server/client certificate identities; every other committed TLS identity fails closed as explicit `unsupported` |
 | `dotnet-sslstream-tls13` | missing | local diagnostic package `org.protocol-lab.components.implementation.dotnet-sslstream-tls13@0.1.0`; independent library-backed TLS 1.3 target |
 | `go-tls13` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-tls13@0.2.0`; independent Go `crypto/tls` target for exact TLS 1.3 full/resumed handshakes and deterministic record transfers |
+| `go-tls13-mtls` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-tls13-mtls@0.1.0`; independent narrow Go `crypto/tls` target requiring the canonical client trust chain and exact client leaf identity |
 | HTTP/1.1 cleartext WebSocket three-package lane | missing | local diagnostic scenario, executor, and independent origin packages at `0.1.0`; exact five-ID RFC 6455 smoke passes, while all adjacent WebSocket identities fail closed as unsupported |
 | HTTP/1.1 TLS WebSocket three-package lane | missing | local diagnostic `org.protocol-lab.components.scenario.http1-websocket-tls-performance`, `go-http1-websocket-tls-executor`, and independent `go-http1-websocket-tls` packages at `0.2.0`; the original five-ID TLS 1.3 regression plus exact `plab.echo.v1` and permessage-deflate no-context-takeover diagnostics pass with authenticated certificate and `http/1.1` ALPN proof |
 | `go-dns-doq` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-dns-doq@0.1.0`; QUIC v1/TLS 1.3/ALPN `doq` local fixture authority for `dns.doq.query.a` only |
@@ -87,8 +89,10 @@ This matrix tracks reusable component package coverage for implementations and e
 | `org.protocol-lab.components.executor.go-http1-executor` | `executors/go-http1-executor` |
 | `org.protocol-lab.components.executor.go-http2-executor` | `executors/go-http2-executor` |
 | `org.protocol-lab.components.executor.go-tls13-executor` | `executors/go-tls13-executor` |
+| `org.protocol-lab.components.executor.go-tls13-mtls-executor` | `executors/go-tls13-mtls-executor` |
 | `org.protocol-lab.components.implementation.dotnet-sslstream-tls13` | `implementations/dotnet-sslstream-tls13` |
 | `org.protocol-lab.components.implementation.go-tls13` | `implementations/go-tls13` |
+| `org.protocol-lab.components.implementation.go-tls13-mtls` | `implementations/go-tls13-mtls` |
 | `org.protocol-lab.components.implementation.go-http1-websocket` | `implementations/go-http1-websocket` |
 | `org.protocol-lab.components.executor.go-http1-websocket-executor` | `executors/go-http1-websocket-executor` |
 | `org.protocol-lab.components.scenario.http1-websocket-cleartext-performance` | `scenarios/http1-websocket-cleartext-performance` |
