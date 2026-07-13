@@ -4,8 +4,14 @@
   "serviceContractCanonicalSha256": "b7b987814f8af5cd4f15c03989b9c309c1c0ec643972ae32668304d71502120f",
   "files": {
     "scenarios/grpc/h2/unary-echo.yaml": "db277fb4a17e1aa0b4552c4dc369bb62044218064796927b589ad35217823deb",
+    "scenarios/grpc/h2/unary-empty.yaml": "7c885901b2237d7bf350e93b385159a1a32bc3324088509b12cc40fd5aca433b",
+    "scenarios/grpc/h2/unary-fixed-metadata.yaml": "ebd5e1f29f18d77d80b6e847aed709ef4b288fe97dda8d81de75789ccb264103",
+    "scenarios/grpc/h2/unary-gzip.yaml": "2edd6694c44595b069c598757fbfba2486569331e4d7616cfb311626a42e6a68",
+    "scenarios/grpc/h2/unary-large.yaml": "77578a898de3133418dd96599fb0db8897d4543cc128fda598128dddbf402df6",
     "suites/grpc-h2-performance-smoke.yaml": "d789e6a09e78855b86c6e0e81043455692375032d495f8be5a58bbef146fc752",
+    "suites/grpc-h2-contract-breadth-smoke.yaml": "b0385a48ae3e741124ad27848b54bf7c4e283c5940a087fbc885dc696d666103",
     "load-profiles/grpc-h2-smoke.yaml": "38b51ae12e2e13f5c273b3dfb6a77edee268a5c22db66f58b5807a3e50f4acdf",
+    "load-profiles/grpc-h2-diagnostic.yaml": "e23f1df9f7ae4d775b5843b877428bf28f2033aae33ed84fba212ae570f82bd3",
     "fixtures/public-contracts/grpc/v2/valid/echo-service-v2.json": "597de2fe069d6ccca3df9ad18fcb825d2a648c846d5fa7060d7eeacc9fc959c1"
   }
 }

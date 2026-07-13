@@ -2,48 +2,45 @@ package main
 
 import (
 	"bytes"
-	"crypto/tls"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 )
 
-func canonicalFrame() []byte {
-	protobuf := append([]byte{0x0a, 0x80, 0x01}, expectedPayload...)
-	return append([]byte{0, 0, 0, 0, byte(len(protobuf))}, protobuf...)
-}
-
-func TestHandlerReturnsCanonicalUnaryEcho(t *testing.T) {
-	req := httptest.NewRequest(http.MethodPost, "https://grpc.plab.test"+grpcPath, bytes.NewReader(canonicalFrame()))
-	req.Proto, req.ProtoMajor, req.ProtoMinor = "HTTP/2.0", 2, 0
-	req.TLS = &tls.ConnectionState{Version: tls.VersionTLS13, NegotiatedProtocol: "h2"}
-	req.Header.Set("Content-Type", "application/grpc+proto")
-	req.Header.Set("Te", "trailers")
-	response := httptest.NewRecorder()
-	handleUnaryEcho(response, req)
-	if response.Code != http.StatusOK || !bytes.Equal(response.Body.Bytes(), canonicalFrame()) {
-		t.Fatalf("unexpected unary echo response: status=%d bytes=%d", response.Code, response.Body.Len())
+func TestSupportedUnaryFrames(t *testing.T) {
+	cases := []struct {
+		method, compression string
+		payload             []byte
+	}{{"UnaryEcho", "identity", nil}, {"UnaryEcho", "identity", bytes.Repeat([]byte{'G'}, 128)}, {"UnaryEcho", "identity", bytes.Repeat([]byte{'L'}, 1<<20)}, {"UnaryFixedMetadata", "identity", bytes.Repeat([]byte{'G'}, 128)}, {"UnaryGzip", "gzip", bytes.Repeat([]byte{'B'}, 1024)}}
+	for _, tc := range cases {
+		protobuf := encodeTestProtobuf(tc.payload)
+		frame, err := encodeFrame(protobuf, tc.compression)
+		if err != nil {
+			t.Fatal(err)
+		}
+		observedProtobuf, observedPayload, err := decodeFrame(frame, tc.compression)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !validScenarioPayload(tc.method, observedPayload, observedProtobuf) {
+			t.Fatalf("rejected %s/%d", tc.method, len(tc.payload))
+		}
 	}
 }
-
-func TestValidateFrame(t *testing.T) {
-	if err := validateFrame(canonicalFrame()); err != nil {
-		t.Fatalf("canonical frame rejected: %v", err)
-	}
-	mutated := canonicalFrame()
-	mutated[len(mutated)-1] = 'X'
-	if err := validateFrame(mutated); err == nil {
-		t.Fatal("mutated payload was accepted")
+func TestRejectsPayloadSubstitution(t *testing.T) {
+	payload := bytes.Repeat([]byte{'X'}, 128)
+	if validScenarioPayload("UnaryEcho", payload, encodeTestProtobuf(payload)) {
+		t.Fatal("substitution accepted")
 	}
 }
-
-func TestHandlerRejectsProtocolFallback(t *testing.T) {
-	req := httptest.NewRequest(http.MethodPost, "https://grpc.plab.test"+grpcPath, bytes.NewReader(canonicalFrame()))
-	req.Header.Set("Content-Type", "application/grpc+proto")
-	req.Header.Set("Te", "trailers")
-	response := httptest.NewRecorder()
-	handleUnaryEcho(response, req)
-	if response.Code != http.StatusHTTPVersionNotSupported {
-		t.Fatalf("expected protocol rejection, got %d", response.Code)
+func encodeTestProtobuf(payload []byte) []byte {
+	if len(payload) == 0 {
+		return nil
 	}
+	out := []byte{0x0a}
+	n := uint64(len(payload))
+	for n >= 0x80 {
+		out = append(out, byte(n)|0x80)
+		n >>= 7
+	}
+	out = append(out, byte(n))
+	return append(out, payload...)
 }

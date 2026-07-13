@@ -1,0 +1,61 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: grpc.h2.unary.gzip
+title: gRPC over HTTP/2 Unary Gzip
+description: Exchange one deterministic 1 KiB unary payload using gzip message compression and validate decompressed protobuf bytes.
+status: draft
+kind: protocolValidation
+layer: application
+protocol: h2
+family: grpc
+semanticTemplateId: grpc.unary.echo.gzip
+protocolStack: [grpc, h2, tls, tcp]
+upstreamStandards: [https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md, https://www.rfc-editor.org/rfc/rfc9113]
+roles: [client, server]
+requires: {capabilities: [grpc.client, grpc.server, grpc.unary, grpc.compression.gzip], protocols: [h2, grpc], roles: [client, server]}
+trafficShape: request-response
+grpc:
+  binding: grpc-over-h2
+  alpn: h2
+  serviceContractId: protocollab.performance.v1.EchoService
+  serviceContractSha256: b7b987814f8af5cd4f15c03989b9c309c1c0ec643972ae32668304d71502120f
+  serviceContractCanonicalization: json-sort-keys-utf8-no-whitespace-v1
+  scheme: https
+  httpMethod: POST
+  authority: grpc.plab.test
+  service: protocollab.performance.v1.EchoService
+  method: UnaryGzip
+  path: /protocollab.performance.v1.EchoService/UnaryGzip
+  rpcType: unary
+  compression: gzip
+  compressionValidation: {profileId: gzip-semantic-v1, decompressedProtobufSha256Required: true, compressedWireSha256Required: false, encoderProvenanceRequired: true}
+  metadataPolicy: fixed-empty-user-metadata
+  deadlineMilliseconds: 5000
+  connectionLifecycle: pre-established-channel
+  measuredWindow: rpc-operation
+  requestContentType: application/grpc+proto
+  responseContentType: application/grpc+proto
+  te: trailers
+  trailersRequired: true
+  expectedGrpcStatus: 0
+  grpcEncoding: gzip
+  grpcAcceptEncoding: gzip
+  retryPolicy: disabled
+  hedgingPolicy: disabled
+  waitForReady: false
+  effectiveHttp2SettingsRequired: true
+  byteAccounting: {hashScope: per-message, grpcFrameIncludesPrefix: true, totalTransferredBytesScope: bidirectional-on-wire-transport-bytes-including-protocol-overhead}
+  messageFraming: {compressedFlag: 1, lengthPrefixBytes: 4, byteOrder: network, lengthValueSource: compressedMessageBytes, dataFrameBoundariesDefineMessageBoundaries: false}
+  request: {count: 1, payloadGenerator: repeated-octet, payloadOctet: 66, payloadBytes: 1024, payloadSha256: 9b6ce55f379e9771551de6939556a7e6b949814ae27c2f5cfd5dbeb378ce7c2a, serializedProtobufBytes: 1027, serializedProtobufSha256: 0a685639b341882d59f7b7da8308517b2b7862047846d3294b4ba9e8d48a4322}
+  response: {count: 1, payloadGenerator: repeated-octet, payloadOctet: 66, payloadBytes: 1024, payloadSha256: 9b6ce55f379e9771551de6939556a7e6b949814ae27c2f5cfd5dbeb378ce7c2a, serializedProtobufBytes: 1027, serializedProtobufSha256: 0a685639b341882d59f7b7da8308517b2b7862047846d3294b4ba9e8d48a4322}
+executionProfile: {transportSecurity: tls, protocolVariant: grpc-over-h2-tls-alpn, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+validation:
+  required: true
+  checks: [protocol:h2, alpn:h2, no-fallback, grpc-encoding:gzip, compressed-flag:1, decompress-success, request-protobuf-sha256, response-protobuf-sha256, gzip-encoder-provenance, grpc-status:0, trailers-present, zero-unexpected-failures, zero-deadline-exceeded, zero-cancellations, zero-timeouts]
+  protocol: {requested: grpc-over-h2, expectedObserved: grpc-over-h2, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic], primaryMetrics: [completedOperations, failedOperations, totalTransferredBytes]}
+requiredMetrics: [completedOperations, failedOperations, deadlineExceededOperations, cancelledOperations, timedOutOperations, totalTransferredBytes]
+artifacts: {required: [validation.json, protocol-proof.json, grpc-summary.json, result.json, load.stdout.log, load.stderr.log], optional: [http2-frame-summary.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [grpc-web, grpc-over-h3, gzip-unavailable, identity-substitution]}
+networkProfile: clean
+tags: [grpc, h2, unary, gzip, diagnostic]

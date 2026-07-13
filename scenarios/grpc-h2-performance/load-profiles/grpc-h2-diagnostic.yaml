@@ -1,0 +1,13 @@
+schemaVersion: protocol-lab.load-profile.v2
+version: 2.0.0
+id: grpc-h2-diagnostic
+title: gRPC over HTTP/2 Bounded Diagnostic
+status: experimental
+purpose: diagnostic
+description: One bounded RPC per scenario on a pre-established reusable channel; expected terminal statuses are diagnostic outcomes.
+durationSeconds: 10
+warmupSeconds: 0
+repetitions: 1
+grpc: {channels: 1, connectionsPerChannel: 1, concurrency: 1, streamsPerConnection: 1, channelReuse: reuse, operationTimeoutMilliseconds: 20000, totalRpcs: 1, rpcRateLimitPerSecond: null}
+evidence: {minimumTier: diagnostic, publishable: false}
+artifacts: {required: [load.stdout.log, load.stderr.log, validation.json, protocol-proof.json, grpc-summary.json, result.json], optional: [http2-frame-summary.json, target-telemetry.json]}

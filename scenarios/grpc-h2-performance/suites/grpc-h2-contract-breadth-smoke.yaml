@@ -1,0 +1,10 @@
+id: grpc-h2-contract-breadth-smoke
+name: gRPC over HTTP/2 contract breadth smoke suite
+description: Bounded success-path selection for all four RPC cardinalities, gzip, fixed metadata, and empty and large unary messages.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: grpc-h2-diagnostic
+scenarios: [grpc.h2.unary.echo, grpc.h2.server-streaming.echo, grpc.h2.client-streaming.echo, grpc.h2.bidi-streaming.echo, grpc.h2.unary.gzip, grpc.h2.unary.fixed-metadata, grpc.h2.unary.empty, grpc.h2.unary.large]
+protocol: h2
+notes: Each scenario receives one bounded RPC; this suite is validity evidence and is not publishable performance evidence.
+tags: [grpc, h2, breadth, smoke, non-publishable]

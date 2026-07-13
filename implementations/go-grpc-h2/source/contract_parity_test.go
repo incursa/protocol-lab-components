@@ -115,13 +115,25 @@ func TestProtoAndImplementationDescriptorMatchPublicV2Contract(t *testing.T) {
 
 	assertIDs(t, compressionIDs(contract), []string{"gzip-semantic-v1", "identity-v1"}, "compression profiles")
 	assertIDs(t, metadataIDs(contract), []string{"fixed-ascii-and-binary-metadata-v1", "fixed-empty-user-metadata"}, "metadata profiles")
-	expectedStatuses := map[string]int{"UnaryEcho": 0, "ServerStreamingEcho": 0, "ClientStreamingEcho": 0, "BidirectionalStreamingEcho": 0, "TrailersOnlyStatus": 3, "DeadlineExceeded": 4, "ClientCancellation": 1, "UnaryGzip": 0, "UnaryFixedMetadata": 0}
+	type methodBinding struct {
+		status                            int
+		statusName, compression, metadata string
+	}
+	expectedBindings := map[string]methodBinding{
+		"UnaryEcho":                  {0, "OK", "identity-v1", "fixed-empty-user-metadata"},
+		"ServerStreamingEcho":        {0, "OK", "identity-v1", "fixed-empty-user-metadata"},
+		"ClientStreamingEcho":        {0, "OK", "identity-v1", "fixed-empty-user-metadata"},
+		"BidirectionalStreamingEcho": {0, "OK", "identity-v1", "fixed-empty-user-metadata"},
+		"TrailersOnlyStatus":         {3, "INVALID_ARGUMENT", "identity-v1", "fixed-empty-user-metadata"},
+		"DeadlineExceeded":           {4, "DEADLINE_EXCEEDED", "identity-v1", "fixed-empty-user-metadata"},
+		"ClientCancellation":         {1, "CANCELLED", "identity-v1", "fixed-empty-user-metadata"},
+		"UnaryGzip":                  {0, "OK", "gzip-semantic-v1", "fixed-empty-user-metadata"},
+		"UnaryFixedMetadata":         {0, "OK", "identity-v1", "fixed-ascii-and-binary-metadata-v1"},
+	}
 	for _, method := range contract.Methods {
-		if expectedStatuses[method.Name] != method.TerminalStatus.Code {
-			t.Fatalf("method %s status mismatch", method.Name)
-		}
-		if method.CompressionProfile == "" || method.MetadataProfile == "" || method.TerminalStatus.Name == "" {
-			t.Fatalf("method %s has incomplete status/compression/metadata binding", method.Name)
+		expected, ok := expectedBindings[method.Name]
+		if !ok || expected.status != method.TerminalStatus.Code || expected.statusName != method.TerminalStatus.Name || expected.compression != method.CompressionProfile || expected.metadata != method.MetadataProfile {
+			t.Fatalf("method %s status/compression/metadata binding mismatch", method.Name)
 		}
 	}
 }
