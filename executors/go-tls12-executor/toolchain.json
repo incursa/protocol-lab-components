@@ -1,0 +1,1 @@
+{"executor":{"language":"go","module":"org.protocol-lab.components.executor.go-tls12-executor","buildFlags":["-buildvcs=false","-trimpath"]},"loadGenerator":{"id":"go-crypto-tls12-load","version":"0.1.0","engineModule":"crypto/tls","engineModuleVersion":"go-standard-library","license":"BSD-3-Clause","source":"https://pkg.go.dev/crypto/tls"}}

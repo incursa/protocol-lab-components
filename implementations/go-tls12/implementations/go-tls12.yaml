@@ -1,0 +1,43 @@
+schemaVersion: "1.0"
+id: go-tls12
+name: Go crypto/tls TLS 1.2 Compatibility Target
+description: Process target for the exact TLS 1.2 full-handshake compatibility contract.
+family: go-tls
+role: library-backed-target
+targetKind: process
+targetContract: process
+executable: bin/linux-x64/go-tls12
+workingDirectory: .
+baseUrl: tls://127.0.0.1:18443
+protocolBaseUrls: {tls: tls://127.0.0.1:18443}
+certificateMode: plab-single-leaf-p256-server-v2
+roles: [server, library-backed-target]
+protocols: [tls]
+supportedProtocols: [tls]
+supportedProtocolVersions: [TLS1.2]
+supportedWorkloadFamilies: [tls, tls.lifecycle]
+supportedScenarios: [tls.handshake.full.tls12]
+supportedTestCaseIds: [tls.handshake.full.tls12]
+scenarioCoverage:
+  tls.handshake.full: {status: unsupported, reason: TLS 1.3 is disabled.}
+  tls.handshake.resumed: {status: unsupported, reason: TLS 1.3 and session resumption are disabled.}
+  tls.handshake.full.tls12: {status: supported, behavior: exact fresh TLS 1.2 ECDHE-ECDSA AES-128-GCM server-authenticated handshake}
+  tls.handshake.full.chacha20: {status: unsupported, reason: TLS 1.3 and ChaCha20 are disabled.}
+  tls.handshake.mutual-auth: {status: unsupported, reason: Client authentication is not implemented.}
+  tls.early-data.accepted: {status: unsupported, reason: Early data is not applicable and is not implemented.}
+  tls.early-data.rejected: {status: unsupported, reason: Early data is not applicable and is not implemented.}
+  tls.key-update.diagnostic: {status: unsupported, reason: TLS 1.3 KeyUpdate is unavailable.}
+  tls.record.coverage: {status: unsupported, reason: Application data is forbidden by this handshake-only target.}
+  tls.record.throughput: {status: unsupported, reason: Application data is forbidden by this handshake-only target.}
+unsupportedKnownCases: [tls.handshake.full, tls.handshake.resumed, tls.handshake.full.chacha20, tls.handshake.mutual-auth, tls.early-data.accepted, tls.early-data.rejected, tls.key-update.diagnostic, tls.record.coverage, tls.record.throughput]
+ports: [{name: tls, protocol: tcp, default: 18443}]
+environment: {PLAB_LISTEN_ADDRESS: 127.0.0.1:18443}
+startup: {port: {name: tls, environmentVariable: PLAB_TARGET_PORT, default: 18443}, readiness: {protocol: process, timeoutSeconds: 10}}
+readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 250}
+capabilities: [tls.server, tls12, tlsX25519, tlsFullHandshake, scenario.tls.handshake.full.tls12]
+entrypoint: {kind: process, path: bin/linux-x64/go-tls12, arguments: [], workingDirectory: .}
+shutdownBehavior: process
+artifactExports: []
+qlogSupport: false
+sslKeyLogSupport: false
+notes: This target disables TLS 1.3, tickets, client authentication, and all application-data workloads.
