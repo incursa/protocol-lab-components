@@ -391,6 +391,17 @@ Minimum proof for every transport: exact transport/ALPN/version, no fallback, qu
 
 Completion update: `dns.plab-test-a.canonical` is committed public authority at `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`. The DoT scenario package authority-locks its exact 27-byte query, 43-byte authoritative answer, transport framing, and message-ID normalization contract. The local three-package DoT cell is complete as recorded above. DoH2, DoH3, DoQ, classic UDP/TCP, and the additional v2 semantic fixtures remain independent explicit unsupported lanes; none is substituted by DoT.
 
+#### E8d — HTTP/1.1 WebSocket over TLS 1.3
+
+Components status: exact package-local source and extracted-package smoke are complete; internal runner admission and Protocol Execution Result v2 remain the next dependency-ordered slice.
+
+- scenario: `org.protocol-lab.components.scenario.http1-websocket-tls-performance@0.1.0` authority-locks the five exact `http1.websocket.rfc6455.tls.*` smoke identities, suite `http1-websocket-tls-performance-smoke`, and `websocket-smoke` to public commit `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`;
+- executor: `org.protocol-lab.components.executor.go-http1-websocket-tls-executor@0.1.0`, executor `go-http1-websocket-tls-executor@0.1.0`, and generator `go-http1-websocket-tls-load@0.1.0`;
+- target: independent `org.protocol-lab.components.implementation.go-http1-websocket-tls@0.1.0`, implementation `go-http1-websocket-tls@0.1.0`;
+- proof: exact TLS 1.3, SNI `websocket.plab.test`, ALPN `http/1.1`, authenticated package-local DER/SPKI hashes, `didResume: false`, no early data, exact HTTP/1.1 status-101 Upgrade headers, fresh random 16-byte keys with zero reuse or accept mismatch, deterministic messages, and clean code-1000 close;
+- unsupported: cleartext substitution, TLS 1.2, subprotocol and permessage-deflate diagnostics, RFC 8441, RFC 9220, fragmentation, WebTransport, `websocket.echo`, and unknown identities fail closed rather than reusing the TLS smoke semantics;
+- evidence: the dirty-source extracted three-package smoke completed all five exact IDs with zero failures and timeouts. Clean immutable package hashes and real runner evidence are recorded only after the source commit and runner admission gates pass.
+
 ## Verification floor
 
 For every components slice:
