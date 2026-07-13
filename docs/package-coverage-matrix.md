@@ -35,7 +35,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | `quic-go-raw` | no raw QUIC implementation package | added `org.protocol-lab.components.implementation.quic-go-raw` for `quic.transport.stream-throughput.1mb` and `quic.transport.multiplex.100x64kb` only |
 | `quic-go-raw-load` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
 | `h3spec-http3-qpack` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
-| `aioquic-rfc9220-websocket` | source executor package present | `0.2.0` exact six-ID RFC9220 executor plus `aioquic-http3@0.2.0` target; fragmented binary echo uses masked `[1024,2048,2928]` frames and exact 6000-byte reassembly |
+| `aioquic-rfc9220-websocket` | source executor package present | `0.2.1` exact six-ID RFC9220 v2 executor plus `aioquic-http3@0.2.1` target; all six scenario bytes are authority-locked, and `0.2.0` is superseded because only its fragmented identity matched v2 authority |
 | `h3spec-http3-qpack` scenario pack | missing | added `org.protocol-lab.components.scenario.h3spec-http3-qpack` with suite `h3spec-http3-qpack-focused` bound to `h3spec-http3-qpack` |
 | `http3-peer-characterization` scenario pack | missing | added `org.protocol-lab.components.scenario.http3-peer-characterization` with suite `http3-peer-characterization` for diagnostic external peer rows |
 | `aioquic-rfc9220-websocket` scenario pack | missing | added `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket` with suite `aioquic-rfc9220-websocket-proof` bound to `aioquic-rfc9220-websocket` |

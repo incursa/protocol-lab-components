@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.aioquic-rfc9220-websocket",
-  "packageVersion": "0.2.0",
+  "packageVersion": "0.2.1",
   "kind": "test-executor",
   "displayName": "aioquic RFC9220 WebSocket-over-H3 Test Executor",
   "entryManifests": [

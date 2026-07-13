@@ -1,47 +1,28 @@
-schemaVersion: "1.0"
+schemaVersion: "2.0"
+version: 2.0.0
 id: http3.websocket.rfc9220.close
-title: RFC9220 WebSocket Close Echo
-name: RFC9220 WebSocket Close Echo
-family: websocket
-description: Validate WebSocket-over-HTTP/3 close echo behavior through the proof endpoint.
-status: stable
+title: RFC 9220 WebSocket Close
+description: Validate clean close-code echo on a WebSocket bound to HTTP/3.
+status: draft
 kind: protocolValidation
 layer: application
 protocol: h3
-protocols:
-  - h3
-  - websocket
-roles:
-  - server
-requires:
-  capabilities:
-    - h3.server
-    - websocket.server
-  protocols:
-    - h3
-    - websocket
-  roles:
-    - server
-trafficShape: bidirectional-stream
-implementationRole: server
-requiredCapabilities:
-  - rfc9220WebSocket
+family: websocket
+semanticTemplateId: websocket.connection.close
+protocolStack: [websocket, h3, quic, tls1.3]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc6455, https://www.rfc-editor.org/rfc/rfc9220]
+roles: [client, server]
+requires: {capabilities: [websocket.client, websocket.server, websocket.close], protocols: [h3], roles: [client, server]}
+trafficShape: connection-lifecycle
+executionProfile: {transportSecurity: tls, protocolVariant: websocket-h3-extended-connect, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+websocket: {binding: http3-extended-connect, standard: rfc9220, path: /websocket-proof, subprotocol: null, operation: close, messageType: none, messageBytes: 0, messageCount: 0, fragmentation: none, masking: client-required, closeCode: 1000, authority: websocket.plab.test, extensions: none, bootstrapPolicy: rfc9220-extended-connect, closeReasonPolicy: empty-utf8-reason, connectionLifecycle: pre-established-connection-per-operation, measuredWindow: closing-handshake, handshake: {binding: http3-extended-connect, settingsEnableConnectProtocol: 1, requestPseudoHeaders: {method: CONNECT, protocol: websocket, scheme: https, authority: websocket.plab.test, path: /websocket-proof}, requestHeaders: {secWebSocketVersion: "13", originPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false, secWebSocketKeyPresent: false}, prohibitedConnectionHeadersPresent: false, responseStatus: 200, responseHeaders: {secWebSocketAcceptPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false}}}
 validation:
   required: true
-  checks:
-    - close-echo
-artifacts:
-  required:
-    - client-result.json
-  optional:
-    - stdout.txt
-    - stderr.txt
-    - qlog
-    - sslkeylog
+  checks: [protocol:h3, no-fallback, extended-connect, no-subprotocol, no-extensions, no-connection-headers, no-sec-websocket-accept, no-sec-websocket-key, sec-websocket-version:13, pseudo-protocol:websocket, settings-enable-connect-protocol, close-sent:1000, close-received:1000, clean-completion, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: websocket-over-h3, expectedObserved: websocket-over-h3, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic], primaryMetrics: [closeLatencyP95, completedOperations, failedOperations]}
+requiredMetrics: [closeLatencyP50, closeLatencyP95, closeLatencyP99, completedOperations, failedOperations, timedOutOperations]
+artifacts: {required: [validation.json, protocol-proof.json, websocket-summary.json, result.json, load.stdout.log, load.stderr.log], optional: [qlog, tls-key-log, frame-summary.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed}
 networkProfile: clean
-tags:
-  - http
-  - h3
-  - websocket
-  - rfc9220
-  - close
+tags: [http3, websocket, rfc9220, close]

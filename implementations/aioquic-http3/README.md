@@ -20,13 +20,13 @@
 
 - Base image: `python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203`
 - Python package: `aioquic==1.3.0`
-- Component image tag: `incursa-protocol-lab-aioquic-http3:0.2.0`
+- Component image tag: `incursa-protocol-lab-aioquic-http3:0.2.1`
 - aioquic license text: `third-party/aioquic-LICENSE.txt`
-- Image identity for `0.2.0` is recorded by local Docker build output and is not a package or publication claim.
+- Image identity for `0.2.1` is recorded by local Docker build output and is not a package or publication claim.
 
 ## Historical Scenario Evidence
 
-The rows below predate `0.2.0`; they remain provenance for the unchanged HTTP/3 core behavior, not proof of the new fragmented WebSocket identity.
+The rows below predate `0.2.1`; they remain provenance for the unchanged HTTP/3 core behavior, not proof of the corrected six-scenario authority parity.
 
 | External row | Scenarios | Status | Evidence |
 | --- | --- | --- | --- |
@@ -47,7 +47,7 @@ Build the wrapper image:
 ```powershell
 docker build --build-arg AIOQUIC_VERSION=1.3.0 `
   -f ./implementations/aioquic-http3/docker/aioquic.Dockerfile `
-  -t incursa-protocol-lab-aioquic-http3:0.2.0 `
+  -t incursa-protocol-lab-aioquic-http3:0.2.1 `
   ./implementations/aioquic-http3
 ```
 

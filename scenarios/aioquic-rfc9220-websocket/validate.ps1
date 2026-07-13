@@ -11,7 +11,8 @@ $requiredFiles = @(
     "scenarios/http3/websocket/rfc9220-binary-echo.yaml",
     "scenarios/http3/websocket/rfc9220-close.yaml",
     "scenarios/http3/websocket/rfc9220-fragmented-binary-echo.yaml",
-    "suites/aioquic-rfc9220-websocket-proof.yaml"
+    "suites/aioquic-rfc9220-websocket-proof.yaml",
+    "tests/test_authority_parity.py"
 )
 
 foreach ($relativePath in $requiredFiles) {
@@ -23,8 +24,10 @@ foreach ($relativePath in $requiredFiles) {
 
 $authority = Get-Content (Join-Path $packageRoot 'authority-lock.json') -Raw | ConvertFrom-Json
 if ($authority.authorityCommit -ne '8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574') { throw 'RFC9220 authority commit mismatch.' }
-$fragmented = Join-Path $packageRoot 'scenarios/http3/websocket/rfc9220-fragmented-binary-echo.yaml'
-$hash = (Get-FileHash $fragmented -Algorithm SHA256).Hash.ToLowerInvariant()
-if ($hash -ne '76bb1c269d42b5ba53742bf5c69e8f2728427406946a7cf2802023f482959725') { throw 'RFC9220 fragmented scenario authority hash mismatch.' }
+foreach ($entry in $authority.files.PSObject.Properties) {
+    $hash = (Get-FileHash (Join-Path $packageRoot $entry.Name) -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($hash -ne $entry.Value) { throw "RFC9220 scenario authority hash mismatch: $($entry.Name)" }
+}
+if (@($authority.files.PSObject.Properties).Count -ne 6) { throw 'RFC9220 authority lock must contain exactly six scenarios.' }
 
 Write-Host "aioquic RFC9220 WebSocket scenario package authority lock is valid."

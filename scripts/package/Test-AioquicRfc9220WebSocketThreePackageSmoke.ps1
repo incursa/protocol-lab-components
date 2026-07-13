@@ -25,9 +25,9 @@ function Expand-One([string]$archive, [string]$destination) {
     return Get-Content (Join-Path $destination 'protocol-lab-package.json') -Raw | ConvertFrom-Json
 }
 
-$scenarioArchive = Resolve-One 'org.protocol-lab.components.scenario.aioquic-rfc9220-websocket.0.2.0.plabpkg'
-$executorArchive = Resolve-One 'org.protocol-lab.components.executor.aioquic-rfc9220-websocket.0.2.0.plabpkg'
-$targetArchive = Resolve-One 'org.protocol-lab.components.implementation.aioquic-http3.0.2.0.plabpkg'
+$scenarioArchive = Resolve-One 'org.protocol-lab.components.scenario.aioquic-rfc9220-websocket.0.2.1.plabpkg'
+$executorArchive = Resolve-One 'org.protocol-lab.components.executor.aioquic-rfc9220-websocket.0.2.1.plabpkg'
+$targetArchive = Resolve-One 'org.protocol-lab.components.implementation.aioquic-http3.0.2.1.plabpkg'
 $scenarioRoot = Join-Path $ArtifactRoot 'scenario'
 $executorRoot = Join-Path $ArtifactRoot 'executor'
 $targetRoot = Join-Path $ArtifactRoot 'target'
@@ -39,9 +39,11 @@ if (@($targetManifest.providedImplementations[0].scenarios | Where-Object { $_ -
 $authority = Get-Content (Join-Path $scenarioRoot 'authority-lock.json') -Raw | ConvertFrom-Json
 if ($authority.authorityCommit -ne '8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574') { throw 'Authority commit mismatch.' }
 foreach ($root in @($executorRoot, $targetRoot)) { if (-not (Test-Path (Join-Path $root 'third-party/aioquic-LICENSE.txt'))) { throw "aioquic license missing from $root" } }
+& python (Join-Path $scenarioRoot 'tests/test_authority_parity.py') --scenario-root $scenarioRoot --executor-root $executorRoot --target-root $targetRoot | Out-Host
+if ($LASTEXITCODE -ne 0) { throw 'Extracted six-scenario authority parity failed.' }
 
-$executorImage = 'incursa-protocol-lab-aioquic-rfc9220-websocket:0.2.0-extracted-smoke'
-$targetImage = 'incursa-protocol-lab-aioquic-http3:0.2.0-extracted-smoke'
+$executorImage = 'incursa-protocol-lab-aioquic-rfc9220-websocket:0.2.1-extracted-smoke'
+$targetImage = 'incursa-protocol-lab-aioquic-http3:0.2.1-extracted-smoke'
 & docker build --build-arg AIOQUIC_VERSION=1.3.0 -f (Join-Path $executorRoot 'docker/aioquic-rfc9220-websocket.Dockerfile') -t $executorImage $executorRoot | Out-Host
 if ($LASTEXITCODE -ne 0) { throw 'Extracted executor image build failed.' }
 & docker build --build-arg AIOQUIC_VERSION=1.3.0 -f (Join-Path $targetRoot 'docker/aioquic.Dockerfile') -t $targetImage $targetRoot | Out-Host

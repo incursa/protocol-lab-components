@@ -1,47 +1,28 @@
-schemaVersion: "1.0"
+schemaVersion: "2.0"
+version: 2.0.0
 id: http3.websocket.rfc9220.extended-connect
-title: RFC9220 Extended CONNECT
-name: RFC9220 Extended CONNECT
-family: websocket
-description: Validate WebSocket-over-HTTP/3 establishment with Extended CONNECT and the websocket pseudo-protocol.
-status: stable
-kind: protocolValidation
+title: RFC 9220 WebSocket Extended CONNECT
+description: Establish and cleanly close a WebSocket using Extended CONNECT over exact HTTP/3.
+status: draft
+kind: workload
 layer: application
 protocol: h3
-protocols:
-  - h3
-  - websocket
-roles:
-  - server
-requires:
-  capabilities:
-    - h3.server
-    - websocket.server
-  protocols:
-    - h3
-    - websocket
-  roles:
-    - server
-trafficShape: bidirectional-stream
-implementationRole: server
-requiredCapabilities:
-  - rfc9220WebSocket
+family: websocket
+semanticTemplateId: websocket.connection.establish
+protocolStack: [websocket, h3, quic, tls1.3]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc9220, https://www.rfc-editor.org/rfc/rfc9114]
+roles: [client, server]
+requires: {capabilities: [websocket.client, websocket.server, websocket.rfc9220], protocols: [h3], roles: [client, server]}
+trafficShape: connection-lifecycle
+websocket: {binding: http3-extended-connect, standard: rfc9220, path: /websocket-proof, subprotocol: null, operation: establish, messageType: none, messageBytes: 0, messageCount: 0, fragmentation: none, masking: client-required, closeCode: 1000, authority: websocket.plab.test, extensions: none, bootstrapPolicy: rfc9220-extended-connect, closeReasonPolicy: empty-utf8-reason, connectionLifecycle: new-connection-per-operation, measuredWindow: opening-handshake, handshake: {binding: http3-extended-connect, settingsEnableConnectProtocol: 1, requestPseudoHeaders: {method: CONNECT, protocol: websocket, scheme: https, authority: websocket.plab.test, path: /websocket-proof}, requestHeaders: {secWebSocketVersion: "13", originPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false, secWebSocketKeyPresent: false}, prohibitedConnectionHeadersPresent: false, responseStatus: 200, responseHeaders: {secWebSocketAcceptPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false}}}
+executionProfile: {transportSecurity: tls, protocolVariant: websocket-h3-extended-connect, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
 validation:
   required: true
-  checks:
-    - extended-connect
-    - protocol:h3
-artifacts:
-  required:
-    - client-result.json
-  optional:
-    - stdout.txt
-    - stderr.txt
-    - qlog
-    - sslkeylog
+  checks: [protocol:h3, alpn:h3, no-fallback, no-subprotocol, no-extensions, no-connection-headers, no-sec-websocket-accept, no-sec-websocket-key, sec-websocket-version:13, settings-enable-connect-protocol, extended-connect, pseudo-protocol:websocket, endpoint:/websocket-proof, connection-established, close-code:1000, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: websocket-over-h3, expectedObserved: websocket-over-h3, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic, comparison, connection-churn], primaryMetrics: [connectionsPerSecond, connectionLatencyP50, connectionLatencyP95, connectionLatencyP99, failedOperations, timedOutOperations]}
+requiredMetrics: [connectionsPerSecond, connectionLatencyMean, connectionLatencyP50, connectionLatencyP75, connectionLatencyP90, connectionLatencyP95, connectionLatencyP99, completedOperations, failedOperations, timedOutOperations]
+artifacts: {required: [validation.json, protocol-proof.json, websocket-summary.json, result.json, load.stdout.log, load.stderr.log], optional: [qlog, tls-key-log, target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [http1-upgrade-fallback, http2-extended-connect, webtransport]}
 networkProfile: clean
-tags:
-  - http
-  - h3
-  - websocket
-  - rfc9220
+tags: [http3, websocket, rfc9220, extended-connect]

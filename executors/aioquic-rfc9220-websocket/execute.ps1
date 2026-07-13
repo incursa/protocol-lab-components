@@ -3,7 +3,7 @@ param(
     [string]$ScenarioId = $env:PLAB_SCENARIO_ID,
     [string]$TargetUrl = $(if ($env:PLAB_TARGET_BASE_URL) { $env:PLAB_TARGET_BASE_URL } else { 'https://host.docker.internal:4435/websocket-proof' }),
     [double]$TimeoutSeconds = 20,
-    [string]$Image = 'incursa-protocol-lab-aioquic-rfc9220-websocket:0.2.0',
+    [string]$Image = 'incursa-protocol-lab-aioquic-rfc9220-websocket:0.2.1',
     [string]$OutputRoot = $(if ($env:PLAB_ARTIFACT_DIR) { $env:PLAB_ARTIFACT_DIR } else { 'artifacts/aioquic-rfc9220-websocket' }),
     [string]$DockerNetwork = '',
     [switch]$SkipBuild,
@@ -66,7 +66,7 @@ try {
     $commands.Add('docker ' + ($dockerArgs -join ' '))
     Set-Content -LiteralPath $commandPath -Value $commands -Encoding utf8NoBOM
     if ($PlanOnly) {
-        [ordered]@{ schemaVersion = 'protocol-lab.aioquic-rfc9220-result.v2'; scenarioId = $ScenarioId; status = 'planned'; targetUrl = $TargetUrl; image = $Image; executor = @{ id = 'aioquic-rfc9220-websocket'; version = '0.2.0' }; commands = $commands.ToArray() } | ConvertTo-Json -Depth 6 | Set-Content $resultPath -Encoding utf8NoBOM
+        [ordered]@{ schemaVersion = 'protocol-lab.aioquic-rfc9220-result.v2'; scenarioId = $ScenarioId; status = 'planned'; targetUrl = $TargetUrl; image = $Image; executor = @{ id = 'aioquic-rfc9220-websocket'; version = '0.2.1' }; commands = $commands.ToArray() } | ConvertTo-Json -Depth 6 | Set-Content $resultPath -Encoding utf8NoBOM
         return
     }
     if (-not $SkipBuild) {
@@ -83,12 +83,12 @@ try {
         scenarioId = $ScenarioId
         status = 'passed'
         authorityCommit = '8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574'
-        executor = @{ id = 'aioquic-rfc9220-websocket'; version = '0.2.0' }
+        executor = @{ id = 'aioquic-rfc9220-websocket'; version = '0.2.1' }
         validation = @{ status = 'passed' }
         protocolProof = $client.protocolProof
         metrics = $client.metrics
         warnings = @('Local package-backed RFC 9220 evidence is diagnostic and non-publishable.')
     } | ConvertTo-Json -Depth 20 | Set-Content $resultPath -Encoding utf8NoBOM
-    [ordered]@{ id = 'aioquic-rfc9220-websocket'; version = '0.2.0'; aioquicVersion = '1.3.0'; role = 'test-executor' } | ConvertTo-Json | Set-Content (Join-Path $resolvedOutputRoot 'executor-identity.json') -Encoding utf8NoBOM
+    [ordered]@{ id = 'aioquic-rfc9220-websocket'; version = '0.2.1'; aioquicVersion = '1.3.0'; role = 'test-executor' } | ConvertTo-Json | Set-Content (Join-Path $resolvedOutputRoot 'executor-identity.json') -Encoding utf8NoBOM
 }
 finally { Pop-Location }

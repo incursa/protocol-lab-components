@@ -45,7 +45,7 @@
     "images": [
       {
         "name": "aioquic-rfc9220-websocket",
-        "image": "incursa-protocol-lab-aioquic-rfc9220-websocket:0.2.0",
+        "image": "incursa-protocol-lab-aioquic-rfc9220-websocket:0.2.1",
         "baseImage": "python:3.12-slim",
         "package": "aioquic==1.3.0",
         "sourceProofImage": "incursa-http3-external-interop-aioquic:latest",
@@ -56,7 +56,7 @@
     ]
   },
   "commands": {
-    "buildTemplate": "docker build --build-arg AIOQUIC_VERSION=1.3.0 -f docker/aioquic-rfc9220-websocket.Dockerfile -t incursa-protocol-lab-aioquic-rfc9220-websocket:0.2.0 .",
+    "buildTemplate": "docker build --build-arg AIOQUIC_VERSION=1.3.0 -f docker/aioquic-rfc9220-websocket.Dockerfile -t incursa-protocol-lab-aioquic-rfc9220-websocket:0.2.1 .",
     "clientTemplate": "aioquic-http3-websocket-client <url> <result-path> --scenario-id <exact-id> --timeout <seconds>"
   },
   "knownLimitations": [
