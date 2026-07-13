@@ -1,18 +1,21 @@
 executorIdentity:
   id: go-tls13-executor
   name: Go TLS 1.3 Test Executor
-  version: 0.1.0
+  version: 0.2.0
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions: [test-executor-v1]
-  executorVersion: 0.1.0
+  executorVersion: 0.2.0
 claimedCapabilities:
   - {id: tls.handshake.full, status: supported}
   - {id: exact-tls1.3-proof, status: supported}
+  - {id: exact-x25519-proof, status: supported}
   - {id: authenticated-certificate-profile-proof, status: supported}
   - {id: tls-smoke, status: supported}
-  - {id: tls.handshake.resumed, status: unsupported}
+  - {id: tls.handshake.resumed, status: supported}
+  - {id: accepted-psk-single-use-ticket-proof, status: supported}
+  - {id: unmeasured-source-session-per-measured-operation, status: supported}
   - {id: tls.0rtt, status: unsupported}
   - {id: tls.record.throughput, status: unsupported}
   - {id: tls.handshake.full.tls12, status: unsupported}
@@ -24,17 +27,21 @@ claimedCapabilities:
   - {id: tls.record.coverage, status: unsupported}
 supportedTestSelectors:
   - {selectorType: test-id, expression: tls.handshake.full}
+  - {selectorType: test-id, expression: tls.handshake.resumed}
 supportedScenarioSelectors:
   - {selectorType: scenario-id, expression: tls.handshake.full}
+  - {selectorType: scenario-id, expression: tls.handshake.resumed}
 supportedProtocolFamilies: [tls]
 supportedExecutionModes: [single-cell, process]
 requiredTargetEndpointBindings:
   - {bindingId: primary, purpose: test-endpoint, endpointType: tls, protocols: [tls]}
 supportedArtifactTypes:
   - {type: validation.json, producedByStates: [stopped, failed]}
+  - {type: unsupported.json, producedByStates: [failed]}
   - {type: result.json, producedByStates: [stopped, failed]}
   - {type: protocol-proof.json, producedByStates: [stopped, failed]}
   - {type: tls-negotiation.json, producedByStates: [stopped, failed]}
+  - {type: resumption-proof.json, producedByStates: [stopped, failed]}
   - {type: tls-topology.json, producedByStates: [stopped, failed]}
   - {type: tls-executor-result.json, producedByStates: [stopped, failed]}
   - {type: tls-load-summary.json, producedByStates: [stopped, failed]}

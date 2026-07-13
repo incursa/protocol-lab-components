@@ -1,0 +1,3 @@
+{
+  "implementation": {"id":"go-tls13","version":"0.1.0","engineModule":"crypto/tls","engineModuleVersion":"go-standard-library","license":"BSD-3-Clause","source":"https://pkg.go.dev/crypto/tls"}
+}
