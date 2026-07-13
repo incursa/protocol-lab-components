@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.scenario.http1-websocket-cleartext-performance",
+  "packageVersion": "0.1.0",
+  "kind": "scenario-pack",
+  "displayName": "HTTP/1.1 Cleartext WebSocket Performance Smoke Scenario Pack",
+  "entryManifests": [
+    "scenarios/http1/websocket/rfc6455-cleartext-upgrade.yaml",
+    "scenarios/http1/websocket/rfc6455-cleartext-control-frames.yaml",
+    "scenarios/http1/websocket/rfc6455-cleartext-text-echo.yaml",
+    "scenarios/http1/websocket/rfc6455-cleartext-binary-echo.yaml",
+    "scenarios/http1/websocket/rfc6455-cleartext-close.yaml",
+    "suites/http1-websocket-cleartext-performance-smoke.yaml",
+    "load-profiles/websocket-smoke.yaml"
+  ],
+  "providedScenarios": [
+    {"scenarioId":"http1.websocket.rfc6455.cleartext.upgrade","displayName":"RFC 6455 HTTP/1.1 Cleartext Upgrade","protocols":["h1"]},
+    {"scenarioId":"http1.websocket.rfc6455.cleartext.control-frames","displayName":"RFC 6455 HTTP/1.1 Cleartext Control Frames","protocols":["h1"]},
+    {"scenarioId":"http1.websocket.rfc6455.cleartext.text-echo","displayName":"RFC 6455 HTTP/1.1 Cleartext Text Echo","protocols":["h1"]},
+    {"scenarioId":"http1.websocket.rfc6455.cleartext.binary-echo","displayName":"RFC 6455 HTTP/1.1 Cleartext Binary Echo","protocols":["h1"]},
+    {"scenarioId":"http1.websocket.rfc6455.cleartext.close","displayName":"RFC 6455 HTTP/1.1 Cleartext Close","protocols":["h1"]}
+  ],
+  "providedSuites": [{"suiteId":"http1-websocket-cleartext-performance-smoke","displayName":"HTTP/1.1 Cleartext WebSocket Performance Smoke","protocols":["h1"]}]
+}

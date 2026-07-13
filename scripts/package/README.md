@@ -44,6 +44,9 @@ pwsh ./scripts/package/Build-CaddyHttp1Package.ps1
 pwsh ./scripts/package/Build-CaddyHttp3Package.ps1
 pwsh ./scripts/package/Build-NginxHttp1Package.ps1
 pwsh ./scripts/package/Build-GoHttp1ExecutorPackage.ps1
+pwsh ./scripts/package/Build-GoHttp1WebSocketImplementationPackage.ps1
+pwsh ./scripts/package/Build-GoHttp1WebSocketExecutorPackage.ps1
+pwsh ./scripts/package/Build-Http1WebSocketCleartextScenarioPackage.ps1
 pwsh ./scripts/package/Build-KestrelHttp3Package.ps1
 pwsh ./scripts/package/Build-CurlHttp3ClientPackage.ps1
 pwsh ./scripts/package/Build-H3SpecHttp3QpackPackage.ps1
@@ -56,6 +59,14 @@ pwsh ./scripts/package/Build-H3SpecHttp3QpackScenarioPackage.ps1
 pwsh ./scripts/package/Build-Http3PeerCharacterizationScenarioPackage.ps1
 pwsh ./scripts/package/Build-RawQuicScenarioPackage.ps1
 pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1
+```
+
+Exercise the extracted Windows three-package HTTP/1.1 cleartext WebSocket cell,
+all five exact supported identities, every adjacent explicit unsupported
+identity, and the unknown-ID exit path with:
+
+```powershell
+pwsh ./scripts/package/Test-Http1WebSocketThreePackageSmoke.ps1
 ```
 
 All wrappers call `Build-ProtocolLabComponentPackage.ps1`, which reads each component's `protocol-lab-package.json` and writes a `.plabpkg` under `artifacts/packages/`.

@@ -1,0 +1,16 @@
+{
+  "schemaVersion":"protocol-lab-package-v2",
+  "packageId":"org.protocol-lab.components.executor.go-http1-websocket-executor",
+  "packageVersion":"0.1.0",
+  "kind":"test-executor",
+  "displayName":"Go HTTP/1.1 Cleartext WebSocket Test Executor",
+  "entryManifests":["test-executors/go-http1-websocket-executor.yaml"],
+  "providedTestExecutors":[{
+    "testExecutorId":"go-http1-websocket-executor",
+    "displayName":"Go HTTP/1.1 Cleartext WebSocket Test Executor",
+    "protocols":["h1"],
+    "scenarios":["http1.websocket.rfc6455.cleartext.upgrade","http1.websocket.rfc6455.cleartext.control-frames","http1.websocket.rfc6455.cleartext.text-echo","http1.websocket.rfc6455.cleartext.binary-echo","http1.websocket.rfc6455.cleartext.close"],
+    "tests":["http1.websocket.rfc6455.cleartext.upgrade","http1.websocket.rfc6455.cleartext.control-frames","http1.websocket.rfc6455.cleartext.text-echo","http1.websocket.rfc6455.cleartext.binary-echo","http1.websocket.rfc6455.cleartext.close"]
+  }],
+  "dependencies":{}
+}
