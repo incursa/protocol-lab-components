@@ -1,0 +1,10 @@
+{
+  "schemaVersion":"protocol-lab-package-v2",
+  "packageId":"org.protocol-lab.components.executor.go-tls12-executor",
+  "packageVersion":"0.1.0",
+  "kind":"test-executor",
+  "displayName":"Go TLS 1.2 Compatibility Executor",
+  "entryManifests":["test-executors/go-tls12-executor.yaml"],
+  "providedTestExecutors":[{"testExecutorId":"go-tls12-executor","displayName":"Go TLS 1.2 Compatibility Executor","protocols":["tls"],"scenarios":["tls.handshake.full.tls12"],"tests":["tls.handshake.full.tls12"]}],
+  "dependencies":{}
+}

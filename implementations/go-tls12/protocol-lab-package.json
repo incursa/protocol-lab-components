@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.go-tls12",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Go TLS 1.2 Compatibility Target",
+  "entryManifests": ["implementations/go-tls12.yaml"],
+  "providedImplementations": [{"implementationId":"go-tls12","displayName":"Go crypto/tls TLS 1.2 Compatibility","protocols":["tls"],"scenarios":["tls.handshake.full.tls12"]}],
+  "dependencies": {}
+}
