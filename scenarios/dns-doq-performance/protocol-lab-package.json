@@ -1,0 +1,9 @@
+{
+  "schemaVersion":"protocol-lab-package-v2",
+  "packageId":"org.protocol-lab.components.scenario.dns-doq-performance",
+  "packageVersion":"0.1.0",
+  "kind":"scenario-pack",
+  "displayName":"DNS-over-QUIC Performance Smoke Scenario Pack",
+  "entryManifests":["scenarios/dns/doq/query-a.yaml","suites/dns-doq-performance-smoke.yaml","load-profiles/secure-dns-smoke.yaml","fixtures/canonical-plab-test-a.json","fixtures/secure-dns-tls13-profile-v1.json"],
+  "providedScenarios":[{"scenarioId":"dns.doq.query.a","displayName":"DNS over QUIC Deterministic A Query","protocols":["doq"]}]
+}

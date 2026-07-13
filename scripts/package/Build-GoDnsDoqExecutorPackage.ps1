@@ -1,0 +1,12 @@
+[CmdletBinding()]
+param([ValidateSet('win-x64','linux-x64')][string]$RuntimeIdentifier='win-x64',[string]$Root=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,[string]$OutputRoot=(Join-Path $Root 'artifacts/packages'),[switch]$AllowDirtySource)
+$ErrorActionPreference='Stop'
+$componentRoot=Join-Path $Root 'executors/go-dns-doq-executor';$sourceRoot=Join-Path $componentRoot 'source';$certificateRoot=Join-Path $Root 'implementations/go-dns-dot/certs'
+& go -C $sourceRoot test -count=1 ./...;if($LASTEXITCODE-ne 0){throw 'go-dns-doq-executor tests failed.'}
+$rid=switch($RuntimeIdentifier){'win-x64'{@{os='windows';arch='x64';goOs='windows';goArch='amd64';name='go-dns-doq-executor.exe'}}'linux-x64'{@{os='linux';arch='x64';goOs='linux';goArch='amd64';name='go-dns-doq-executor'}}}
+$stagingRoot=Join-Path $OutputRoot "go-dns-doq-executor/$RuntimeIdentifier";$packageRoot=Join-Path $stagingRoot 'package';$packageBin=Join-Path $packageRoot "bin/$RuntimeIdentifier"
+Remove-Item -LiteralPath $stagingRoot -Recurse -Force -ErrorAction SilentlyContinue;New-Item -ItemType Directory -Force -Path $packageBin,(Join-Path $packageRoot 'test-executors'),(Join-Path $packageRoot 'certs')|Out-Null
+$oldGoOs=$env:GOOS;$oldGoArch=$env:GOARCH;try{$env:GOOS=$rid.goOs;$env:GOARCH=$rid.goArch;& go -C $sourceRoot build -buildvcs=false -trimpath -o (Join-Path $packageBin $rid.name) .;if($LASTEXITCODE-ne 0){throw 'go-dns-doq-executor build failed.'}}finally{$env:GOOS=$oldGoOs;$env:GOARCH=$oldGoArch}
+Copy-Item (Join-Path $componentRoot 'protocol-lab-package.json') $packageRoot;Copy-Item (Join-Path $componentRoot 'toolchain.json') $packageRoot;Copy-Item (Join-Path $componentRoot 'test-executors/go-dns-doq-executor.yaml') (Join-Path $packageRoot 'test-executors');Copy-Item (Join-Path $certificateRoot 'root.pem') (Join-Path $packageRoot 'certs')
+$internal=Get-Content (Join-Path $componentRoot 'protocol-lab.internal.json') -Raw|ConvertFrom-Json;$internal.environments=@(@{os=$rid.os;arch=$rid.arch;entrypoint=@{kind='process';path="bin/$RuntimeIdentifier/$($rid.name)";arguments=@();workingDirectory='.'}});$internal|ConvertTo-Json -Depth 20|Set-Content (Join-Path $packageRoot 'protocol-lab.internal.json') -Encoding utf8NoBOM
+& (Join-Path $PSScriptRoot 'Build-ProtocolLabComponentPackage.ps1') -Root $Root -OutputRoot $OutputRoot -ComponentPath $packageRoot -SourceComponentPath $componentRoot -ArtifactSuffix $RuntimeIdentifier -PreparedPackageRoot -AllowDirtySource:$AllowDirtySource
