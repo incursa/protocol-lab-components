@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"encoding/base64"
 	"os"
 	"path/filepath"
 	"strings"
@@ -64,6 +65,28 @@ func TestSupportedAndUnsupportedInventoriesAreDisjoint(t *testing.T) {
 		if _, duplicate := knownUnsupported[id]; duplicate {
 			t.Fatalf("duplicate %s", id)
 		}
+	}
+}
+
+func TestOpeningHandshakeAggregateDetectsKeyReuseAndAcceptMismatch(t *testing.T) {
+	key := base64.StdEncoding.EncodeToString(bytes.Repeat([]byte{0x2a}, 16))
+	proof := handshakeProof{
+		Binding: "http1-upgrade", Scheme: "ws", TransportSecurity: "cleartext",
+		Endpoint: "/websocket", Authority: "websocket.plab.test", RequestMethod: "GET",
+		RequestedHTTPVersion: "HTTP/1.1", ObservedHTTPVersion: "HTTP/1.1", ResponseStatus: 101,
+		UpgradeHeader: "websocket", ConnectionHeader: "Upgrade", SecWebSocketVersion: "13",
+		SampleSecWebSocketKey: key, ExpectedSecWebSocketAccept: websocketAccept(key),
+		ObservedSecWebSocketAccept: websocketAccept(key),
+	}
+	summary := newPhaseSummary("test")
+	recordOpeningHandshake(&summary, proof)
+	proof.ObservedSecWebSocketAccept = "mismatch"
+	recordOpeningHandshake(&summary, proof)
+	if summary.OpeningHandshakes != 2 || summary.KeyReuseCount != 1 || summary.InvalidDecodedKeyCount != 0 || summary.AcceptMismatchCount != 1 {
+		t.Fatalf("summary=%+v", summary)
+	}
+	if !summary.UpgradeRequestHeadersMatched || summary.UpgradeResponseHeadersMatched {
+		t.Fatalf("requestMatched=%t responseMatched=%t", summary.UpgradeRequestHeadersMatched, summary.UpgradeResponseHeadersMatched)
 	}
 }
 

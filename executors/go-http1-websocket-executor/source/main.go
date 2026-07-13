@@ -143,17 +143,24 @@ type operationProof struct {
 }
 
 type phaseSummary struct {
-	Phase                 string         `json:"phase"`
-	DurationSeconds       float64        `json:"durationSeconds"`
-	CompletedOperations   int            `json:"completedOperations"`
-	FailedOperations      int            `json:"failedOperations"`
-	TimedOutOperations    int            `json:"timedOutOperations"`
-	TotalTransferredBytes int64          `json:"totalTransferredBytes"`
-	EffectiveConnections  int            `json:"effectiveConnections"`
-	EffectiveConcurrency  int            `json:"effectiveConcurrency"`
-	LatenciesMilliseconds []float64      `json:"latenciesMilliseconds"`
-	LastProof             operationProof `json:"lastProof"`
-	Errors                map[string]int `json:"errors"`
+	Phase                         string              `json:"phase"`
+	DurationSeconds               float64             `json:"durationSeconds"`
+	CompletedOperations           int                 `json:"completedOperations"`
+	FailedOperations              int                 `json:"failedOperations"`
+	TimedOutOperations            int                 `json:"timedOutOperations"`
+	TotalTransferredBytes         int64               `json:"totalTransferredBytes"`
+	EffectiveConnections          int                 `json:"effectiveConnections"`
+	EffectiveConcurrency          int                 `json:"effectiveConcurrency"`
+	LatenciesMilliseconds         []float64           `json:"latenciesMilliseconds"`
+	LastProof                     operationProof      `json:"lastProof"`
+	OpeningHandshakes             int                 `json:"openingHandshakes"`
+	KeyReuseCount                 int                 `json:"keyReuseCount"`
+	InvalidDecodedKeyCount        int                 `json:"invalidDecodedKeyCount"`
+	AcceptMismatchCount           int                 `json:"acceptMismatchCount"`
+	UpgradeRequestHeadersMatched  bool                `json:"upgradeRequestHeadersMatched"`
+	UpgradeResponseHeadersMatched bool                `json:"upgradeResponseHeadersMatched"`
+	Errors                        map[string]int      `json:"errors"`
+	seenKeys                      map[string]struct{} `json:"-"`
 }
 
 type metrics struct {
@@ -315,7 +322,7 @@ func loadConfigFromEnvironment() (loadConfig, error) {
 }
 
 func runPhase(targetURL string, expectation scenarioExpectation, duration, timeout time.Duration, name string) phaseSummary {
-	summary := phaseSummary{Phase: name, EffectiveConnections: 1, EffectiveConcurrency: 1, Errors: map[string]int{}}
+	summary := newPhaseSummary(name)
 	if expectation.operation == "text-echo" || expectation.operation == "binary-echo" || expectation.operation == "control-frames" {
 		return runReusablePhase(targetURL, expectation, duration, timeout, name)
 	}
@@ -332,6 +339,7 @@ func runPhase(targetURL string, expectation scenarioExpectation, duration, timeo
 			summary.Errors[err.Error()]++
 			break
 		}
+		recordOpeningHandshake(&summary, proof.Handshake)
 		summary.CompletedOperations++
 		summary.TotalTransferredBytes += proof.TransferredBytes
 		summary.LatenciesMilliseconds = append(summary.LatenciesMilliseconds, proof.LatencyMilliseconds)
@@ -342,7 +350,7 @@ func runPhase(targetURL string, expectation scenarioExpectation, duration, timeo
 }
 
 func runReusablePhase(targetURL string, expectation scenarioExpectation, duration, timeout time.Duration, name string) phaseSummary {
-	summary := phaseSummary{Phase: name, EffectiveConnections: 1, EffectiveConcurrency: 1, Errors: map[string]int{}}
+	summary := newPhaseSummary(name)
 	connection, err := openWebSocket(targetURL, timeout)
 	if err != nil {
 		summary.FailedOperations = 1
@@ -350,6 +358,7 @@ func runReusablePhase(targetURL string, expectation scenarioExpectation, duratio
 		return summary
 	}
 	defer connection.conn.Close()
+	recordOpeningHandshake(&summary, connection.handshake)
 	started := time.Now()
 	deadline := started.Add(duration)
 	for time.Now().Before(deadline) {
@@ -381,6 +390,40 @@ func runReusablePhase(targetURL string, expectation scenarioExpectation, duratio
 	}
 	summary.DurationSeconds = time.Since(started).Seconds()
 	return summary
+}
+
+func newPhaseSummary(name string) phaseSummary {
+	return phaseSummary{
+		Phase: name, EffectiveConnections: 1, EffectiveConcurrency: 1,
+		UpgradeRequestHeadersMatched: true, UpgradeResponseHeadersMatched: true,
+		Errors: map[string]int{}, seenKeys: map[string]struct{}{},
+	}
+}
+
+func recordOpeningHandshake(summary *phaseSummary, proof handshakeProof) {
+	summary.OpeningHandshakes++
+	decodedKey, err := base64.StdEncoding.DecodeString(proof.SampleSecWebSocketKey)
+	if err != nil || len(decodedKey) != 16 {
+		summary.InvalidDecodedKeyCount++
+	}
+	if _, exists := summary.seenKeys[proof.SampleSecWebSocketKey]; exists {
+		summary.KeyReuseCount++
+	} else {
+		summary.seenKeys[proof.SampleSecWebSocketKey] = struct{}{}
+	}
+	if websocketAccept(proof.SampleSecWebSocketKey) != proof.ObservedSecWebSocketAccept {
+		summary.AcceptMismatchCount++
+	}
+	summary.UpgradeRequestHeadersMatched = summary.UpgradeRequestHeadersMatched &&
+		proof.Binding == "http1-upgrade" && proof.Scheme == "ws" && proof.TransportSecurity == "cleartext" &&
+		proof.Endpoint == "/websocket" && proof.Authority == "websocket.plab.test" && proof.RequestMethod == http.MethodGet &&
+		proof.RequestedHTTPVersion == "HTTP/1.1" && proof.SecWebSocketVersion == "13" &&
+		!proof.SubprotocolRequested && !proof.ExtensionsRequested
+	summary.UpgradeResponseHeadersMatched = summary.UpgradeResponseHeadersMatched &&
+		proof.ObservedHTTPVersion == "HTTP/1.1" && proof.ResponseStatus == http.StatusSwitchingProtocols &&
+		strings.EqualFold(proof.UpgradeHeader, "websocket") && hasToken(proof.ConnectionHeader, "upgrade") &&
+		!proof.SubprotocolNegotiated && !proof.ExtensionsNegotiated &&
+		proof.ObservedSecWebSocketAccept == proof.ExpectedSecWebSocketAccept
 }
 
 func performOperation(targetURL string, expectation scenarioExpectation, timeout time.Duration) (operationProof, error) {
@@ -635,6 +678,15 @@ func normalizeResult(expectation scenarioExpectation, config loadConfig, summary
 		ProtocolProof: map[string]any{
 			"requestedProtocol": "websocket-over-h1-cleartext", "observedProtocol": "websocket-over-h1-cleartext",
 			"protocolVariant": "websocket-h1-cleartext-upgrade", "fallbackDetected": false, "websocket": summary.LastProof,
+			"handshakeAggregate": map[string]any{
+				"binding": "http1-upgrade", "openingHandshakes": summary.OpeningHandshakes,
+				"keyReuseCount": summary.KeyReuseCount, "invalidDecodedKeyCount": summary.InvalidDecodedKeyCount,
+				"acceptMismatchCount":           summary.AcceptMismatchCount,
+				"sampleSecWebSocketKey":         summary.LastProof.Handshake.SampleSecWebSocketKey,
+				"sampleSecWebSocketAccept":      summary.LastProof.Handshake.ObservedSecWebSocketAccept,
+				"upgradeRequestHeadersMatched":  summary.UpgradeRequestHeadersMatched,
+				"upgradeResponseHeadersMatched": summary.UpgradeResponseHeadersMatched,
+			},
 		},
 		Validation:    map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "cleanClose": true},
 		RequestedLoad: requested,
