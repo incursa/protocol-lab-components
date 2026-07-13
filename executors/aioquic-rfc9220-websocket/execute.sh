@@ -5,7 +5,7 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 scenario_id="${PLAB_SCENARIO_ID:-}"
 target_url="${PLAB_TARGET_BASE_URL:-${PLAB_TARGET_URL:-https://host.docker.internal:4435/websocket-proof}}"
 timeout_seconds="${PLAB_TIMEOUT_SECONDS:-20}"
-image="${AIOQUIC_RFC9220_WEBSOCKET_IMAGE:-incursa-protocol-lab-aioquic-rfc9220-websocket:0.2.0}"
+image="${AIOQUIC_RFC9220_WEBSOCKET_IMAGE:-incursa-protocol-lab-aioquic-rfc9220-websocket:0.2.1}"
 output_root="${PLAB_ARTIFACT_DIR:-${PLAB_OUTPUT_ROOT:-artifacts/aioquic-rfc9220-websocket}}"
 skip_build="${PLAB_SKIP_BUILD:-0}"
 plan_only="${PLAB_PLAN_ONLY:-0}"
@@ -77,7 +77,7 @@ result = {
     "scenarioId": sys.argv[3],
     "status": "passed",
     "authorityCommit": "8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574",
-    "executor": {"id": "aioquic-rfc9220-websocket", "version": "0.2.0"},
+    "executor": {"id": "aioquic-rfc9220-websocket", "version": "0.2.1"},
     "validation": {"status": "passed"},
     "protocolProof": client["protocolProof"],
     "metrics": client["metrics"],
@@ -85,4 +85,4 @@ result = {
 }
 json.dump(result, open(sys.argv[2], "w", encoding="utf-8"), indent=2)
 PY
-printf '{"id":"aioquic-rfc9220-websocket","version":"0.2.0","aioquicVersion":"1.3.0","role":"test-executor"}\n' > "$output_root/executor-identity.json"
+printf '{"id":"aioquic-rfc9220-websocket","version":"0.2.1","aioquicVersion":"1.3.0","role":"test-executor"}\n' > "$output_root/executor-identity.json"

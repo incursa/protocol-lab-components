@@ -7,9 +7,9 @@ The pack is declarative. It does not provide a WebSocket server or the aioquic c
 ## Package
 
 - Package ID: `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket`
-- Package version: `0.2.0`
+- Package version: `0.2.1`
 - Suite ID: `aioquic-rfc9220-websocket-proof`
-- Scenarios: the five existing exact RFC9220 identities plus `http3.websocket.rfc9220.fragmented-binary-echo`
+- Scenarios: six exact RFC9220 v2 identities, each byte-locked to public commit `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`
 - Public authority: fragmented scenario bytes are locked to `protocol-lab` commit `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`
 - Test executor: `aioquic-rfc9220-websocket`
 

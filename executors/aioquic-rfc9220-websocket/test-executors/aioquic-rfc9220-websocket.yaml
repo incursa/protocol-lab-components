@@ -1,13 +1,13 @@
 executorIdentity:
   id: aioquic-rfc9220-websocket
   name: aioquic RFC9220 WebSocket-over-H3 Test Executor
-  version: 0.2.0
+  version: 0.2.1
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.2.0
+  executorVersion: 0.2.1
 claimedCapabilities:
   - id: http3.websocket.rfc9220.extended-connect
     status: supported

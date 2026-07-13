@@ -1,48 +1,28 @@
-schemaVersion: "1.0"
+schemaVersion: "2.0"
+version: 2.0.0
 id: http3.websocket.rfc9220.control-frames
-title: RFC9220 WebSocket Control Frames
-name: RFC9220 WebSocket Control Frames
-family: websocket
-description: Validate WebSocket-over-HTTP/3 ping and pong control-frame behavior through the proof endpoint.
-status: stable
+title: RFC 9220 WebSocket Control Frames
+description: Validate ping and pong control-frame behavior over a WebSocket bound to HTTP/3.
+status: draft
 kind: protocolValidation
 layer: application
 protocol: h3
-protocols:
-  - h3
-  - websocket
-roles:
-  - server
-requires:
-  capabilities:
-    - h3.server
-    - websocket.server
-  protocols:
-    - h3
-    - websocket
-  roles:
-    - server
+family: websocket
+semanticTemplateId: websocket.control.ping-pong
+protocolStack: [websocket, h3, quic, tls1.3]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc6455, https://www.rfc-editor.org/rfc/rfc9220]
+roles: [client, server]
+requires: {capabilities: [websocket.client, websocket.server, websocket.control-frames], protocols: [h3], roles: [client, server]}
 trafficShape: bidirectional-stream
-implementationRole: server
-requiredCapabilities:
-  - rfc9220WebSocket
+executionProfile: {transportSecurity: tls, protocolVariant: websocket-h3-extended-connect, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+websocket: {binding: http3-extended-connect, standard: rfc9220, path: /websocket-proof, subprotocol: null, operation: control-frames, messageType: none, messageBytes: 0, messageCount: 1, controlPayloadGenerator: exact-utf8, controlPayloadText: protocol-lab-ping, controlPayloadBytes: 17, controlPayloadSha256: 4848de689e96825e0e05b6c3e96e48f2ad7ec7805fb64ecf824ccc6aa9c58883, fragmentation: none, masking: client-required, closeCode: 1000, authority: websocket.plab.test, extensions: none, bootstrapPolicy: rfc9220-extended-connect, closeReasonPolicy: empty-utf8-reason, connectionLifecycle: pre-established-connection-per-operation, measuredWindow: control-frame-round-trip, handshake: {binding: http3-extended-connect, settingsEnableConnectProtocol: 1, requestPseudoHeaders: {method: CONNECT, protocol: websocket, scheme: https, authority: websocket.plab.test, path: /websocket-proof}, requestHeaders: {secWebSocketVersion: "13", originPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false, secWebSocketKeyPresent: false}, prohibitedConnectionHeadersPresent: false, responseStatus: 200, responseHeaders: {secWebSocketAcceptPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false}}}
 validation:
   required: true
-  checks:
-    - server-ping-client-pong
-    - client-ping-server-pong
-artifacts:
-  required:
-    - client-result.json
-  optional:
-    - stdout.txt
-    - stderr.txt
-    - qlog
-    - sslkeylog
+  checks: [protocol:h3, no-fallback, extended-connect, no-subprotocol, no-extensions, no-connection-headers, no-sec-websocket-accept, no-sec-websocket-key, sec-websocket-version:13, pseudo-protocol:websocket, settings-enable-connect-protocol, ping-sent, pong-received, control-payload-match, close-code:1000, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: websocket-over-h3, expectedObserved: websocket-over-h3, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic], primaryMetrics: [controlFrameLatencyP95, completedOperations, failedOperations]}
+requiredMetrics: [controlFrameLatencyP50, controlFrameLatencyP95, controlFrameLatencyP99, completedOperations, failedOperations, timedOutOperations]
+artifacts: {required: [validation.json, protocol-proof.json, websocket-summary.json, result.json, load.stdout.log, load.stderr.log], optional: [qlog, tls-key-log, frame-summary.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed}
 networkProfile: clean
-tags:
-  - http
-  - h3
-  - websocket
-  - rfc9220
-  - control-frames
+tags: [http3, websocket, rfc9220, control-frames]

@@ -2,6 +2,11 @@
   "authorityRepository": "protocol-lab",
   "authorityCommit": "8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574",
   "files": {
+    "scenarios/http3/websocket/rfc9220-extended-connect.yaml": "59640ee041d85d36ef484c915658e96f7772207637069e36e190cb6a74c4950a",
+    "scenarios/http3/websocket/rfc9220-control-frames.yaml": "f08929cde090744524fb880805adbfd892d96f663ad080b3cf4c2b5f83c2d645",
+    "scenarios/http3/websocket/rfc9220-text-echo.yaml": "9b1b3a9cb0639b37bfaa5319d9e4a4368cd074ed60673944e574317b3be6038c",
+    "scenarios/http3/websocket/rfc9220-binary-echo.yaml": "167efd8e61b5b9d1a3d7d5bfee3fa8f38c7fabc6dfe94635d01f7ff640b1ef03",
+    "scenarios/http3/websocket/rfc9220-close.yaml": "15d2f7b1a0e00ab5bfee3aa890d6a351e6d06cb38db8bda74ace315b42225303",
     "scenarios/http3/websocket/rfc9220-fragmented-binary-echo.yaml": "76bb1c269d42b5ba53742bf5c69e8f2728427406946a7cf2802023f482959725"
   }
 }
