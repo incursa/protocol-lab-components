@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.openssl-tls13-key-update",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "OpenSSL TLS 1.3 KeyUpdate Target",
+  "entryManifests": ["implementations/openssl-tls13-key-update.yaml"],
+  "providedImplementations": [{
+    "implementationId": "openssl-tls13-key-update",
+    "displayName": "OpenSSL TLS 1.3 KeyUpdate Target",
+    "protocols": ["tls"],
+    "scenarios": ["tls.key-update.diagnostic"]
+  }],
+  "dependencies": {}
+}

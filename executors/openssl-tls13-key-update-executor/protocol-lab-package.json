@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.openssl-tls13-key-update-executor",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "OpenSSL TLS 1.3 KeyUpdate Executor",
+  "entryManifests": ["test-executors/openssl-tls13-key-update-executor.yaml"],
+  "providedTestExecutors": [{
+    "testExecutorId": "openssl-tls13-key-update-executor",
+    "displayName": "OpenSSL TLS 1.3 KeyUpdate Executor",
+    "protocols": ["tls"],
+    "scenarios": ["tls.key-update.diagnostic"],
+    "tests": ["tls.key-update.diagnostic"]
+  }],
+  "dependencies": {}
+}

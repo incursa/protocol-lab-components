@@ -48,6 +48,8 @@ pwsh ./scripts/package/Build-GoTls13MtlsImplementationPackage.ps1
 pwsh ./scripts/package/Build-GoTls13MtlsExecutorPackage.ps1
 pwsh ./scripts/package/Build-GoTls12ImplementationPackage.ps1
 pwsh ./scripts/package/Build-GoTls12ExecutorPackage.ps1
+pwsh ./scripts/package/Build-OpenSslTls13KeyUpdateImplementationPackage.ps1
+pwsh ./scripts/package/Build-OpenSslTls13KeyUpdateExecutorPackage.ps1
 pwsh ./scripts/package/Build-GoHttp1WebSocketImplementationPackage.ps1
 pwsh ./scripts/package/Build-GoHttp1WebSocketExecutorPackage.ps1
 pwsh ./scripts/package/Build-Http1WebSocketCleartextScenarioPackage.ps1
@@ -97,6 +99,17 @@ outcomes, and the unknown-ID exit path:
 
 ```powershell
 pwsh ./scripts/package/Test-Tls13Chacha20ThreePackageSmoke.ps1
+```
+
+Exercise the authority-locked TLS 1.3 KeyUpdate diagnostic with the extracted
+scenario, OpenSSL executor, and independent OpenSSL target packages. The smoke
+requires an actual `SSL_key_update(SSL_KEY_UPDATE_NOT_REQUESTED)` event,
+bilateral message-callback observation, exact post-update payload proof,
+Protocol Execution Result v2 schema conformance, explicit unsupported outcomes,
+and no traffic-secret publication:
+
+```powershell
+pwsh ./scripts/package/Test-OpenSslTls13KeyUpdateThreePackageSmoke.ps1
 ```
 
 Exercise all six authority-locked HTTP/2 RFC 8441 identities with the
