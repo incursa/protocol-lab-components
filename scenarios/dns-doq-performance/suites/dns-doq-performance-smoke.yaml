@@ -1,0 +1,10 @@
+id: dns-doq-performance-smoke
+name: DNS over QUIC performance contract smoke suite
+description: Fast deterministic DoQ query validity selection.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: secure-dns-smoke
+scenarios: [dns.doq.query.a]
+protocol: doq
+notes: Exact doq ALPN, two-octet framing, and client/server STREAM FIN completion are required.
+tags: [dns, doq, smoke, non-publishable]

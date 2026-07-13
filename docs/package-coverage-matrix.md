@@ -43,6 +43,9 @@ This matrix tracks reusable component package coverage for implementations and e
 | `go-http2-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-http2-executor@0.3.0`; exact h2c smoke, diagnostic, and `16/128/8` balanced-round-robin comparison shapes |
 | `go-tls13-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-tls13-executor@0.1.0`; exact TLS 1.3 full-handshake smoke only |
 | `dotnet-sslstream-tls13` | missing | local diagnostic package `org.protocol-lab.components.implementation.dotnet-sslstream-tls13@0.1.0`; independent library-backed TLS 1.3 target |
+| `go-dns-doq` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-dns-doq@0.1.0`; QUIC v1/TLS 1.3/ALPN `doq` local fixture authority for `dns.doq.query.a` only |
+| `go-dns-doq-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-dns-doq-executor@0.1.0`; exact RFC 9250 DoQ binding, one query per client-initiated bidirectional stream, and no DNS-transport fallback |
+| `dns-doq-performance` scenario pack | missing | authority-locked `org.protocol-lab.components.scenario.dns-doq-performance@0.1.0` for `dns.doq.query.a`, `dns-doq-performance-smoke`, and `secure-dns-smoke` at public commit `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574` |
 
 ## Scenario Support
 
@@ -82,6 +85,9 @@ This matrix tracks reusable component package coverage for implementations and e
 | `org.protocol-lab.components.executor.go-http2-executor` | `executors/go-http2-executor` |
 | `org.protocol-lab.components.executor.go-tls13-executor` | `executors/go-tls13-executor` |
 | `org.protocol-lab.components.implementation.dotnet-sslstream-tls13` | `implementations/dotnet-sslstream-tls13` |
+| `org.protocol-lab.components.implementation.go-dns-doq` | `implementations/go-dns-doq` |
+| `org.protocol-lab.components.executor.go-dns-doq-executor` | `executors/go-dns-doq-executor` |
+| `org.protocol-lab.components.scenario.dns-doq-performance` | `scenarios/dns-doq-performance` |
 | `org.protocol-lab.components.scenario.raw-quic-transport` | `scenarios/raw-quic-transport` |
 | `org.protocol-lab.components.scenario.h3spec-http3-qpack` | `scenarios/h3spec-http3-qpack` |
 | `org.protocol-lab.components.scenario.http3-peer-characterization` | `scenarios/http3-peer-characterization` |
