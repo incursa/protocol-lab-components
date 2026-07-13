@@ -1,0 +1,4 @@
+{
+  "executor":{"language":"go","module":"org.protocol-lab.components.executor.go-dns-doh2-executor","buildFlags":["-buildvcs=false","-trimpath"]},
+  "loadGenerator":{"id":"go-dns-doh2-load","version":"0.1.0","engineModule":"net/http HTTP/2 transport","engineModuleVersion":"Go standard library","license":"BSD-3-Clause","source":"https://pkg.go.dev/net/http"}
+}

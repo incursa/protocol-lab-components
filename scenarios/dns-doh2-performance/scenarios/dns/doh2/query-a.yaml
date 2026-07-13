@@ -1,0 +1,53 @@
+schemaVersion: "2.0"
+version: "2.0.0"
+id: dns.doh2.query.a
+title: DNS over HTTPS HTTP/2 Deterministic A Query
+description: POST one deterministic DNS message to the local fixture authority over exact HTTP/2.
+status: draft
+kind: workload
+layer: application
+protocol: doh2
+family: dns.secure
+semanticTemplateId: dns.query.a.plab-test
+protocolStack: [dns, doh, h2, tls1.3, tcp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc1035, https://www.rfc-editor.org/rfc/rfc6761, https://www.rfc-editor.org/rfc/rfc5737, https://www.rfc-editor.org/rfc/rfc8484, https://www.rfc-editor.org/rfc/rfc9113, https://www.rfc-editor.org/rfc/rfc9846]
+roles: [client, authoritative-server]
+requires: {capabilities: [dns.client, dns.authoritative-server, dns.doh2], protocols: [doh2], roles: [client, authoritative-server]}
+trafficShape: request-response
+dns:
+  fixtureId: dns.plab-test-a.canonical
+  transport: doh2
+  authorityMode: local-fixture-authoritative
+  cacheState: disabled
+  alpn: h2
+  connectionReuse: reuse
+  endpoint: {host: dns.plab.test, port: 443, serverName: dns.plab.test, addressResolution: runner-provided-local-binding}
+  tlsPolicy: {profileId: plab-secure-dns-tls13-v1, version: tls1.3, resumptionPolicy: not-offered, earlyData: not-attempted, alpn: h2, certificateProfile: plab-secure-dns-single-leaf-p256-v1, cipherSuite: TLS_AES_128_GCM_SHA256, keyExchangeGroup: x25519, signatureScheme: ecdsa_secp256r1_sha256, peerAuthentication: server-certificate-required, connectionLifecycle: pre-established-full-authenticated-connection, measuredWindow: dns-query-response}
+  authorityPolicy: {zone: plab.test., authoritativeAnswer: true, recursionDesired: false, recursionAvailable: false, externalUpstream: prohibited, outOfZoneResponse: REFUSED, unknownNameResponse: NXDOMAIN, existingNameUnknownTypeResponse: NOERROR-NODATA}
+  framing: {kind: bare-dns-message-body, requestBodyLength: 27, canonicalResponseLength: 43}
+  http:
+    version: h2
+    method: POST
+    scheme: https
+    authority: dns.plab.test
+    path: /dns-query
+    expectedStatus: 200
+    requestHeaders: {accept: application/dns-message, contentType: application/dns-message, cacheControl: no-cache}
+    responseHeaders: {contentType: application/dns-message, cacheControl: no-store}
+    bodyFraming: bare-dns-message-body
+  query: {name: plab.test., type: A, class: IN, wireLength: 27, normalizedWireSha256: c46b9fb76019b5a644d0884b17e816cb7c3076275d9468c27d180f70488eb8ec}
+  expectedResponse: {rcode: NOERROR, answer: 192.0.2.1, ttl: 0, wireLength: 43, normalizedWireSha256: 9d488461675ad5ab9f74c7b203861e1ad17521e413a407a25e6611012a595620}
+  runtimeIdPolicy: {messageId: zero, canonicalHashNormalization: identity}
+  responseNormalization: {rawResponseEqualityRequired: false, compressionMayDiffer: true, procedure: [parse-dns-message, canonical-reserialize, compare-normalized-sha256]}
+  operationPolicy: {timeoutSource: load-profile.dns.queryTimeoutMilliseconds, retries: 0, onTimeout: cancel-operation-and-record}
+executionProfile: {transportSecurity: tls, protocolVariant: doh-h2-tls-alpn, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode, platformProvenanceRequired: true, accelerationProvenanceRequired: true}
+validation:
+  required: true
+  checks: [protocol:h2, protocol:doh, tls-version:tls1.3, alpn:h2, certificate-valid, port:443, no-fallback, method:POST, scheme:https, authority:dns.plab.test, endpoint:/dns-query, request-accept:application/dns-message, request-content-type:application/dns-message, response-content-type:application/dns-message, cache-control:no-store, status:200, bare-query-length:27, query-identity, query-flags-zero, query-section-counts:1-0-0-0, response-id-zero, response-question, response-aa-set, response-ra-clear, response-section-counts:1-1-0-0, rcode:NOERROR, answer:192.0.2.1, normalized-wire-length:43, normalized-wire-sha256, zero-malformed, zero-retries, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: doh2, expectedObserved: doh2, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic, comparison, connection-reuse, concurrent-queries], primaryMetrics: [queriesPerSecond, queryLatencyP50, queryLatencyP95, queryLatencyP99, failedOperations, timedOutOperations]}
+requiredMetrics: [queriesPerSecond, queryLatencyMean, queryLatencyP50, queryLatencyP75, queryLatencyP90, queryLatencyP95, queryLatencyP99, timeToFirstByte, connectionLatency, completedOperations, malformedOperations, retryCount, failedOperations, timedOutOperations, totalTransferredBytes, effectiveConcurrency, effectiveStreams]
+artifacts: {required: [validation.json, protocol-proof.json, dns-wire-summary.json, http-summary.json, tls-negotiation.json, result.json, load.stdout.log, load.stderr.log], optional: [http2-frame-summary.json, target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [http1-fallback, doh-get-workload, public-recursive-resolver]}
+networkProfile: clean
+tags: [dns, doh, h2, query, a]

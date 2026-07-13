@@ -1,0 +1,10 @@
+id: dns-doh2-performance-smoke
+name: DNS over HTTPS HTTP/2 performance contract smoke suite
+description: Fast deterministic DoH2 query validity selection.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: secure-dns-smoke
+scenarios: [dns.doh2.query.a]
+protocol: doh2
+notes: Exact HTTP/2 and h2 ALPN binding, HTTPS authority, request headers, and bare DNS body are required; fallback is invalid.
+tags: [dns, doh, h2, smoke, non-publishable]

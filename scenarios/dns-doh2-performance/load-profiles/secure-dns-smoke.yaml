@@ -1,0 +1,13 @@
+schemaVersion: protocol-lab.load-profile.v2
+version: 2.0.0
+id: secure-dns-smoke
+title: Secure DNS Contract Smoke
+status: experimental
+purpose: smoke
+description: Fast single-connection validity profile reusable across DoT, DoH2, DoH3, and DoQ scenarios.
+durationSeconds: 5
+warmupSeconds: 1
+repetitions: 1
+dns: {connections: 1, concurrency: 1, outstandingQueries: 1, connectionReuse: reuse, connectionTimeoutMilliseconds: 5000, handshakeTimeoutMilliseconds: 5000, queryTimeoutMilliseconds: 5000, drainTimeoutMilliseconds: 5000, maxRetries: 0, totalQueries: null, queryRateLimitPerSecond: null}
+evidence: {minimumTier: smoke, publishable: false}
+artifacts: {required: [load.stdout.log, load.stderr.log, validation.json, protocol-proof.json, result.json], optional: [dns-wire-summary.json]}

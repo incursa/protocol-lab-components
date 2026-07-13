@@ -1,0 +1,10 @@
+{
+  "schemaVersion":"protocol-lab-package-v2",
+  "packageId":"org.protocol-lab.components.executor.go-dns-doh2-executor",
+  "packageVersion":"0.1.0",
+  "kind":"test-executor",
+  "displayName":"Go DNS-over-HTTPS HTTP/2 Test Executor",
+  "entryManifests":["test-executors/go-dns-doh2-executor.yaml"],
+  "providedTestExecutors":[{"testExecutorId":"go-dns-doh2-executor","displayName":"Go DNS-over-HTTPS HTTP/2 Test Executor","protocols":["doh2"],"scenarios":["dns.doh2.query.a"],"tests":["dns.doh2.query.a"]}],
+  "dependencies":{}
+}

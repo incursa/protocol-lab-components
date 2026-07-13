@@ -1,0 +1,50 @@
+package main
+
+import "testing"
+
+func TestCanonicalFixtureHashesAndLengths(t *testing.T) {
+	if len(canonicalQuery) != 27 || hash(canonicalQuery) != queryHash {
+		t.Fatal("canonical query mismatch")
+	}
+	if len(canonicalResponse) != 43 || hash(canonicalResponse) != responseHash {
+		t.Fatal("canonical response mismatch")
+	}
+	proof, err := validateDNS(canonicalResponse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if proof.ResponseNormalizedSHA256 != responseHash || proof.ResponseMessageID != 0 {
+		t.Fatalf("proof=%+v", proof)
+	}
+}
+func TestKnownUnsupportedInventoryIsExact(t *testing.T) {
+	expected := []string{"dns.classic.tcp.query.a", "dns.classic.udp-truncated-tcp-retry", "dns.classic.udp.query.a", "dns.doh3.get.a", "dns.doh3.query.a", "dns.doh3.query.aaaa", "dns.doh3.query.cname-chain", "dns.doh3.query.large-dnssec-shaped", "dns.doh3.query.nodata", "dns.doh3.query.nxdomain", "dns.doq.query.a", "dns.dot.query.a"}
+	if len(knownUnsupported) != len(expected) {
+		t.Fatalf("count=%d", len(knownUnsupported))
+	}
+	for _, id := range expected {
+		if _, ok := knownUnsupported[id]; !ok {
+			t.Fatalf("missing %s", id)
+		}
+	}
+}
+func TestNormalizeTargetRejectsFallbackAndWrongPath(t *testing.T) {
+	got, err := normalizeTarget("https://127.0.0.1:18531")
+	if err != nil || got != "https://127.0.0.1:18531/dns-query" {
+		t.Fatalf("got=%s err=%v", got, err)
+	}
+	for _, value := range []string{"http://127.0.0.1:18531", "tls://127.0.0.1:853", "https://127.0.0.1:18531/other", "https://127.0.0.1:18531/dns-query?dns=x"} {
+		if _, err := normalizeTarget(value); err == nil {
+			t.Fatalf("accepted %s", value)
+		}
+	}
+}
+func TestResponseSemanticParserRejectsSubstitution(t *testing.T) {
+	for _, index := range []int{0, 2, 6, len(canonicalResponse) - 1} {
+		value := append([]byte(nil), canonicalResponse...)
+		value[index] ^= 1
+		if _, err := validateDNS(value); err == nil {
+			t.Fatalf("accepted mutation at %d", index)
+		}
+	}
+}
