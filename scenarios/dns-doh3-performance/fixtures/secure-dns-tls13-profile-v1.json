@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "protocol-lab.secure-dns-tls-profile.v1",
+  "profileId": "plab-secure-dns-tls13-v1",
+  "tlsVersion": "tls1.3",
+  "serverName": "dns.plab.test",
+  "alpnByTransport": {
+    "dot": "dot",
+    "doh2": "h2",
+    "doh3": "h3",
+    "doq": "doq"
+  },
+  "cipherSuite": "TLS_AES_128_GCM_SHA256",
+  "keyExchangeGroup": "x25519",
+  "signatureScheme": "ecdsa_secp256r1_sha256",
+  "peerAuthentication": "server-certificate-required",
+  "resumptionPolicy": "not-offered",
+  "earlyData": "not-attempted",
+  "certificate": {
+    "profileId": "plab-secure-dns-single-leaf-p256-v1",
+    "leafKeyAlgorithm": "ecdsa",
+    "leafNamedCurve": "secp256r1",
+    "dnsSubjectAlternativeName": "dns.plab.test",
+    "sentCertificateCount": 1,
+    "trustAnchorSent": false,
+    "trustModel": "configured-test-trust-anchor",
+    "mustBeValidAtExecution": true,
+    "provisioningMeasured": false,
+    "exactDerHashRequiredForComparison": true,
+    "privateKeyPublication": "forbidden"
+  },
+  "evidence": {
+    "negotiatedParametersRequired": true,
+    "leafCertificateDerSha256Required": true,
+    "platformProvenanceRequired": true,
+    "accelerationProvenanceRequired": true
+  }
+}

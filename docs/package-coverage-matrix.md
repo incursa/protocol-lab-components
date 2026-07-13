@@ -53,6 +53,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | `go-dns-doq` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-dns-doq@0.1.0`; QUIC v1/TLS 1.3/ALPN `doq` local fixture authority for `dns.doq.query.a` only |
 | `go-dns-doq-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-dns-doq-executor@0.1.0`; exact RFC 9250 DoQ binding, one query per client-initiated bidirectional stream, and no DNS-transport fallback |
 | `dns-doq-performance` scenario pack | missing | authority-locked `org.protocol-lab.components.scenario.dns-doq-performance@0.1.0` for `dns.doq.query.a`, `dns-doq-performance-smoke`, and `secure-dns-smoke` at public commit `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574` |
+| DoH3 three-package lane | missing | local diagnostic `org.protocol-lab.components.scenario.dns-doh3-performance`, `org.protocol-lab.components.executor.go-dns-doh3-executor`, and independent `org.protocol-lab.components.implementation.go-dns-doh3` packages at `0.1.0`; all seven exact committed DoH3 identities pass extracted-package smoke with QUIC v1, TLS 1.3, `h3`, HTTP/3, DNS semantic, canonical hash, and no-fallback proof |
 
 ## Scenario Support
 
@@ -106,6 +107,9 @@ This matrix tracks reusable component package coverage for implementations and e
 | `org.protocol-lab.components.implementation.go-dns-doq` | `implementations/go-dns-doq` |
 | `org.protocol-lab.components.executor.go-dns-doq-executor` | `executors/go-dns-doq-executor` |
 | `org.protocol-lab.components.scenario.dns-doq-performance` | `scenarios/dns-doq-performance` |
+| `org.protocol-lab.components.implementation.go-dns-doh3` | `implementations/go-dns-doh3` |
+| `org.protocol-lab.components.executor.go-dns-doh3-executor` | `executors/go-dns-doh3-executor` |
+| `org.protocol-lab.components.scenario.dns-doh3-performance` | `scenarios/dns-doh3-performance` |
 | `org.protocol-lab.components.scenario.raw-quic-transport` | `scenarios/raw-quic-transport` |
 | `org.protocol-lab.components.scenario.h3spec-http3-qpack` | `scenarios/h3spec-http3-qpack` |
 | `org.protocol-lab.components.scenario.http3-peer-characterization` | `scenarios/http3-peer-characterization` |

@@ -1,0 +1,37 @@
+executorIdentity: {id: go-dns-doh3-executor, name: Go DNS-over-HTTPS HTTP/3 Test Executor, version: 0.1.0, vendor: Incursa}
+versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.1.0}
+claimedCapabilities:
+  - {id: dns.doh3.query.a, status: supported}
+  - {id: dns.doh3.get.a, status: supported}
+  - {id: dns.doh3.query.aaaa, status: supported}
+  - {id: dns.doh3.query.cname-chain, status: supported}
+  - {id: dns.doh3.query.large-dnssec-shaped, status: supported}
+  - {id: dns.doh3.query.nodata, status: supported}
+  - {id: dns.doh3.query.nxdomain, status: supported}
+  - {id: secure-dns-smoke, status: supported}
+  - {id: secure-dns-comparison, status: unsupported}
+  - {id: dns.classic.tcp.query.a, status: unsupported}
+  - {id: dns.classic.udp-truncated-tcp-retry, status: unsupported}
+  - {id: dns.classic.udp.query.a, status: unsupported}
+  - {id: dns.doh2.query.a, status: unsupported}
+  - {id: dns.doq.query.a, status: unsupported}
+  - {id: dns.dot.query.a, status: unsupported}
+supportedTestSelectors: [{selectorType: test-id, expression: dns.doh3.*}]
+supportedScenarioSelectors: [{selectorType: scenario-id, expression: dns.doh3.*}]
+supportedProtocolFamilies: [doh3]
+supportedExecutionModes: [single-cell, process]
+requiredTargetEndpointBindings: [{bindingId: primary, purpose: test-endpoint, endpointType: https, protocols: [doh3]}]
+supportedArtifactTypes:
+  - {type: validation.json, producedByStates: [stopped, failed]}
+  - {type: result.json, producedByStates: [stopped, failed]}
+  - {type: protocol-proof.json, producedByStates: [stopped, failed]}
+  - {type: dns-wire-summary.json, producedByStates: [stopped, failed]}
+  - {type: http-summary.json, producedByStates: [stopped, failed]}
+  - {type: quic-summary.json, producedByStates: [stopped, failed]}
+  - {type: tls-negotiation.json, producedByStates: [stopped, failed]}
+  - {type: dns-doh3-executor-result.json, producedByStates: [stopped, failed]}
+  - {type: load.stdout.log, producedByStates: [stopped, failed]}
+  - {type: load.stderr.log, producedByStates: [stopped, failed]}
+metricsAvailability: {available: true, availableKinds: [validation, queries-per-second, latency-percentiles, time-to-first-byte, operation-outcomes, bytes, quic, tls-negotiation]}
+parser: {id: protocol-lab-dns-doh3-json, type: protocol-lab-dns-doh3-json, preservesRawOutput: true}
+telemetry: {supported: true, supported_contract_versions: [telemetry-bundle-v1], supported_scopes: [test-executor, load-generator], supported_artifact_kinds: [summary, metrics, stdout, stderr, raw], export_modes: [inline, artifact-bundle]}

@@ -1,0 +1,10 @@
+id: dns-doh3-performance-smoke
+name: DNS over HTTPS HTTP/3 performance contract smoke suite
+description: Fast deterministic DoH3 query validity selection.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: secure-dns-smoke
+scenarios: [dns.doh3.query.a]
+protocol: doh3
+notes: Exact HTTP/3 and h3 ALPN binding, HTTPS authority, request headers, and bare DNS body are required; fallback is invalid.
+tags: [dns, doh, h3, smoke, non-publishable]

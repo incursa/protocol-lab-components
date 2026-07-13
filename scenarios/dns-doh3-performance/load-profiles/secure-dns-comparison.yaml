@@ -1,0 +1,14 @@
+schemaVersion: protocol-lab.load-profile.v2
+version: 2.0.0
+id: secure-dns-comparison
+title: Secure DNS Comparison Candidate
+status: experimental
+purpose: comparison
+description: Non-publishable connection-reuse comparison candidate; each exact transport remains a separate comparison group.
+durationSeconds: 30
+warmupSeconds: 10
+cooldownSeconds: 10
+repetitions: 5
+dns: {connections: 4, concurrency: 32, outstandingQueries: 32, connectionReuse: reuse, connectionTimeoutMilliseconds: 5000, handshakeTimeoutMilliseconds: 5000, queryTimeoutMilliseconds: 5000, drainTimeoutMilliseconds: 5000, maxRetries: 0, totalQueries: null, queryRateLimitPerSecond: null}
+evidence: {minimumTier: comparison, publishable: false}
+artifacts: {required: [load.stdout.log, load.stderr.log, validation.json, protocol-proof.json, dns-wire-summary.json, result.json, target-telemetry.json, load-generator-telemetry.json], optional: [network-summary.json, packet-summary.json]}

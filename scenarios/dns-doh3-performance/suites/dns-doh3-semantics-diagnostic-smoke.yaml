@@ -1,0 +1,10 @@
+id: dns-doh3-semantics-diagnostic-smoke
+name: DNS over HTTPS HTTP/3 semantic breadth diagnostic smoke suite
+description: Representative secure-DNS semantic and GET coverage on one selected transport, without a transport cross-product.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: secure-dns-smoke
+scenarios: [dns.doh3.query.aaaa, dns.doh3.query.cname-chain, dns.doh3.query.nxdomain, dns.doh3.query.nodata, dns.doh3.query.large-dnssec-shaped, dns.doh3.get.a]
+protocol: doh3
+notes: Diagnostic smoke only; the DNSSEC-shaped fixture exercises size and record parsing but does not claim signature validity.
+tags: [dns, doh, h3, semantic-breadth, get, smoke, non-publishable]
