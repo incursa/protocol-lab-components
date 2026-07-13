@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.go-grpc-h2",
-  "packageVersion": "0.3.0",
+  "packageVersion": "0.4.0",
   "kind": "implementation",
   "displayName": "Go gRPC over HTTP/2 Target",
   "entryManifests": ["implementations/go-grpc-h2.yaml"],
@@ -9,7 +9,7 @@
     "implementationId": "go-grpc-h2",
     "displayName": "Go gRPC over HTTP/2 Target",
     "protocols": ["h2"],
-    "scenarios": ["grpc.h2.unary.echo", "grpc.h2.unary.empty", "grpc.h2.unary.fixed-metadata", "grpc.h2.unary.gzip", "grpc.h2.unary.large", "grpc.h2.server-streaming.echo", "grpc.h2.client-streaming.echo", "grpc.h2.bidi-streaming.echo"]
+    "scenarios": ["grpc.h2.unary.echo","grpc.h2.unary.empty","grpc.h2.unary.fixed-metadata","grpc.h2.unary.gzip","grpc.h2.unary.large","grpc.h2.server-streaming.echo","grpc.h2.client-streaming.echo","grpc.h2.bidi-streaming.echo","grpc.h2.trailers-only-status","grpc.h2.deadline-exceeded","grpc.h2.client-cancellation","grpc.h2.unary.echo-new-channel"]
   }],
   "dependencies": {}
 }

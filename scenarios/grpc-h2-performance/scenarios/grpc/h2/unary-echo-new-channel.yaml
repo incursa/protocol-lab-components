@@ -1,0 +1,60 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: grpc.h2.unary.echo-new-channel
+title: gRPC over HTTP/2 Unary Echo With New Channel
+description: Establish a fresh TLS and HTTP/2 channel and execute one deterministic unary Echo RPC inside the same measured operation.
+status: draft
+kind: workload
+layer: application
+protocol: h2
+family: grpc
+semanticTemplateId: grpc.unary.echo.new-channel
+protocolStack: [grpc, h2, tls, tcp]
+upstreamStandards: [https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md, https://www.rfc-editor.org/rfc/rfc9113]
+roles: [client, server]
+requires: {capabilities: [grpc.client, grpc.server, grpc.unary, grpc.channel.churn], protocols: [h2, grpc], roles: [client, server]}
+trafficShape: connection-lifecycle
+grpc:
+  binding: grpc-over-h2
+  alpn: h2
+  serviceContractId: protocollab.performance.v1.EchoService
+  serviceContractSha256: b7b987814f8af5cd4f15c03989b9c309c1c0ec643972ae32668304d71502120f
+  serviceContractCanonicalization: json-sort-keys-utf8-no-whitespace-v1
+  scheme: https
+  httpMethod: POST
+  authority: grpc.plab.test
+  service: protocollab.performance.v1.EchoService
+  method: UnaryEcho
+  path: /protocollab.performance.v1.EchoService/UnaryEcho
+  rpcType: unary
+  compression: identity
+  metadataPolicy: fixed-empty-user-metadata
+  deadlineMilliseconds: 5000
+  connectionLifecycle: new-channel-per-operation
+  measuredWindow: channel-establishment-and-rpc
+  requestContentType: application/grpc+proto
+  responseContentType: application/grpc+proto
+  te: trailers
+  trailersRequired: true
+  expectedGrpcStatus: 0
+  grpcEncoding: identity
+  grpcAcceptEncoding: identity
+  retryPolicy: disabled
+  hedgingPolicy: disabled
+  waitForReady: false
+  effectiveHttp2SettingsRequired: true
+  byteAccounting: {hashScope: per-message, grpcFrameIncludesPrefix: true, totalTransferredBytesScope: bidirectional-on-wire-transport-bytes-including-protocol-overhead}
+  messageFraming: {compressedFlag: 0, lengthPrefixBytes: 4, byteOrder: network, lengthValueSource: serializedProtobufBytes, dataFrameBoundariesDefineMessageBoundaries: false}
+  request: {count: 1, payloadGenerator: repeated-octet, payloadOctet: 71, payloadBytes: 128, payloadSha256: 394394b5f0e91a21d1e932f9ed55e098c8b05f3668f77134eeee843fef1d1758, serializedProtobufBytes: 131, serializedProtobufSha256: c2046bce7238a2a9cae159ba85a75e93f07c74073fe7b83d2be713caef717cb4, grpcFrameBytes: 136, grpcFrameSha256: 98f1fce70c79cf7da3649fc3ecfc77a975c1427c9f8afcd1a41d85559164525a}
+  response: {count: 1, payloadGenerator: repeated-octet, payloadOctet: 71, payloadBytes: 128, payloadSha256: 394394b5f0e91a21d1e932f9ed55e098c8b05f3668f77134eeee843fef1d1758, serializedProtobufBytes: 131, serializedProtobufSha256: c2046bce7238a2a9cae159ba85a75e93f07c74073fe7b83d2be713caef717cb4, grpcFrameBytes: 136, grpcFrameSha256: 98f1fce70c79cf7da3649fc3ecfc77a975c1427c9f8afcd1a41d85559164525a}
+executionProfile: {transportSecurity: tls, protocolVariant: grpc-over-h2-tls-new-channel, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+validation:
+  required: true
+  checks: [protocol:h2, alpn:h2, no-fallback, fresh-tls-connection, fresh-http2-channel, settings-observed, endpoint, grpc-status:0, payload-sha256, channel-disposed-after-operation, zero-unexpected-failures, zero-deadline-exceeded, zero-cancellations, zero-timeouts]
+  protocol: {requested: grpc-over-h2-new-channel, expectedObserved: grpc-over-h2-new-channel, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic, channel-churn], primaryMetrics: [channelAndRpcLatencyP50, channelAndRpcLatencyP95, channelAndRpcLatencyP99, failedOperations, timedOutOperations]}
+requiredMetrics: [channelAndRpcLatencyMean, channelAndRpcLatencyP50, channelAndRpcLatencyP75, channelAndRpcLatencyP90, channelAndRpcLatencyP95, channelAndRpcLatencyP99, completedOperations, failedOperations, deadlineExceededOperations, cancelledOperations, timedOutOperations, totalTransferredBytes]
+artifacts: {required: [validation.json, protocol-proof.json, grpc-summary.json, tls-negotiation.json, result.json, load.stdout.log, load.stderr.log], optional: [http2-frame-summary.json, target-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [grpc-web, grpc-over-h3, pooled-channel-substitution]}
+networkProfile: clean
+tags: [grpc, h2, unary, channel-churn, lifecycle]

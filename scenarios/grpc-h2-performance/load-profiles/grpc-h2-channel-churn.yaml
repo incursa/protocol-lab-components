@@ -1,0 +1,13 @@
+schemaVersion: protocol-lab.load-profile.v2
+version: 2.0.0
+id: grpc-h2-channel-churn
+title: gRPC over HTTP/2 New-Channel Diagnostic
+status: experimental
+purpose: diagnostic
+description: Ten sequential operations, each using a newly established TLS and HTTP/2 channel whose establishment is inside the measured window.
+durationSeconds: 30
+warmupSeconds: 0
+repetitions: 3
+grpc: {channels: 1, connectionsPerChannel: 1, concurrency: 1, streamsPerConnection: 1, channelReuse: churn, operationTimeoutMilliseconds: 20000, totalRpcs: 10, rpcRateLimitPerSecond: null}
+evidence: {minimumTier: diagnostic, publishable: false}
+artifacts: {required: [load.stdout.log, load.stderr.log, validation.json, protocol-proof.json, grpc-summary.json, result.json], optional: [tls-negotiation.json, http2-frame-summary.json, target-telemetry.json]}
