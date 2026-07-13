@@ -1,0 +1,1 @@
+{"implementation":{"language":"csharp","framework":"net10.0","server":"ASP.NET Core Kestrel","api":"IHttpExtendedConnectFeature.AcceptAsync","publish":{"selfContained":true,"publishSingleFile":true,"trimmed":false},"license":"MIT","source":"https://github.com/dotnet/aspnetcore"},"websocketFraming":"package-local raw RFC 6455 frame parser over accepted HTTP/2 stream"}

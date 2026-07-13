@@ -450,7 +450,30 @@ All seven clean packages have parity-eligible attestations. SHA-256 values are s
 
 The clean extracted Windows proof is under `C:\shared\src\incursa\.worktrees\protocol-lab-components-dns-classic\artifacts\dns-classic-three-package-smoke-clean-d483694`. UDP A completed `56,735` operations, TCP A completed `75,433`, and UDP truncation-to-TCP completed `31,120`; every cell recorded zero malformed, failed, and timed-out operations. The retry cell recorded exactly `31,120` contract retries and its per-operation proof requires an advertised UDP size of 512, a 45-byte TC response, one identical-question persistent-TCP retry with a new unique ID, and the 630-byte canonical response with prefix `0276`. Runtime IDs are unique among outstanding operations and normalized to zero before all canonical query/response hash checks. Each cell preserves validation, protocol proof, DNS wire summary, normalized result, warmup/load summaries, executor/load-generator identities, and redirected stdout/stderr. Both executors return explicit `unsupported` for every other committed DNS identity and reject unknown identities with exit code `2`. This remains local diagnostic component evidence: no runner admission, Protocol Execution Result v2, comparison, publication, or ranking claim is made.
 
-#### E8d — HTTP/1.1 WebSocket over TLS 1.3
+#### E8d — HTTP/2 RFC 8441 WebSocket
+
+Component delivery selects a raw, independently implemented pair rather than
+an API that hides the binding. The test side is
+`org.protocol-lab.components.executor.go-http2-websocket-executor@0.1.0`,
+executor `go-http2-websocket-executor@0.1.0`, and generator
+`go-x-net-http2-websocket-load@0.1.0`, pinned to
+`golang.org/x/net/http2@v0.57.0` raw Framer and HPACK APIs. The target is
+`org.protocol-lab.components.implementation.kestrel-http2-websocket@0.1.0`,
+which uses .NET 10 Kestrel `IHttpExtendedConnectFeature.AcceptAsync` and a
+package-local raw WebSocket frame parser. The scenario package
+`org.protocol-lab.components.scenario.http2-websocket-performance@0.1.0`
+authority-locks all six exact identities plus their suites and load profiles to
+public commit `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`.
+
+The direct and extracted-package technology proof requires TLS 1.3, ALPN `h2`,
+server `SETTINGS_ENABLE_CONNECT_PROTOCOL=1`, exact CONNECT pseudo-headers,
+status 200, absence of HTTP/1.1 and Sec-WebSocket-Key/Accept headers, client
+masking, deterministic message bytes and hashes, strict 100-message ordering,
+ping/pong payload equality, and clean code-1000 close. HTTP/1.1 and HTTP/3
+WebSocket identities return explicit unsupported evidence; unknown identities
+fail closed. Evidence remains local, diagnostic, and non-publishable.
+
+#### E8e — HTTP/1.1 WebSocket over TLS 1.3
 
 Status: the original five-ID `0.1.0` package and runner lane remains complete. Component version `0.2.0` adds two individually routed diagnostics with source, extracted-package, exact runner-admission, and Protocol Execution Result v2 proof.
 

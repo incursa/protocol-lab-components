@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+test "$(sha256sum "$root/scenarios/http2/websocket/rfc8441-extended-connect.yaml" | cut -d' ' -f1)" = "3c15969cac0acfca3ae1476919c27bfcbe9f167198b58890756ba644e3d1a9c5"
+test "$(sha256sum "$root/scenarios/http2/websocket/rfc8441-control-frames.yaml" | cut -d' ' -f1)" = "b505f16abbdc2bdc0e53400974801f7014cf758954fef3b8cbaebea553027b7e"
+test "$(sha256sum "$root/scenarios/http2/websocket/rfc8441-text-echo.yaml" | cut -d' ' -f1)" = "2f226c749632b623c6cdcf9e36a4d138909d9ccd9e7e6d29cb2a4deb1e438766"
+test "$(sha256sum "$root/scenarios/http2/websocket/rfc8441-binary-echo.yaml" | cut -d' ' -f1)" = "4611e22b69e05562d4c63ffff4ee33a0e0f8b031efd2ef0912cd7014474bb0e2"
+test "$(sha256sum "$root/scenarios/http2/websocket/rfc8441-close.yaml" | cut -d' ' -f1)" = "f49c63d092aeb46bc2b888340b00b55b3e3187be37f3956354a2fba0ea86c86d"
+test "$(sha256sum "$root/scenarios/http2/websocket/rfc8441-multi-message-text-echo.yaml" | cut -d' ' -f1)" = "10289129b10b07a5a705b867b1acc1e98854ae4bd02d600e93e9a619ed16d4a1"
+test "$(sha256sum "$root/suites/http2-websocket-performance-smoke.yaml" | cut -d' ' -f1)" = "0eed4f9f332562a2b023a84305f5ebcc348873ff6b3d746b657cd23833ccb113"
+test "$(sha256sum "$root/suites/http2-websocket-performance-comparison.yaml" | cut -d' ' -f1)" = "f2363e48443248e6809939908a1f523134dfdd206530f57adb12af5e3118e2cc"
+test "$(sha256sum "$root/load-profiles/websocket-smoke.yaml" | cut -d' ' -f1)" = "f2005bfa254815f7d4975aefc39f0b9a6da79b0d2507178775cd4b0b3032c645"
+test "$(sha256sum "$root/load-profiles/websocket-comparison.yaml" | cut -d' ' -f1)" = "7fb534db4d2b498a6b74d0c9aa8485838986d306f57950c2b8c56a6c6c6e6dc9"
+echo "Validated HTTP/2 WebSocket scenario package authority lock."

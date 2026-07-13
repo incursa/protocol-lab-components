@@ -99,6 +99,15 @@ outcomes, and the unknown-ID exit path:
 pwsh ./scripts/package/Test-Tls13Chacha20ThreePackageSmoke.ps1
 ```
 
+Exercise all six authority-locked HTTP/2 RFC 8441 identities with the
+extracted scenario, raw Go HTTP/2 executor, and independent Kestrel target.
+The smoke also proves all adjacent HTTP/1.1 and HTTP/3 WebSocket identities are
+explicitly unsupported and rejects an unknown identity:
+
+```powershell
+pwsh ./scripts/package/Test-Http2WebSocketThreePackageSmoke.ps1
+```
+
 All wrappers call `Build-ProtocolLabComponentPackage.ps1`, which reads each component's `protocol-lab-package.json` and writes a `.plabpkg` under `artifacts/packages/`.
 Compiled payload wrappers may stage a runtime-specific package before compression while preserving the same package manifest layout and artifact root.
 

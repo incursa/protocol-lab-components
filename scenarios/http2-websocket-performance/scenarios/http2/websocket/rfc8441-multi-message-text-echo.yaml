@@ -1,0 +1,28 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: http2.websocket.rfc8441.multi-message-text-echo
+title: RFC 8441 WebSocket Ordered Multi-Message Text Echo Diagnostic
+description: Echo one hundred exact protocol-lab text messages in order on one established WebSocket over HTTP/2.
+status: draft
+kind: workload
+layer: application
+protocol: h2
+family: websocket
+semanticTemplateId: websocket.echo.text.ordered-100
+protocolStack: [websocket, h2, tls, tcp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc6455, https://www.rfc-editor.org/rfc/rfc8441]
+roles: [client, server]
+requires: {capabilities: [websocket.client, websocket.server, websocket.text-echo, websocket.multi-message], protocols: [h2], roles: [client, server]}
+trafficShape: bidirectional-stream
+executionProfile: {transportSecurity: tls, protocolVariant: websocket-h2-extended-connect, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+websocket: {binding: http2-extended-connect, standard: rfc8441, path: /websocket, subprotocol: null, operation: text-echo, messageType: text, messageBytes: 12, messageCount: 100, messageOrdering: strict-in-order, payloadGenerator: exact-utf8, payloadText: protocol-lab, payloadSha256: 504585b0bb4fd77012ea2575efbcdb58f4c33e6b543e9567a65896d213720c29, fragmentation: none, masking: client-required, closeCode: 1000, authority: websocket.plab.test, extensions: none, bootstrapPolicy: rfc8441-extended-connect, closeReasonPolicy: empty-utf8-reason, connectionLifecycle: pre-established-connection-per-operation, measuredWindow: message-round-trip, handshake: {binding: http2-extended-connect, settingsEnableConnectProtocol: 1, requestPseudoHeaders: {method: CONNECT, protocol: websocket, scheme: https, authority: websocket.plab.test, path: /websocket}, requestHeaders: {secWebSocketVersion: "13", originPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false, secWebSocketKeyPresent: false}, prohibitedConnectionHeadersPresent: false, responseStatus: 200, responseHeaders: {secWebSocketAcceptPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false}}}
+validation:
+  required: true
+  checks: [protocol:h2, no-fallback, extended-connect, message-type:text, message-size:12, message-count:100, strict-in-order, payload-sha256-per-message, ordered-echo, close-code:1000, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: websocket-over-h2, expectedObserved: websocket-over-h2, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [diagnostic, sustained-messages], primaryMetrics: [messagesPerSecond, messageLatencyP95, messageLatencyP99, failedOperations, timedOutOperations]}
+requiredMetrics: [messagesPerSecond, messageLatencyMean, messageLatencyP50, messageLatencyP75, messageLatencyP90, messageLatencyP95, messageLatencyP99, completedOperations, failedOperations, timedOutOperations, totalTransferredBytes, effectiveStreams]
+artifacts: {required: [validation.json, protocol-proof.json, websocket-summary.json, result.json, load.stdout.log, load.stderr.log], optional: [http2-frame-summary.json, target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [multi-message-unavailable, out-of-order-echo, http1-upgrade-fallback]}
+networkProfile: clean
+tags: [http2, websocket, rfc8441, text, echo, multi-message, ordering, diagnostic]

@@ -1,0 +1,38 @@
+schemaVersion: "1.0"
+id: kestrel-http2-websocket
+name: Kestrel HTTP/2 RFC 8441 WebSocket Origin
+description: Independent exact RFC 8441 origin serving deterministic TLS 1.3 HTTP/2 workloads only.
+family: kestrel-websocket
+role: origin-server
+targetKind: process
+targetContract: process
+executable: bin/linux-x64/KestrelHttp2WebSocket
+workingDirectory: .
+baseUrl: https://127.0.0.1:18451
+protocolBaseUrls: {h2: https://127.0.0.1:18451}
+roles: [origin-server]
+protocols: [h2, tls]
+supportedProtocols: [h2, tls]
+supportedWorkloadFamilies: [websocket]
+supportedProtocolVersions: [HTTP/2, RFC8441, RFC6455, TLS1.3]
+supportedScenarios: [http2.websocket.rfc8441.extended-connect, http2.websocket.rfc8441.control-frames, http2.websocket.rfc8441.text-echo, http2.websocket.rfc8441.binary-echo, http2.websocket.rfc8441.close, http2.websocket.rfc8441.multi-message-text-echo]
+supportedTestCaseIds: [http2.websocket.rfc8441.extended-connect, http2.websocket.rfc8441.control-frames, http2.websocket.rfc8441.text-echo, http2.websocket.rfc8441.binary-echo, http2.websocket.rfc8441.close, http2.websocket.rfc8441.multi-message-text-echo]
+scenarioCoverage:
+  http2.websocket.rfc8441.extended-connect: {status: supported, behavior: exact TLS 1.3 HTTP/2 Extended CONNECT with clean close}
+  http2.websocket.rfc8441.control-frames: {status: supported, behavior: exact masked ping and unmasked deterministic pong}
+  http2.websocket.rfc8441.text-echo: {status: supported, behavior: exact unfragmented protocol-lab UTF-8 echo}
+  http2.websocket.rfc8441.binary-echo: {status: supported, behavior: exact unfragmented repeated-octet 1 KiB echo}
+  http2.websocket.rfc8441.close: {status: supported, behavior: close code 1000 with empty UTF-8 reason}
+  http2.websocket.rfc8441.multi-message-text-echo: {status: supported, behavior: one hundred exact text messages echoed strictly in stream order}
+unsupportedKnownCases: [websocket.echo, http1.websocket.rfc6455.cleartext.upgrade, http1.websocket.rfc6455.tls.upgrade, http3.websocket.rfc9220.extended-connect, http3.websocket.rfc9220.fragmented-binary-echo]
+ports: [{name: websocket-h2, protocol: tcp, default: 18451, hostPort: 18451, containerPort: 18451}]
+environment: {PLAB_LISTEN_ADDRESS: "127.0.0.1:18451"}
+startup: {port: {name: websocket-h2, environmentVariable: PLAB_LISTEN_ADDRESS, default: 18451}, readiness: {protocol: process, timeoutSeconds: 10}}
+readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 250}
+capabilities: [websocket.server, websocket.rfc8441, websocket.text-echo, websocket.binary-echo, websocket.control-frames, websocket.close, websocket.multi-message, tls.server, tls1.3, alpn.h2, http2.extended-connect]
+entrypoint: {kind: process, path: bin/linux-x64/KestrelHttp2WebSocket, arguments: [], workingDirectory: .}
+shutdownBehavior: graceful-termination
+artifactExports: []
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Package-local authenticated test certificate; HTTP/1.1 Upgrade, HTTP/3 RFC 9220, subprotocols, extensions, fragmentation, WebTransport, and noncanonical payloads are rejected.

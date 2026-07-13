@@ -1,0 +1,14 @@
+schemaVersion: protocol-lab.load-profile.v2
+version: 2.0.0
+id: websocket-comparison
+title: WebSocket Comparison Candidate
+status: experimental
+purpose: comparison
+description: Non-publishable sustained-message comparison candidate; HTTP bindings remain separate comparison groups.
+durationSeconds: 30
+warmupSeconds: 10
+cooldownSeconds: 10
+repetitions: 5
+websocket: {connections: 32, concurrency: 32, totalOperations: null, operationRateLimitPerSecond: null, operationTimeoutMilliseconds: 10000}
+evidence: {minimumTier: comparison, publishable: false}
+artifacts: {required: [load.stdout.log, load.stderr.log, validation.json, protocol-proof.json, websocket-summary.json, result.json, target-telemetry.json, load-generator-telemetry.json], optional: [frame-summary.json, network-summary.json]}
