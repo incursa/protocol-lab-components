@@ -1,0 +1,57 @@
+executorIdentity:
+  id: openssl-tls13-key-update-executor
+  name: OpenSSL TLS 1.3 KeyUpdate Executor
+  version: 0.1.0
+  vendor: Incursa
+versionCompatibility:
+  contractVersion: test-executor-v1
+  compatibleContractVersions: [test-executor-v1]
+  executorVersion: 0.1.0
+claimedCapabilities:
+  - {id: tls.key-update.diagnostic, status: supported}
+  - {id: exact-tls1.3-proof, status: supported}
+  - {id: exact-key-update-wire-event-proof, status: supported}
+  - {id: post-update-bidirectional-payload-proof, status: supported}
+  - {id: protocol-execution-result-v2, status: supported}
+  - {id: tls-diagnostic, status: supported}
+  - {id: tls.handshake.full, status: unsupported}
+  - {id: tls.handshake.resumed, status: unsupported}
+  - {id: tls.handshake.full.tls12, status: unsupported}
+  - {id: tls.handshake.full.chacha20, status: unsupported}
+  - {id: tls.handshake.mutual-auth, status: unsupported}
+  - {id: tls.early-data.accepted, status: unsupported}
+  - {id: tls.early-data.rejected, status: unsupported}
+  - {id: tls.record.throughput, status: unsupported}
+  - {id: tls.record.coverage, status: unsupported}
+supportedTestSelectors:
+  - {selectorType: test-id, expression: tls.key-update.diagnostic}
+supportedScenarioSelectors:
+  - {selectorType: scenario-id, expression: tls.key-update.diagnostic}
+supportedProtocolFamilies: [tls]
+supportedExecutionModes: [single-cell, process]
+requiredTargetEndpointBindings:
+  - {bindingId: primary, purpose: test-endpoint, endpointType: tls, protocols: [tls]}
+supportedArtifactTypes:
+  - {type: validation.json, producedByStates: [stopped, failed]}
+  - {type: unsupported.json, producedByStates: [failed]}
+  - {type: result.json, producedByStates: [stopped, failed]}
+  - {type: protocol-proof.json, producedByStates: [stopped, failed]}
+  - {type: tls-negotiation.json, producedByStates: [stopped, failed]}
+  - {type: key-update-proof.json, producedByStates: [stopped, failed]}
+  - {type: payload-hash.json, producedByStates: [stopped, failed]}
+  - {type: tls-executor-result.json, producedByStates: [stopped, failed]}
+  - {type: protocol-execution-result-v2.json, producedByStates: [stopped, failed]}
+metricsAvailability:
+  available: true
+  availableKinds: [validation, operation-outcomes, transferred-bytes, tls-negotiation, key-update]
+parser:
+  id: protocol-lab-tls-json
+  type: protocol-lab-tls-json
+  preservesRawOutput: true
+telemetry:
+  supported: true
+  supported_contract_versions: [telemetry-bundle-v1]
+  supported_scopes: [test-executor, load-generator]
+  supported_artifact_kinds: [summary, metrics, stdout, stderr, raw]
+  export_modes: [inline, artifact-bundle]
+  metadata: {optional: true, implementation_owned: true, description: The executor emits exact KeyUpdate wire-event and post-update proof; the runner owns stdout/stderr and saturation telemetry.}

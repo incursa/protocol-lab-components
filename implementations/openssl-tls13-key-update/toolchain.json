@@ -1,0 +1,13 @@
+{
+  "implementation": {
+    "id": "openssl-tls13-key-update",
+    "version": "0.1.0",
+    "language": "c11",
+    "engineModule": "OpenSSL",
+    "windowsEngineVersion": "3.3.0",
+    "linuxEngineVersion": "3.5.7",
+    "linuxBuildImage": "alpine@sha256:4b7ce07002c69e8f3d704a9c5d6fd3053be500b7f1c69fc0d80990c2ad8dd412",
+    "license": "Apache-2.0",
+    "source": "https://github.com/openssl/openssl"
+  }
+}
