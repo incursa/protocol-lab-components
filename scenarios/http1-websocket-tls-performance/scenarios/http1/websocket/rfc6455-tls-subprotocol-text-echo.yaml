@@ -1,0 +1,28 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: http1.websocket.rfc6455.tls.subprotocol-text-echo
+title: RFC 6455 WebSocket HTTP/1.1 TLS Subprotocol Negotiation Diagnostic
+description: Negotiate the exact plab.echo.v1 subprotocol and echo protocol-lab over a TLS 1.3 WebSocket on HTTP/1.1.
+status: draft
+kind: workload
+layer: application
+protocol: h1
+family: websocket
+semanticTemplateId: websocket.echo.text.subprotocol.plab-v1
+protocolStack: [websocket, h1, tls1.3, tcp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc6455, https://www.rfc-editor.org/rfc/rfc9112, https://www.rfc-editor.org/rfc/rfc9846]
+roles: [client, server]
+requires: {capabilities: [websocket.client, websocket.server, websocket.text-echo, websocket.subprotocol, tls.client, tls.server], protocols: [h1, tls], roles: [client, server]}
+trafficShape: bidirectional-stream
+websocket: {binding: http1-upgrade, standard: rfc6455, scheme: wss, path: /websocket, subprotocol: plab.echo.v1, operation: text-echo, messageType: text, messageBytes: 12, messageCount: 1, payloadGenerator: exact-utf8, payloadText: protocol-lab, payloadSha256: 504585b0bb4fd77012ea2575efbcdb58f4c33e6b543e9567a65896d213720c29, fragmentation: none, masking: client-required, closeCode: 1000, authority: websocket.plab.test, extensions: none, bootstrapPolicy: rfc6455-http1-upgrade, closeReasonPolicy: empty-utf8-reason, connectionLifecycle: pre-established-connection-per-operation, measuredWindow: message-round-trip, handshake: {binding: http1-upgrade, requestMethod: GET, requestVersion: HTTP/1.1, requestHeaders: {host: websocket.plab.test, upgrade: websocket, connection: Upgrade, secWebSocketKeyPolicy: fresh-random-16-octets-per-opening-handshake, secWebSocketVersion: "13", originPresent: false, secWebSocketProtocolPresent: true, secWebSocketProtocol: plab.echo.v1, secWebSocketExtensionsPresent: false}, responseStatus: 101, responseHeaders: {upgrade: websocket, connection: Upgrade, secWebSocketAcceptPolicy: base64-sha1-runtime-key-plus-rfc6455-guid, secWebSocketProtocolPresent: true, secWebSocketProtocol: plab.echo.v1, secWebSocketExtensionsPresent: false}}}
+executionProfile: {transportSecurity: tls, protocolVariant: websocket-h1-tls1.3-upgrade, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+validation:
+  required: true
+  checks: [protocol:h1, protocol:tls1.3, scheme:wss, subprotocol-offered:plab.echo.v1, subprotocol-accepted:plab.echo.v1, no-extensions, sec-websocket-accept, fresh-sec-websocket-key, no-fallback, connection-established, message-type:text, message-size:12, payload-sha256, ordered-echo, close-code:1000, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: websocket-over-h1-tls, expectedObserved: websocket-over-h1-tls, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [diagnostic], primaryMetrics: [messageLatencyP95, failedOperations, timedOutOperations]}
+requiredMetrics: [messageLatencyMean, messageLatencyP50, messageLatencyP75, messageLatencyP90, messageLatencyP95, messageLatencyP99, completedOperations, failedOperations, timedOutOperations, totalTransferredBytes]
+artifacts: {required: [validation.json, protocol-proof.json, websocket-summary.json, tls-negotiation.json, result.json, load.stdout.log, load.stderr.log], optional: [frame-summary.json, target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [subprotocol-negotiation-unavailable, wrong-subprotocol, cleartext-only, tls1.2-only, h2-or-h3-substitution]}
+networkProfile: clean
+tags: [http1, websocket, rfc6455, tls, tls1.3, wss, subprotocol, diagnostic]

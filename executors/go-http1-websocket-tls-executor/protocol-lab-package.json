@@ -1,7 +1,7 @@
 {
   "schemaVersion":"protocol-lab-package-v2",
   "packageId":"org.protocol-lab.components.executor.go-http1-websocket-tls-executor",
-  "packageVersion":"0.1.0",
+  "packageVersion":"0.2.0",
   "kind":"test-executor",
   "displayName":"Go HTTP/1.1 TLS WebSocket Test Executor",
   "entryManifests":["test-executors/go-http1-websocket-tls-executor.yaml"],
@@ -9,8 +9,8 @@
     "testExecutorId":"go-http1-websocket-tls-executor",
     "displayName":"Go HTTP/1.1 TLS WebSocket Test Executor",
     "protocols":["h1","tls"],
-    "scenarios":["http1.websocket.rfc6455.tls.upgrade","http1.websocket.rfc6455.tls.control-frames","http1.websocket.rfc6455.tls.text-echo","http1.websocket.rfc6455.tls.binary-echo","http1.websocket.rfc6455.tls.close"],
-    "tests":["http1.websocket.rfc6455.tls.upgrade","http1.websocket.rfc6455.tls.control-frames","http1.websocket.rfc6455.tls.text-echo","http1.websocket.rfc6455.tls.binary-echo","http1.websocket.rfc6455.tls.close"]
+    "scenarios":["http1.websocket.rfc6455.tls.upgrade","http1.websocket.rfc6455.tls.control-frames","http1.websocket.rfc6455.tls.text-echo","http1.websocket.rfc6455.tls.binary-echo","http1.websocket.rfc6455.tls.close","http1.websocket.rfc6455.tls.subprotocol-text-echo","http1.websocket.rfc6455.tls.permessage-deflate-binary-echo"],
+    "tests":["http1.websocket.rfc6455.tls.upgrade","http1.websocket.rfc6455.tls.control-frames","http1.websocket.rfc6455.tls.text-echo","http1.websocket.rfc6455.tls.binary-echo","http1.websocket.rfc6455.tls.close","http1.websocket.rfc6455.tls.subprotocol-text-echo","http1.websocket.rfc6455.tls.permessage-deflate-binary-echo"]
   }],
   "dependencies":{}
 }

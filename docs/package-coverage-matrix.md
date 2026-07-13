@@ -45,7 +45,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | `dotnet-sslstream-tls13` | missing | local diagnostic package `org.protocol-lab.components.implementation.dotnet-sslstream-tls13@0.1.0`; independent library-backed TLS 1.3 target |
 | `go-tls13` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-tls13@0.2.0`; independent Go `crypto/tls` target for exact TLS 1.3 full/resumed handshakes and deterministic record transfers |
 | HTTP/1.1 cleartext WebSocket three-package lane | missing | local diagnostic scenario, executor, and independent origin packages at `0.1.0`; exact five-ID RFC 6455 smoke passes, while all adjacent WebSocket identities fail closed as unsupported |
-| HTTP/1.1 TLS WebSocket three-package lane | missing | local diagnostic `org.protocol-lab.components.scenario.http1-websocket-tls-performance`, `go-http1-websocket-tls-executor`, and independent `go-http1-websocket-tls` packages at `0.1.0`; exact five-ID TLS 1.3 smoke passes with authenticated certificate and `http/1.1` ALPN proof |
+| HTTP/1.1 TLS WebSocket three-package lane | missing | local diagnostic `org.protocol-lab.components.scenario.http1-websocket-tls-performance`, `go-http1-websocket-tls-executor`, and independent `go-http1-websocket-tls` packages at `0.2.0`; the original five-ID TLS 1.3 regression plus exact `plab.echo.v1` and permessage-deflate no-context-takeover diagnostics pass with authenticated certificate and `http/1.1` ALPN proof |
 
 ## Scenario Support
 

@@ -1,4 +1,4 @@
 {
   "executor":{"language":"go","module":"org.protocol-lab.components.executor.go-http1-websocket-tls-executor","buildFlags":["-buildvcs=false","-trimpath"]},
-  "loadGenerator":{"id":"go-http1-websocket-tls-load","version":"0.1.0","engineModule":"crypto/tls + net + raw RFC 6455 framing","engineModuleVersion":"Go standard library","license":"BSD-3-Clause","source":"https://pkg.go.dev/crypto/tls"}
+  "loadGenerator":{"id":"go-http1-websocket-tls-load","version":"0.2.0","engineModule":"crypto/tls + net + raw RFC 6455 and RFC 7692 framing","engineModuleVersion":"Go standard library","license":"BSD-3-Clause","source":"https://pkg.go.dev/crypto/tls"}
 }

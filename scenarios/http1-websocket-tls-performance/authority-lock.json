@@ -6,6 +6,8 @@
     "scenarios/http1/websocket/rfc6455-tls-binary-echo.yaml": "99b71fa2707c79b395ba056cbdaf8e920d1e4e50518227bb45e6d7eec1286aaa",
     "scenarios/http1/websocket/rfc6455-tls-close.yaml": "8e185a4e6b647860f6d3002fff20b0dc1b88d014e6abb66eb2b2d6af2e3e0585",
     "scenarios/http1/websocket/rfc6455-tls-control-frames.yaml": "a26f445972761f6713b1c53bab24a50e7ea12de04e3f4cef49c7eea65aca6866",
+    "scenarios/http1/websocket/rfc6455-tls-permessage-deflate-binary-echo.yaml": "53fd505ba2ae7ed00cfa157053f1f2379460635ea33aca20c41f33b935b95c05",
+    "scenarios/http1/websocket/rfc6455-tls-subprotocol-text-echo.yaml": "e9f47f180c0a84c5aacf8ee8e34cb7a174885e2a4ffb5b9046e909dea950ff2d",
     "scenarios/http1/websocket/rfc6455-tls-text-echo.yaml": "4c4da569fafdfada564968bdf5eb255958a8836cbbb3baa278a0797dcaaad064",
     "scenarios/http1/websocket/rfc6455-tls-upgrade.yaml": "febc674ee91b501e431b8f04f0aed88b323460706f70b623a9556020c86ee9d5",
     "suites/http1-websocket-tls-performance-smoke.yaml": "10c94a5a92076b970d8dd218e4a72ad792f91b36bbc31c3aea61afe7c093991a"

@@ -1,19 +1,24 @@
 executorIdentity:
   id: go-http1-websocket-tls-executor
   name: Go HTTP/1.1 TLS WebSocket Test Executor
-  version: 0.1.0
+  version: 0.2.0
   vendor: Incursa
-versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.1.0}
+versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.2.0}
 claimedCapabilities:
   - {id: http1.websocket.rfc6455.tls.upgrade, status: supported}
   - {id: http1.websocket.rfc6455.tls.control-frames, status: supported}
   - {id: http1.websocket.rfc6455.tls.text-echo, status: supported}
   - {id: http1.websocket.rfc6455.tls.binary-echo, status: supported}
   - {id: http1.websocket.rfc6455.tls.close, status: supported}
+  - {id: http1.websocket.rfc6455.tls.subprotocol-text-echo, status: supported}
+  - {id: http1.websocket.rfc6455.tls.permessage-deflate-binary-echo, status: supported}
   - {id: exact-http1.1-upgrade-proof, status: supported}
   - {id: exact-tls1.3-alpn-http1.1-proof, status: supported}
   - {id: authenticated-certificate-hash-proof, status: supported}
   - {id: rfc6455-client-masking-proof, status: supported}
+  - {id: exact-subprotocol-negotiation-proof, status: supported}
+  - {id: permessage-deflate-no-context-takeover-proof, status: supported}
+  - {id: rsv1-and-semantic-decompression-proof, status: supported}
   - {id: cleartext, status: unsupported}
   - {id: rfc8441, status: unsupported}
   - {id: rfc9220, status: unsupported}
@@ -24,12 +29,16 @@ supportedTestSelectors:
   - {selectorType: test-id, expression: http1.websocket.rfc6455.tls.text-echo}
   - {selectorType: test-id, expression: http1.websocket.rfc6455.tls.binary-echo}
   - {selectorType: test-id, expression: http1.websocket.rfc6455.tls.close}
+  - {selectorType: test-id, expression: http1.websocket.rfc6455.tls.subprotocol-text-echo}
+  - {selectorType: test-id, expression: http1.websocket.rfc6455.tls.permessage-deflate-binary-echo}
 supportedScenarioSelectors:
   - {selectorType: scenario-id, expression: http1.websocket.rfc6455.tls.upgrade}
   - {selectorType: scenario-id, expression: http1.websocket.rfc6455.tls.control-frames}
   - {selectorType: scenario-id, expression: http1.websocket.rfc6455.tls.text-echo}
   - {selectorType: scenario-id, expression: http1.websocket.rfc6455.tls.binary-echo}
   - {selectorType: scenario-id, expression: http1.websocket.rfc6455.tls.close}
+  - {selectorType: scenario-id, expression: http1.websocket.rfc6455.tls.subprotocol-text-echo}
+  - {selectorType: scenario-id, expression: http1.websocket.rfc6455.tls.permessage-deflate-binary-echo}
 supportedProtocolFamilies: [h1, tls, websocket]
 supportedExecutionModes: [single-cell, process]
 requiredTargetEndpointBindings:
