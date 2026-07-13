@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.go-http1-executor",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.3.0",
   "kind": "test-executor",
   "displayName": "Go HTTP/1 Test Executor",
   "entryManifests": [
@@ -21,21 +21,8 @@
       "tests": [
         "http1.core.plaintext",
         "http1.core.json"
-      ],
-      "requiredCapabilities": [
-        {
-          "name": "go",
-          "value": "true"
-        }
       ]
     }
   ],
-  "dependencies": {
-    "requiredCapabilities": [
-      {
-        "name": "go",
-        "value": "true"
-      }
-    ]
-  }
+  "dependencies": {}
 }

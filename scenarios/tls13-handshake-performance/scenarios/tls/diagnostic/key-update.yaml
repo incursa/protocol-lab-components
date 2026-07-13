@@ -1,0 +1,25 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: tls.key-update.diagnostic
+title: TLS 1.3 KeyUpdate Diagnostic
+description: Request one TLS 1.3 KeyUpdate and prove post-update application-data continuity outside comparison lanes.
+status: experimental
+kind: diagnostic
+layer: transport
+protocol: tls
+family: tls
+semanticTemplateId: tls.key-update.single
+protocolStack: [tls1.3, tcp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc9846]
+roles: [client, server]
+requires: {capabilities: [tls.client, tls.server, tls.key-update], protocols: [tls], roles: [client, server]}
+trafficShape: bidirectional-stream
+tls: {profileId: plab-tls13-aes128gcm-p256-server-auth-v2, version: tls1.3, mode: key-update-diagnostic, resumptionPolicy: not-offered, earlyData: not-attempted, serverName: tls.plab.test, applicationDataBytes: 65536, payloadGenerator: repeated-octet, payloadOctet: 90, payloadSha256: 944044fe482bc4e91085c15c5a923a1b9e02eac98d3bce04997d6dbecd2a5b8d, alpn: protocol-lab-tls, certificateProfile: plab-single-leaf-p256-server-v2, cipherSuite: TLS_AES_128_GCM_SHA256, keyExchangeGroup: x25519, signatureScheme: ecdsa_secp256r1_sha256, peerAuthentication: server-certificate-required, connectionLifecycle: pre-established-full-authenticated-connection, measuredWindow: key-update-and-post-update-transfer, direction: bidirectional, prerequisitePolicy: unmeasured-full-handshake-before-key-update, warmupIsolation: fresh-connection-for-each-measured-operation, keyUpdatePolicy: {initiator: client, requestedUpdates: 1, peerUpdateRequested: false, postUpdateBytesRequired: 65536}}
+executionProfile: {transportSecurity: tls, protocolVariant: tls1.3-key-update, implementationRole: library-backed-target, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode, platformProvenanceRequired: true, accelerationProvenanceRequired: true}
+validation: {required: true, checks: [protocol:tls1.3, key-update-sent, traffic-secret-changed, post-update-data-complete, payload-sha256, zero-unexpected-failures, zero-timeouts], protocol: {requested: tls1.3-key-update, expectedObserved: tls1.3-key-update, fallbackAllowed: false}}
+benchmarkCompat: {compatibleLoadShapes: [diagnostic], primaryMetrics: [completedOperations, failedOperations, timedOutOperations]}
+requiredMetrics: [completedOperations, failedOperations, timedOutOperations, totalTransferredBytes]
+artifacts: {required: [validation.json, protocol-proof.json, tls-negotiation.json, key-update-proof.json, payload-hash.json, result.json, load.stdout.log, load.stderr.log], optional: [packet-summary.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [key-update-observation-unavailable]}
+networkProfile: clean
+tags: [tls, tls1.3, key-update, diagnostic]

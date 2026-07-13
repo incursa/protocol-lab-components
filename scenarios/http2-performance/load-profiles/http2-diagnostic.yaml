@@ -1,0 +1,36 @@
+# Load Profile Contract v1
+schemaVersion: protocol-lab.load-profile.v1
+
+id: http2-diagnostic
+title: HTTP/2 Diagnostic
+status: stable
+purpose: diagnostic
+
+description: >
+  Short protocol-specific diagnostic profile for validation evidence and optional protocol artifacts. Not publishable benchmark evidence by itself.
+
+durationSeconds: 10
+warmupSeconds: 1
+cooldownSeconds: 1
+repetitions: 1
+
+http2:
+  connections: 1
+  concurrency: 8
+  streamsPerConnection: 8
+  requestTimeoutSeconds: 10
+
+evidence:
+  minimumTier: diagnostic
+  publishable: false
+
+artifacts:
+  required:
+    - load.stdout.log
+    - load.stderr.log
+    - validation.json
+    - result.json
+  optional:
+    - counters
+    - protocol-diagnostic-artifact
+    - telemetry-bundle.json

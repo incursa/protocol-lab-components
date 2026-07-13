@@ -1,7 +1,7 @@
 {
   "packageId": "org.protocol-lab.components.executor.go-http1-executor",
   "packageKind": "test-executor",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "component": {
     "name": "go-http1-executor",
     "family": "go-http",
@@ -20,6 +20,10 @@
   "capabilities": {
     "supported": [
       "http.validation",
+      "http.exact-protocol-proof",
+      "http.payload-sha256",
+      "http.load-generation",
+      "http.normalized-metrics",
       "httpPlaintext",
       "httpJson"
     ],
@@ -42,8 +46,7 @@
       "h3",
       "https",
       "request-body-echo",
-      "payload-bytes",
-      "load-generation"
+      "payload-bytes"
     ]
   },
   "requirements": {
@@ -51,19 +54,15 @@
       "linux",
       "windows"
     ],
-    "runtimes": [
-      "Go 1.23 or newer for local source run"
-    ],
+    "runtimes": [],
     "ports": [],
-    "externalTools": [
-      "go"
-    ]
+    "externalTools": []
   },
   "provenance": {
     "sourcePath": "executors/go-http1-executor",
     "owners": [
       "protocol-lab-components"
     ],
-    "licenseNotes": "Confirm Go module dependency licenses before publishing binary artifacts."
+    "licenseNotes": "The runtime package embeds the MIT-licensed oha v1.15.0 PGO binary for its exact runtime identifier and includes third-party license text."
   }
 }

@@ -1,0 +1,130 @@
+executorIdentity:
+  id: go-http2-executor
+  name: Go HTTP/2 Test Executor
+  version: 0.3.0
+  vendor: Incursa
+versionCompatibility:
+  contractVersion: test-executor-v1
+  compatibleContractVersions:
+    - test-executor-v1
+  executorVersion: 0.3.0
+claimedCapabilities:
+  - id: http2.core.plaintext
+    status: supported
+  - id: http2.core.json
+    status: supported
+  - id: exact-http2-h2c-prior-knowledge-proof
+    status: supported
+  - id: deterministic-payload-length-and-sha256
+    status: supported
+  - id: http2-smoke-1x1-topology-proof
+    status: supported
+  - id: http2-diagnostic-1x8x8-topology-proof
+    status: supported
+  - id: http2-comparison-16x128x8-balanced-round-robin-topology-proof
+    status: supported
+  - id: load-generation
+    status: supported
+  - id: http2.streaming.response
+    status: unsupported
+  - id: http2-diagnostic
+    status: supported
+  - id: http2-comparison
+    status: supported
+  - id: http2-tls-alpn
+    status: unsupported
+  - id: h1
+    status: unsupported
+  - id: h3
+    status: unsupported
+supportedTestSelectors:
+  - selectorType: test-id
+    expression: http2.core.plaintext
+  - selectorType: test-id
+    expression: http2.core.json
+supportedScenarioSelectors:
+  - selectorType: scenario-id
+    expression: http2.core.plaintext
+  - selectorType: scenario-id
+    expression: http2.core.json
+supportedProtocolFamilies:
+  - h2
+supportedExecutionModes:
+  - single-cell
+  - process
+requiredTargetEndpointBindings:
+  - bindingId: primary
+    purpose: test-endpoint
+    endpointType: http
+    protocols:
+      - h2
+supportedArtifactTypes:
+  - type: validation.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: result.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: protocol-proof.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: executor-identity.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: load-generator-identity.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: http-executor-result.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: http2-warmup-summary.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: http2-load-summary.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: http2-topology.json
+    producedByStates:
+      - stopped
+      - failed
+metricsAvailability:
+  available: true
+  availableKinds:
+    - validation
+    - requests-per-second
+    - bytes-per-second
+    - latency-percentiles
+    - operation-outcomes
+    - connection-and-stream-topology
+parser:
+  id: protocol-lab-http-json
+  type: protocol-lab-http-json
+  preservesRawOutput: true
+telemetry:
+  supported: true
+  supported_contract_versions:
+    - telemetry-bundle-v1
+  supported_scopes:
+    - test-executor
+    - load-generator
+  supported_artifact_kinds:
+    - summary
+    - metrics
+    - stdout
+    - stderr
+    - raw
+  export_modes:
+    - inline
+    - artifact-bundle
+  metadata:
+    optional: true
+    implementation_owned: true
+    description: The executor emits exact h2c protocol and topology proof. The invoking runner or package host owns raw stdout and stderr preservation.

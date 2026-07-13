@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.scenario.grpc-h2-performance",
+  "packageVersion": "0.1.0",
+  "kind": "scenario-pack",
+  "displayName": "gRPC over HTTP/2 Performance Scenario Pack",
+  "entryManifests": [
+    "scenarios/grpc/h2/unary-echo.yaml",
+    "suites/grpc-h2-performance-smoke.yaml",
+    "load-profiles/grpc-h2-smoke.yaml"
+  ],
+  "providedScenarios": [
+    {
+      "scenarioId": "grpc.h2.unary.echo",
+      "displayName": "gRPC over HTTP/2 Unary Echo",
+      "protocols": ["h2"]
+    }
+  ]
+}

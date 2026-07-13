@@ -7,7 +7,9 @@ param(
 
     [string]$Root = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,
 
-    [string]$OutputRoot = (Join-Path $Root 'artifacts/packages')
+    [string]$OutputRoot = (Join-Path $Root 'artifacts/packages'),
+
+    [switch]$AllowDirtySource
 )
 
 $ErrorActionPreference = 'Stop'
@@ -84,4 +86,5 @@ $executionManifest | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-P
     -ArtifactSuffix $RuntimeIdentifier `
     -BuildConfiguration $Configuration `
     -RuntimeIdentifier $RuntimeIdentifier `
-    -PreparedPackageRoot
+    -PreparedPackageRoot `
+    -AllowDirtySource:$AllowDirtySource

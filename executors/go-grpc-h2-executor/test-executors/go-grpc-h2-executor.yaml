@@ -1,0 +1,58 @@
+executorIdentity:
+  id: go-grpc-h2-executor
+  name: Go gRPC over HTTP/2 Executor
+  version: 0.1.0
+  vendor: Incursa
+versionCompatibility:
+  contractVersion: test-executor-v1
+  compatibleContractVersions: [test-executor-v1]
+  executorVersion: 0.1.0
+claimedCapabilities:
+  - {id: grpc.h2.unary.echo, status: supported}
+  - {id: grpc-h2-smoke, status: supported}
+  - {id: exact-tls13-alpn-h2-proof, status: supported}
+  - {id: pre-established-reused-channel-proof, status: supported}
+  - {id: deterministic-payload-protobuf-frame-hashes, status: supported}
+  - {id: grpc.h2.bidi-streaming.echo, status: unsupported}
+  - {id: grpc.h2.client-cancellation, status: unsupported}
+  - {id: grpc.h2.client-streaming.echo, status: unsupported}
+  - {id: grpc.h2.deadline-exceeded, status: unsupported}
+  - {id: grpc.h2.server-streaming.echo, status: unsupported}
+  - {id: grpc.h2.trailers-only-status, status: unsupported}
+  - {id: grpc.h2.unary.echo-new-channel, status: unsupported}
+  - {id: grpc.h2.unary.empty, status: unsupported}
+  - {id: grpc.h2.unary.fixed-metadata, status: unsupported}
+  - {id: grpc.h2.unary.gzip, status: unsupported}
+  - {id: grpc.h2.unary.large, status: unsupported}
+supportedTestSelectors:
+  - {selectorType: test-id, expression: grpc.h2.unary.echo}
+supportedScenarioSelectors:
+  - {selectorType: scenario-id, expression: grpc.h2.unary.echo}
+supportedProtocolFamilies: [h2]
+supportedExecutionModes: [single-cell, process]
+requiredTargetEndpointBindings:
+  - {bindingId: primary, purpose: test-endpoint, endpointType: https, protocols: [h2]}
+supportedArtifactTypes:
+  - {type: validation.json, producedByStates: [stopped, failed]}
+  - {type: protocol-proof.json, producedByStates: [stopped, failed]}
+  - {type: grpc-summary.json, producedByStates: [stopped, failed]}
+  - {type: result.json, producedByStates: [stopped, failed]}
+  - {type: executor-identity.json, producedByStates: [stopped, failed]}
+  - {type: load-generator-identity.json, producedByStates: [stopped, failed]}
+  - {type: grpc-request-frame.bin, producedByStates: [stopped, failed]}
+  - {type: grpc-response-frame.bin, producedByStates: [stopped, failed]}
+  - {type: tls-peer-certificate.der, producedByStates: [stopped, failed]}
+metricsAvailability:
+  available: true
+  availableKinds: [validation, rpc-latency-percentiles, operation-outcomes, connection-and-stream-topology, byte-accounting]
+parser:
+  id: protocol-lab-grpc-h2-json
+  type: protocol-lab-grpc-h2-json
+  preservesRawOutput: true
+telemetry:
+  supported: true
+  supported_contract_versions: [telemetry-bundle-v1]
+  supported_scopes: [test-executor, load-generator]
+  supported_artifact_kinds: [summary, metrics, stdout, stderr, raw]
+  export_modes: [inline, artifact-bundle]
+  metadata: {optional: true, implementation_owned: true, description: The runner owns stdout and stderr preservation; the executor owns normalized gRPC/H2 proof and exact raw byte artifacts.}

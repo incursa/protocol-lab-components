@@ -1,0 +1,19 @@
+{
+  "authorityRepository": "protocol-lab",
+  "commit": "8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574",
+  "files": {
+    "fixtures/public-contracts/tls/valid/tls13-p256-profile-v1.json": "56eb9eb4124da0e7d69cafaffb67ec0e2b4014318eee97880849937ae71a858c",
+    "load-profiles/tls-smoke.yaml": "c01fc33bf945911744c387715ccec7bbf47b2c7cfb3da4c3ac6af71e122d71a6",
+    "scenarios/tls/diagnostic/key-update.yaml": "10d9324acc0437fbefc6a3b29cb68937f45f52ff058d7a2111025180235ad9e7",
+    "scenarios/tls/early-data/accepted.yaml": "2f11fe6d69b5dc568b5c1a9c6549c3114de19101eb5ba0eaecd8403bfec6af78",
+    "scenarios/tls/early-data/rejected.yaml": "24a7d05bb773496da96db18821a724d2c4dc9d3e0f11fa1dd6795453b724b377",
+    "scenarios/tls/handshake/full-chacha20.yaml": "ca502190c313fcef152381f87d7a1e47be9dc998d1f49869e23eaa3444ef802f",
+    "scenarios/tls/handshake/full-tls12.yaml": "6e1aeb011193d5cc94a44b27c0aa2596dfc44a02e6f6225e85240dd9df0cf4ae",
+    "scenarios/tls/handshake/full.yaml": "73d594f08679b366497acc35f84c610044c0d216421c9fe67c5f571abf19610a",
+    "scenarios/tls/handshake/mutual-auth.yaml": "355686d36b75d9c0854f29c3f7ac14b526edbe42d004b469b8a370be9c19ec02",
+    "scenarios/tls/handshake/resumed.yaml": "919c4cb0dbf75e70578f512e74502b424859153e71225fd9b84157f4765cb4a5",
+    "scenarios/tls/record/coverage.yaml": "cd5864a7251f4d7d0ab74446e2292a223cb6fe966419a22992822494d1cc4106",
+    "scenarios/tls/record/throughput.yaml": "ae9fae3a0d46e4dea451d5f59d3f3cb487159fe3e9af1980531021c551343922",
+    "suites/tls-performance-smoke.yaml": "ecbeea03f8dcb1ef590807d47158113c96f320e8fa1f764b0969348d4a555caa"
+  }
+}

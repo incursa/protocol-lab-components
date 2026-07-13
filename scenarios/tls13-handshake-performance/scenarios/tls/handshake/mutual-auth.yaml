@@ -1,0 +1,25 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: tls.handshake.mutual-auth
+title: TLS 1.3 Mutual Authentication Handshake
+description: Establish a fresh TLS 1.3 session with required server and client certificate authentication.
+status: experimental
+kind: protocolValidation
+layer: transport
+protocol: tls
+family: tls
+semanticTemplateId: tls.handshake.mutual-auth
+protocolStack: [tls1.3, tcp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc9846, https://www.rfc-editor.org/rfc/rfc9525]
+roles: [client, server]
+requires: {capabilities: [tls.client, tls.server, tls.handshake.full, tls.peer-auth.mutual], protocols: [tls], roles: [client, server]}
+trafficShape: handshake-only
+tls: {profileId: plab-tls13-aes128gcm-p256-mutual-auth-v2, version: tls1.3, mode: full-handshake, resumptionPolicy: not-offered, earlyData: not-attempted, serverName: tls.plab.test, applicationDataBytes: 0, alpn: protocol-lab-tls, certificateProfile: plab-single-leaf-p256-server-v2, clientCertificateProfile: plab-single-leaf-p256-client-v2, cipherSuite: TLS_AES_128_GCM_SHA256, keyExchangeGroup: x25519, signatureScheme: ecdsa_secp256r1_sha256, peerAuthentication: mutual-certificate-required, connectionLifecycle: fresh-connection-per-operation, measuredWindow: full-handshake, direction: not-applicable, prerequisitePolicy: provision-both-trust-anchors-before-operation, warmupIsolation: warmup-state-not-reused-by-measurement}
+executionProfile: {transportSecurity: tls, protocolVariant: tls1.3-full-mutual-auth, implementationRole: library-backed-target, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode, platformProvenanceRequired: true, accelerationProvenanceRequired: true}
+validation: {required: true, checks: [protocol:tls1.3, no-fallback, handshake-complete, server-certificate-valid, client-certificate-valid, mutual-authenticated, zero-unexpected-failures, zero-timeouts], protocol: {requested: tls1.3-mtls, expectedObserved: tls1.3-mtls, fallbackAllowed: false}}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic], primaryMetrics: [handshakesPerSecond, handshakeLatencyP95, failedOperations, timedOutOperations]}
+requiredMetrics: [handshakesPerSecond, handshakeLatencyMean, handshakeLatencyP50, handshakeLatencyP95, handshakeLatencyP99, completedOperations, failedOperations, timedOutOperations, totalTransferredBytes]
+artifacts: {required: [validation.json, protocol-proof.json, tls-negotiation.json, peer-auth-proof.json, result.json, load.stdout.log, load.stderr.log], optional: [packet-summary.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [client-certificate-auth-unavailable]}
+networkProfile: clean
+tags: [tls, tls1.3, mtls, handshake]

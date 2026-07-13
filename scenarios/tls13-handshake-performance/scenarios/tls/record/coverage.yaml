@@ -1,0 +1,25 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: tls.record.coverage
+title: TLS 1.3 Record Direction and Size Coverage
+description: Execute the six bounded direction/size cases in the canonical TLS record coverage profile.
+status: experimental
+kind: diagnostic
+layer: transport
+protocol: tls
+family: tls
+semanticTemplateId: tls.record.coverage
+protocolStack: [tls1.3, tcp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc9846]
+roles: [client, server]
+requires: {capabilities: [tls.client, tls.server, tls.record.transfer, tls.record.coverage], protocols: [tls], roles: [client, server]}
+trafficShape: bidirectional-stream
+tls: {profileId: plab-tls13-aes128gcm-p256-server-auth-v2, version: tls1.3, mode: record-coverage, recordCoverageProfileId: plab-tls-record-coverage-v1, resumptionPolicy: not-offered, earlyData: not-attempted, serverName: tls.plab.test, applicationDataBytes: 0, alpn: protocol-lab-tls, certificateProfile: plab-single-leaf-p256-server-v2, cipherSuite: TLS_AES_128_GCM_SHA256, keyExchangeGroup: x25519, signatureScheme: ecdsa_secp256r1_sha256, peerAuthentication: server-certificate-required, connectionLifecycle: pre-established-full-authenticated-connection-per-case, measuredWindow: application-data-transfer-per-case, direction: profile-matrix, prerequisitePolicy: unmeasured-full-handshake-before-each-case, warmupIsolation: fresh-connection-for-each-measured-case}
+executionProfile: {transportSecurity: tls, protocolVariant: tls1.3-record-coverage, implementationRole: library-backed-target, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode, platformProvenanceRequired: true, accelerationProvenanceRequired: true}
+validation: {required: true, checks: [protocol:tls1.3, record-coverage-profile-resolved, all-six-cases-complete, per-case-direction, per-case-payload-size, per-case-payload-sha256, zero-unexpected-failures, zero-timeouts], protocol: {requested: tls1.3-record-coverage, expectedObserved: tls1.3-record-coverage, fallbackAllowed: false}}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic], primaryMetrics: [bytesPerSecond, transferLatencyP95, completedOperations, failedOperations]}
+requiredMetrics: [bytesPerSecond, transferLatencyMean, transferLatencyP50, transferLatencyP95, transferLatencyP99, totalTransferredBytes, completedOperations, failedOperations, timedOutOperations]
+artifacts: {required: [validation.json, protocol-proof.json, tls-negotiation.json, record-coverage.json, payload-hash.json, result.json, load.stdout.log, load.stderr.log], optional: [network-summary.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [bidirectional-record-coverage-unavailable]}
+networkProfile: clean
+tags: [tls, tls1.3, record, direction, size, diagnostic]

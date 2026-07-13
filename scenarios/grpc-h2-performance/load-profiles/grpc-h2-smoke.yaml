@@ -1,0 +1,13 @@
+schemaVersion: protocol-lab.load-profile.v2
+version: 2.0.0
+id: grpc-h2-smoke
+title: gRPC over HTTP/2 Contract Smoke
+status: experimental
+purpose: smoke
+description: Fast single-channel validity profile for unary and streaming gRPC/H2 scenarios.
+durationSeconds: 5
+warmupSeconds: 1
+repetitions: 1
+grpc: {channels: 1, connectionsPerChannel: 1, concurrency: 1, streamsPerConnection: 1, channelReuse: reuse, operationTimeoutMilliseconds: 20000, totalRpcs: null, rpcRateLimitPerSecond: null}
+evidence: {minimumTier: smoke, publishable: false}
+artifacts: {required: [load.stdout.log, load.stderr.log, validation.json, protocol-proof.json, result.json], optional: [http2-frame-summary.json]}

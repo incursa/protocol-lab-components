@@ -1,0 +1,52 @@
+schemaVersion: "1.0"
+id: go-grpc-h2
+name: Go gRPC over HTTP/2 Unary Target
+description: Independent TLS 1.3 and HTTP/2 origin target for the exact ProtocolLab unary echo contract.
+family: go
+role: server
+targetKind: process
+targetContract: process
+executable: bin/linux-x64/go-grpc-h2
+workingDirectory: .
+baseUrl: https://127.0.0.1:18444
+protocolBaseUrls:
+  h2: https://127.0.0.1:18444
+certificateMode: package-test-root
+roles: [server]
+protocols: [h2]
+supportedProtocols: [h2]
+supportedProtocolVersions: [HTTP/2.0]
+supportedWorkloadFamilies: [grpc]
+supportedScenarios: [grpc.h2.unary.echo]
+supportedTestCaseIds: [grpc.h2.unary.echo]
+scenarioCoverage:
+  grpc.h2.unary.echo:
+    status: supported
+    behavior: exact 128-byte deterministic unary echo over TLS 1.3 and ALPN h2
+  grpc.h2.bidi-streaming.echo: {status: unsupported, reason: Bidirectional streaming is not implemented in version 0.1.0.}
+  grpc.h2.client-cancellation: {status: unsupported, reason: Cancellation diagnostics are not implemented in version 0.1.0.}
+  grpc.h2.client-streaming.echo: {status: unsupported, reason: Client streaming is not implemented in version 0.1.0.}
+  grpc.h2.deadline-exceeded: {status: unsupported, reason: Deadline diagnostics are not implemented in version 0.1.0.}
+  grpc.h2.server-streaming.echo: {status: unsupported, reason: Server streaming is not implemented in version 0.1.0.}
+  grpc.h2.trailers-only-status: {status: unsupported, reason: Trailers-only status is not implemented in version 0.1.0.}
+  grpc.h2.unary.echo-new-channel: {status: unsupported, reason: Per-operation channel churn is not implemented in version 0.1.0.}
+  grpc.h2.unary.empty: {status: unsupported, reason: Empty unary messages are not implemented in version 0.1.0.}
+  grpc.h2.unary.fixed-metadata: {status: unsupported, reason: Fixed metadata is not implemented in version 0.1.0.}
+  grpc.h2.unary.gzip: {status: unsupported, reason: Gzip compression is not implemented in version 0.1.0.}
+  grpc.h2.unary.large: {status: unsupported, reason: Large unary payloads are not implemented in version 0.1.0.}
+unsupportedKnownCases: [grpc-web, grpc-over-h3, h1, h2c]
+ports:
+  - {name: grpc-h2, protocol: tcp, default: 18444}
+environment:
+  PLAB_LISTEN_ADDRESS: 127.0.0.1:18444
+startup:
+  port: {name: grpc-h2, environmentVariable: PLAB_TARGET_PORT, default: 18444}
+  readiness: {protocol: process, timeoutSeconds: 10}
+readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 750}
+capabilities: [scenario.grpc.h2.unary.echo, grpc.h2, tls13, alpn.h2]
+entrypoint: {kind: process, path: bin/linux-x64/go-grpc-h2, arguments: [], workingDirectory: .}
+shutdownBehavior: process
+artifactExports: [target.stdout.txt, target.stderr.txt, target-execution.json]
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Only grpc.h2.unary.echo is supported. Every other committed gRPC/H2 identity fails closed as unsupported.

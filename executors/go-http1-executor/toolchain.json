@@ -1,0 +1,28 @@
+{
+  "executor": {
+    "language": "go",
+    "module": "org.protocol-lab.components.executor.go-http1-executor",
+    "buildFlags": [
+      "-buildvcs=false",
+      "-trimpath"
+    ]
+  },
+  "loadGenerator": {
+    "project": "hatoo/oha",
+    "version": "1.15.0",
+    "license": "MIT",
+    "release": "https://github.com/hatoo/oha/releases/tag/v1.15.0",
+    "assets": {
+      "win-x64": {
+        "name": "oha-windows-amd64-pgo.exe",
+        "url": "https://github.com/hatoo/oha/releases/download/v1.15.0/oha-windows-amd64-pgo.exe",
+        "sha256": "b1dac6c1272abbb4b2c52723d869f0bfdd7807e742955e46e5cb515a15114f6f"
+      },
+      "linux-x64": {
+        "name": "oha-linux-amd64-pgo",
+        "url": "https://github.com/hatoo/oha/releases/download/v1.15.0/oha-linux-amd64-pgo",
+        "sha256": "54008b400a990998824c4f91952c18565433452b3b71c2f4b47d9aebfaa34d9c"
+      }
+    }
+  }
+}

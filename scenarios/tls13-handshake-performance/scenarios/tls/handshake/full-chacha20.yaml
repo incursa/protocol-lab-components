@@ -1,0 +1,25 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: tls.handshake.full.chacha20
+title: TLS 1.3 ChaCha20 Full Handshake
+description: Establish a fresh TLS 1.3 session using the exact ChaCha20-Poly1305 profile.
+status: experimental
+kind: protocolValidation
+layer: transport
+protocol: tls
+family: tls
+semanticTemplateId: tls.handshake.full
+protocolStack: [tls1.3, tcp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc9846]
+roles: [client, server]
+requires: {capabilities: [tls.client, tls.server, tls.handshake.full, tls.cipher.chacha20-poly1305], protocols: [tls], roles: [client, server]}
+trafficShape: handshake-only
+tls: {profileId: plab-tls13-chacha20-p256-server-auth-v2, version: tls1.3, mode: full-handshake, resumptionPolicy: not-offered, earlyData: not-attempted, serverName: tls.plab.test, applicationDataBytes: 0, alpn: protocol-lab-tls, certificateProfile: plab-single-leaf-p256-server-v2, cipherSuite: TLS_CHACHA20_POLY1305_SHA256, keyExchangeGroup: x25519, signatureScheme: ecdsa_secp256r1_sha256, peerAuthentication: server-certificate-required, connectionLifecycle: fresh-connection-per-operation, measuredWindow: full-handshake, direction: not-applicable, prerequisitePolicy: clear-resumption-state-before-each-operation, warmupIsolation: warmup-state-not-reused-by-measurement}
+executionProfile: {transportSecurity: tls, protocolVariant: tls1.3-full-chacha20, implementationRole: library-backed-target, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode, platformProvenanceRequired: true, accelerationProvenanceRequired: true}
+validation: {required: true, checks: [protocol:tls1.3, cipher:TLS_CHACHA20_POLY1305_SHA256, no-fallback, handshake-complete, authenticated-peer, zero-unexpected-failures, zero-timeouts], protocol: {requested: tls1.3-chacha20, expectedObserved: tls1.3-chacha20, fallbackAllowed: false}}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic, comparison], primaryMetrics: [handshakesPerSecond, handshakeLatencyP95, failedOperations, timedOutOperations]}
+requiredMetrics: [handshakesPerSecond, handshakeLatencyMean, handshakeLatencyP50, handshakeLatencyP95, handshakeLatencyP99, completedOperations, failedOperations, timedOutOperations, totalTransferredBytes]
+artifacts: {required: [validation.json, protocol-proof.json, tls-negotiation.json, result.json, load.stdout.log, load.stderr.log], optional: [target-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [chacha20-poly1305-unavailable]}
+networkProfile: clean
+tags: [tls, tls1.3, chacha20, handshake]

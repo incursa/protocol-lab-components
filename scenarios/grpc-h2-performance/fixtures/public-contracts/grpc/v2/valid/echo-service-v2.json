@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "protocol-lab.grpc-service.v2",
+  "contractId": "protocollab.performance.v1.EchoService",
+  "package": "protocollab.performance.v1",
+  "service": "EchoService",
+  "wireFormat": {
+    "protobufEdition": "proto3",
+    "messageEncoding": "canonical-field-order-single-bytes-field",
+    "grpcEnvelope": "compressed-flag-plus-uint32be-length",
+    "hashScope": "per-message-uncompressed-payload-protobuf-and-envelope"
+  },
+  "messages": [
+    {"name": "EchoRequest", "fields": [{"number": 1, "name": "payload", "type": "bytes"}]},
+    {"name": "EchoResponse", "fields": [{"number": 1, "name": "payload", "type": "bytes"}]}
+  ],
+  "compressionProfiles": [
+    {"id": "identity-v1", "grpcEncoding": "identity", "compressedFlag": 0, "validation": "compare-uncompressed-protobuf-sha256", "wireBytesComparable": true},
+    {"id": "gzip-semantic-v1", "grpcEncoding": "gzip", "compressedFlag": 1, "validation": "decompress-then-compare-uncompressed-protobuf-sha256", "wireBytesComparable": false}
+  ],
+  "metadataProfiles": [
+    {"id": "fixed-empty-user-metadata", "requestInitialMetadata": [], "expectedResponseInitialMetadata": [], "expectedResponseTrailingMetadata": []},
+    {
+      "id": "fixed-ascii-and-binary-metadata-v1",
+      "requestInitialMetadata": [
+        {"name": "x-plab-text", "value": "protocol-lab"},
+        {"name": "x-plab-bin-bin", "valueBase64": "AAECAw=="}
+      ],
+      "expectedResponseInitialMetadata": [{"name": "x-plab-text", "value": "protocol-lab"}],
+      "expectedResponseTrailingMetadata": [{"name": "x-plab-bin-bin", "valueBase64": "AAECAw=="}]
+    }
+  ],
+  "methods": [
+    {"name": "UnaryEcho", "input": "EchoRequest", "output": "EchoResponse", "clientStreaming": false, "serverStreaming": false, "requestMessages": 1, "responseMessages": 1, "behavior": "echo-request-payload", "compressionProfile": "identity-v1", "metadataProfile": "fixed-empty-user-metadata", "terminalStatus": {"code": 0, "name": "OK", "message": ""}, "responsePolicy": "messages-and-trailers", "completionTrigger": "request-message"},
+    {"name": "ServerStreamingEcho", "input": "EchoRequest", "output": "EchoResponse", "clientStreaming": false, "serverStreaming": true, "requestMessages": 1, "responseMessages": 100, "behavior": "repeat-request-payload-100-times", "compressionProfile": "identity-v1", "metadataProfile": "fixed-empty-user-metadata", "terminalStatus": {"code": 0, "name": "OK", "message": ""}, "responsePolicy": "messages-and-trailers", "completionTrigger": "request-message"},
+    {"name": "ClientStreamingEcho", "input": "EchoRequest", "output": "EchoResponse", "clientStreaming": true, "serverStreaming": false, "requestMessages": 100, "responseMessages": 1, "behavior": "respond-with-final-request-payload", "compressionProfile": "identity-v1", "metadataProfile": "fixed-empty-user-metadata", "terminalStatus": {"code": 0, "name": "OK", "message": ""}, "responsePolicy": "messages-and-trailers", "completionTrigger": "client-half-close-after-100-messages"},
+    {"name": "BidirectionalStreamingEcho", "input": "EchoRequest", "output": "EchoResponse", "clientStreaming": true, "serverStreaming": true, "requestMessages": 100, "responseMessages": 100, "behavior": "ordered-one-to-one-echo", "compressionProfile": "identity-v1", "metadataProfile": "fixed-empty-user-metadata", "terminalStatus": {"code": 0, "name": "OK", "message": ""}, "responsePolicy": "messages-and-trailers", "completionTrigger": "client-half-close-after-100-messages"},
+    {"name": "TrailersOnlyStatus", "input": "EchoRequest", "output": "EchoResponse", "clientStreaming": false, "serverStreaming": false, "requestMessages": 1, "responseMessages": 0, "behavior": "return-invalid-argument-without-data", "compressionProfile": "identity-v1", "metadataProfile": "fixed-empty-user-metadata", "terminalStatus": {"code": 3, "name": "INVALID_ARGUMENT", "message": "plab invalid fixture"}, "responsePolicy": "trailers-only", "completionTrigger": "request-message"},
+    {"name": "DeadlineExceeded", "input": "EchoRequest", "output": "EchoResponse", "clientStreaming": false, "serverStreaming": false, "requestMessages": 1, "responseMessages": 0, "behavior": "remain-open-until-client-deadline", "compressionProfile": "identity-v1", "metadataProfile": "fixed-empty-user-metadata", "terminalStatus": {"code": 4, "name": "DEADLINE_EXCEEDED", "message": ""}, "responsePolicy": "client-observed-terminal-status", "completionTrigger": "client-deadline"},
+    {"name": "ClientCancellation", "input": "EchoRequest", "output": "EchoResponse", "clientStreaming": false, "serverStreaming": true, "requestMessages": 1, "responseMessages": 0, "behavior": "send-ready-initial-metadata-then-wait-for-client-cancel", "compressionProfile": "identity-v1", "metadataProfile": "fixed-empty-user-metadata", "terminalStatus": {"code": 1, "name": "CANCELLED", "message": ""}, "responsePolicy": "client-observed-terminal-status", "completionTrigger": "client-cancel-after-ready-initial-metadata"},
+    {"name": "UnaryGzip", "input": "EchoRequest", "output": "EchoResponse", "clientStreaming": false, "serverStreaming": false, "requestMessages": 1, "responseMessages": 1, "behavior": "echo-request-payload", "compressionProfile": "gzip-semantic-v1", "metadataProfile": "fixed-empty-user-metadata", "terminalStatus": {"code": 0, "name": "OK", "message": ""}, "responsePolicy": "messages-and-trailers", "completionTrigger": "request-message"},
+    {"name": "UnaryFixedMetadata", "input": "EchoRequest", "output": "EchoResponse", "clientStreaming": false, "serverStreaming": false, "requestMessages": 1, "responseMessages": 1, "behavior": "echo-request-payload-and-fixed-metadata", "compressionProfile": "identity-v1", "metadataProfile": "fixed-ascii-and-binary-metadata-v1", "terminalStatus": {"code": 0, "name": "OK", "message": ""}, "responsePolicy": "messages-and-trailers", "completionTrigger": "request-message"}
+  ]
+}

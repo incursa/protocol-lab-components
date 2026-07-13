@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.scenario.http1-performance",
+  "packageVersion": "0.1.0",
+  "kind": "scenario-pack",
+  "displayName": "HTTP/1 Performance Smoke Scenario Pack",
+  "entryManifests": [
+    "scenarios/http1/core/plaintext.yaml",
+    "scenarios/http1/core/json.yaml",
+    "load-profiles/http1-smoke.yaml"
+  ],
+  "providedScenarios": [
+    {
+      "scenarioId": "http1.core.plaintext",
+      "displayName": "HTTP/1 Plaintext",
+      "protocols": ["h1"]
+    },
+    {
+      "scenarioId": "http1.core.json",
+      "displayName": "HTTP/1 JSON",
+      "protocols": ["h1"]
+    }
+  ]
+}

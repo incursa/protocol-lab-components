@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.go-http2-executor",
+  "packageVersion": "0.3.0",
+  "kind": "test-executor",
+  "displayName": "Go HTTP/2 Test Executor",
+  "entryManifests": [
+    "test-executors/go-http2-executor.yaml"
+  ],
+  "providedTestExecutors": [
+    {
+      "testExecutorId": "go-http2-executor",
+      "displayName": "Go HTTP/2 Test Executor",
+      "protocols": [
+        "h2"
+      ],
+      "scenarios": [
+        "http2.core.plaintext",
+        "http2.core.json"
+      ],
+      "tests": [
+        "http2.core.plaintext",
+        "http2.core.json"
+      ]
+    }
+  ],
+  "dependencies": {}
+}

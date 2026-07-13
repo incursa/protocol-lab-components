@@ -1,0 +1,90 @@
+schemaVersion: "1.0"
+id: http1.core.plaintext
+title: HTTP/1 Plaintext
+name: HTTP/1 Plaintext
+family: http.application
+description: Validate and benchmark a fixed small plaintext HTTP response over an HTTP/1 server endpoint.
+status: stable
+kind: workload
+layer: application
+protocol: h1
+roles:
+  - server
+requires:
+  capabilities:
+    - http.server
+    - httpPlaintext
+  protocols:
+    - h1
+  roles:
+    - server
+trafficShape: request-response
+implementationRole: server
+requiredCapabilities:
+  - httpPlaintext
+endpoint:
+  method: GET
+  path: /plaintext
+  query: {}
+  requestHeaders: {}
+  requestBodyGeneration: none
+  expectedStatus: 200
+  expectedHeaders:
+    content-type: text/plain
+  expectedBodyRule: exact
+  expectedBody: Hello, World!
+  expectedBodySize: 13
+validation:
+  required: true
+  checks:
+    - status
+    - content-type
+    - body
+    - body-size
+    - protocol:h1
+  http:
+    expectedStatus: 200
+    expectedProtocol: h1
+    expectedBody: Hello, World!
+benchmark:
+  warmupSeconds: 5
+  durationSeconds: 30
+  repetitions: 1
+  connections:
+    - 1
+  streamsPerConnection:
+    - 1
+benchmarkCompat:
+  compatibleLoadShapes:
+    - fixed-path-request-response
+    - smoke
+    - regression
+    - comparison
+  primaryMetrics:
+    - requestsPerSecond
+    - latencyP50
+    - latencyP95
+    - latencyP99
+    - errorRate
+  notes: Compatible with HTTP/1 request/response load profiles when the selected executor preserves the fixed GET /plaintext request and validates the response before accepting benchmark metrics.
+artifacts:
+  required:
+    - validation.json
+    - result.json
+    - load-generator.stdout.txt
+    - load-generator.stderr.txt
+  optional:
+    - request-sample.json
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - requestsPerSecond
+  - latencyMeanMs
+artifactRequirements:
+  - load-generator.stdout.txt
+  - load-generator.stderr.txt
+tags:
+  - phase1
+  - http
+  - h1
+  - plaintext

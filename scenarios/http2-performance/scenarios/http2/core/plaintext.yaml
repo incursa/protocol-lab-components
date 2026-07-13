@@ -1,0 +1,78 @@
+schemaVersion: "1.0"
+id: http2.core.plaintext
+title: HTTP/2 Plaintext
+name: HTTP/2 Plaintext
+family: http.application
+description: Validate a fixed small plaintext HTTP response over an HTTP/2 server endpoint.
+status: stable
+kind: workload
+layer: application
+protocol: h2
+roles:
+  - server
+requires:
+  capabilities:
+    - http.server
+    - httpPlaintext
+  protocols:
+    - h2
+  roles:
+    - server
+trafficShape: request-response
+implementationRole: server
+requiredCapabilities:
+  - httpPlaintext
+endpoint:
+  method: GET
+  path: /plaintext
+  query: {}
+  requestHeaders: {}
+  requestBodyGeneration: none
+  expectedStatus: 200
+  expectedHeaders:
+    content-type: text/plain
+  expectedBodyRule: exact
+  expectedBody: Hello, World!
+  expectedBodySize: 13
+validation:
+  required: true
+  checks:
+    - status
+    - content-type
+    - body
+    - body-size
+    - protocol:h2
+  http:
+    expectedStatus: 200
+    expectedProtocol: h2
+    expectedBody: Hello, World!
+benchmarkCompat:
+  compatibleLoadShapes:
+    - fixed-path-request-response
+    - smoke
+  primaryMetrics:
+    - requestsPerSecond
+    - latencyP50
+    - latencyP95
+    - latencyP99
+    - errorRate
+artifacts:
+  required:
+    - validation.json
+    - result.json
+    - load-generator.stdout.txt
+    - load-generator.stderr.txt
+  optional:
+    - request-sample.json
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - requestsPerSecond
+artifactRequirements:
+  - load-generator.stdout.txt
+  - load-generator.stderr.txt
+tags:
+  - http
+  - h2
+  - core
+  - plaintext

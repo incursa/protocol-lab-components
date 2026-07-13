@@ -1,0 +1,93 @@
+schemaVersion: "1.0"
+id: http1.core.json
+title: HTTP/1 JSON
+name: HTTP/1 JSON
+family: http.application
+description: Validate and benchmark a fixed small JSON HTTP response over an HTTP/1 server endpoint.
+status: stable
+kind: workload
+layer: application
+protocol: h1
+roles:
+  - server
+requires:
+  capabilities:
+    - http.server
+  protocols:
+    - h1
+  roles:
+    - server
+trafficShape: request-response
+implementationRole: server
+requiredCapabilities:
+  - httpJson
+endpoint:
+  method: GET
+  path: /json
+  query: {}
+  requestHeaders: {}
+  requestBodyGeneration: none
+  expectedStatus: 200
+  expectedHeaders:
+    content-type: application/json
+  expectedBodyRule: jsonEquivalent
+  expectedBody: '{"message":"Hello, World!"}'
+  expectedJsonProperties:
+    message: Hello, World!
+  expectedJsonKeys:
+    - message
+validation:
+  required: true
+  checks:
+    - status
+    - content-type
+    - json-body
+    - json-equivalent
+    - json-property:message
+    - protocol:h1
+  http:
+    expectedStatus: 200
+    expectedProtocol: h1
+    expectedBody: '{"message":"Hello, World!"}'
+benchmark:
+  warmupSeconds: 5
+  durationSeconds: 30
+  repetitions: 1
+  connections:
+    - 1
+  streamsPerConnection:
+    - 1
+benchmarkCompat:
+  compatibleLoadShapes:
+    - fixed-path-request-response
+    - smoke
+    - regression
+    - comparison
+  primaryMetrics:
+    - requestsPerSecond
+    - latencyP50
+    - latencyP95
+    - latencyP99
+    - errorRate
+  notes: Compatible with HTTP/1 request/response load profiles when the selected executor preserves the fixed GET /json request and validates JSON equivalence before accepting benchmark metrics.
+artifacts:
+  required:
+    - validation.json
+    - result.json
+    - load-generator.stdout.txt
+    - load-generator.stderr.txt
+  optional:
+    - response-body.json
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - requestsPerSecond
+  - latencyMeanMs
+artifactRequirements:
+  - load-generator.stdout.txt
+  - load-generator.stderr.txt
+tags:
+  - phase1
+  - http
+  - h1
+  - json

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.scenario.tls13-handshake-performance",
+  "packageVersion": "0.1.0",
+  "kind": "scenario-pack",
+  "displayName": "TLS Performance Contract Scenario Pack",
+  "entryManifests": [
+    "scenarios/tls/handshake/full.yaml",
+    "scenarios/tls/handshake/full-tls12.yaml",
+    "scenarios/tls/handshake/full-chacha20.yaml",
+    "scenarios/tls/handshake/mutual-auth.yaml",
+    "scenarios/tls/handshake/resumed.yaml",
+    "scenarios/tls/early-data/accepted.yaml",
+    "scenarios/tls/early-data/rejected.yaml",
+    "scenarios/tls/diagnostic/key-update.yaml",
+    "scenarios/tls/record/coverage.yaml",
+    "scenarios/tls/record/throughput.yaml",
+    "suites/tls-performance-smoke.yaml",
+    "load-profiles/tls-smoke.yaml",
+    "fixtures/public-contracts/tls/valid/tls13-p256-profile-v1.json"
+  ],
+  "providedScenarios": [
+    { "scenarioId": "tls.handshake.full", "displayName": "TLS 1.3 Full Handshake", "protocols": ["tls"] },
+    { "scenarioId": "tls.handshake.full.tls12", "displayName": "TLS 1.2 Full Handshake", "protocols": ["tls"] },
+    { "scenarioId": "tls.handshake.full.chacha20", "displayName": "TLS 1.3 ChaCha20 Full Handshake", "protocols": ["tls"] },
+    { "scenarioId": "tls.handshake.mutual-auth", "displayName": "TLS Mutual Authentication", "protocols": ["tls"] },
+    { "scenarioId": "tls.handshake.resumed", "displayName": "TLS Resumed Handshake", "protocols": ["tls"] },
+    { "scenarioId": "tls.early-data.accepted", "displayName": "TLS Accepted Early Data", "protocols": ["tls"] },
+    { "scenarioId": "tls.early-data.rejected", "displayName": "TLS Rejected Early Data", "protocols": ["tls"] },
+    { "scenarioId": "tls.key-update.diagnostic", "displayName": "TLS KeyUpdate Diagnostic", "protocols": ["tls"] },
+    { "scenarioId": "tls.record.coverage", "displayName": "TLS Record Coverage", "protocols": ["tls"] },
+    { "scenarioId": "tls.record.throughput", "displayName": "TLS Record Throughput", "protocols": ["tls"] }
+  ]
+}

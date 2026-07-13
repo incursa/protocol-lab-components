@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.scenario.http2-performance",
+  "packageVersion": "0.2.0",
+  "kind": "scenario-pack",
+  "displayName": "HTTP/2 Performance Smoke and Diagnostic Scenario Pack",
+  "entryManifests": [
+    "scenarios/http2/core/plaintext.yaml",
+    "scenarios/http2/core/json.yaml",
+    "load-profiles/http2-smoke.yaml",
+    "load-profiles/http2-diagnostic.yaml"
+  ],
+  "providedScenarios": [
+    {
+      "scenarioId": "http2.core.plaintext",
+      "displayName": "HTTP/2 Plaintext",
+      "protocols": ["h2"]
+    },
+    {
+      "scenarioId": "http2.core.json",
+      "displayName": "HTTP/2 JSON",
+      "protocols": ["h2"]
+    }
+  ]
+}

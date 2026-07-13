@@ -1,0 +1,10 @@
+id: dns-dot-performance-smoke
+name: DNS over TLS performance contract smoke suite
+description: Fast deterministic DoT query validity selection.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: secure-dns-smoke
+scenarios: [dns.dot.query.a]
+protocol: dot
+notes: Local fixture authority only; no public recursive resolver is eligible. One outstanding query is allowed on the single reused TLS connection.
+tags: [dns, dot, smoke, non-publishable]

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.go-dns-dot-executor",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "Go DNS-over-TLS Test Executor",
+  "entryManifests": ["test-executors/go-dns-dot-executor.yaml"],
+  "providedTestExecutors": [{
+    "testExecutorId": "go-dns-dot-executor",
+    "displayName": "Go DNS-over-TLS Test Executor",
+    "protocols": ["dot"],
+    "scenarios": ["dns.dot.query.a"],
+    "tests": ["dns.dot.query.a"]
+  }],
+  "dependencies": {}
+}

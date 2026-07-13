@@ -1,0 +1,43 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: tls.handshake.full.tls12
+title: TLS 1.2 Compatibility Full Handshake
+description: Establish a fresh authenticated TLS 1.2 session under one exact compatibility profile.
+status: experimental
+kind: protocolValidation
+layer: transport
+protocol: tls
+family: tls
+semanticTemplateId: tls.handshake.full
+protocolStack: [tls1.2, tcp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc5246, https://www.rfc-editor.org/rfc/rfc9325, https://www.rfc-editor.org/rfc/rfc9525]
+roles: [client, server]
+requires: {capabilities: [tls.client, tls.server, tls.handshake.full, tls.version.1_2], protocols: [tls], roles: [client, server]}
+trafficShape: handshake-only
+tls:
+  profileId: plab-tls12-aes128gcm-p256-server-auth-v2
+  version: tls1.2
+  mode: full-handshake
+  resumptionPolicy: not-offered
+  earlyData: not-applicable
+  serverName: tls.plab.test
+  applicationDataBytes: 0
+  alpn: protocol-lab-tls
+  certificateProfile: plab-single-leaf-p256-server-v2
+  cipherSuite: TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+  keyExchangeGroup: x25519
+  signatureScheme: ecdsa_secp256r1_sha256
+  peerAuthentication: server-certificate-required
+  connectionLifecycle: fresh-connection-per-operation
+  measuredWindow: full-handshake
+  direction: not-applicable
+  prerequisitePolicy: clear-session-state-before-each-operation
+  warmupIsolation: warmup-state-not-reused-by-measurement
+executionProfile: {transportSecurity: tls, protocolVariant: tls1.2-full-compatibility, implementationRole: library-backed-target, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode, platformProvenanceRequired: true, accelerationProvenanceRequired: true}
+validation: {required: true, checks: [protocol:tls1.2, no-fallback, handshake-complete, authenticated-peer, fresh-session, zero-unexpected-failures, zero-timeouts], protocol: {requested: tls1.2, expectedObserved: tls1.2, fallbackAllowed: false}}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic], primaryMetrics: [handshakesPerSecond, handshakeLatencyP95, failedOperations, timedOutOperations]}
+requiredMetrics: [handshakesPerSecond, handshakeLatencyMean, handshakeLatencyP50, handshakeLatencyP95, handshakeLatencyP99, completedOperations, failedOperations, timedOutOperations, totalTransferredBytes]
+artifacts: {required: [validation.json, protocol-proof.json, tls-negotiation.json, result.json, load.stdout.log, load.stderr.log], optional: [packet-summary.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [tls1.2-disabled, cipher-suite-unavailable]}
+networkProfile: clean
+tags: [tls, tls1.2, compatibility, handshake]

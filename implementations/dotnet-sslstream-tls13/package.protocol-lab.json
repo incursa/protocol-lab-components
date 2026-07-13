@@ -1,0 +1,38 @@
+{
+  "packageId": "org.protocol-lab.components.implementation.dotnet-sslstream-tls13",
+  "packageKind": "implementation",
+  "version": "0.1.0",
+  "component": {"name": "dotnet-sslstream-tls13", "family": "dotnet-tls", "role": "library-backed-target", "protocols": ["tls"]},
+  "entrypoints": {"launch": {"type": "command", "command": "./run.ps1", "workingDirectory": "."}},
+  "capabilities": {
+    "supported": ["tls.server", "tls13", "tls.handshake.full", "tls.no-resumption", "tls.zero-application-data"],
+    "supportedProtocols": ["tls"],
+    "supportedProtocolVersions": ["TLS1.3"],
+    "supportedTestCaseIds": ["tls.handshake.full"],
+    "supportedScenarios": ["tls.handshake.full"],
+    "unsupportedKnownCases": [
+      "TLS1.2",
+      "tls.handshake.full.tls12",
+      "tls.handshake.full.chacha20",
+      "tls.handshake.mutual-auth",
+      "tls.handshake.resumed",
+      "tls.early-data.accepted",
+      "tls.early-data.rejected",
+      "tls.key-update.diagnostic",
+      "tls.record.coverage",
+      "tls.record.throughput",
+      "tls.0rtt"
+    ]
+  },
+  "requirements": {
+    "os": ["linux", "windows"],
+    "runtimes": [".NET 10 SDK for local source run"],
+    "ports": [{"name": "tls", "protocol": "tcp", "default": 8443}],
+    "externalTools": []
+  },
+  "provenance": {
+    "sourcePath": "implementations/dotnet-sslstream-tls13",
+    "owners": ["protocol-lab-components"],
+    "licenseNotes": "The package contains a test-only private key for plab-single-leaf-p256-v1. It must never be used outside ProtocolLab fixtures or emitted as evidence."
+  }
+}

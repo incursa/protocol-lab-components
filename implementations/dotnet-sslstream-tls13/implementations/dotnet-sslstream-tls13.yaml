@@ -1,0 +1,86 @@
+schemaVersion: "1.0"
+id: dotnet-sslstream-tls13
+name: .NET SslStream TLS 1.3
+description: Library-backed TLS 1.3 full-handshake target with a fixed test certificate and no session resumption.
+family: dotnet-tls
+role: library-backed-target
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-dotnet-sslstream-tls13:0.1.0
+dockerfile: Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+workingDirectory: .
+baseUrl: tls://127.0.0.1:18443
+dockerBaseUrl: tls://127.0.0.1:18443
+protocolBaseUrls:
+  tls: tls://127.0.0.1:18443
+dockerProtocolBaseUrls:
+  tls: tls://127.0.0.1:18443
+certificateMode: plab-single-leaf-p256-v1
+roles:
+  - server
+  - library-backed-target
+protocols:
+  - tls
+supportedProtocols:
+  - tls
+supportedWorkloadFamilies:
+  - tls
+  - tls.lifecycle
+protocolVersions:
+  - TLS1.3
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+ports:
+  - name: tls
+    protocol: tcp
+    default: 18443
+    hostPort: 18443
+    containerPort: 8443
+environment:
+  PLAB_TLS_PORT: "8443"
+startup:
+  port:
+    name: tls
+    environmentVariable: PLAB_TLS_PORT
+    default: 18443
+  readiness:
+    protocol: tcp
+readinessCheck:
+  type: processStarted
+  timeoutSeconds: 10
+  startupDelayMilliseconds: 750
+capabilities:
+  - tls.server
+  - tls13
+  - tlsFullHandshake
+  - tlsNoResumption
+  - tlsZeroApplicationData
+  - scenario.tls.handshake.full
+supportedProtocolVersions:
+  - TLS1.3
+supportedTestCaseIds:
+  - tls.handshake.full
+supportedScenarios:
+  - tls.handshake.full
+unsupportedKnownCases:
+  - TLS1.2
+  - tls.handshake.resumed
+  - tls.0rtt
+  - tls.record.throughput
+  - tls.handshake.full.tls12
+  - tls.handshake.full.chacha20
+  - tls.handshake.mutual-auth
+  - tls.early-data.accepted
+  - tls.early-data.rejected
+  - tls.key-update.diagnostic
+  - tls.record.coverage
+shutdownBehavior: docker-container
+artifactExports: []
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Linux-container-only target because the v2 contract requires an exact TLS 1.3 cipher suite that Windows Schannel cannot select per process. The packaged leaf private key is test-only implementation material and must never be included in evidence artifacts.

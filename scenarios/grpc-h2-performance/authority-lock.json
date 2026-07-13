@@ -1,0 +1,11 @@
+{
+  "repository": "protocol-lab",
+  "commit": "8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574",
+  "serviceContractCanonicalSha256": "b7b987814f8af5cd4f15c03989b9c309c1c0ec643972ae32668304d71502120f",
+  "files": {
+    "scenarios/grpc/h2/unary-echo.yaml": "db277fb4a17e1aa0b4552c4dc369bb62044218064796927b589ad35217823deb",
+    "suites/grpc-h2-performance-smoke.yaml": "d789e6a09e78855b86c6e0e81043455692375032d495f8be5a58bbef146fc752",
+    "load-profiles/grpc-h2-smoke.yaml": "38b51ae12e2e13f5c273b3dfb6a77edee268a5c22db66f58b5807a3e50f4acdf",
+    "fixtures/public-contracts/grpc/v2/valid/echo-service-v2.json": "597de2fe069d6ccca3df9ad18fcb825d2a648c846d5fa7060d7eeacc9fc959c1"
+  }
+}

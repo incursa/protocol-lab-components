@@ -1,0 +1,18 @@
+{
+  "executor": {
+    "language": "go",
+    "module": "org.protocol-lab.components.executor.go-http2-executor",
+    "buildFlags": [
+      "-buildvcs=false",
+      "-trimpath"
+    ]
+  },
+  "loadGenerator": {
+    "id": "go-x-net-http2-h2c-load",
+    "version": "0.3.0",
+    "engineModule": "golang.org/x/net/http2",
+    "engineModuleVersion": "v0.57.0",
+    "license": "BSD-3-Clause",
+    "source": "https://pkg.go.dev/golang.org/x/net/http2"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.go-grpc-h2-executor",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "Go gRPC over HTTP/2 Executor",
+  "entryManifests": ["test-executors/go-grpc-h2-executor.yaml"],
+  "providedTestExecutors": [{
+    "testExecutorId": "go-grpc-h2-executor",
+    "displayName": "Go gRPC over HTTP/2 Executor",
+    "protocols": ["h2"],
+    "scenarios": ["grpc.h2.unary.echo"],
+    "tests": ["grpc.h2.unary.echo"]
+  }],
+  "dependencies": {}
+}

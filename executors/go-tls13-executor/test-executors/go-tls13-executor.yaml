@@ -1,0 +1,55 @@
+executorIdentity:
+  id: go-tls13-executor
+  name: Go TLS 1.3 Test Executor
+  version: 0.1.0
+  vendor: Incursa
+versionCompatibility:
+  contractVersion: test-executor-v1
+  compatibleContractVersions: [test-executor-v1]
+  executorVersion: 0.1.0
+claimedCapabilities:
+  - {id: tls.handshake.full, status: supported}
+  - {id: exact-tls1.3-proof, status: supported}
+  - {id: authenticated-certificate-profile-proof, status: supported}
+  - {id: tls-smoke, status: supported}
+  - {id: tls.handshake.resumed, status: unsupported}
+  - {id: tls.0rtt, status: unsupported}
+  - {id: tls.record.throughput, status: unsupported}
+  - {id: tls.handshake.full.tls12, status: unsupported}
+  - {id: tls.handshake.full.chacha20, status: unsupported}
+  - {id: tls.handshake.mutual-auth, status: unsupported}
+  - {id: tls.early-data.accepted, status: unsupported}
+  - {id: tls.early-data.rejected, status: unsupported}
+  - {id: tls.key-update.diagnostic, status: unsupported}
+  - {id: tls.record.coverage, status: unsupported}
+supportedTestSelectors:
+  - {selectorType: test-id, expression: tls.handshake.full}
+supportedScenarioSelectors:
+  - {selectorType: scenario-id, expression: tls.handshake.full}
+supportedProtocolFamilies: [tls]
+supportedExecutionModes: [single-cell, process]
+requiredTargetEndpointBindings:
+  - {bindingId: primary, purpose: test-endpoint, endpointType: tls, protocols: [tls]}
+supportedArtifactTypes:
+  - {type: validation.json, producedByStates: [stopped, failed]}
+  - {type: result.json, producedByStates: [stopped, failed]}
+  - {type: protocol-proof.json, producedByStates: [stopped, failed]}
+  - {type: tls-negotiation.json, producedByStates: [stopped, failed]}
+  - {type: tls-topology.json, producedByStates: [stopped, failed]}
+  - {type: tls-executor-result.json, producedByStates: [stopped, failed]}
+  - {type: tls-load-summary.json, producedByStates: [stopped, failed]}
+  - {type: connection-and-handshake-latency.json, producedByStates: [stopped, failed]}
+metricsAvailability:
+  available: true
+  availableKinds: [validation, handshakes-per-second, latency-percentiles, operation-outcomes, tls-negotiation]
+parser:
+  id: protocol-lab-tls-json
+  type: protocol-lab-tls-json
+  preservesRawOutput: true
+telemetry:
+  supported: true
+  supported_contract_versions: [telemetry-bundle-v1]
+  supported_scopes: [test-executor, load-generator]
+  supported_artifact_kinds: [summary, metrics, stdout, stderr, raw]
+  export_modes: [inline, artifact-bundle]
+  metadata: {optional: true, implementation_owned: true, description: The executor emits exact TLS negotiation and timing-boundary proof; the runner owns stdout/stderr and saturation telemetry.}

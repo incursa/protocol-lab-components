@@ -1,0 +1,10 @@
+id: tls-performance-smoke
+name: TLS performance contract smoke suite
+description: Fast package-neutral validity selection for full, resumed, and record TLS 1.3 scenarios.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: tls-smoke
+scenarios: [tls.handshake.full, tls.handshake.resumed, tls.record.throughput]
+protocol: tls
+notes: Contract selection only; no TLS executor or implementation support is implied.
+tags: [tls, smoke, non-publishable]

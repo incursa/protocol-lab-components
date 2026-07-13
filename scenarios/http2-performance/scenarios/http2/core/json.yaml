@@ -1,0 +1,82 @@
+schemaVersion: "1.0"
+id: http2.core.json
+title: HTTP/2 JSON
+name: HTTP/2 JSON
+family: http.application
+description: Validate a fixed small JSON HTTP response over an HTTP/2 server endpoint.
+status: stable
+kind: workload
+layer: application
+protocol: h2
+roles:
+  - server
+requires:
+  capabilities:
+    - http.server
+    - httpJson
+  protocols:
+    - h2
+  roles:
+    - server
+trafficShape: request-response
+implementationRole: server
+requiredCapabilities:
+  - httpJson
+endpoint:
+  method: GET
+  path: /json
+  query: {}
+  requestHeaders: {}
+  requestBodyGeneration: none
+  expectedStatus: 200
+  expectedHeaders:
+    content-type: application/json
+  expectedBodyRule: jsonEquivalent
+  expectedBody: '{"message":"Hello, World!"}'
+  expectedJsonProperties:
+    message: Hello, World!
+  expectedJsonKeys:
+    - message
+validation:
+  required: true
+  checks:
+    - status
+    - content-type
+    - json-body
+    - json-equivalent
+    - json-property:message
+    - protocol:h2
+  http:
+    expectedStatus: 200
+    expectedProtocol: h2
+    expectedBody: '{"message":"Hello, World!"}'
+benchmarkCompat:
+  compatibleLoadShapes:
+    - fixed-path-request-response
+    - smoke
+  primaryMetrics:
+    - requestsPerSecond
+    - latencyP50
+    - latencyP95
+    - latencyP99
+    - errorRate
+artifacts:
+  required:
+    - validation.json
+    - result.json
+    - load-generator.stdout.txt
+    - load-generator.stderr.txt
+  optional:
+    - response-body.json
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - requestsPerSecond
+artifactRequirements:
+  - load-generator.stdout.txt
+  - load-generator.stderr.txt
+tags:
+  - http
+  - h2
+  - core
+  - json

@@ -1,0 +1,17 @@
+{
+  "packageId": "org.protocol-lab.components.executor.go-tls13-executor",
+  "packageKind": "test-executor",
+  "version": "0.1.0",
+  "component": {"name": "go-tls13-executor", "family": "go-tls", "role": "test-executor", "protocols": ["tls"]},
+  "entrypoints": {"execute": {"type": "command", "command": "./go-tls13-executor", "workingDirectory": "."}},
+  "capabilities": {
+    "supported": ["tls.validation", "tls.exact-version-proof", "tls.authenticated-peer", "tls.handshake.full", "tls.normalized-metrics", "tls.zero-application-data"],
+    "supportedProtocols": ["tls"],
+    "supportedProtocolVersions": ["TLS1.3"],
+    "supportedTestCaseIds": ["tls.handshake.full"],
+    "supportedScenarios": ["tls.handshake.full"],
+    "unsupportedKnownCases": ["TLS1.2", "tls.handshake.resumed", "tls.0rtt", "tls.record.throughput", "comparison"]
+  },
+  "requirements": {"os": ["linux", "windows"], "runtimes": [], "ports": [], "externalTools": []},
+  "provenance": {"sourcePath": "executors/go-tls13-executor", "owners": ["protocol-lab-components"], "licenseNotes": "Built entirely from the Go standard library; the package contains only the public ProtocolLab test root certificate."}
+}

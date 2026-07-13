@@ -1,17 +1,21 @@
 executorIdentity:
   id: go-http1-executor
   name: Go HTTP/1 Test Executor
-  version: 0.1.0
+  version: 0.3.0
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.0
+  executorVersion: 0.3.0
 claimedCapabilities:
   - id: http1.core.plaintext
     status: supported
   - id: http1.core.json
+    status: supported
+  - id: exact-http1.1-protocol-proof
+    status: supported
+  - id: deterministic-payload-length-and-sha256
     status: supported
   - id: h2
     status: unsupported
@@ -24,7 +28,7 @@ claimedCapabilities:
   - id: payload-bytes
     status: unsupported
   - id: load-generation
-    status: unsupported
+    status: supported
 supportedTestSelectors:
   - selectorType: test-id
     expression: http1.core.plaintext
@@ -55,23 +59,42 @@ supportedArtifactTypes:
     producedByStates:
       - stopped
       - failed
-  - type: load-tool.stdout.txt
+  - type: protocol-proof.json
     producedByStates:
       - stopped
       - failed
-  - type: load-tool.stderr.txt
+  - type: executor-identity.json
     producedByStates:
       - stopped
       - failed
-  - type: load-tool-execution.json
+  - type: load-generator-identity.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: http-executor-result.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: oha.stdout.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: oha.stderr.txt
     producedByStates:
       - stopped
       - failed
 metricsAvailability:
   available: true
   availableKinds:
-    - session
     - validation
+    - requests-per-second
+    - bytes-per-second
+    - latency-percentiles
+    - operation-outcomes
+parser:
+  id: protocol-lab-http-json
+  type: protocol-lab-http-json
+  preservesRawOutput: true
 telemetry:
   supported: true
   supported_contract_versions:
@@ -91,4 +114,4 @@ telemetry:
   metadata:
     optional: true
     implementation_owned: true
-    description: Raw executor output is retained as artifacts unless normalized into public measurement summaries.
+    description: The executor emits validation and protocol-proof artifacts. The invoking runner or package host owns raw stdout and stderr preservation.

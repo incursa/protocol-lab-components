@@ -1,0 +1,32 @@
+# Load Profile Contract v1
+schemaVersion: protocol-lab.load-profile.v1
+
+id: http2-smoke
+title: HTTP/2 Smoke
+status: stable
+purpose: smoke
+
+description: >
+  Minimal protocol-specific smoke test to verify basic endpoint and protocol function. Not intended for benchmark comparison.
+
+durationSeconds: 5
+warmupSeconds: 1
+repetitions: 1
+
+http2:
+  connections: 1
+  concurrency: 1
+  streamsPerConnection: 1
+  requestTimeoutSeconds: 5
+
+evidence:
+  minimumTier: smoke
+  publishable: false
+
+artifacts:
+  required:
+    - load.stdout.log
+    - load.stderr.log
+    - validation.json
+  optional:
+    []

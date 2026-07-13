@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.go-grpc-h2",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Go gRPC over HTTP/2 Unary Target",
+  "entryManifests": ["implementations/go-grpc-h2.yaml"],
+  "providedImplementations": [{
+    "implementationId": "go-grpc-h2",
+    "displayName": "Go gRPC over HTTP/2 Unary Target",
+    "protocols": ["h2"],
+    "scenarios": ["grpc.h2.unary.echo"]
+  }],
+  "dependencies": {}
+}

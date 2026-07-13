@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.go-tls13-executor",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "Go TLS 1.3 Test Executor",
+  "entryManifests": ["test-executors/go-tls13-executor.yaml"],
+  "providedTestExecutors": [{
+    "testExecutorId": "go-tls13-executor",
+    "displayName": "Go TLS 1.3 Test Executor",
+    "protocols": ["tls"],
+    "scenarios": ["tls.handshake.full"],
+    "tests": ["tls.handshake.full"]
+  }],
+  "dependencies": {}
+}

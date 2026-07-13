@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {"os":"windows","arch":"x64","entrypoint":{"kind":"pwsh","path":"run.ps1","arguments":[],"workingDirectory":"."}},
+    {"os":"linux","arch":"x64","entrypoint":{"kind":"bash","path":"run.sh","arguments":[],"workingDirectory":"."}}
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": false,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": true,
+    "requiredCapabilities": [{"name":"go","value":"true"}]
+  }
+}

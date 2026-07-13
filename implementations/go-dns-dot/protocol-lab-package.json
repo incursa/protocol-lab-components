@@ -1,0 +1,10 @@
+{
+  "schemaVersion":"protocol-lab-package-v2",
+  "packageId":"org.protocol-lab.components.implementation.go-dns-dot",
+  "packageVersion":"0.1.0",
+  "kind":"implementation",
+  "displayName":"Go DNS-over-TLS Local Fixture Authority",
+  "entryManifests":["implementations/go-dns-dot.yaml"],
+  "providedImplementations":[{"implementationId":"go-dns-dot","displayName":"Go DNS-over-TLS Local Fixture Authority","protocols":["dot"],"scenarios":["dns.dot.query.a"]}],
+  "dependencies":{}
+}
