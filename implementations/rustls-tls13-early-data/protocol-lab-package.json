@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.rustls-tls13-early-data",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "rustls TLS 1.3 Early Data Target",
+  "entryManifests": ["implementations/rustls-tls13-early-data.yaml"],
+  "providedImplementations": [{
+    "implementationId": "rustls-tls13-early-data",
+    "displayName": "rustls TLS 1.3 Early Data Target",
+    "protocols": ["tls"],
+    "scenarios": ["tls.early-data.accepted", "tls.early-data.rejected"]
+  }],
+  "dependencies": {}
+}
