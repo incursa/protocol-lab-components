@@ -44,6 +44,8 @@ pwsh ./scripts/package/Build-CaddyHttp1Package.ps1
 pwsh ./scripts/package/Build-CaddyHttp3Package.ps1
 pwsh ./scripts/package/Build-NginxHttp1Package.ps1
 pwsh ./scripts/package/Build-GoHttp1ExecutorPackage.ps1
+pwsh ./scripts/package/Build-GoTls13MtlsImplementationPackage.ps1
+pwsh ./scripts/package/Build-GoTls13MtlsExecutorPackage.ps1
 pwsh ./scripts/package/Build-GoHttp1WebSocketImplementationPackage.ps1
 pwsh ./scripts/package/Build-GoHttp1WebSocketExecutorPackage.ps1
 pwsh ./scripts/package/Build-Http1WebSocketCleartextScenarioPackage.ps1
@@ -67,6 +69,14 @@ identity, and the unknown-ID exit path with:
 
 ```powershell
 pwsh ./scripts/package/Test-Http1WebSocketThreePackageSmoke.ps1
+```
+
+Exercise the authority-locked TLS 1.3 mutual-authentication scenario with the
+extracted scenario, executor, and target packages, including exact certificate
+proof and explicit unsupported outcomes, with:
+
+```powershell
+pwsh ./scripts/package/Test-Tls13MtlsThreePackageSmoke.ps1
 ```
 
 All wrappers call `Build-ProtocolLabComponentPackage.ps1`, which reads each component's `protocol-lab-package.json` and writes a `.plabpkg` under `artifacts/packages/`.

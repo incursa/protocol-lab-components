@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.go-tls13-mtls-executor",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "Go TLS 1.3 Mutual Authentication Executor",
+  "entryManifests": ["test-executors/go-tls13-mtls-executor.yaml"],
+  "providedTestExecutors": [{
+    "testExecutorId": "go-tls13-mtls-executor",
+    "displayName": "Go TLS 1.3 Mutual Authentication Executor",
+    "protocols": ["tls"],
+    "scenarios": ["tls.handshake.mutual-auth"],
+    "tests": ["tls.handshake.mutual-auth"]
+  }],
+  "dependencies": {}
+}
