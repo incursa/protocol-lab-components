@@ -1,0 +1,15 @@
+{
+  "executor": {
+    "language": "rust",
+    "module": "protocol-lab-rustls-tls13-early-data-executor",
+    "engineModule": "rustls",
+    "engineModuleVersion": "0.23.35",
+    "cryptoProvider": "rustls-rustcrypto@0.0.2-alpha"
+  },
+  "loadGenerator": {
+    "id": "rustls-tls13-early-data-load",
+    "version": "0.1.0",
+    "license": "Apache-2.0 OR ISC OR MIT",
+    "source": "https://github.com/rustls/rustls"
+  }
+}

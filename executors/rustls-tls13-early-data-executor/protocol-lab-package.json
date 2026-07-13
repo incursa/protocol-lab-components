@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.rustls-tls13-early-data-executor",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "rustls TLS 1.3 Early Data Executor",
+  "entryManifests": ["test-executors/rustls-tls13-early-data-executor.yaml"],
+  "providedTestExecutors": [{
+    "testExecutorId": "rustls-tls13-early-data-executor",
+    "displayName": "rustls TLS 1.3 Early Data Executor",
+    "protocols": ["tls"],
+    "scenarios": ["tls.early-data.accepted", "tls.early-data.rejected"],
+    "tests": ["tls.early-data.accepted", "tls.early-data.rejected"]
+  }],
+  "dependencies": {}
+}
