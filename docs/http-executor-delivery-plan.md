@@ -349,7 +349,8 @@ Components status: exact package-local source and extracted-package smoke are co
 - target: independent `org.protocol-lab.components.implementation.go-http1-websocket-tls@0.1.0`, implementation `go-http1-websocket-tls@0.1.0`;
 - proof: exact TLS 1.3, SNI `websocket.plab.test`, ALPN `http/1.1`, authenticated package-local DER/SPKI hashes, `didResume: false`, no early data, exact HTTP/1.1 status-101 Upgrade headers, fresh random 16-byte keys with zero reuse or accept mismatch, deterministic messages, and clean code-1000 close;
 - unsupported: cleartext substitution, TLS 1.2, subprotocol and permessage-deflate diagnostics, RFC 8441, RFC 9220, fragmentation, WebTransport, `websocket.echo`, and unknown identities fail closed rather than reusing the TLS smoke semantics;
-- evidence: the dirty-source extracted three-package smoke completed all five exact IDs with zero failures and timeouts. Clean immutable package hashes and real runner evidence are recorded only after the source commit and runner admission gates pass.
+- clean package evidence at components commit `a09370c`: scenario SHA-256 `c2a83a34c1ed04e73b761f94a08c9d7651ce906b548a426732741651aaa7345e`; executor Windows `c63d280b49a2421c8a5d13b73a4cd6f9f490b218380b4c2b35f6540a79f16683`, Linux `70459ce4b228310f9beb6ac0842041a7005f8abf0c9c4c8cf52e7d42c10906c1`; target Windows `99d36b3dd89dfc87f48bce64e92c8cd354c0cec9c82b83bec4b95d22b12494de`, Linux `e581931cb7e9f1a127d9058aec41fd1f61e7e89a2d6f3cd5639958f06c12492f`. All five attestations are clean-source and parity-eligible;
+- extracted Windows smoke completed upgrade `2,213`, control frames `75,691`, text echo `80,820`, binary echo `67,371`, and close `2,273`, with zero failures/timeouts. It proves the exact package-local TLS and WebSocket gates but remains local diagnostic evidence; real runner admission and Protocol Execution Result v2 are still required.
 
 ## Verification floor
 
