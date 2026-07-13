@@ -8,7 +8,7 @@ Exact supported identities are `dns.doh3.query.a`, `dns.doh3.get.a`, `dns.doh3.q
 
 The package-local executor requires QUIC v1, TLS 1.3, ALPN `h3`, authenticated leaf DER/SPKI hashes, HTTP/3.0, exact authority/path/method/media/cache binding, no fallback, one reused connection, parsed semantic equivalence to the selected deterministic DNS fixture, canonical query and response hashes, and zero malformed/retried/failed/timed-out operations. The large case proves the exact 630-byte canonical response and explicitly records `dnssecSignatureValidity: not-claimed`.
 
-Clean packages were built from component commit `0500afbdc4f5cc2b70a13d6db3496b1edaad38af`. All matching build attestations report clean source, are parity-eligible, and pass `Test-ProtocolLabPackageBuildAttestation.ps1 -RequireParityEligible`.
+Clean packages were built from component commit `0500afb4b95f465fbed0d475ea7b92b6cbce728d`. All matching build attestations report clean source, are parity-eligible, and pass `Test-ProtocolLabPackageBuildAttestation.ps1 -RequireParityEligible`.
 
 | Package artifact | SHA-256 |
 | --- | --- |
