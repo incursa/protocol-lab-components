@@ -89,6 +89,16 @@ certificate, unsupported-ID, and unknown-ID gates, with:
 pwsh ./scripts/package/Test-Tls12ThreePackageSmoke.ps1
 ```
 
+Exercise the authority-locked TLS 1.3 ChaCha20 full-handshake profile with the
+extracted scenario, pinned uTLS executor, and independent Go `crypto/tls`
+target packages. The smoke proves the exact one-suite ClientHello, X25519,
+certificate identity, no session state or early data, explicit unsupported
+outcomes, and the unknown-ID exit path:
+
+```powershell
+pwsh ./scripts/package/Test-Tls13Chacha20ThreePackageSmoke.ps1
+```
+
 All wrappers call `Build-ProtocolLabComponentPackage.ps1`, which reads each component's `protocol-lab-package.json` and writes a `.plabpkg` under `artifacts/packages/`.
 Compiled payload wrappers may stage a runtime-specific package before compression while preserving the same package manifest layout and artifact root.
 
