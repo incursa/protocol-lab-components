@@ -1,0 +1,28 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: http1.websocket.rfc6455.tls.permessage-deflate-binary-echo
+title: RFC 6455 WebSocket HTTP/1.1 TLS permessage-deflate Diagnostic
+description: Negotiate permessage-deflate without context takeover and echo a deterministic 1 KiB binary message over TLS 1.3 and HTTP/1.1.
+status: draft
+kind: workload
+layer: application
+protocol: h1
+family: websocket
+semanticTemplateId: websocket.echo.binary.1kib.permessage-deflate
+protocolStack: [websocket, h1, tls1.3, tcp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc6455, https://www.rfc-editor.org/rfc/rfc7692, https://www.rfc-editor.org/rfc/rfc9112, https://www.rfc-editor.org/rfc/rfc9846]
+roles: [client, server]
+requires: {capabilities: [websocket.client, websocket.server, websocket.binary-echo, websocket.permessage-deflate, tls.client, tls.server], protocols: [h1, tls], roles: [client, server]}
+trafficShape: bidirectional-stream
+websocket: {binding: http1-upgrade, standard: rfc6455, scheme: wss, path: /websocket, subprotocol: null, operation: binary-echo, messageType: binary, messageBytes: 1024, messageCount: 1, payloadGenerator: repeated-octet, payloadOctet: 66, payloadSha256: 9b6ce55f379e9771551de6939556a7e6b949814ae27c2f5cfd5dbeb378ce7c2a, fragmentation: none, masking: client-required, closeCode: 1000, authority: websocket.plab.test, extensions: permessage-deflate-no-context-takeover, extensionPolicy: {offer: "permessage-deflate; client_no_context_takeover; server_no_context_takeover", accept: "permessage-deflate; client_no_context_takeover; server_no_context_takeover", clientNoContextTakeover: true, serverNoContextTakeover: true, compressedMessages: data-messages-required, validation: decompress-and-compare-payload-sha256}, bootstrapPolicy: rfc6455-http1-upgrade, closeReasonPolicy: empty-utf8-reason, connectionLifecycle: pre-established-connection-per-operation, measuredWindow: message-round-trip, handshake: {binding: http1-upgrade, requestMethod: GET, requestVersion: HTTP/1.1, requestHeaders: {host: websocket.plab.test, upgrade: websocket, connection: Upgrade, secWebSocketKeyPolicy: fresh-random-16-octets-per-opening-handshake, secWebSocketVersion: "13", originPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: true, secWebSocketExtensions: "permessage-deflate; client_no_context_takeover; server_no_context_takeover"}, responseStatus: 101, responseHeaders: {upgrade: websocket, connection: Upgrade, secWebSocketAcceptPolicy: base64-sha1-runtime-key-plus-rfc6455-guid, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: true, secWebSocketExtensions: "permessage-deflate; client_no_context_takeover; server_no_context_takeover"}}}
+executionProfile: {transportSecurity: tls, protocolVariant: websocket-h1-tls1.3-upgrade, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+validation:
+  required: true
+  checks: [protocol:h1, protocol:tls1.3, scheme:wss, no-subprotocol, extension-offered:permessage-deflate, extension-accepted:permessage-deflate, client-no-context-takeover, server-no-context-takeover, compressed-data-frame, decompressed-payload-sha256, fresh-sec-websocket-key, no-fallback, message-type:binary, message-size:1024, ordered-echo, close-code:1000, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: websocket-over-h1-tls, expectedObserved: websocket-over-h1-tls, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [diagnostic], primaryMetrics: [messageLatencyP95, failedOperations, timedOutOperations]}
+requiredMetrics: [messageLatencyMean, messageLatencyP50, messageLatencyP75, messageLatencyP90, messageLatencyP95, messageLatencyP99, completedOperations, failedOperations, timedOutOperations, totalTransferredBytes]
+artifacts: {required: [validation.json, protocol-proof.json, websocket-summary.json, payload-hash.json, frame-summary.json, tls-negotiation.json, result.json, load.stdout.log, load.stderr.log], optional: [target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [permessage-deflate-unavailable, context-takeover-required, cleartext-only, tls1.2-only, payload-hash-unavailable, h2-or-h3-substitution]}
+networkProfile: clean
+tags: [http1, websocket, rfc6455, rfc7692, tls, tls1.3, wss, compression, diagnostic]

@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"compress/flate"
 	"context"
 	"crypto/sha1"
 	"crypto/sha256"
@@ -25,12 +27,19 @@ import (
 )
 
 const (
-	implementationID      = "go-http1-websocket-tls"
-	implementationVersion = "0.1.0"
-	websocketGUID         = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
-	textPayload           = "protocol-lab"
-	controlPayload        = "protocol-lab-ping"
+	implementationID           = "go-http1-websocket-tls"
+	implementationVersion      = "0.2.0"
+	websocketGUID              = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+	textPayload                = "protocol-lab"
+	controlPayload             = "protocol-lab-ping"
+	subprotocol                = "plab.echo.v1"
+	perMessageDeflateExtension = "permessage-deflate; client_no_context_takeover; server_no_context_takeover"
 )
+
+type connectionProfile struct {
+	subprotocol       string
+	perMessageDeflate bool
+}
 
 func main() {
 	listenAddress := envOr("PLAB_HTTP1_WEBSOCKET_TLS_LISTEN", net.JoinHostPort("127.0.0.1", envOr("PLAB_TARGET_PORT", "18443")))
@@ -112,12 +121,20 @@ func handleConnection(conn net.Conn) error {
 		return fmt.Errorf("HTTP/1.1 opening handshake: %w", err)
 	}
 	defer request.Body.Close()
-	if err := validateUpgradeRequest(request); err != nil {
+	profile, err := validateUpgradeRequest(request)
+	if err != nil {
 		_, _ = io.WriteString(conn, "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 0\r\n\r\n")
 		return err
 	}
 	accept := websocketAccept(request.Header.Get("Sec-WebSocket-Key"))
-	response := "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: " + accept + "\r\n\r\n"
+	response := "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: " + accept + "\r\n"
+	if profile.subprotocol != "" {
+		response += "Sec-WebSocket-Protocol: " + profile.subprotocol + "\r\n"
+	}
+	if profile.perMessageDeflate {
+		response += "Sec-WebSocket-Extensions: " + perMessageDeflateExtension + "\r\n"
+	}
+	response += "\r\n"
 	if _, err := io.WriteString(conn, response); err != nil {
 		return err
 	}
@@ -126,11 +143,14 @@ func handleConnection(conn net.Conn) error {
 		if err != nil {
 			return err
 		}
-		if !frame.fin || frame.rsv != 0 {
-			return errors.New("fragmented or RSV-bearing frames are not supported by this exact target")
+		if !frame.fin {
+			return errors.New("fragmented frames are not supported by this exact target")
 		}
 		switch frame.opcode {
 		case 0x1:
+			if profile.perMessageDeflate || frame.rsv != 0 {
+				return errors.New("text data frame did not match the exact negotiated subprotocol profile")
+			}
 			if string(frame.payload) != textPayload {
 				return errors.New("unexpected text payload")
 			}
@@ -138,18 +158,40 @@ func handleConnection(conn net.Conn) error {
 				return err
 			}
 		case 0x2:
-			if len(frame.payload) != 1024 {
+			semanticPayload := frame.payload
+			if profile.perMessageDeflate {
+				if frame.rsv != 0x40 {
+					return errors.New("permessage-deflate binary data frame must set only RSV1")
+				}
+				semanticPayload, err = decompressMessage(frame.payload)
+				if err != nil {
+					return fmt.Errorf("decompress client permessage-deflate frame: %w", err)
+				}
+			} else if profile.subprotocol != "" || frame.rsv != 0 {
+				return errors.New("binary data frame did not match the exact negotiated profile")
+			}
+			if len(semanticPayload) != 1024 {
 				return errors.New("unexpected binary payload length")
 			}
-			for _, value := range frame.payload {
+			for _, value := range semanticPayload {
 				if value != 66 {
 					return errors.New("unexpected binary payload content")
 				}
 			}
-			if err := writeFrame(conn, 0x2, frame.payload, false); err != nil {
+			responsePayload := semanticPayload
+			if profile.perMessageDeflate {
+				responsePayload, err = compressMessage(semanticPayload)
+				if err != nil {
+					return err
+				}
+			}
+			if err := writeFrameWithRSV1(conn, 0x2, responsePayload, false, profile.perMessageDeflate); err != nil {
 				return err
 			}
 		case 0x9:
+			if frame.rsv != 0 || profile.subprotocol != "" || profile.perMessageDeflate {
+				return errors.New("ping did not match the unextended base profile")
+			}
 			if string(frame.payload) != controlPayload {
 				return errors.New("unexpected ping payload")
 			}
@@ -157,6 +199,9 @@ func handleConnection(conn net.Conn) error {
 				return err
 			}
 		case 0x8:
+			if frame.rsv != 0 {
+				return errors.New("close frame must not set RSV bits")
+			}
 			if len(frame.payload) != 2 || binary.BigEndian.Uint16(frame.payload) != 1000 {
 				return errors.New("close payload must contain code 1000 with an empty UTF-8 reason")
 			}
@@ -175,7 +220,7 @@ func packagedRoot() string {
 	return filepath.Clean(filepath.Join(filepath.Dir(executable), "..", ".."))
 }
 
-func validateUpgradeRequest(request *http.Request) error {
+func validateUpgradeRequest(request *http.Request) (connectionProfile, error) {
 	var failures []string
 	if request.Method != http.MethodGet {
 		failures = append(failures, "method is not GET")
@@ -199,15 +244,26 @@ func validateUpgradeRequest(request *http.Request) error {
 	if err != nil || len(decoded) != 16 {
 		failures = append(failures, "Sec-WebSocket-Key is not base64 of exactly 16 octets")
 	}
-	for _, absent := range []string{"Origin", "Sec-WebSocket-Protocol", "Sec-WebSocket-Extensions"} {
+	for _, absent := range []string{"Origin"} {
 		if request.Header.Get(absent) != "" {
 			failures = append(failures, absent+" must be absent")
 		}
 	}
 	if len(failures) != 0 {
-		return errors.New(strings.Join(failures, "; "))
+		return connectionProfile{}, errors.New(strings.Join(failures, "; "))
 	}
-	return nil
+	offeredSubprotocol := request.Header.Get("Sec-WebSocket-Protocol")
+	offeredExtension := request.Header.Get("Sec-WebSocket-Extensions")
+	switch {
+	case offeredSubprotocol == "" && offeredExtension == "":
+		return connectionProfile{}, nil
+	case offeredSubprotocol == subprotocol && offeredExtension == "":
+		return connectionProfile{subprotocol: subprotocol}, nil
+	case offeredSubprotocol == "" && offeredExtension == perMessageDeflateExtension:
+		return connectionProfile{perMessageDeflate: true}, nil
+	default:
+		return connectionProfile{}, errors.New("opening handshake did not match an exact supported subprotocol or permessage-deflate profile")
+	}
 }
 
 type wireFrame struct {
@@ -256,7 +312,18 @@ func readFrame(reader *bufio.Reader, requireMask bool) (wireFrame, error) {
 }
 
 func writeFrame(writer io.Writer, opcode byte, payload []byte, masked bool) error {
-	header := []byte{0x80 | opcode}
+	return writeFrameWithRSV1(writer, opcode, payload, masked, false)
+}
+
+func writeFrameWithRSV1(writer io.Writer, opcode byte, payload []byte, masked, rsv1 bool) error {
+	first := byte(0x80) | opcode
+	if rsv1 {
+		if opcode != 0x1 && opcode != 0x2 {
+			return errors.New("RSV1 is valid only on compressed data frames")
+		}
+		first |= 0x40
+	}
+	header := []byte{first}
 	maskBit := byte(0)
 	if masked {
 		maskBit = 0x80
@@ -297,6 +364,44 @@ func readPayloadLength(reader io.Reader, encoded byte) (int, error) {
 	default:
 		return int(encoded), nil
 	}
+}
+
+func compressMessage(payload []byte) ([]byte, error) {
+	var buffer bytes.Buffer
+	writer, err := flate.NewWriter(&buffer, flate.DefaultCompression)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := writer.Write(payload); err != nil {
+		_ = writer.Close()
+		return nil, err
+	}
+	if err := writer.Flush(); err != nil {
+		_ = writer.Close()
+		return nil, err
+	}
+	wire := append([]byte(nil), buffer.Bytes()...)
+	if err := writer.Close(); err != nil {
+		return nil, err
+	}
+	tail := []byte{0x00, 0x00, 0xff, 0xff}
+	if len(wire) < len(tail) || !bytes.Equal(wire[len(wire)-len(tail):], tail) {
+		return nil, errors.New("permessage-deflate sync-flush tail was not produced")
+	}
+	return wire[:len(wire)-len(tail)], nil
+}
+
+func decompressMessage(wire []byte) ([]byte, error) {
+	reader := flate.NewReader(io.MultiReader(bytes.NewReader(wire), bytes.NewReader([]byte{0x00, 0x00, 0xff, 0xff})))
+	defer reader.Close()
+	payload, err := io.ReadAll(io.LimitReader(reader, 1<<20+1))
+	if err != nil && !errors.Is(err, io.ErrUnexpectedEOF) {
+		return nil, err
+	}
+	if len(payload) > 1<<20 {
+		return nil, errors.New("decompressed message exceeds package limit")
+	}
+	return payload, nil
 }
 
 func websocketAccept(key string) string {

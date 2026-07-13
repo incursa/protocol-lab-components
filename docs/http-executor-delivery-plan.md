@@ -405,15 +405,16 @@ Clean packages built from components commit `0ba643fe5fe3670cf17d140782d04b11077
 
 #### E8d — HTTP/1.1 WebSocket over TLS 1.3
 
-Components status: exact package-local source and extracted-package smoke are complete; internal runner admission and Protocol Execution Result v2 remain the next dependency-ordered slice.
+Components status: the original five-ID package-local and runner lane remains complete. Component version `0.2.0` adds two individually routed diagnostics with source and extracted-package proof; their runner admission and Protocol Execution Result v2 normalization remain a separate future slice.
 
-- scenario: `org.protocol-lab.components.scenario.http1-websocket-tls-performance@0.1.0` authority-locks the five exact `http1.websocket.rfc6455.tls.*` smoke identities, suite `http1-websocket-tls-performance-smoke`, and `websocket-smoke` to public commit `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`;
-- executor: `org.protocol-lab.components.executor.go-http1-websocket-tls-executor@0.1.0`, executor `go-http1-websocket-tls-executor@0.1.0`, and generator `go-http1-websocket-tls-load@0.1.0`;
-- target: independent `org.protocol-lab.components.implementation.go-http1-websocket-tls@0.1.0`, implementation `go-http1-websocket-tls@0.1.0`;
-- proof: exact TLS 1.3, SNI `websocket.plab.test`, ALPN `http/1.1`, authenticated package-local DER/SPKI hashes, `didResume: false`, no early data, exact HTTP/1.1 status-101 Upgrade headers, fresh random 16-byte keys with zero reuse or accept mismatch, deterministic messages, and clean code-1000 close;
-- unsupported: cleartext substitution, TLS 1.2, subprotocol and permessage-deflate diagnostics, RFC 8441, RFC 9220, fragmentation, WebTransport, `websocket.echo`, and unknown identities fail closed rather than reusing the TLS smoke semantics;
-- clean package evidence at components commit `a09370c`: scenario SHA-256 `c2a83a34c1ed04e73b761f94a08c9d7651ce906b548a426732741651aaa7345e`; executor Windows `c63d280b49a2421c8a5d13b73a4cd6f9f490b218380b4c2b35f6540a79f16683`, Linux `70459ce4b228310f9beb6ac0842041a7005f8abf0c9c4c8cf52e7d42c10906c1`; target Windows `99d36b3dd89dfc87f48bce64e92c8cd354c0cec9c82b83bec4b95d22b12494de`, Linux `e581931cb7e9f1a127d9058aec41fd1f61e7e89a2d6f3cd5639958f06c12492f`. All five attestations are clean-source and parity-eligible;
-- extracted Windows smoke completed upgrade `2,213`, control frames `75,691`, text echo `80,820`, binary echo `67,371`, and close `2,273`, with zero failures/timeouts. It proves the exact package-local TLS and WebSocket gates but remains local diagnostic evidence; real runner admission and Protocol Execution Result v2 are still required.
+- scenario: `org.protocol-lab.components.scenario.http1-websocket-tls-performance@0.2.0` authority-locks seven exact `http1.websocket.rfc6455.tls.*` identities, the unchanged five-ID suite `http1-websocket-tls-performance-smoke`, and `websocket-smoke` to public commit `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`; the two diagnostics are not silently inserted into the canonical suite;
+- executor: `org.protocol-lab.components.executor.go-http1-websocket-tls-executor@0.2.0`, executor `go-http1-websocket-tls-executor@0.2.0`, and generator `go-http1-websocket-tls-load@0.2.0`;
+- target: independent `org.protocol-lab.components.implementation.go-http1-websocket-tls@0.2.0`, implementation `go-http1-websocket-tls@0.2.0`;
+- base proof remains exact TLS 1.3, SNI `websocket.plab.test`, ALPN `http/1.1`, authenticated package-local DER/SPKI hashes, `didResume: false`, no early data, exact HTTP/1.1 status-101 Upgrade headers, fresh random 16-byte keys with zero reuse or accept mismatch, deterministic messages, and clean code-1000 close;
+- diagnostic proof adds exact `plab.echo.v1` offer/acceptance and exact `permessage-deflate; client_no_context_takeover; server_no_context_takeover` offer/acceptance. Compression evidence requires correct masking, binary opcode, RSV1 in both data directions, semantic decompression, and the canonical 1 KiB payload hash; it deliberately does not require identical compressed wire bytes;
+- unsupported: cleartext substitution, TLS 1.2, adjacent subprotocols or compression parameters, RFC 8441, RFC 9220, fragmentation, WebTransport, `websocket.echo`, and unknown identities fail closed rather than reusing a supported diagnostic;
+- extracted Windows proof passes separate three-package cells for `http1.websocket.rfc6455.tls.subprotocol-text-echo` and `http1.websocket.rfc6455.tls.permessage-deflate-binary-echo`, plus the unchanged five-ID regression, with zero failures/timeouts. This is local diagnostic evidence only; runner admission, comparison, publication, and ranking are not implied;
+- clean immutable package hashes and parity-eligible attestations are recorded only after the source commit and clean rebuild gate.
 
 ## Verification floor
 

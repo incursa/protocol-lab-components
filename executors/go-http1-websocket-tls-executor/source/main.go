@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"compress/flate"
 	"context"
 	"crypto/rand"
 	"crypto/sha1"
@@ -30,58 +32,62 @@ import (
 
 const (
 	executorID                    = "go-http1-websocket-tls-executor"
-	executorVersion               = "0.1.0"
+	executorVersion               = "0.2.0"
 	loadGeneratorID               = "go-http1-websocket-tls-load"
-	loadGeneratorVersion          = "0.1.0"
+	loadGeneratorVersion          = "0.2.0"
 	supportedProfile              = "websocket-smoke"
 	websocketGUID                 = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 	textPayload                   = "protocol-lab"
 	controlPayload                = "protocol-lab-ping"
 	serverName                    = "websocket.plab.test"
+	subprotocol                   = "plab.echo.v1"
+	perMessageDeflateExtension    = "permessage-deflate; client_no_context_takeover; server_no_context_takeover"
 	expectedCertificateDERSHA256  = "fe996190f39355e3cfc201cbb7e2cba962a701b94ed08ff49e68e830216d0109"
 	expectedCertificateSPKISHA256 = "c2440fbe955033f341ca625c1804e21b50066d952ab24a4b53007dc1cfbf410c"
 )
 
 type scenarioExpectation struct {
-	id               string
-	operation        string
-	messageType      string
-	payload          []byte
-	payloadHash      string
-	requestOpcode    byte
-	responseOpcode   byte
-	connectionMetric bool
+	id                string
+	operation         string
+	messageType       string
+	payload           []byte
+	payloadHash       string
+	requestOpcode     byte
+	responseOpcode    byte
+	connectionMetric  bool
+	subprotocol       string
+	perMessageDeflate bool
 }
 
 var expectations = map[string]scenarioExpectation{
-	"http1.websocket.rfc6455.tls.upgrade":        {id: "http1.websocket.rfc6455.tls.upgrade", operation: "establish", messageType: "none", payloadHash: hash(nil), connectionMetric: true},
-	"http1.websocket.rfc6455.tls.text-echo":      {id: "http1.websocket.rfc6455.tls.text-echo", operation: "text-echo", messageType: "text", payload: []byte(textPayload), payloadHash: "504585b0bb4fd77012ea2575efbcdb58f4c33e6b543e9567a65896d213720c29", requestOpcode: 0x1, responseOpcode: 0x1},
-	"http1.websocket.rfc6455.tls.binary-echo":    {id: "http1.websocket.rfc6455.tls.binary-echo", operation: "binary-echo", messageType: "binary", payload: repeatedByte(66, 1024), payloadHash: "9b6ce55f379e9771551de6939556a7e6b949814ae27c2f5cfd5dbeb378ce7c2a", requestOpcode: 0x2, responseOpcode: 0x2},
-	"http1.websocket.rfc6455.tls.control-frames": {id: "http1.websocket.rfc6455.tls.control-frames", operation: "control-frames", messageType: "none", payload: []byte(controlPayload), payloadHash: "4848de689e96825e0e05b6c3e96e48f2ad7ec7805fb64ecf824ccc6aa9c58883", requestOpcode: 0x9, responseOpcode: 0xA},
-	"http1.websocket.rfc6455.tls.close":          {id: "http1.websocket.rfc6455.tls.close", operation: "close", messageType: "none", payloadHash: hash(nil)},
+	"http1.websocket.rfc6455.tls.upgrade":                        {id: "http1.websocket.rfc6455.tls.upgrade", operation: "establish", messageType: "none", payloadHash: hash(nil), connectionMetric: true},
+	"http1.websocket.rfc6455.tls.text-echo":                      {id: "http1.websocket.rfc6455.tls.text-echo", operation: "text-echo", messageType: "text", payload: []byte(textPayload), payloadHash: "504585b0bb4fd77012ea2575efbcdb58f4c33e6b543e9567a65896d213720c29", requestOpcode: 0x1, responseOpcode: 0x1},
+	"http1.websocket.rfc6455.tls.binary-echo":                    {id: "http1.websocket.rfc6455.tls.binary-echo", operation: "binary-echo", messageType: "binary", payload: repeatedByte(66, 1024), payloadHash: "9b6ce55f379e9771551de6939556a7e6b949814ae27c2f5cfd5dbeb378ce7c2a", requestOpcode: 0x2, responseOpcode: 0x2},
+	"http1.websocket.rfc6455.tls.control-frames":                 {id: "http1.websocket.rfc6455.tls.control-frames", operation: "control-frames", messageType: "none", payload: []byte(controlPayload), payloadHash: "4848de689e96825e0e05b6c3e96e48f2ad7ec7805fb64ecf824ccc6aa9c58883", requestOpcode: 0x9, responseOpcode: 0xA},
+	"http1.websocket.rfc6455.tls.close":                          {id: "http1.websocket.rfc6455.tls.close", operation: "close", messageType: "none", payloadHash: hash(nil)},
+	"http1.websocket.rfc6455.tls.subprotocol-text-echo":          {id: "http1.websocket.rfc6455.tls.subprotocol-text-echo", operation: "text-echo", messageType: "text", payload: []byte(textPayload), payloadHash: "504585b0bb4fd77012ea2575efbcdb58f4c33e6b543e9567a65896d213720c29", requestOpcode: 0x1, responseOpcode: 0x1, subprotocol: subprotocol},
+	"http1.websocket.rfc6455.tls.permessage-deflate-binary-echo": {id: "http1.websocket.rfc6455.tls.permessage-deflate-binary-echo", operation: "binary-echo", messageType: "binary", payload: repeatedByte(66, 1024), payloadHash: "9b6ce55f379e9771551de6939556a7e6b949814ae27c2f5cfd5dbeb378ce7c2a", requestOpcode: 0x2, responseOpcode: 0x2, perMessageDeflate: true},
 }
 
 var knownUnsupported = map[string]struct{}{
 	"websocket.echo": {},
-	"http1.websocket.rfc6455.cleartext.upgrade":                  {},
-	"http1.websocket.rfc6455.cleartext.text-echo":                {},
-	"http1.websocket.rfc6455.cleartext.binary-echo":              {},
-	"http1.websocket.rfc6455.cleartext.control-frames":           {},
-	"http1.websocket.rfc6455.cleartext.close":                    {},
-	"http1.websocket.rfc6455.tls.subprotocol-text-echo":          {},
-	"http1.websocket.rfc6455.tls.permessage-deflate-binary-echo": {},
-	"http2.websocket.rfc8441.extended-connect":                   {},
-	"http2.websocket.rfc8441.text-echo":                          {},
-	"http2.websocket.rfc8441.binary-echo":                        {},
-	"http2.websocket.rfc8441.control-frames":                     {},
-	"http2.websocket.rfc8441.close":                              {},
-	"http2.websocket.rfc8441.multi-message-text-echo":            {},
-	"http3.websocket.rfc9220.extended-connect":                   {},
-	"http3.websocket.rfc9220.text-echo":                          {},
-	"http3.websocket.rfc9220.binary-echo":                        {},
-	"http3.websocket.rfc9220.control-frames":                     {},
-	"http3.websocket.rfc9220.close":                              {},
-	"http3.websocket.rfc9220.fragmented-binary-echo":             {},
+	"http1.websocket.rfc6455.cleartext.upgrade":        {},
+	"http1.websocket.rfc6455.cleartext.text-echo":      {},
+	"http1.websocket.rfc6455.cleartext.binary-echo":    {},
+	"http1.websocket.rfc6455.cleartext.control-frames": {},
+	"http1.websocket.rfc6455.cleartext.close":          {},
+	"http2.websocket.rfc8441.extended-connect":         {},
+	"http2.websocket.rfc8441.text-echo":                {},
+	"http2.websocket.rfc8441.binary-echo":              {},
+	"http2.websocket.rfc8441.control-frames":           {},
+	"http2.websocket.rfc8441.close":                    {},
+	"http2.websocket.rfc8441.multi-message-text-echo":  {},
+	"http3.websocket.rfc9220.extended-connect":         {},
+	"http3.websocket.rfc9220.text-echo":                {},
+	"http3.websocket.rfc9220.binary-echo":              {},
+	"http3.websocket.rfc9220.control-frames":           {},
+	"http3.websocket.rfc9220.close":                    {},
+	"http3.websocket.rfc9220.fragmented-binary-echo":   {},
 }
 
 type loadConfig struct {
@@ -112,8 +118,14 @@ type handshakeProof struct {
 	ObservedSecWebSocketAccept string `json:"observedSecWebSocketAccept"`
 	SubprotocolRequested       bool   `json:"subprotocolRequested"`
 	SubprotocolNegotiated      bool   `json:"subprotocolNegotiated"`
+	SubprotocolOffered         string `json:"subprotocolOffered"`
+	SubprotocolAccepted        string `json:"subprotocolAccepted"`
 	ExtensionsRequested        bool   `json:"extensionsRequested"`
 	ExtensionsNegotiated       bool   `json:"extensionsNegotiated"`
+	ExtensionOffered           string `json:"extensionOffered"`
+	ExtensionAccepted          string `json:"extensionAccepted"`
+	ClientNoContextTakeover    bool   `json:"clientNoContextTakeover"`
+	ServerNoContextTakeover    bool   `json:"serverNoContextTakeover"`
 	FallbackDetected           bool   `json:"fallbackDetected"`
 	ConnectionEstablished      bool   `json:"connectionEstablished"`
 	TLSVersion                 string `json:"tlsVersion"`
@@ -128,32 +140,37 @@ type handshakeProof struct {
 }
 
 type operationProof struct {
-	ScenarioID           string         `json:"scenarioId"`
-	Operation            string         `json:"operation"`
-	MessageType          string         `json:"messageType"`
-	MessageBytes         int            `json:"messageBytes"`
-	MessageCount         int            `json:"messageCount"`
-	PayloadSHA256        string         `json:"payloadSha256"`
-	ControlPayloadBytes  int            `json:"controlPayloadBytes"`
-	ControlPayloadSHA256 string         `json:"controlPayloadSha256"`
-	Fragmentation        string         `json:"fragmentation"`
-	ClientFrameMasked    bool           `json:"clientFrameMasked"`
-	ServerFrameMasked    bool           `json:"serverFrameMasked"`
-	RequestOpcode        string         `json:"requestOpcode"`
-	ResponseOpcode       string         `json:"responseOpcode"`
-	OrderedEcho          bool           `json:"orderedEcho"`
-	PingSent             bool           `json:"pingSent"`
-	PongReceived         bool           `json:"pongReceived"`
-	CloseSentCode        int            `json:"closeSentCode"`
-	CloseReceivedCode    int            `json:"closeReceivedCode"`
-	CloseReasonBytes     int            `json:"closeReasonBytes"`
-	CleanCompletion      bool           `json:"cleanCompletion"`
-	TransportEOFObserved bool           `json:"transportEofObserved"`
-	Handshake            handshakeProof `json:"handshake"`
-	LatencyMilliseconds  float64        `json:"latencyMilliseconds"`
-	TransferredBytes     int64          `json:"transferredBytes"`
-	HandshakeRequest     string         `json:"-"`
-	HandshakeResponse    string         `json:"-"`
+	ScenarioID                string         `json:"scenarioId"`
+	Operation                 string         `json:"operation"`
+	MessageType               string         `json:"messageType"`
+	MessageBytes              int            `json:"messageBytes"`
+	MessageCount              int            `json:"messageCount"`
+	PayloadSHA256             string         `json:"payloadSha256"`
+	ControlPayloadBytes       int            `json:"controlPayloadBytes"`
+	ControlPayloadSHA256      string         `json:"controlPayloadSha256"`
+	Fragmentation             string         `json:"fragmentation"`
+	ClientFrameMasked         bool           `json:"clientFrameMasked"`
+	ServerFrameMasked         bool           `json:"serverFrameMasked"`
+	RequestOpcode             string         `json:"requestOpcode"`
+	ResponseOpcode            string         `json:"responseOpcode"`
+	RequestRSV1               bool           `json:"requestRsv1"`
+	ResponseRSV1              bool           `json:"responseRsv1"`
+	CompressedMessage         bool           `json:"compressedMessage"`
+	DecompressedPayloadSHA256 string         `json:"decompressedPayloadSha256"`
+	PayloadHashMatched        bool           `json:"payloadHashMatched"`
+	OrderedEcho               bool           `json:"orderedEcho"`
+	PingSent                  bool           `json:"pingSent"`
+	PongReceived              bool           `json:"pongReceived"`
+	CloseSentCode             int            `json:"closeSentCode"`
+	CloseReceivedCode         int            `json:"closeReceivedCode"`
+	CloseReasonBytes          int            `json:"closeReasonBytes"`
+	CleanCompletion           bool           `json:"cleanCompletion"`
+	TransportEOFObserved      bool           `json:"transportEofObserved"`
+	Handshake                 handshakeProof `json:"handshake"`
+	LatencyMilliseconds       float64        `json:"latencyMilliseconds"`
+	TransferredBytes          int64          `json:"transferredBytes"`
+	HandshakeRequest          string         `json:"-"`
+	HandshakeResponse         string         `json:"-"`
 }
 
 type phaseSummary struct {
@@ -357,7 +374,7 @@ func runPhase(targetURL, rootCertificate string, expectation scenarioExpectation
 			summary.Errors[err.Error()]++
 			break
 		}
-		recordOpeningHandshake(&summary, proof.Handshake)
+		recordOpeningHandshake(&summary, proof.Handshake, expectation)
 		summary.CompletedOperations++
 		summary.TotalTransferredBytes += proof.TransferredBytes
 		summary.LatenciesMilliseconds = append(summary.LatenciesMilliseconds, proof.LatencyMilliseconds)
@@ -369,14 +386,14 @@ func runPhase(targetURL, rootCertificate string, expectation scenarioExpectation
 
 func runReusablePhase(targetURL, rootCertificate string, expectation scenarioExpectation, duration, timeout time.Duration, name string) phaseSummary {
 	summary := newPhaseSummary(name)
-	connection, err := openWebSocket(targetURL, rootCertificate, timeout)
+	connection, err := openWebSocket(targetURL, rootCertificate, expectation, timeout)
 	if err != nil {
 		summary.FailedOperations = 1
 		summary.Errors[err.Error()]++
 		return summary
 	}
 	defer connection.conn.Close()
-	recordOpeningHandshake(&summary, connection.handshake)
+	recordOpeningHandshake(&summary, connection.handshake, expectation)
 	started := time.Now()
 	deadline := started.Add(duration)
 	for time.Now().Before(deadline) {
@@ -418,7 +435,7 @@ func newPhaseSummary(name string) phaseSummary {
 	}
 }
 
-func recordOpeningHandshake(summary *phaseSummary, proof handshakeProof) {
+func recordOpeningHandshake(summary *phaseSummary, proof handshakeProof, expectation scenarioExpectation) {
 	summary.OpeningHandshakes++
 	decodedKey, err := base64.StdEncoding.DecodeString(proof.SampleSecWebSocketKey)
 	if err != nil || len(decodedKey) != 16 {
@@ -436,16 +453,19 @@ func recordOpeningHandshake(summary *phaseSummary, proof handshakeProof) {
 		proof.Binding == "http1-upgrade" && proof.Scheme == "wss" && proof.TransportSecurity == "tls" &&
 		proof.Endpoint == "/websocket" && proof.Authority == "websocket.plab.test" && proof.RequestMethod == http.MethodGet &&
 		proof.RequestedHTTPVersion == "HTTP/1.1" && proof.SecWebSocketVersion == "13" &&
-		!proof.SubprotocolRequested && !proof.ExtensionsRequested
+		proof.SubprotocolRequested == (expectation.subprotocol != "") && proof.SubprotocolOffered == expectation.subprotocol &&
+		proof.ExtensionsRequested == expectation.perMessageDeflate && proof.ExtensionOffered == expectedExtension(expectation)
 	summary.UpgradeResponseHeadersMatched = summary.UpgradeResponseHeadersMatched &&
 		proof.ObservedHTTPVersion == "HTTP/1.1" && proof.ResponseStatus == http.StatusSwitchingProtocols &&
 		strings.EqualFold(proof.UpgradeHeader, "websocket") && hasToken(proof.ConnectionHeader, "upgrade") &&
-		!proof.SubprotocolNegotiated && !proof.ExtensionsNegotiated &&
+		proof.SubprotocolNegotiated == (expectation.subprotocol != "") && proof.SubprotocolAccepted == expectation.subprotocol &&
+		proof.ExtensionsNegotiated == expectation.perMessageDeflate && proof.ExtensionAccepted == expectedExtension(expectation) &&
+		proof.ClientNoContextTakeover == expectation.perMessageDeflate && proof.ServerNoContextTakeover == expectation.perMessageDeflate &&
 		proof.ObservedSecWebSocketAccept == proof.ExpectedSecWebSocketAccept
 }
 
 func performOperation(targetURL, rootCertificate string, expectation scenarioExpectation, timeout time.Duration) (operationProof, error) {
-	connection, err := openWebSocket(targetURL, rootCertificate, timeout)
+	connection, err := openWebSocket(targetURL, rootCertificate, expectation, timeout)
 	if err != nil {
 		return operationProof{}, err
 	}
@@ -455,6 +475,7 @@ func performOperation(targetURL, rootCertificate string, expectation scenarioExp
 		MessageBytes: len(expectation.payload), PayloadSHA256: expectation.payloadHash, Fragmentation: "none",
 		Handshake: connection.handshake, CloseReasonBytes: 0,
 		HandshakeRequest: connection.rawRequest, HandshakeResponse: connection.rawResponse,
+		DecompressedPayloadSHA256: hash(nil), PayloadHashMatched: expectation.payloadHash == hash(nil),
 	}
 	applySemanticCounts(&proof, expectation)
 	if expectation.operation == "establish" {
@@ -492,16 +513,27 @@ func performOnOpenConnection(connection *wsConnection, expectation scenarioExpec
 		MessageBytes: len(expectation.payload), PayloadSHA256: expectation.payloadHash, Fragmentation: "none",
 		Handshake: connection.handshake, CloseReasonBytes: 0,
 		HandshakeRequest: connection.rawRequest, HandshakeResponse: connection.rawResponse,
+		DecompressedPayloadSHA256: hash(nil), PayloadHashMatched: expectation.payloadHash == hash(nil),
 	}
 	applySemanticCounts(&proof, expectation)
 	started := time.Now()
-	written, err := writeClientFrame(connection.conn, expectation.requestOpcode, expectation.payload)
+	wirePayload := expectation.payload
+	if expectation.perMessageDeflate {
+		compressed, compressErr := compressMessage(expectation.payload)
+		if compressErr != nil {
+			return proof, compressErr
+		}
+		wirePayload = compressed
+	}
+	written, err := writeClientFrameWithRSV1(connection.conn, expectation.requestOpcode, wirePayload, expectation.perMessageDeflate)
 	connection.bytes += int64(written)
 	if err != nil {
 		return proof, err
 	}
 	proof.ClientFrameMasked = true
 	proof.RequestOpcode = opcodeName(expectation.requestOpcode)
+	proof.RequestRSV1 = expectation.perMessageDeflate
+	proof.CompressedMessage = expectation.perMessageDeflate
 	frame, err := readFrame(connection.reader, false)
 	connection.bytes += int64(frame.bytes)
 	if err != nil {
@@ -510,7 +542,22 @@ func performOnOpenConnection(connection *wsConnection, expectation scenarioExpec
 	proof.LatencyMilliseconds = durationMS(time.Since(started))
 	proof.ServerFrameMasked = frame.masked
 	proof.ResponseOpcode = opcodeName(frame.opcode)
-	if !frame.fin || frame.rsv != 0 || frame.opcode != expectation.responseOpcode || !equal(frame.payload, expectation.payload) {
+	proof.ResponseRSV1 = frame.rsv == 0x40
+	semanticPayload := frame.payload
+	if expectation.perMessageDeflate {
+		if frame.rsv != 0x40 {
+			return proof, errors.New("permessage-deflate response data frame did not set only RSV1")
+		}
+		semanticPayload, err = decompressMessage(frame.payload)
+		if err != nil {
+			return proof, fmt.Errorf("decompress permessage-deflate response: %w", err)
+		}
+	} else if frame.rsv != 0 {
+		return proof, errors.New("unnegotiated RSV bit was set on response frame")
+	}
+	proof.DecompressedPayloadSHA256 = hash(semanticPayload)
+	proof.PayloadHashMatched = equal(semanticPayload, expectation.payload) && proof.DecompressedPayloadSHA256 == expectation.payloadHash
+	if !frame.fin || frame.opcode != expectation.responseOpcode || !proof.PayloadHashMatched {
 		return proof, errors.New("response frame opcode, fragmentation, or deterministic payload mismatch")
 	}
 	proof.OrderedEcho = expectation.operation == "text-echo" || expectation.operation == "binary-echo"
@@ -520,7 +567,7 @@ func performOnOpenConnection(connection *wsConnection, expectation scenarioExpec
 	return proof, nil
 }
 
-func openWebSocket(targetURL, rootCertificate string, timeout time.Duration) (*wsConnection, error) {
+func openWebSocket(targetURL, rootCertificate string, expectation scenarioExpectation, timeout time.Duration) (*wsConnection, error) {
 	parsed, err := url.Parse(targetURL)
 	if err != nil {
 		return nil, err
@@ -565,7 +612,14 @@ func openWebSocket(targetURL, rootCertificate string, timeout time.Duration) (*w
 	}
 	key := base64.StdEncoding.EncodeToString(keyBytes)
 	expectedAccept := websocketAccept(key)
-	rawRequest := "GET /websocket HTTP/1.1\r\nHost: websocket.plab.test\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " + key + "\r\nSec-WebSocket-Version: 13\r\n\r\n"
+	rawRequest := "GET /websocket HTTP/1.1\r\nHost: websocket.plab.test\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: " + key + "\r\nSec-WebSocket-Version: 13\r\n"
+	if expectation.subprotocol != "" {
+		rawRequest += "Sec-WebSocket-Protocol: " + expectation.subprotocol + "\r\n"
+	}
+	if expectation.perMessageDeflate {
+		rawRequest += "Sec-WebSocket-Extensions: " + perMessageDeflateExtension + "\r\n"
+	}
+	rawRequest += "\r\n"
 	started := time.Now()
 	if _, err := io.WriteString(conn, rawRequest); err != nil {
 		conn.Close()
@@ -583,34 +637,55 @@ func openWebSocket(targetURL, rootCertificate string, timeout time.Duration) (*w
 		return nil, err
 	}
 	defer response.Body.Close()
+	acceptedSubprotocol := response.Header.Get("Sec-WebSocket-Protocol")
+	acceptedExtension := response.Header.Get("Sec-WebSocket-Extensions")
 	proof := handshakeProof{
 		Binding: "http1-upgrade", Scheme: "wss", TransportSecurity: "tls", Endpoint: "/websocket", Authority: "websocket.plab.test",
 		RequestMethod: "GET", RequestedHTTPVersion: "HTTP/1.1", ObservedHTTPVersion: response.Proto,
 		ResponseStatus: response.StatusCode, UpgradeHeader: response.Header.Get("Upgrade"), ConnectionHeader: response.Header.Get("Connection"),
 		SecWebSocketVersion: "13", SecWebSocketKeyPolicy: "fresh-random-16-octets-per-opening-handshake", SampleSecWebSocketKey: key,
 		ExpectedSecWebSocketAccept: expectedAccept, ObservedSecWebSocketAccept: response.Header.Get("Sec-WebSocket-Accept"),
-		SubprotocolRequested: false, SubprotocolNegotiated: response.Header.Get("Sec-WebSocket-Protocol") != "",
-		ExtensionsRequested: false, ExtensionsNegotiated: response.Header.Get("Sec-WebSocket-Extensions") != "",
-		FallbackDetected: response.ProtoMajor != 1 || response.ProtoMinor != 1 || state.Version != tls.VersionTLS13 || state.NegotiatedProtocol != "http/1.1",
-		TLSVersion:       tls.VersionName(state.Version), ALPN: state.NegotiatedProtocol, ServerName: serverName,
+		SubprotocolRequested: expectation.subprotocol != "", SubprotocolNegotiated: acceptedSubprotocol != "",
+		SubprotocolOffered: expectation.subprotocol, SubprotocolAccepted: acceptedSubprotocol,
+		ExtensionsRequested: expectation.perMessageDeflate, ExtensionsNegotiated: acceptedExtension != "",
+		ExtensionOffered: expectedExtension(expectation), ExtensionAccepted: acceptedExtension,
+		ClientNoContextTakeover: acceptedExtension == perMessageDeflateExtension,
+		ServerNoContextTakeover: acceptedExtension == perMessageDeflateExtension,
+		FallbackDetected:        response.ProtoMajor != 1 || response.ProtoMinor != 1 || state.Version != tls.VersionTLS13 || state.NegotiatedProtocol != "http/1.1",
+		TLSVersion:              tls.VersionName(state.Version), ALPN: state.NegotiatedProtocol, ServerName: serverName,
 		CipherSuite: tls.CipherSuiteName(state.CipherSuite), DidResume: state.DidResume, EarlyData: false,
 		VerifiedChainCount: len(state.VerifiedChains), CertificateDERSHA256: certificateDERSHA256, CertificateSPKISHA256: certificateSPKISHA256,
 	}
+	if err := validateHandshakeProof(expectation, proof); err != nil {
+		conn.Close()
+		return nil, err
+	}
+	proof.ConnectionEstablished = true
+	return &wsConnection{conn: conn, reader: reader, handshake: proof, rawRequest: rawRequest, rawResponse: rawResponse, handshakeMS: durationMS(time.Since(started)), bytes: int64(len(rawRequest) + len(rawResponse))}, nil
+}
+
+func validateHandshakeProof(expectation scenarioExpectation, proof handshakeProof) error {
 	var failures []string
 	if proof.FallbackDetected {
 		failures = append(failures, "observed protocol is not exact HTTP/1.1")
 	}
-	if response.StatusCode != http.StatusSwitchingProtocols {
+	if proof.ResponseStatus != http.StatusSwitchingProtocols {
 		failures = append(failures, "opening handshake status is not 101")
 	}
 	if !strings.EqualFold(proof.UpgradeHeader, "websocket") || !hasToken(proof.ConnectionHeader, "upgrade") {
 		failures = append(failures, "opening handshake Upgrade/Connection response is invalid")
 	}
-	if proof.ObservedSecWebSocketAccept != expectedAccept {
+	if proof.ObservedSecWebSocketAccept != proof.ExpectedSecWebSocketAccept {
 		failures = append(failures, "Sec-WebSocket-Accept mismatch")
 	}
-	if proof.SubprotocolNegotiated || proof.ExtensionsNegotiated {
-		failures = append(failures, "unrequested subprotocol or extension was negotiated")
+	if proof.SubprotocolOffered != expectation.subprotocol || proof.SubprotocolRequested != (expectation.subprotocol != "") ||
+		proof.SubprotocolAccepted != expectation.subprotocol || proof.SubprotocolNegotiated != (expectation.subprotocol != "") {
+		failures = append(failures, "exact WebSocket subprotocol negotiation mismatch")
+	}
+	if proof.ExtensionOffered != expectedExtension(expectation) || proof.ExtensionsRequested != expectation.perMessageDeflate ||
+		proof.ExtensionAccepted != expectedExtension(expectation) || proof.ExtensionsNegotiated != expectation.perMessageDeflate ||
+		proof.ClientNoContextTakeover != expectation.perMessageDeflate || proof.ServerNoContextTakeover != expectation.perMessageDeflate {
+		failures = append(failures, "exact permessage-deflate no-context-takeover negotiation mismatch")
 	}
 	if proof.TLSVersion != "TLS 1.3" || proof.ALPN != "http/1.1" || proof.ServerName != serverName || proof.DidResume || proof.EarlyData {
 		failures = append(failures, "exact TLS 1.3, http/1.1 ALPN, SNI, full-session, or no-early-data proof mismatch")
@@ -619,11 +694,9 @@ func openWebSocket(targetURL, rootCertificate string, timeout time.Duration) (*w
 		failures = append(failures, "authenticated certificate hash proof mismatch")
 	}
 	if len(failures) != 0 {
-		conn.Close()
-		return nil, errors.New(strings.Join(failures, "; "))
+		return errors.New(strings.Join(failures, "; "))
 	}
-	proof.ConnectionEstablished = true
-	return &wsConnection{conn: conn, reader: reader, handshake: proof, rawRequest: rawRequest, rawResponse: rawResponse, handshakeMS: durationMS(time.Since(started)), bytes: int64(len(rawRequest) + len(rawResponse))}, nil
+	return nil
 }
 
 func closeCleanly(connection *wsConnection, proof *operationProof) error {
@@ -688,12 +761,15 @@ func writePreflightArtifacts(output string, expectation scenarioExpectation, pro
 	writeRequired(output, "websocket-summary.json", proof)
 	writeRequired(output, "payload-hash.json", map[string]any{
 		"scenarioId": expectation.id, "generator": payloadGenerator(expectation), "lengthBytes": len(expectation.payload),
-		"sha256": expectation.payloadHash, "observedSha256": hash(expectation.payload), "matched": expectation.payloadHash == hash(expectation.payload),
+		"sha256": expectation.payloadHash, "observedSha256": proof.DecompressedPayloadSHA256, "matched": proof.PayloadHashMatched,
 	})
 	writeRequired(output, "handshake-summary.json", proof.Handshake)
 	writeRequired(output, "frame-summary.json", map[string]any{
 		"fragmentation": "none", "clientFramesMasked": proof.ClientFrameMasked, "serverFramesMasked": proof.ServerFrameMasked,
-		"requestOpcode": proof.RequestOpcode, "responseOpcode": proof.ResponseOpcode, "closeCode": proof.CloseReceivedCode,
+		"requestOpcode": proof.RequestOpcode, "responseOpcode": proof.ResponseOpcode, "requestRsv1": proof.RequestRSV1,
+		"responseRsv1": proof.ResponseRSV1, "compressedMessage": proof.CompressedMessage,
+		"decompressedPayloadSha256": proof.DecompressedPayloadSHA256, "payloadHashMatched": proof.PayloadHashMatched,
+		"closeCode": proof.CloseReceivedCode,
 	})
 	writeRequired(output, "executor-identity.json", map[string]any{
 		"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedScenarios": sortedSupportedIDs(),
@@ -761,12 +837,20 @@ func normalizeResult(expectation scenarioExpectation, config loadConfig, summary
 		Validation:    map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "cleanClose": true},
 		RequestedLoad: requested,
 		EffectiveLoad: map[string]any{"connections": 1, "activeConnections": 1, "concurrency": 1}, Metrics: metric,
-		Warnings: []string{"Local package-backed WebSocket TLS smoke is diagnostic and non-publishable. Cleartext substitution, TLS 1.2, RFC 8441, RFC 9220, breadth diagnostics, WebTransport, and legacy websocket.echo substitution are unsupported."},
+		Warnings: []string{"Local package-backed WebSocket TLS smoke is diagnostic and non-publishable. Cleartext substitution, TLS 1.2, RFC 8441, RFC 9220, unimplemented adjacent diagnostics, WebTransport, and legacy websocket.echo substitution are unsupported."},
 	}
 }
 
 func writeClientFrame(writer io.Writer, opcode byte, payload []byte) (int, error) {
-	header := []byte{0x80 | opcode}
+	return writeClientFrameWithRSV1(writer, opcode, payload, false)
+}
+
+func writeClientFrameWithRSV1(writer io.Writer, opcode byte, payload []byte, rsv1 bool) (int, error) {
+	first := byte(0x80) | opcode
+	if rsv1 {
+		first |= 0x40
+	}
+	header := []byte{first}
 	switch {
 	case len(payload) <= 125:
 		header = append(header, 0x80|byte(len(payload)))
@@ -958,6 +1042,52 @@ func payloadGenerator(value scenarioExpectation) string {
 	default:
 		return "none"
 	}
+}
+
+func expectedExtension(expectation scenarioExpectation) string {
+	if expectation.perMessageDeflate {
+		return perMessageDeflateExtension
+	}
+	return ""
+}
+
+func compressMessage(payload []byte) ([]byte, error) {
+	var buffer bytes.Buffer
+	writer, err := flate.NewWriter(&buffer, flate.DefaultCompression)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := writer.Write(payload); err != nil {
+		_ = writer.Close()
+		return nil, err
+	}
+	if err := writer.Flush(); err != nil {
+		_ = writer.Close()
+		return nil, err
+	}
+	wire := append([]byte(nil), buffer.Bytes()...)
+	if err := writer.Close(); err != nil {
+		return nil, err
+	}
+	tail := []byte{0x00, 0x00, 0xff, 0xff}
+	if len(wire) < len(tail) || !bytes.Equal(wire[len(wire)-len(tail):], tail) {
+		return nil, errors.New("permessage-deflate sync-flush tail was not produced")
+	}
+	return wire[:len(wire)-len(tail)], nil
+}
+
+func decompressMessage(wire []byte) ([]byte, error) {
+	reader := flate.NewReader(io.MultiReader(bytes.NewReader(wire), bytes.NewReader([]byte{0x00, 0x00, 0xff, 0xff})))
+	defer reader.Close()
+	limited := io.LimitReader(reader, 1<<20+1)
+	payload, err := io.ReadAll(limited)
+	if err != nil && !errors.Is(err, io.ErrUnexpectedEOF) {
+		return nil, err
+	}
+	if len(payload) > 1<<20 {
+		return nil, errors.New("decompressed message exceeds package limit")
+	}
+	return payload, nil
 }
 func applySemanticCounts(proof *operationProof, expectation scenarioExpectation) {
 	switch expectation.operation {
