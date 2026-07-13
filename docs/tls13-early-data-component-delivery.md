@@ -12,7 +12,24 @@ The implementation is pinned by `Cargo.lock` to `rustls@0.23.35` and `rustls-rus
 
 ## Clean package evidence
 
-Clean package hashes and extracted-package evidence will be recorded in a follow-up evidence-only commit after this implementation commit establishes a clean source head.
+Clean packages were built from component commit `abd4ff97fb16c0fdb82531e97542d7973c80c1c4`. All matching build attestations report clean source, are parity-eligible, and pass `Test-ProtocolLabPackageBuildAttestation.ps1 -RequireParityEligible`.
+
+| Package artifact | SHA-256 |
+| --- | --- |
+| Scenario, portable | `8616f967587af620e06c8f6973f3ceb2b0988c0598f37e58dfdcbe99c75bd50a` |
+| Executor, Windows x64 | `3801235aca985d900f3839df13218d30e10e2f4c3fefbfc229af8700c6457287` |
+| Executor, Linux x64 | `2a0656935e59f1b94c6ba59eae9cacc23cf6883f9f3482f55c7e00047ac3d07e` |
+| Target, Windows x64 | `106dc89ce88f7412c8f38b19fa409630e779673e7ad05f52f0d0aafb85b52765` |
+| Target, Linux x64 | `ac2100aa2593f144b2b60b2928f31c25b004bd970dd3064a3c0daa9971b7bf6e` |
+
+The clean packages are rooted at `artifacts/tls-early-data-clean-packages-abd4ff9`. The extracted Windows three-package smoke is rooted at `artifacts/tls-early-data-clean-extracted-smoke-abd4ff9` and produced:
+
+| Scenario | Outcome | Completed | Failed | Timed out | Transferred bytes | Duplicate effects |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| `tls.early-data.accepted` | accepted during early data | 1 | 0 | 0 | 1,024 | 0 |
+| `tls.early-data.rejected` | rejected, then retried once after handshake | 1 | 0 | 0 | 2,048 | 0 |
+
+The rejected cell's 2,048 transferred bytes record the 1,024 offered early bytes plus the one required 1,024-byte post-handshake retry. Its semantic payload remains exactly 1,024 bytes and causes exactly one application effect. The extracted smoke also proved explicit unsupported exit/evidence for `tls.handshake.full`, `tls.handshake.resumed`, `tls.handshake.full.tls12`, `tls.handshake.full.chacha20`, `tls.handshake.mutual-auth`, `tls.key-update.diagnostic`, `tls.record.coverage`, and `tls.record.throughput`, while an unknown identity returned the distinct configuration exit.
 
 Verification commands:
 
@@ -24,7 +41,8 @@ cargo fmt --manifest-path ./executors/rustls-tls13-early-data-executor/source/Ca
 cargo test --locked --manifest-path ./executors/rustls-tls13-early-data-executor/source/Cargo.toml
 cargo clippy --locked --manifest-path ./executors/rustls-tls13-early-data-executor/source/Cargo.toml --all-targets -- -D warnings
 pwsh ./scripts/package/Validate-ProtocolLabComponentManifests.ps1
-pwsh ./scripts/package/Test-Tls13EarlyDataThreePackageSmoke.ps1
+pwsh ./scripts/package/Test-ProtocolLabPackageBuildAttestation.ps1 -PackagePath <package> -AttestationPath <attestation> -RequireParityEligible
+pwsh ./scripts/package/Test-Tls13EarlyDataThreePackageSmoke.ps1 -PackageRoot ./artifacts/tls-early-data-clean-packages-abd4ff9 -ArtifactRoot ./artifacts/tls-early-data-clean-extracted-smoke-abd4ff9
 ```
 
 This delivery is local diagnostic component evidence only. It makes no runner-admission, benchmark, comparison, ranking, publication, deployment, or lab-infrastructure claim.
