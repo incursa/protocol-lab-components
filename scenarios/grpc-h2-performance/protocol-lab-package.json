@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.grpc-h2-performance",
-  "packageVersion": "0.3.0",
+  "packageVersion": "0.4.0",
   "kind": "scenario-pack",
   "displayName": "gRPC over HTTP/2 Performance Scenario Pack",
   "entryManifests": [
@@ -13,10 +13,17 @@
     "scenarios/grpc/h2/server-streaming-echo.yaml",
     "scenarios/grpc/h2/client-streaming-echo.yaml",
     "scenarios/grpc/h2/bidi-streaming-echo.yaml",
+    "scenarios/grpc/h2/trailers-only-status.yaml",
+    "scenarios/grpc/h2/deadline-exceeded.yaml",
+    "scenarios/grpc/h2/client-cancellation.yaml",
+    "scenarios/grpc/h2/unary-echo-new-channel.yaml",
     "suites/grpc-h2-performance-smoke.yaml",
     "suites/grpc-h2-contract-breadth-smoke.yaml",
+    "suites/grpc-h2-terminal-outcomes-diagnostic.yaml",
+    "suites/grpc-h2-new-channel-diagnostic.yaml",
     "load-profiles/grpc-h2-smoke.yaml",
-    "load-profiles/grpc-h2-diagnostic.yaml"
+    "load-profiles/grpc-h2-diagnostic.yaml",
+    "load-profiles/grpc-h2-channel-churn.yaml"
   ],
   "providedScenarios": [
     {
@@ -30,6 +37,16 @@
     {"scenarioId":"grpc.h2.unary.large","displayName":"gRPC over HTTP/2 Unary One-Mebibyte Message","protocols":["h2"]},
     {"scenarioId":"grpc.h2.server-streaming.echo","displayName":"gRPC over HTTP/2 Server-Streaming Echo","protocols":["h2"]},
     {"scenarioId":"grpc.h2.client-streaming.echo","displayName":"gRPC over HTTP/2 Client-Streaming Echo","protocols":["h2"]},
-    {"scenarioId":"grpc.h2.bidi-streaming.echo","displayName":"gRPC over HTTP/2 Bidirectional-Streaming Echo","protocols":["h2"]}
+    {"scenarioId":"grpc.h2.bidi-streaming.echo","displayName":"gRPC over HTTP/2 Bidirectional-Streaming Echo","protocols":["h2"]},
+    {"scenarioId":"grpc.h2.trailers-only-status","displayName":"gRPC over HTTP/2 Trailers-Only Status","protocols":["h2"]},
+    {"scenarioId":"grpc.h2.deadline-exceeded","displayName":"gRPC over HTTP/2 Deadline Exceeded","protocols":["h2"]},
+    {"scenarioId":"grpc.h2.client-cancellation","displayName":"gRPC over HTTP/2 Client Cancellation","protocols":["h2"]},
+    {"scenarioId":"grpc.h2.unary.echo-new-channel","displayName":"gRPC over HTTP/2 Unary Echo With New Channel","protocols":["h2"]}
+  ],
+  "providedSuites": [
+    {"suiteId":"grpc-h2-performance-smoke","displayName":"gRPC over HTTP/2 Performance Smoke","protocols":["h2"]},
+    {"suiteId":"grpc-h2-contract-breadth-smoke","displayName":"gRPC over HTTP/2 Contract Breadth Smoke","protocols":["h2"]},
+    {"suiteId":"grpc-h2-terminal-outcomes-diagnostic","displayName":"gRPC over HTTP/2 Terminal Outcomes Diagnostic","protocols":["h2"]},
+    {"suiteId":"grpc-h2-new-channel-diagnostic","displayName":"gRPC over HTTP/2 New Channel Diagnostic","protocols":["h2"]}
   ]
 }

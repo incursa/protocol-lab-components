@@ -11,10 +11,17 @@
     "scenarios/grpc/h2/server-streaming-echo.yaml": "8d8be64cc9068333a3a5ca800d32b528cad38051db63d498e782bc41efb3267c",
     "scenarios/grpc/h2/client-streaming-echo.yaml": "eead458477ea90283db07eefde83f7ecbe10cac62c26886399e67ca555474edd",
     "scenarios/grpc/h2/bidi-streaming-echo.yaml": "68236eba9fe4457fc47fb2da1a5344bd2a77323e8c0d6566eba80359ae3b5020",
+    "scenarios/grpc/h2/client-cancellation.yaml": "a9bb771b56d12e2790b15c2bf2030f279225094814db87948b457c5f1a877507",
+    "scenarios/grpc/h2/deadline-exceeded.yaml": "b30b47d283e3a491d707984a5bf847364acd1a38ff7b9a77b3c1de50239d2a26",
+    "scenarios/grpc/h2/trailers-only-status.yaml": "b3194fe1a21ff0e2a4b7c008a22e4b5d4ab312439b9619184b87dddcc3bcd7b4",
+    "scenarios/grpc/h2/unary-echo-new-channel.yaml": "771b8105142d9762d6bf819764882c51c803d0f9a9294c2fbeb4f30eaeed0218",
     "suites/grpc-h2-performance-smoke.yaml": "d789e6a09e78855b86c6e0e81043455692375032d495f8be5a58bbef146fc752",
     "suites/grpc-h2-contract-breadth-smoke.yaml": "b0385a48ae3e741124ad27848b54bf7c4e283c5940a087fbc885dc696d666103",
+    "suites/grpc-h2-terminal-outcomes-diagnostic.yaml": "ffac4c09e0002ad6b5d59b09b357f56708b538fd7b6de34d80681f3e977fd527",
+    "suites/grpc-h2-new-channel-diagnostic.yaml": "3e325fd4ddf2b9846924639411f52f88c38762981b64425c961ec1b4c39ff99f",
     "load-profiles/grpc-h2-smoke.yaml": "38b51ae12e2e13f5c273b3dfb6a77edee268a5c22db66f58b5807a3e50f4acdf",
     "load-profiles/grpc-h2-diagnostic.yaml": "e23f1df9f7ae4d775b5843b877428bf28f2033aae33ed84fba212ae570f82bd3",
+    "load-profiles/grpc-h2-channel-churn.yaml": "1c2672db2db3a37584c86c95fda9c26c1dff58f9e444600c1a5caea9d896af75",
     "fixtures/public-contracts/grpc/v2/valid/echo-service-v2.json": "597de2fe069d6ccca3df9ad18fcb825d2a648c846d5fa7060d7eeacc9fc959c1"
   }
 }

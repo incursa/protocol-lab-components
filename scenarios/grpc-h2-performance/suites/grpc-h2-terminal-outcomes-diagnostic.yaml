@@ -1,0 +1,10 @@
+id: grpc-h2-terminal-outcomes-diagnostic
+name: gRPC over HTTP/2 terminal outcomes diagnostic suite
+description: Distinct expected trailers-only, deadline-exceeded, and client-cancellation terminal semantics.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: grpc-h2-diagnostic
+scenarios: [grpc.h2.trailers-only-status, grpc.h2.deadline-exceeded, grpc.h2.client-cancellation]
+protocol: h2
+notes: Expected nonzero statuses satisfy their scenario validity gates and must not be reclassified as unexpected benchmark failures.
+tags: [grpc, h2, status, deadline, cancellation, non-publishable]

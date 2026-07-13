@@ -15,13 +15,14 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"golang.org/x/net/http2"
 )
 
 const (
 	implementationID      = "go-grpc-h2"
-	implementationVersion = "0.3.0"
+	implementationVersion = "0.4.0"
 	maxFrameBytes         = 1048585
 	streamMessageCount    = 100
 )
@@ -40,7 +41,7 @@ func main() {
 	if err := http2.ConfigureServer(server, &http2.Server{}); err != nil {
 		fatal(err)
 	}
-	ready := map[string]any{"implementationId": implementationID, "implementationVersion": implementationVersion, "listenAddress": *listen, "protocol": "grpc-over-h2", "tlsVersion": "TLS1.3", "alpn": "h2", "scenarioIds": []string{"grpc.h2.unary.echo", "grpc.h2.unary.empty", "grpc.h2.unary.fixed-metadata", "grpc.h2.unary.gzip", "grpc.h2.unary.large", "grpc.h2.server-streaming.echo", "grpc.h2.client-streaming.echo", "grpc.h2.bidi-streaming.echo"}}
+	ready := map[string]any{"implementationId": implementationID, "implementationVersion": implementationVersion, "listenAddress": *listen, "protocol": "grpc-over-h2", "tlsVersion": "TLS1.3", "alpn": "h2", "scenarioIds": []string{"grpc.h2.unary.echo", "grpc.h2.unary.empty", "grpc.h2.unary.fixed-metadata", "grpc.h2.unary.gzip", "grpc.h2.unary.large", "grpc.h2.server-streaming.echo", "grpc.h2.client-streaming.echo", "grpc.h2.bidi-streaming.echo", "grpc.h2.trailers-only-status", "grpc.h2.deadline-exceeded", "grpc.h2.client-cancellation", "grpc.h2.unary.echo-new-channel"}}
 	encoded, _ := json.Marshal(ready)
 	fmt.Fprintln(os.Stdout, string(encoded))
 	if err := server.ListenAndServeTLS("", ""); err != nil && !errors.Is(err, http.ErrServerClosed) {
@@ -58,7 +59,7 @@ func handleRPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	method := strings.TrimPrefix(r.URL.Path, "/protocollab.performance.v1.EchoService/")
-	if method != "UnaryEcho" && method != "UnaryGzip" && method != "UnaryFixedMetadata" && method != "ServerStreamingEcho" && method != "ClientStreamingEcho" && method != "BidirectionalStreamingEcho" {
+	if method != "UnaryEcho" && method != "UnaryGzip" && method != "UnaryFixedMetadata" && method != "ServerStreamingEcho" && method != "ClientStreamingEcho" && method != "BidirectionalStreamingEcho" && method != "TrailersOnlyStatus" && method != "DeadlineExceeded" && method != "ClientCancellation" {
 		http.NotFound(w, r)
 		return
 	}
@@ -78,6 +79,10 @@ func handleRPC(w http.ResponseWriter, r *http.Request) {
 		writeGRPCError(w, "3", "fixed request metadata mismatch")
 		return
 	}
+	if method == "ClientCancellation" {
+		handleClientCancellation(w, r)
+		return
+	}
 	if method == "ServerStreamingEcho" || method == "ClientStreamingEcho" || method == "BidirectionalStreamingEcho" {
 		handleStreaming(w, r, method)
 		return
@@ -90,6 +95,25 @@ func handleRPC(w http.ResponseWriter, r *http.Request) {
 	protobuf, payload, err := decodeFrame(body, compression)
 	if err != nil || !validScenarioPayload(method, payload, protobuf) {
 		writeGRPCError(w, "3", "invalid deterministic request")
+		return
+	}
+	if method == "DeadlineExceeded" {
+		if r.Header.Get("grpc-timeout") != "50m" {
+			writeGRPCError(w, "3", "grpc-timeout must be exactly 50m")
+			return
+		}
+		select {
+		case <-time.After(250 * time.Millisecond):
+		case <-r.Context().Done():
+		}
+		return
+	}
+	if method == "TrailersOnlyStatus" {
+		w.Header().Set("Content-Type", "application/grpc+proto")
+		w.Header().Set("grpc-encoding", "identity")
+		w.Header().Set("grpc-status", "3")
+		w.Header().Set("grpc-message", "plab invalid fixture")
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 	responseFrame, err := encodeFrame(protobuf, compression)
@@ -112,6 +136,27 @@ func handleRPC(w http.ResponseWriter, r *http.Request) {
 	if method == "UnaryFixedMetadata" {
 		w.Header().Set("x-plab-bin-bin", "AAECAw==")
 	}
+}
+
+func handleClientCancellation(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(io.LimitReader(r.Body, maxFrameBytes+1))
+	if err != nil {
+		writeGRPCError(w, "13", "request read failed")
+		return
+	}
+	protobuf, payload, err := decodeFrame(body, "identity")
+	if err != nil || !validScenarioPayload("ClientCancellation", payload, protobuf) {
+		writeGRPCError(w, "3", "invalid deterministic cancellation request")
+		return
+	}
+	w.Header().Set("Content-Type", "application/grpc+proto")
+	w.Header().Set("grpc-encoding", "identity")
+	w.Header().Set("x-plab-ready", "1")
+	w.WriteHeader(http.StatusOK)
+	if flusher, ok := w.(http.Flusher); ok {
+		flusher.Flush()
+	}
+	<-r.Context().Done()
 }
 
 func handleStreaming(w http.ResponseWriter, r *http.Request, method string) {
@@ -240,7 +285,7 @@ func validScenarioPayload(method string, payload, protobuf []byte) bool {
 	switch method {
 	case "UnaryGzip":
 		return len(payload) == 1024 && bytes.Equal(payload, bytes.Repeat([]byte{'B'}, 1024)) && len(protobuf) == 1027
-	case "UnaryFixedMetadata":
+	case "UnaryFixedMetadata", "TrailersOnlyStatus", "DeadlineExceeded", "ClientCancellation":
 		return len(payload) == 128 && bytes.Equal(payload, bytes.Repeat([]byte{'G'}, 128)) && len(protobuf) == 131
 	case "UnaryEcho":
 		return (len(payload) == 0 && len(protobuf) == 0) || (len(payload) == 128 && bytes.Equal(payload, bytes.Repeat([]byte{'G'}, 128)) && len(protobuf) == 131) || (len(payload) == 1<<20 && bytes.Equal(payload, bytes.Repeat([]byte{'L'}, 1<<20)) && len(protobuf) == 1048580)

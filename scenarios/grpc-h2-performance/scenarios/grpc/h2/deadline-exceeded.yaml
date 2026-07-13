@@ -1,0 +1,62 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: grpc.h2.deadline-exceeded
+title: gRPC over HTTP/2 Deadline Exceeded
+description: Apply a 50 ms client deadline to a method that remains open for at least 250 ms and require DEADLINE_EXCEEDED.
+status: draft
+kind: protocolValidation
+layer: application
+protocol: h2
+family: grpc
+semanticTemplateId: grpc.terminal.deadline-exceeded
+protocolStack: [grpc, h2, tls, tcp]
+upstreamStandards: [https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md, https://www.rfc-editor.org/rfc/rfc9113]
+roles: [client, server]
+requires: {capabilities: [grpc.client, grpc.server, grpc.deadline], protocols: [h2, grpc], roles: [client, server]}
+trafficShape: request-response
+grpc:
+  binding: grpc-over-h2
+  alpn: h2
+  serviceContractId: protocollab.performance.v1.EchoService
+  serviceContractSha256: b7b987814f8af5cd4f15c03989b9c309c1c0ec643972ae32668304d71502120f
+  serviceContractCanonicalization: json-sort-keys-utf8-no-whitespace-v1
+  scheme: https
+  httpMethod: POST
+  authority: grpc.plab.test
+  service: protocollab.performance.v1.EchoService
+  method: DeadlineExceeded
+  path: /protocollab.performance.v1.EchoService/DeadlineExceeded
+  rpcType: unary
+  compression: identity
+  metadataPolicy: fixed-empty-user-metadata
+  deadlineMilliseconds: 50
+  deadlinePolicy: {serverMinimumWaitMilliseconds: 250, expectedInitiator: client-deadline}
+  connectionLifecycle: pre-established-channel
+  measuredWindow: rpc-operation
+  requestContentType: application/grpc+proto
+  responseContentType: application/grpc+proto
+  te: trailers
+  trailersRequired: false
+  expectedGrpcStatus: 4
+  responsePolicy: client-observed-terminal-status
+  grpcEncoding: identity
+  grpcAcceptEncoding: identity
+  retryPolicy: disabled
+  hedgingPolicy: disabled
+  waitForReady: false
+  effectiveHttp2SettingsRequired: true
+  byteAccounting: {hashScope: per-message, grpcFrameIncludesPrefix: true, totalTransferredBytesScope: bidirectional-on-wire-transport-bytes-including-protocol-overhead}
+  messageFraming: {compressedFlag: 0, lengthPrefixBytes: 4, byteOrder: network, lengthValueSource: serializedProtobufBytes, dataFrameBoundariesDefineMessageBoundaries: false}
+  request: {count: 1, payloadGenerator: repeated-octet, payloadOctet: 71, payloadBytes: 128, payloadSha256: 394394b5f0e91a21d1e932f9ed55e098c8b05f3668f77134eeee843fef1d1758, serializedProtobufBytes: 131, serializedProtobufSha256: c2046bce7238a2a9cae159ba85a75e93f07c74073fe7b83d2be713caef717cb4, grpcFrameBytes: 136, grpcFrameSha256: 98f1fce70c79cf7da3649fc3ecfc77a975c1427c9f8afcd1a41d85559164525a}
+  response: {count: 0}
+executionProfile: {transportSecurity: tls, protocolVariant: grpc-over-h2-tls-alpn, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+validation:
+  required: true
+  checks: [protocol:h2, alpn:h2, no-fallback, grpc-timeout:50ms, retry-disabled, hedging-disabled, client-deadline-fired, grpc-status:4, no-response-data, expected-terminal-outcome, zero-unexpected-failures]
+  protocol: {requested: grpc-over-h2, expectedObserved: grpc-over-h2, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic], primaryMetrics: [deadlineExceededOperations, failedOperations]}
+requiredMetrics: [completedOperations, deadlineExceededOperations, failedOperations, cancelledOperations, timedOutOperations, totalTransferredBytes]
+artifacts: {required: [validation.json, protocol-proof.json, grpc-summary.json, result.json, load.stdout.log, load.stderr.log], optional: [http2-frame-summary.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [grpc-web, grpc-over-h3, retry-substitution]}
+networkProfile: clean
+tags: [grpc, h2, deadline-exceeded, diagnostic]

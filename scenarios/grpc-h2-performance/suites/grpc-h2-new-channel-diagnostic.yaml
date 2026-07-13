@@ -1,0 +1,10 @@
+id: grpc-h2-new-channel-diagnostic
+name: gRPC over HTTP/2 new-channel lifecycle diagnostic suite
+description: Measures TLS and HTTP/2 channel establishment plus one unary RPC for each bounded operation.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: grpc-h2-channel-churn
+scenarios: [grpc.h2.unary.echo-new-channel]
+protocol: h2
+notes: Compare only with separately reported pre-established-channel cells; never merge its latency distribution with rpc-operation latency.
+tags: [grpc, h2, channel-churn, lifecycle, non-publishable]

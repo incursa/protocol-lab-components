@@ -1,7 +1,7 @@
 schemaVersion: "1.0"
 id: go-grpc-h2
 name: Go gRPC over HTTP/2 Target
-description: Independent TLS 1.3 and HTTP/2 origin target for the exact ProtocolLab unary and streaming success-path contracts.
+description: Independent TLS 1.3 and HTTP/2 origin target for every committed ProtocolLab gRPC/H2 contract.
 family: go
 role: server
 targetKind: process
@@ -17,19 +17,19 @@ protocols: [h2]
 supportedProtocols: [h2]
 supportedProtocolVersions: [HTTP/2.0]
 supportedWorkloadFamilies: [grpc]
-supportedScenarios: [grpc.h2.unary.echo, grpc.h2.unary.empty, grpc.h2.unary.fixed-metadata, grpc.h2.unary.gzip, grpc.h2.unary.large, grpc.h2.server-streaming.echo, grpc.h2.client-streaming.echo, grpc.h2.bidi-streaming.echo]
-supportedTestCaseIds: [grpc.h2.unary.echo, grpc.h2.unary.empty, grpc.h2.unary.fixed-metadata, grpc.h2.unary.gzip, grpc.h2.unary.large, grpc.h2.server-streaming.echo, grpc.h2.client-streaming.echo, grpc.h2.bidi-streaming.echo]
+supportedScenarios: [grpc.h2.unary.echo, grpc.h2.unary.empty, grpc.h2.unary.fixed-metadata, grpc.h2.unary.gzip, grpc.h2.unary.large, grpc.h2.server-streaming.echo, grpc.h2.client-streaming.echo, grpc.h2.bidi-streaming.echo, grpc.h2.trailers-only-status, grpc.h2.deadline-exceeded, grpc.h2.client-cancellation, grpc.h2.unary.echo-new-channel]
+supportedTestCaseIds: [grpc.h2.unary.echo, grpc.h2.unary.empty, grpc.h2.unary.fixed-metadata, grpc.h2.unary.gzip, grpc.h2.unary.large, grpc.h2.server-streaming.echo, grpc.h2.client-streaming.echo, grpc.h2.bidi-streaming.echo, grpc.h2.trailers-only-status, grpc.h2.deadline-exceeded, grpc.h2.client-cancellation, grpc.h2.unary.echo-new-channel]
 scenarioCoverage:
   grpc.h2.unary.echo:
     status: supported
     behavior: exact 128-byte deterministic unary echo over TLS 1.3 and ALPN h2
   grpc.h2.bidi-streaming.echo: {status: supported, behavior: one ordered 100-request and 100-response bidirectional RPC with exact per-message hashes and client half-close}
-  grpc.h2.client-cancellation: {status: unsupported, reason: Cancellation diagnostics are not implemented in version 0.3.0.}
+  grpc.h2.client-cancellation: {status: supported, behavior: sends exact ready initial metadata and remains open until client-initiated cancellation}
   grpc.h2.client-streaming.echo: {status: supported, behavior: 100 exact request messages followed by client half-close and one final-request-payload response}
-  grpc.h2.deadline-exceeded: {status: unsupported, reason: Deadline diagnostics are not implemented in version 0.3.0.}
+  grpc.h2.deadline-exceeded: {status: supported, behavior: validates exact 50 ms grpc-timeout and withholds a response until client deadline cancellation}
   grpc.h2.server-streaming.echo: {status: supported, behavior: one exact request message and 100 exact ordered response messages on one RPC}
-  grpc.h2.trailers-only-status: {status: unsupported, reason: Trailers-only status is not implemented in version 0.3.0.}
-  grpc.h2.unary.echo-new-channel: {status: unsupported, reason: Per-operation channel churn is not implemented in version 0.3.0.}
+  grpc.h2.trailers-only-status: {status: supported, behavior: exact HTTP 200 trailers-only INVALID_ARGUMENT with bounded grpc-message and no DATA}
+  grpc.h2.unary.echo-new-channel: {status: supported, behavior: canonical unary echo endpoint compatible with executor-proven fresh TLS and HTTP/2 channel per operation}
   grpc.h2.unary.empty: {status: supported, behavior: exact empty proto3 unary echo in a five-byte identity envelope}
   grpc.h2.unary.fixed-metadata: {status: supported, behavior: exact ASCII and binary request, initial-response, and trailing metadata echo}
   grpc.h2.unary.gzip: {status: supported, behavior: exact one-KiB semantic gzip unary echo with decompressed protobuf validation}
@@ -43,10 +43,10 @@ startup:
   port: {name: grpc-h2, environmentVariable: PLAB_TARGET_PORT, default: 18444}
   readiness: {protocol: process, timeoutSeconds: 10}
 readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 750}
-capabilities: [scenario.grpc.h2.unary.echo, scenario.grpc.h2.unary.empty, scenario.grpc.h2.unary.fixed-metadata, scenario.grpc.h2.unary.gzip, scenario.grpc.h2.unary.large, scenario.grpc.h2.server-streaming.echo, scenario.grpc.h2.client-streaming.echo, scenario.grpc.h2.bidi-streaming.echo, grpc.h2, tls13, alpn.h2]
+capabilities: [scenario.grpc.h2.unary.echo, scenario.grpc.h2.unary.empty, scenario.grpc.h2.unary.fixed-metadata, scenario.grpc.h2.unary.gzip, scenario.grpc.h2.unary.large, scenario.grpc.h2.server-streaming.echo, scenario.grpc.h2.client-streaming.echo, scenario.grpc.h2.bidi-streaming.echo, scenario.grpc.h2.trailers-only-status, scenario.grpc.h2.deadline-exceeded, scenario.grpc.h2.client-cancellation, scenario.grpc.h2.unary.echo-new-channel, grpc.h2, grpc.terminal-outcomes, grpc.channel-churn, tls13, alpn.h2]
 entrypoint: {kind: process, path: bin/linux-x64/go-grpc-h2, arguments: [], workingDirectory: .}
 shutdownBehavior: process
 artifactExports: [target.stdout.txt, target.stderr.txt, target-execution.json]
 qlogSupport: false
 sslKeyLogSupport: false
-notes: Five unary and three streaming success-path scenarios are supported. Cancellation, deadline, trailers-only, and new-channel identities fail closed as unsupported.
+notes: All committed gRPC/H2 success, streaming, expected terminal-outcome, and new-channel identities are supported. gRPC-Web, gRPC-over-H3, H1, h2c, retries, and hedging remain unsupported.
