@@ -2,156 +2,87 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-target_url="${PLAB_TARGET_URL:-https://host.docker.internal:4435/websocket-proof}"
+scenario_id="${PLAB_SCENARIO_ID:-}"
+target_url="${PLAB_TARGET_BASE_URL:-${PLAB_TARGET_URL:-https://host.docker.internal:4435/websocket-proof}}"
 timeout_seconds="${PLAB_TIMEOUT_SECONDS:-20}"
-image="${AIOQUIC_RFC9220_WEBSOCKET_IMAGE:-incursa-protocol-lab-aioquic-rfc9220-websocket:0.1.7}"
-output_root="${PLAB_OUTPUT_ROOT:-artifacts/aioquic-rfc9220-websocket}"
+image="${AIOQUIC_RFC9220_WEBSOCKET_IMAGE:-incursa-protocol-lab-aioquic-rfc9220-websocket:0.2.0}"
+output_root="${PLAB_ARTIFACT_DIR:-${PLAB_OUTPUT_ROOT:-artifacts/aioquic-rfc9220-websocket}}"
 skip_build="${PLAB_SKIP_BUILD:-0}"
 plan_only="${PLAB_PLAN_ONLY:-0}"
 docker_network="${PLAB_DOCKER_NETWORK:-}"
-
 while [[ "$#" -gt 0 ]]; do
   case "$1" in
-    http://*|https://*) target_url="$1"; shift ;;
+    --scenario-id) scenario_id="$2"; shift 2 ;;
     --target-url) target_url="$2"; shift 2 ;;
     --timeout) timeout_seconds="$2"; shift 2 ;;
     --output-root) output_root="$2"; shift 2 ;;
-    --skip-build) skip_build="1"; shift ;;
-    --plan-only) plan_only="1"; shift ;;
+    --skip-build) skip_build=1; shift ;;
+    --plan-only) plan_only=1; shift ;;
     --docker-network) docker_network="$2"; shift 2 ;;
     *) echo "Unknown argument: $1" >&2; exit 2 ;;
   esac
 done
+if [[ "$output_root" != /* ]]; then output_root="$script_dir/$output_root"; fi
+mkdir -p "$output_root/qlog" "$output_root/sslkeylog"
+
+supported=(http3.websocket.rfc9220.extended-connect http3.websocket.rfc9220.control-frames http3.websocket.rfc9220.text-echo http3.websocket.rfc9220.binary-echo http3.websocket.rfc9220.close http3.websocket.rfc9220.fragmented-binary-echo)
+unsupported=(websocket.echo http1.websocket.rfc6455.cleartext.upgrade http1.websocket.rfc6455.cleartext.control-frames http1.websocket.rfc6455.cleartext.text-echo http1.websocket.rfc6455.cleartext.binary-echo http1.websocket.rfc6455.cleartext.close http1.websocket.rfc6455.tls.upgrade http1.websocket.rfc6455.tls.control-frames http1.websocket.rfc6455.tls.text-echo http1.websocket.rfc6455.tls.binary-echo http1.websocket.rfc6455.tls.close http1.websocket.rfc6455.tls.subprotocol-text-echo http1.websocket.rfc6455.tls.permessage-deflate-binary-echo http2.websocket.rfc8441.extended-connect http2.websocket.rfc8441.control-frames http2.websocket.rfc8441.text-echo http2.websocket.rfc8441.binary-echo http2.websocket.rfc8441.close http2.websocket.rfc8441.multi-message-text-echo)
+contains() { local needle="$1"; shift; local value; for value in "$@"; do [[ "$value" == "$needle" ]] && return 0; done; return 1; }
+if contains "$scenario_id" "${unsupported[@]}"; then
+  printf '{"schemaVersion":"protocol-lab.aioquic-rfc9220-result.v2","scenarioId":"%s","status":"unsupported"}\n' "$scenario_id" > "$output_root/result.json"
+  exit 3
+fi
+if [[ -z "$scenario_id" ]] || ! contains "$scenario_id" "${supported[@]}"; then
+  printf '{"schemaVersion":"protocol-lab.aioquic-rfc9220-result.v2","scenarioId":"%s","status":"unknown"}\n' "$scenario_id" > "$output_root/result.json"
+  exit 2
+fi
 
 python_bin="$(command -v python3 || command -v python)"
-target_url="$("$python_bin" - "$target_url" <<'PY'
+target_url="$($python_bin - "$target_url" <<'PY'
 import sys
 from urllib.parse import urlsplit, urlunsplit
-
 uri = urlsplit(sys.argv[1])
-path = uri.path if uri.path and uri.path != "/" else "/websocket-proof"
-host = uri.hostname or ""
+host = "host.docker.internal" if (uri.hostname or "").lower() in {"localhost", "127.0.0.1", "::1"} else uri.hostname
 port = f":{uri.port}" if uri.port is not None else ""
-if host.lower() in {"localhost", "127.0.0.1", "::1"}:
-    host = "host.docker.internal"
-netloc = f"[{host}]{port}" if ":" in host and not host.startswith("[") else f"{host}{port}"
-print(urlunsplit((uri.scheme, netloc, path, uri.query, uri.fragment)))
+path = uri.path if uri.path and uri.path != "/" else "/websocket-proof"
+print(urlunsplit((uri.scheme, f"{host}{port}", path, uri.query, uri.fragment)))
 PY
 )"
-
-if [[ "$output_root" != /* ]]; then
-  output_root="$script_dir/$output_root"
-fi
-
-mkdir -p "$output_root/qlog" "$output_root/sslkeylog"
 command_file="$output_root/command.txt"
 result_file="$output_root/result.json"
-build_stdout="$output_root/build.stdout.txt"
-build_stderr="$output_root/build.stderr.txt"
-
 build_command=(docker build --build-arg AIOQUIC_VERSION=1.3.0 -f "$script_dir/docker/aioquic-rfc9220-websocket.Dockerfile" -t "$image" "$script_dir")
-run_command=(
-  docker run --rm
-  --add-host=host.docker.internal:host-gateway
-)
-if [ -n "$docker_network" ]; then
-  run_command+=(--network "$docker_network")
-fi
-run_command+=(
-  -v "$output_root:/proof"
-  -e QLOGDIR=/proof/qlog
-  -e SSLKEYLOGFILE=/proof/sslkeylog/keys.log
-  "$image"
-  /usr/local/bin/aioquic-http3-websocket-client
-  "$target_url"
-  /proof/client-result.json
-  --timeout "$timeout_seconds"
-)
-
+run_command=(docker run --rm --add-host=host.docker.internal:host-gateway)
+if [[ -n "$docker_network" ]]; then run_command+=(--network "$docker_network"); fi
+run_command+=(-v "$output_root:/proof" -e QLOGDIR=/proof/qlog -e SSLKEYLOGFILE=/proof/sslkeylog/keys.log "$image" /usr/local/bin/aioquic-http3-websocket-client "$target_url" /proof/client-result.json --scenario-id "$scenario_id" --timeout "$timeout_seconds")
 : > "$command_file"
-if [ "$skip_build" != "1" ]; then
-  printf '%q ' "${build_command[@]}" >> "$command_file"
-  printf '\n' >> "$command_file"
-fi
-printf '%q ' "${run_command[@]}" >> "$command_file"
-printf '\n' >> "$command_file"
-
-if [ "$plan_only" = "1" ]; then
-  cat > "$result_file" <<EOF
-{"status":"planned","targetUrl":"$target_url","image":"$image"}
-EOF
-  "$python_bin" - "$result_file" <<'PY'
-import json
-import sys
-
-with open(sys.argv[1], encoding="utf-8") as handle:
-    payload = json.load(handle)
-
-payload["tool"] = "aioquic-rfc9220-websocket"
-payload["metrics"] = {"totalRequests": 0, "successfulRequests": 0, "failedRequests": 0}
-with open(sys.argv[1], "w", encoding="utf-8") as handle:
-    json.dump(payload, handle, separators=(",", ":"))
-PY
-  cat "$result_file"
-  echo "Planned aioquic RFC9220 WebSocket executor command at $command_file" >&2
+if [[ "$skip_build" != 1 ]]; then printf '%q ' "${build_command[@]}" >> "$command_file"; printf '\n' >> "$command_file"; fi
+printf '%q ' "${run_command[@]}" >> "$command_file"; printf '\n' >> "$command_file"
+if [[ "$plan_only" == 1 ]]; then
+  printf '{"schemaVersion":"protocol-lab.aioquic-rfc9220-result.v2","scenarioId":"%s","status":"planned","image":"%s"}\n' "$scenario_id" "$image" > "$result_file"
   exit 0
 fi
-
-if [ "$skip_build" != "1" ]; then
-  "${build_command[@]}" > "$build_stdout" 2> "$build_stderr"
-fi
-
+if [[ "$skip_build" != 1 ]]; then "${build_command[@]}" > "$output_root/build.stdout.log" 2> "$output_root/build.stderr.log"; fi
 set +e
-"${run_command[@]}" > "$output_root/stdout.txt" 2> "$output_root/stderr.txt"
+"${run_command[@]}" > "$output_root/load.stdout.log" 2> "$output_root/load.stderr.log"
 exit_code=$?
 set -e
-
-client_status="missing"
-if [ -f "$output_root/client-result.json" ]; then
-  client_status="$("$python_bin" -c 'import json,sys; print(json.load(open(sys.argv[1])).get("status", "missing"))' "$output_root/client-result.json")"
-fi
-
-if [ "$exit_code" -eq 0 ] && [ "$client_status" = "passed" ]; then
-  cat > "$result_file" <<EOF
-{"status":"passed","targetUrl":"$target_url","image":"$image","exitCode":$exit_code}
-EOF
-  "$python_bin" - "$result_file" "$output_root/client-result.json" <<'PY'
-import json
-import sys
-
-with open(sys.argv[1], encoding="utf-8") as handle:
-    payload = json.load(handle)
-with open(sys.argv[2], encoding="utf-8") as handle:
-    client = json.load(handle)
-
-payload["tool"] = "aioquic-rfc9220-websocket"
-payload["evidenceClass"] = client.get("evidenceClass", "local-external-aioquic-peer")
-payload["statusCode"] = client.get("statusCode")
-payload["proofScope"] = client.get("proofScope", [])
-payload["metrics"] = {"totalRequests": 1, "successfulRequests": 1, "failedRequests": 0}
-with open(sys.argv[1], "w", encoding="utf-8") as handle:
-    json.dump(payload, handle, separators=(",", ":"))
+if [[ "$exit_code" -ne 0 ]] || [[ ! -f "$output_root/client-result.json" ]]; then exit 1; fi
+"$python_bin" - "$output_root/client-result.json" "$result_file" "$scenario_id" <<'PY'
+import json, sys
+client = json.load(open(sys.argv[1], encoding="utf-8"))
+if client.get("status") != "passed" or client.get("scenarioId") != sys.argv[3]:
+    raise SystemExit("client identity or validation mismatch")
+result = {
+    "schemaVersion": "protocol-lab.aioquic-rfc9220-result.v2",
+    "scenarioId": sys.argv[3],
+    "status": "passed",
+    "authorityCommit": "8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574",
+    "executor": {"id": "aioquic-rfc9220-websocket", "version": "0.2.0"},
+    "validation": {"status": "passed"},
+    "protocolProof": client["protocolProof"],
+    "metrics": client["metrics"],
+    "warnings": ["Local package-backed RFC 9220 evidence is diagnostic and non-publishable."],
+}
+json.dump(result, open(sys.argv[2], "w", encoding="utf-8"), indent=2)
 PY
-  cat "$result_file"
-  echo "aioquic RFC9220 WebSocket executor passed for $target_url" >&2
-  exit 0
-fi
-
-cat > "$result_file" <<EOF
-{"status":"failed","targetUrl":"$target_url","image":"$image","exitCode":$exit_code,"clientStatus":"$client_status"}
-EOF
-"$python_bin" - "$result_file" <<'PY'
-import json
-import sys
-
-with open(sys.argv[1], encoding="utf-8") as handle:
-    payload = json.load(handle)
-
-payload["tool"] = "aioquic-rfc9220-websocket"
-payload["metrics"] = {"totalRequests": 1, "successfulRequests": 0, "failedRequests": 1}
-payload["errors"] = [f"clientStatus={payload.get('clientStatus')}", f"exitCode={payload.get('exitCode')}"]
-with open(sys.argv[1], "w", encoding="utf-8") as handle:
-    json.dump(payload, handle, separators=(",", ":"))
-PY
-cat "$result_file"
-exit 1
+printf '{"id":"aioquic-rfc9220-websocket","version":"0.2.0","aioquicVersion":"1.3.0","role":"test-executor"}\n' > "$output_root/executor-identity.json"

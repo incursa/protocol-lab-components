@@ -1,11 +1,13 @@
 [CmdletBinding()]
 param(
     [string]$Root = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,
-    [string]$OutputRoot = (Join-Path $Root 'artifacts/packages')
+    [string]$OutputRoot = (Join-Path $Root 'artifacts/packages'),
+    [switch]$AllowDirtySource
 )
 
 $ErrorActionPreference = 'Stop'
 & (Join-Path $PSScriptRoot 'Build-ProtocolLabComponentPackage.ps1') `
     -Root $Root `
     -OutputRoot $OutputRoot `
-    -ComponentPath 'executors/aioquic-rfc9220-websocket'
+    -ComponentPath 'executors/aioquic-rfc9220-websocket' `
+    -AllowDirtySource:$AllowDirtySource

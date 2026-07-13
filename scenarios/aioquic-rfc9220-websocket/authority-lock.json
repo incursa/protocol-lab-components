@@ -1,0 +1,7 @@
+{
+  "authorityRepository": "protocol-lab",
+  "authorityCommit": "8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574",
+  "files": {
+    "scenarios/http3/websocket/rfc9220-fragmented-binary-echo.yaml": "76bb1c269d42b5ba53742bf5c69e8f2728427406946a7cf2802023f482959725"
+  }
+}

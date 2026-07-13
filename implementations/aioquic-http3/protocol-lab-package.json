@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.aioquic-http3",
-  "packageVersion": "0.1.7",
+  "packageVersion": "0.2.0",
   "kind": "implementation",
   "displayName": "aioquic HTTP/3 Implementation Wrapper",
   "entryManifests": [
@@ -23,7 +23,8 @@
         "http3.websocket.rfc9220.control-frames",
         "http3.websocket.rfc9220.text-echo",
         "http3.websocket.rfc9220.binary-echo",
-        "http3.websocket.rfc9220.close"
+        "http3.websocket.rfc9220.close",
+        "http3.websocket.rfc9220.fragmented-binary-echo"
       ]
     }
   ],

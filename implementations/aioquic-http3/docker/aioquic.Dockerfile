@@ -1,10 +1,12 @@
-FROM python:3.12-slim
+FROM python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203
 
 ARG AIOQUIC_VERSION=1.3.0
 RUN python -m pip install --no-cache-dir "aioquic==${AIOQUIC_VERSION}"
 WORKDIR /work
 COPY docker/aioquic_http3_client.py /usr/local/bin/aioquic-http3-client
 COPY docker/aioquic_http3_server.py /usr/local/bin/aioquic-http3-server
+COPY tests /work/tests
+COPY third-party/aioquic-LICENSE.txt /licenses/aioquic-LICENSE.txt
 RUN chmod +x /usr/local/bin/aioquic-http3-client /usr/local/bin/aioquic-http3-server
 RUN mkdir -p /www /certs \
     && printf 'aioquic HTTP/3 status\n' > /www/status \
@@ -19,7 +21,7 @@ from cryptography.x509.oid import NameOID
 
 key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
 subject = issuer = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "localhost")])
-now = datetime.datetime.utcnow()
+now = datetime.datetime.now(datetime.timezone.utc)
 certificate = (
     x509.CertificateBuilder()
     .subject_name(subject)

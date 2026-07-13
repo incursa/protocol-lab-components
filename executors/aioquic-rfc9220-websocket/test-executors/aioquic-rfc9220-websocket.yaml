@@ -1,13 +1,13 @@
 executorIdentity:
   id: aioquic-rfc9220-websocket
   name: aioquic RFC9220 WebSocket-over-H3 Test Executor
-  version: 0.1.7
+  version: 0.2.0
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.7
+  executorVersion: 0.2.0
 claimedCapabilities:
   - id: http3.websocket.rfc9220.extended-connect
     status: supported
@@ -18,6 +18,8 @@ claimedCapabilities:
   - id: http3.websocket.rfc9220.binary-echo
     status: supported
   - id: http3.websocket.rfc9220.close
+    status: supported
+  - id: http3.websocket.rfc9220.fragmented-binary-echo
     status: supported
   - id: websocket-server-role
     status: unsupported
@@ -49,6 +51,8 @@ supportedScenarioSelectors:
     expression: http3.websocket.rfc9220.binary-echo
   - selectorType: scenario-id
     expression: http3.websocket.rfc9220.close
+  - selectorType: scenario-id
+    expression: http3.websocket.rfc9220.fragmented-binary-echo
 supportedProtocolFamilies:
   - h3
   - websocket
@@ -87,6 +91,26 @@ supportedArtifactTypes:
       - stopped
       - failed
   - type: sslkeylog
+    producedByStates:
+      - stopped
+      - failed
+  - type: validation.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: protocol-proof.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: websocket-summary.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: payload-hash.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: frame-summary.json
     producedByStates:
       - stopped
       - failed
