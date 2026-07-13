@@ -279,6 +279,8 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'implementations/kestrel-http1'; script = 'Build-KestrelHttp1Package.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'implementations/kestrel-http2'; script = 'Build-KestrelHttp2Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/dotnet-sslstream-tls13'; script = 'Build-DotNetSslStreamTls13Package.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/go-tls13'; script = 'Build-GoTls13ImplementationPackage.ps1'; arguments = @('win-x64') },
+    [pscustomobject]@{ componentPath = 'implementations/go-tls13'; script = 'Build-GoTls13ImplementationPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-grpc-h2'; script = 'Build-GoGrpcH2ImplementationPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-grpc-h2'; script = 'Build-GoGrpcH2ImplementationPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-dns-dot'; script = 'Build-GoDnsDotPackage.ps1'; arguments = @('win-x64') },

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.go-tls13",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Go TLS 1.3 Full and Resumed Handshake Target",
+  "entryManifests": ["implementations/go-tls13.yaml"],
+  "providedImplementations": [{
+    "implementationId": "go-tls13",
+    "displayName": "Go crypto/tls TLS 1.3",
+    "protocols": ["tls"],
+    "scenarios": ["tls.handshake.full", "tls.handshake.resumed"]
+  }],
+  "dependencies": {}
+}

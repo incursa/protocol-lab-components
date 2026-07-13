@@ -11,6 +11,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"math"
 	"net"
 	"net/url"
@@ -19,25 +20,29 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
 const (
 	executorID           = "go-tls13-executor"
-	executorVersion      = "0.1.0"
+	executorVersion      = "0.2.0"
 	loadGeneratorID      = "go-crypto-tls13-handshake-load"
-	loadGeneratorVersion = "0.1.0"
-	scenarioID           = "tls.handshake.full"
+	loadGeneratorVersion = "0.2.0"
+	fullScenarioID       = "tls.handshake.full"
+	resumedScenarioID    = "tls.handshake.resumed"
 	loadProfileID        = "tls-smoke"
 	serverName           = "tls.plab.test"
 	alpn                 = "protocol-lab-tls"
 	requiredCipherSuite  = "TLS_AES_128_GCM_SHA256"
+	requiredKeyExchange  = "X25519"
 	certificateProfile   = "plab-single-leaf-p256-v1"
 	leafDERHash          = "cf99a110e63d11b14d6a526d132b11b0363058f8eac30dd79a62f27fcbc38b5e"
 	leafSPKIHash         = "407e0f88780f510da95d16cbf92243a3879c6c676be5b3c5779f11d31e646fc0"
 )
 
 type loadConfig struct {
+	ScenarioID              string
 	Connections             int
 	Concurrency             int
 	HandshakesPerConnection int
@@ -80,7 +85,63 @@ type phaseSummary struct {
 	TLSHandshakeLatencyMilliseconds    []float64             `json:"tlsHandshakeLatencyMilliseconds"`
 	ConnectionAndHandshakeMilliseconds []float64             `json:"connectionAndHandshakeLatencyMilliseconds"`
 	LastNegotiation                    *handshakeObservation `json:"lastNegotiation,omitempty"`
+	LastResumptionProof                *resumptionProof      `json:"lastResumptionProof,omitempty"`
 	Errors                             map[string]int        `json:"errors"`
+}
+
+type resumptionProof struct {
+	ScenarioID                        string               `json:"scenarioId"`
+	ResumptionPolicy                  string               `json:"resumptionPolicy"`
+	PrerequisitePolicy                string               `json:"prerequisitePolicy"`
+	WarmupIsolation                   string               `json:"warmupIsolation"`
+	MeasuredWindow                    string               `json:"measuredWindow"`
+	SourceSession                     handshakeObservation `json:"sourceSession"`
+	MeasuredSession                   handshakeObservation `json:"measuredSession"`
+	SourceHandshakeOutsideMeasured    bool                 `json:"sourceHandshakeOutsideMeasuredWindow"`
+	SessionTicketAvailableAfterSource bool                 `json:"sessionTicketAvailableAfterSource"`
+	SessionTicketConsumedExactlyOnce  bool                 `json:"sessionTicketConsumedExactlyOnce"`
+	WarmupSessionStateReused          bool                 `json:"warmupSessionStateReusedByMeasurement"`
+	EarlyDataAttempted                bool                 `json:"earlyDataAttempted"`
+	ApplicationDataBytes              int                  `json:"applicationDataBytes"`
+	CachePutCountAfterSource          int                  `json:"cachePutCountAfterSource"`
+	CacheGetCountForMeasuredHandshake int                  `json:"cacheGetCountForMeasuredHandshake"`
+	CacheHitCountForMeasuredHandshake int                  `json:"cacheHitCountForMeasuredHandshake"`
+}
+
+type singleUseSessionCache struct {
+	mu      sync.Mutex
+	key     string
+	session *tls.ClientSessionState
+	puts    int
+	gets    int
+	hits    int
+}
+
+func (cache *singleUseSessionCache) Put(key string, session *tls.ClientSessionState) {
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
+	cache.puts++
+	cache.key = key
+	cache.session = session
+}
+
+func (cache *singleUseSessionCache) Get(key string) (*tls.ClientSessionState, bool) {
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
+	cache.gets++
+	if cache.session == nil || cache.key != key {
+		return nil, false
+	}
+	session := cache.session
+	cache.session = nil
+	cache.hits++
+	return session, true
+}
+
+func (cache *singleUseSessionCache) counts() (puts, gets, hits int, available bool) {
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
+	return cache.puts, cache.gets, cache.hits, cache.session != nil
 }
 
 type loadShape struct {
@@ -133,34 +194,46 @@ func main() {
 
 	verifySubstitution("PLAB_EXECUTOR_ID", executorID, "executor")
 	verifySubstitution("PLAB_EXECUTOR_VERSION", executorVersion, "executor version")
+	verifySubstitution("PLAB_LOAD_GENERATOR_ID", loadGeneratorID, "load generator")
+	verifySubstitution("PLAB_LOAD_GENERATOR_VERSION", loadGeneratorVersion, "load generator version")
 	verifySubstitution("PLAB_PROTOCOL", "tls", "protocol")
-	verifySubstitution("PLAB_PROTOCOL_VARIANT", "tls1.3-full", "protocol variant")
+	if strings.TrimSpace(*outputDir) == "" {
+		*outputDir = "artifacts"
+	}
+	if err := os.MkdirAll(*outputDir, 0o755); err != nil {
+		fatal(1, err)
+	}
+	requestedID := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
+	if isKnownUnsupportedScenario(requestedID) {
+		emitUnsupported(*outputDir, requestedID)
+		os.Exit(3)
+	}
+	scenario, protocolVariant, err := requestedScenario()
+	if err != nil {
+		fatal(2, err)
+	}
+	verifySubstitution("PLAB_PROTOCOL_VARIANT", protocolVariant, "protocol variant")
 
 	address, err := normalizeTarget(*target)
 	if err != nil {
 		fatal(2, err)
 	}
-	if strings.TrimSpace(*outputDir) == "" {
-		*outputDir = "artifacts"
-	}
 	if strings.TrimSpace(*rootCertificate) == "" {
 		*rootCertificate = filepath.Join("certs", "root.pem")
-	}
-	if err := os.MkdirAll(*outputDir, 0o755); err != nil {
-		fatal(1, err)
 	}
 	roots, err := loadRoots(*rootCertificate)
 	if err != nil {
 		fatal(2, err)
 	}
 
-	preflight, err := runHandshake(context.Background(), address, roots, 5*time.Second)
+	preflight, preflightResumption, err := runOperation(context.Background(), scenario, address, roots, 5*time.Second)
 	validation := map[string]any{
-		"scenarioId":             scenarioID,
+		"scenarioId":             scenario,
 		"passed":                 err == nil,
-		"requestedProtocol":      "tls1.3",
+		"requestedProtocol":      protocolVariant,
 		"observedProtocol":       preflight.TLSVersion,
 		"fallbackDetected":       preflight.TLSVersion != "TLS1.3",
+		"didResume":              preflight.DidResume,
 		"unexpectedFailureCount": boolInt(err != nil),
 		"timeoutCount":           boolInt(isTimeout(err)),
 		"error":                  errorString(err),
@@ -169,16 +242,19 @@ func main() {
 	writeRequired(*outputDir, "result.json", validation)
 	writeRequired(*outputDir, "protocol-proof.json", preflight)
 	writeRequired(*outputDir, "tls-negotiation.json", preflight)
+	if scenario == resumedScenarioID {
+		writeRequired(*outputDir, "resumption-proof.json", preflightResumption)
+	}
 	writeRequired(*outputDir, "executor-identity.json", map[string]any{
 		"id": executorID, "version": executorVersion, "role": "client-test-executor",
-		"supportedProtocols": []string{"tls"}, "supportedScenarios": []string{scenarioID},
+		"supportedProtocols": []string{"tls"}, "supportedScenarios": []string{fullScenarioID, resumedScenarioID},
 		"supportedLoadProfiles": []string{loadProfileID},
 	})
 	if err != nil {
 		fatal(1, fmt.Errorf("TLS validity handshake failed: %w", err))
 	}
 	if *validationOnly {
-		fmt.Fprintln(os.Stderr, "go-tls13-executor validation passed with exact TLS 1.3 full-handshake proof")
+		fmt.Fprintf(os.Stderr, "go-tls13-executor validation passed with exact %s proof\n", protocolVariant)
 		return
 	}
 
@@ -187,13 +263,13 @@ func main() {
 		fatal(2, err)
 	}
 	if config.Warmup > 0 {
-		warmup := runPhase(address, roots, config.Warmup, config.ConnectionTimeout, "warmup")
+		warmup := runPhase(config.ScenarioID, address, roots, config.Warmup, config.ConnectionTimeout, "warmup")
 		writeRequired(*outputDir, "tls-warmup-summary.json", warmup)
 		if warmup.FailedOperations != 0 || warmup.TimedOutOperations != 0 || warmup.CompletedOperations == 0 {
 			fatal(1, errors.New("TLS warmup did not satisfy the minimal validity gate"))
 		}
 	}
-	measured := runPhase(address, roots, config.Duration, config.ConnectionTimeout, "measured")
+	measured := runPhase(config.ScenarioID, address, roots, config.Duration, config.ConnectionTimeout, "measured")
 	writeRequired(*outputDir, "tls-load-summary.json", measured)
 	if measured.FailedOperations != 0 || measured.TimedOutOperations != 0 || measured.CompletedOperations == 0 || measured.LastNegotiation == nil {
 		fatal(1, fmt.Errorf("TLS measured phase rejected: completed=%d failed=%d timedOut=%d", measured.CompletedOperations, measured.FailedOperations, measured.TimedOutOperations))
@@ -213,24 +289,29 @@ func main() {
 		Validation:    map[string]string{"status": "passed"},
 		ProtocolProof: *measured.LastNegotiation,
 		RequestedLoad: shape, EffectiveLoad: effective, Metrics: metrics,
-		Warnings: []string{"TLS handshake smoke evidence is local and non-publishable; resumed handshakes, 0-RTT, record throughput, comparison, and ranking are unsupported."},
+		Warnings: []string{"TLS handshake smoke evidence is local and non-publishable; 0-RTT, alternate cipher/version/authentication profiles, record workloads, comparison, and ranking are unsupported."},
 	}
 	writeRequired(*outputDir, "tls-topology.json", map[string]any{"schemaVersion": "protocol-lab.tls-topology.v1", "requested": shape, "effective": effective})
 	writeRequired(*outputDir, "connection-and-handshake-latency.json", map[string]any{"samplesMilliseconds": measured.ConnectionAndHandshakeMilliseconds})
 	writeRequired(*outputDir, "load-generator-identity.json", result.LoadGenerator)
+	if config.ScenarioID == resumedScenarioID {
+		writeRequired(*outputDir, "resumption-proof.json", measured.LastResumptionProof)
+	}
 	writeRequired(*outputDir, "tls-executor-result.json", result)
 	data, _ := json.MarshalIndent(result, "", "  ")
 	fmt.Println(string(data))
 }
 
 func loadConfigFromEnvironment() (loadConfig, error) {
-	if strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID")) != scenarioID {
-		return loadConfig{}, fmt.Errorf("go-tls13-executor supports scenario %q only", scenarioID)
+	scenario, _, err := requestedScenario()
+	if err != nil {
+		return loadConfig{}, err
 	}
 	if strings.TrimSpace(os.Getenv("PLAB_LOAD_PROFILE_ID")) != loadProfileID {
 		return loadConfig{}, fmt.Errorf("go-tls13-executor supports load profile %q only", loadProfileID)
 	}
 	config := loadConfig{
+		ScenarioID:  scenario,
 		Connections: envInt("PLAB_CONNECTIONS"), Concurrency: envInt("PLAB_CONCURRENCY"),
 		HandshakesPerConnection: 1,
 		ApplicationDataBytes:    0,
@@ -241,17 +322,70 @@ func loadConfigFromEnvironment() (loadConfig, error) {
 	}
 	if config.Connections != 1 || config.Concurrency != 1 || config.HandshakesPerConnection != 1 || config.ApplicationDataBytes != 0 ||
 		config.Duration != 5*time.Second || config.Warmup != time.Second || config.Repetition != 1 || config.ConnectionTimeout != 5*time.Second {
-		return config, fmt.Errorf("tls-smoke with tls.handshake.full requires connections=1 concurrency=1 fresh handshakes, zero application bytes, duration=5s warmup=1s repetition=1 operationTimeout=5s; observed %+v", config)
+		return config, fmt.Errorf("tls-smoke with %s requires connections=1 concurrency=1 one handshake per connection, zero application bytes, duration=5s warmup=1s repetition=1 operationTimeout=5s; observed %+v", scenario, config)
 	}
 	return config, nil
 }
 
-func runPhase(address string, roots *x509.CertPool, duration, timeout time.Duration, phase string) phaseSummary {
+func requestedScenario() (scenario, variant string, err error) {
+	scenario = strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
+	switch scenario {
+	case fullScenarioID:
+		return scenario, "tls1.3-full", nil
+	case resumedScenarioID:
+		return scenario, "tls1.3-psk-resumed", nil
+	default:
+		return "", "", fmt.Errorf("unknown or invalid TLS scenario %q; supported scenarios are %q and %q", scenario, fullScenarioID, resumedScenarioID)
+	}
+}
+
+func isKnownUnsupportedScenario(scenario string) bool {
+	switch scenario {
+	case "tls.handshake.full.tls12",
+		"tls.handshake.full.chacha20",
+		"tls.handshake.mutual-auth",
+		"tls.early-data.accepted",
+		"tls.early-data.rejected",
+		"tls.key-update.diagnostic",
+		"tls.record.coverage",
+		"tls.record.throughput":
+		return true
+	default:
+		return false
+	}
+}
+
+func emitUnsupported(outputDir, scenario string) {
+	unsupported := map[string]any{
+		"schemaVersion":      "protocol-lab.unsupported.v1",
+		"status":             "unsupported",
+		"scenarioId":         scenario,
+		"reasonCode":         "scenario-not-implemented",
+		"message":            fmt.Sprintf("go-tls13-executor@%s recognizes %s but does not implement its exact semantics", executorVersion, scenario),
+		"authorityCommit":    "8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574",
+		"executor":           map[string]string{"id": executorID, "version": executorVersion},
+		"loadGenerator":      map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion},
+		"supportedScenarios": []string{fullScenarioID, resumedScenarioID},
+	}
+	writeRequired(outputDir, "unsupported.json", unsupported)
+	writeRequired(outputDir, "result.json", unsupported)
+	writeRequired(outputDir, "executor-identity.json", map[string]any{
+		"id": executorID, "version": executorVersion, "role": "client-test-executor",
+		"supportedProtocols": []string{"tls"}, "supportedScenarios": []string{fullScenarioID, resumedScenarioID},
+		"supportedLoadProfiles": []string{loadProfileID},
+	})
+	data, err := json.MarshalIndent(unsupported, "", "  ")
+	if err == nil {
+		fmt.Println(string(data))
+	}
+}
+
+func runPhase(scenario, address string, roots *x509.CertPool, duration, timeout time.Duration, phase string) phaseSummary {
 	started := time.Now()
 	summary := phaseSummary{Phase: phase, MaximumEffectiveConcurrency: 1, Errors: map[string]int{}}
-	deadline := started.Add(duration)
-	for time.Now().Before(deadline) {
-		observation, err := runHandshake(context.Background(), address, roots, timeout)
+	measuredDuration := time.Duration(0)
+	for measuredDuration < duration {
+		observation, resumption, err := runOperation(context.Background(), scenario, address, roots, timeout)
 		if err != nil {
 			if isTimeout(err) {
 				summary.TimedOutOperations++
@@ -265,12 +399,64 @@ func runPhase(address string, roots *x509.CertPool, duration, timeout time.Durat
 		summary.TLSHandshakeLatencyMilliseconds = append(summary.TLSHandshakeLatencyMilliseconds, observation.TLSHandshakeLatencyMS)
 		summary.ConnectionAndHandshakeMilliseconds = append(summary.ConnectionAndHandshakeMilliseconds, observation.ConnectionAndHandshakeLatencyMS)
 		summary.LastNegotiation = &observation
+		if resumption != nil {
+			summary.LastResumptionProof = resumption
+		}
+		measuredDuration += time.Duration(observation.TLSHandshakeLatencyMS * float64(time.Millisecond))
 	}
-	summary.DurationSeconds = time.Since(started).Seconds()
+	summary.DurationSeconds = measuredDuration.Seconds()
+	if scenario == fullScenarioID {
+		summary.DurationSeconds = time.Since(started).Seconds()
+	}
 	return summary
 }
 
-func runHandshake(ctx context.Context, address string, roots *x509.CertPool, timeout time.Duration) (handshakeObservation, error) {
+func runOperation(ctx context.Context, scenario, address string, roots *x509.CertPool, timeout time.Duration) (handshakeObservation, *resumptionProof, error) {
+	if scenario == fullScenarioID {
+		observation, err := runHandshake(ctx, address, roots, timeout, nil, false, false)
+		return observation, nil, err
+	}
+	cache := &singleUseSessionCache{}
+	source, err := runHandshake(ctx, address, roots, timeout, cache, false, true)
+	if err != nil {
+		return source, nil, fmt.Errorf("unmeasured source handshake failed: %w", err)
+	}
+	puts, sourceGets, sourceHits, available := cache.counts()
+	if !available || puts < 1 {
+		return source, nil, errors.New("unmeasured source handshake did not yield a resumable TLS 1.3 session ticket")
+	}
+	measured, err := runHandshake(ctx, address, roots, timeout, cache, true, false)
+	_, totalGets, totalHits, availableAfter := cache.counts()
+	measuredGets := totalGets - sourceGets
+	measuredHits := totalHits - sourceHits
+	proof := &resumptionProof{
+		ScenarioID:                        resumedScenarioID,
+		ResumptionPolicy:                  "accepted-psk-single-use-ticket",
+		PrerequisitePolicy:                "unmeasured-source-session-per-measured-operation",
+		WarmupIsolation:                   "warmup-state-not-reused-by-measurement",
+		MeasuredWindow:                    "resumed-handshake",
+		SourceSession:                     source,
+		MeasuredSession:                   measured,
+		SourceHandshakeOutsideMeasured:    true,
+		SessionTicketAvailableAfterSource: true,
+		SessionTicketConsumedExactlyOnce:  measuredGets == 1 && measuredHits == 1 && !availableAfter,
+		WarmupSessionStateReused:          false,
+		EarlyDataAttempted:                false,
+		ApplicationDataBytes:              0,
+		CachePutCountAfterSource:          puts,
+		CacheGetCountForMeasuredHandshake: measuredGets,
+		CacheHitCountForMeasuredHandshake: measuredHits,
+	}
+	if err != nil {
+		return measured, proof, fmt.Errorf("measured resumed handshake failed: %w", err)
+	}
+	if !proof.SessionTicketConsumedExactlyOnce {
+		return measured, proof, fmt.Errorf("session ticket was not consumed exactly once: measuredGets=%d measuredHits=%d availableAfter=%t", measuredGets, measuredHits, availableAfter)
+	}
+	return measured, proof, nil
+}
+
+func runHandshake(ctx context.Context, address string, roots *x509.CertPool, timeout time.Duration, cache tls.ClientSessionCache, expectResume, drainTicket bool) (handshakeObservation, error) {
 	connectionStart := time.Now()
 	operationContext, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
@@ -282,7 +468,8 @@ func runHandshake(ctx context.Context, address string, roots *x509.CertPool, tim
 	client := tls.Client(raw, &tls.Config{
 		MinVersion: tls.VersionTLS13, MaxVersion: tls.VersionTLS13,
 		RootCAs: roots, ServerName: serverName, NextProtos: []string{alpn},
-		ClientSessionCache: nil,
+		CurvePreferences:   []tls.CurveID{tls.X25519},
+		ClientSessionCache: cache,
 	})
 	handshakeStart := time.Now()
 	if err := client.HandshakeContext(operationContext); err != nil {
@@ -290,14 +477,36 @@ func runHandshake(ctx context.Context, address string, roots *x509.CertPool, tim
 	}
 	handshakeFinished := time.Now()
 	state := client.ConnectionState()
-	observation, err := validateState(state)
+	observation, err := validateState(state, expectResume)
 	observation.TLSHandshakeLatencyMS = durationMS(handshakeFinished.Sub(handshakeStart))
 	observation.ConnectionAndHandshakeLatencyMS = durationMS(handshakeFinished.Sub(connectionStart))
+	if err == nil && drainTicket {
+		err = drainSessionTicket(client, timeout)
+	}
 	_ = client.Close()
 	return observation, err
 }
 
-func validateState(state tls.ConnectionState) (handshakeObservation, error) {
+func drainSessionTicket(client *tls.Conn, timeout time.Duration) error {
+	if err := client.SetReadDeadline(time.Now().Add(timeout)); err != nil {
+		return err
+	}
+	buffer := make([]byte, 1)
+	for {
+		n, err := client.Read(buffer)
+		if n != 0 {
+			return errors.New("TLS handshake workload received unexpected application data while awaiting the session ticket")
+		}
+		if errors.Is(err, io.EOF) {
+			return nil
+		}
+		if err != nil {
+			return fmt.Errorf("session ticket was not received before the source connection ended: %w", err)
+		}
+	}
+}
+
+func validateState(state tls.ConnectionState, expectResume bool) (handshakeObservation, error) {
 	observation := handshakeObservation{
 		TLSVersion: tlsVersionName(state.Version), CipherSuite: tls.CipherSuiteName(state.CipherSuite),
 		KeyExchangeGroup: state.CurveID.String(), ALPN: state.NegotiatedProtocol, ServerName: serverName,
@@ -322,14 +531,17 @@ func validateState(state tls.ConnectionState) (handshakeObservation, error) {
 	if !state.HandshakeComplete {
 		failures = append(failures, "handshake did not complete")
 	}
-	if state.DidResume {
-		failures = append(failures, "session resumption was detected")
+	if state.DidResume != expectResume {
+		failures = append(failures, fmt.Sprintf("session resumption mismatch: expected didResume=%t, observed %t", expectResume, state.DidResume))
 	}
 	if state.NegotiatedProtocol != alpn {
 		failures = append(failures, "ALPN mismatch")
 	}
 	if observation.CipherSuite != requiredCipherSuite {
 		failures = append(failures, fmt.Sprintf("cipher suite mismatch: expected %s, observed %s", requiredCipherSuite, observation.CipherSuite))
+	}
+	if observation.KeyExchangeGroup != requiredKeyExchange {
+		failures = append(failures, fmt.Sprintf("key-exchange group mismatch: expected %s, observed %s", requiredKeyExchange, observation.KeyExchangeGroup))
 	}
 	if len(state.VerifiedChains) == 0 {
 		failures = append(failures, "authenticated certificate chain was not verified")
