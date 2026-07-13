@@ -43,10 +43,12 @@ This matrix tracks reusable component package coverage for implementations and e
 | `go-http2-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-http2-executor@0.3.0`; exact h2c smoke, diagnostic, and `16/128/8` balanced-round-robin comparison shapes |
 | `go-tls13-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-tls13-executor@0.3.0`; exact TLS 1.3 full/resumed handshakes plus deterministic record throughput and six-case record coverage; remaining committed TLS identities fail closed as explicit `unsupported` |
 | `go-tls13-mtls-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-tls13-mtls-executor@0.1.0`; exact TLS 1.3 mutual-authentication handshake with pinned server/client certificate identities; every other committed TLS identity fails closed as explicit `unsupported` |
+| `go-utls-tls13-chacha20-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-utls-tls13-chacha20-executor@0.1.0`; pinned uTLS v1.8.2 custom ClientHello offers only TLS 1.3 ChaCha20/X25519 with no ticket, PSK, or early data; every other committed TLS identity fails closed as explicit `unsupported` |
 | `go-tls12-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-tls12-executor@0.1.0`; exact TLS 1.2 compatibility handshake with pinned cipher, X25519, ALPN, and server certificate identity; every other committed TLS identity fails closed as explicit `unsupported` |
 | `dotnet-sslstream-tls13` | missing | local diagnostic package `org.protocol-lab.components.implementation.dotnet-sslstream-tls13@0.1.0`; independent library-backed TLS 1.3 target |
 | `go-tls13` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-tls13@0.2.0`; independent Go `crypto/tls` target for exact TLS 1.3 full/resumed handshakes and deterministic record transfers |
 | `go-tls13-mtls` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-tls13-mtls@0.1.0`; independent narrow Go `crypto/tls` target requiring the canonical client trust chain and exact client leaf identity |
+| `go-tls13-chacha20` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-tls13-chacha20@0.1.0`; independent narrow Go `crypto/tls` target for the exact TLS 1.3 ChaCha20/X25519 full-handshake profile |
 | `go-tls12` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-tls12@0.1.0`; independent narrow Go `crypto/tls` target for the exact TLS 1.2 ECDHE-ECDSA AES-128-GCM compatibility profile |
 | HTTP/1.1 cleartext WebSocket three-package lane | missing | local diagnostic scenario, executor, and independent origin packages at `0.1.0`; exact five-ID RFC 6455 smoke passes, while all adjacent WebSocket identities fail closed as unsupported |
 | HTTP/1.1 TLS WebSocket three-package lane | missing | local diagnostic `org.protocol-lab.components.scenario.http1-websocket-tls-performance`, `go-http1-websocket-tls-executor`, and independent `go-http1-websocket-tls` packages at `0.2.0`; the original five-ID TLS 1.3 regression plus exact `plab.echo.v1` and permessage-deflate no-context-takeover diagnostics pass with authenticated certificate and `http/1.1` ALPN proof |
@@ -92,10 +94,12 @@ This matrix tracks reusable component package coverage for implementations and e
 | `org.protocol-lab.components.executor.go-http2-executor` | `executors/go-http2-executor` |
 | `org.protocol-lab.components.executor.go-tls13-executor` | `executors/go-tls13-executor` |
 | `org.protocol-lab.components.executor.go-tls13-mtls-executor` | `executors/go-tls13-mtls-executor` |
+| `org.protocol-lab.components.executor.go-utls-tls13-chacha20-executor` | `executors/go-utls-tls13-chacha20-executor` |
 | `org.protocol-lab.components.executor.go-tls12-executor` | `executors/go-tls12-executor` |
 | `org.protocol-lab.components.implementation.dotnet-sslstream-tls13` | `implementations/dotnet-sslstream-tls13` |
 | `org.protocol-lab.components.implementation.go-tls13` | `implementations/go-tls13` |
 | `org.protocol-lab.components.implementation.go-tls13-mtls` | `implementations/go-tls13-mtls` |
+| `org.protocol-lab.components.implementation.go-tls13-chacha20` | `implementations/go-tls13-chacha20` |
 | `org.protocol-lab.components.implementation.go-tls12` | `implementations/go-tls12` |
 | `org.protocol-lab.components.implementation.go-http1-websocket` | `implementations/go-http1-websocket` |
 | `org.protocol-lab.components.executor.go-http1-websocket-executor` | `executors/go-http1-websocket-executor` |

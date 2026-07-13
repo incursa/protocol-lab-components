@@ -374,6 +374,37 @@ The same executor recognizes
 full or resumed scenario. These local smokes remain diagnostic and
 non-publishable.
 
+Completion update: `tls.handshake.full.chacha20` now has a narrow package-local
+vertical locked to public authority commit
+`8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`. The scenario package retains
+`org.protocol-lab.components.scenario.tls13-handshake-performance@0.2.0`. The
+test-side package is truthfully identified as
+`org.protocol-lab.components.executor.go-utls-tls13-chacha20-executor@0.1.0`
+with executor `go-utls-tls13-chacha20-executor@0.1.0` and logical generator
+`go-utls-tls13-chacha20-load@0.1.0`. It pins
+`github.com/refraction-networking/utls@v1.8.2` and applies a custom ClientHello
+that offers only TLS 1.3, `TLS_CHACHA20_POLY1305_SHA256`, X25519,
+`ecdsa_secp256r1_sha256`, and ALPN `protocol-lab-tls`, with no ticket, PSK, or
+early-data extension. The independent target remains
+`org.protocol-lab.components.implementation.go-tls13-chacha20@0.1.0`, built on
+Go `crypto/tls`; the target and load generator are not the same implementation.
+
+Extracted Windows and WSL2 Linux package smokes each completed one validation
+handshake with zero failures and zero timeouts. Both proved the exact suite,
+X25519, ALPN, canonical DER/SPKI certificate hashes, `didResume: false`, no
+session-state or early-data offer, and zero application bytes. All nine other
+committed TLS identities return explicit `unsupported`; an unknown identity
+fails closed. The dirty-source diagnostic package hashes from the decisive
+Windows proof are scenario
+`401e2600c653555f4b238096f9233d8bdab8b9164c16ae1d038c13d3abb2f142`,
+executor `e1b3b37684adda6a1e6ba046e5d683f1e7685b9e1385b0fb0e6e0b1d80ae95d7`,
+and target `979b9d3325ab378622faeac4c8e92c80c693f3c076f25d8e1ee773395104ec30`.
+The Linux executor and target diagnostics are respectively
+`4d4f68930f84939670d4c3a6d0d233f753af52ac5ffdc9f225a9cf58e8b90ad1`
+and `497b37fd89b7c23fab0583e8f986decc842dab45e2e9cdbdbfba587c7530e706`.
+These local cells remain diagnostic and non-publishable; no generic uTLS, TLS,
+comparison, or ranking support is implied.
+
 #### E8b — gRPC over HTTP/2 unary after TLS/ALPN
 
 Proposed package identities:
