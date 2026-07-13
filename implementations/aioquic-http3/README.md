@@ -6,7 +6,7 @@
 
 - Protocol family: `h3`
 - Roles: client and server
-- Public scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`, and the RFC9220 WebSocket proof scenarios.
+- Public scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`, and all six exact committed RFC9220 WebSocket scenarios including fragmented binary echo.
 - Stable external interop scenarios: `get-small`, `not-found`
 
 ## Known Unsupported
@@ -18,16 +18,15 @@
 
 ## Pinned Toolchain
 
-- Base image: `python:3.12-slim`
+- Base image: `python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203`
 - Python package: `aioquic==1.3.0`
-- Component image tag: `incursa-protocol-lab-aioquic-http3:0.1.6`
-- Component image ID: `sha256:7541ae1425ea7baf2efa34baea6d42abd888ad04082851eba982ac4d47fadad7`
-- Component repo digest: `incursa-protocol-lab-aioquic-http3@sha256:7541ae1425ea7baf2efa34baea6d42abd888ad04082851eba982ac4d47fadad7`
-- Source manifest image ID: `sha256:ef138c09ec4cb224ee283f00768eebba6b2d196d9e869809603606ce0d0c0937`
-- Local interop image ID observed during this package proof: `sha256:7541ae1425ea7baf2efa34baea6d42abd888ad04082851eba982ac4d47fadad7`
-- Source evidence: `C:\src\incursa\quic-dotnet\.artifacts\http3-external\20260619T184606Z\peer-tool-manifest.json`
+- Component image tag: `incursa-protocol-lab-aioquic-http3:0.2.0`
+- aioquic license text: `third-party/aioquic-LICENSE.txt`
+- Image identity for `0.2.0` is recorded by local Docker build output and is not a package or publication claim.
 
-## Scenario Evidence
+## Historical Scenario Evidence
+
+The rows below predate `0.2.0`; they remain provenance for the unchanged HTTP/3 core behavior, not proof of the new fragmented WebSocket identity.
 
 | External row | Scenarios | Status | Evidence |
 | --- | --- | --- | --- |
@@ -48,7 +47,7 @@ Build the wrapper image:
 ```powershell
 docker build --build-arg AIOQUIC_VERSION=1.3.0 `
   -f ./implementations/aioquic-http3/docker/aioquic.Dockerfile `
-  -t incursa-protocol-lab-aioquic-http3:0.1.6 `
+  -t incursa-protocol-lab-aioquic-http3:0.2.0 `
   ./implementations/aioquic-http3
 ```
 

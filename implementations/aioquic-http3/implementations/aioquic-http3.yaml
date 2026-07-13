@@ -8,7 +8,7 @@ roles:
   - server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-aioquic-http3:0.1.6
+image: incursa-protocol-lab-aioquic-http3:0.2.0
 dockerfile: docker/aioquic.Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
@@ -40,6 +40,7 @@ supportedScenarios:
   - http3.websocket.rfc9220.text-echo
   - http3.websocket.rfc9220.binary-echo
   - http3.websocket.rfc9220.close
+  - http3.websocket.rfc9220.fragmented-binary-echo
 supportedTestCaseIds:
   - http3.core.status
   - http3.payload.bytes.1kb
@@ -50,6 +51,7 @@ supportedTestCaseIds:
   - http3.websocket.rfc9220.text-echo
   - http3.websocket.rfc9220.binary-echo
   - http3.websocket.rfc9220.close
+  - http3.websocket.rfc9220.fragmented-binary-echo
 scenarioCoverage:
   quic.transport.stream-throughput.1mb:
     status: unsupported
@@ -81,6 +83,11 @@ scenarioCoverage:
     scenarioId: http3.websocket.rfc9220.extended-connect
     executorId: aioquic-rfc9220-websocket
     reason: The aioquic HTTP/3 package exposes the /websocket-proof RFC9220 proof endpoint and uses the aioquic RFC9220 executor for validation.
+  http3.websocket.rfc9220.fragmented-binary-echo:
+    status: supported
+    scenarioId: http3.websocket.rfc9220.fragmented-binary-echo
+    executorId: aioquic-rfc9220-websocket
+    reason: The target reassembles the exact masked 1024, 2048, and 2928 byte frame plan without interleaved control frames and echoes the deterministic 6000-byte message.
   h3spec-qpack-executor:
     status: compatible-target-unproven
     executorId: h3spec-http3-qpack
@@ -149,6 +156,7 @@ capabilities:
   - h3Qpack
   - websocket.server
   - rfc9220WebSocket
+  - websocket.fragmentation
 endpoints:
   bytes1kb:
     method: GET

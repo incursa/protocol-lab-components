@@ -1,0 +1,28 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: http3.websocket.rfc9220.fragmented-binary-echo
+title: RFC 9220 WebSocket Fragmented Binary Echo Diagnostic
+description: Echo the deterministic 6000-byte binary message split across three RFC 6455 data fragments over WebSocket on HTTP/3.
+status: draft
+kind: workload
+layer: application
+protocol: h3
+family: websocket
+semanticTemplateId: websocket.echo.binary.fragmented.6000b
+protocolStack: [websocket, h3, quic, tls1.3]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc6455, https://www.rfc-editor.org/rfc/rfc9220]
+roles: [client, server]
+requires: {capabilities: [websocket.client, websocket.server, websocket.binary-echo, websocket.fragmentation], protocols: [h3], roles: [client, server]}
+trafficShape: bidirectional-stream
+executionProfile: {transportSecurity: tls, protocolVariant: websocket-h3-extended-connect, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+websocket: {binding: http3-extended-connect, standard: rfc9220, path: /websocket-proof, subprotocol: null, operation: binary-echo, messageType: binary, messageBytes: 6000, messageCount: 1, payloadGenerator: repeated-octet, payloadOctet: 165, payloadSha256: 8f8d8f75d55c80475ffb0c12b1ede7083d6df689e8ef04f05176c5050873bfb7, fragmentation: diagnostic, fragmentPlan: {framePayloadBytes: [1024, 2048, 2928], firstOpcode: binary, continuationOpcode: continuation, firstFrameFin: false, finalFrameFin: true, interleavedControlFrames: false}, masking: client-required, closeCode: 1000, authority: websocket.plab.test, extensions: none, bootstrapPolicy: rfc9220-extended-connect, closeReasonPolicy: empty-utf8-reason, connectionLifecycle: pre-established-connection-per-operation, measuredWindow: message-round-trip, handshake: {binding: http3-extended-connect, settingsEnableConnectProtocol: 1, requestPseudoHeaders: {method: CONNECT, protocol: websocket, scheme: https, authority: websocket.plab.test, path: /websocket-proof}, requestHeaders: {secWebSocketVersion: "13", originPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false, secWebSocketKeyPresent: false}, prohibitedConnectionHeadersPresent: false, responseStatus: 200, responseHeaders: {secWebSocketAcceptPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false}}}
+validation:
+  required: true
+  checks: [protocol:h3, no-fallback, extended-connect, fragmented-message, fragment-count:3, fragment-bytes:1024-2048-2928, continuation-opcodes, final-fin, message-type:binary, message-size:6000, payload-sha256, reassembled-payload-sha256, ordered-echo, close-code:1000, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: websocket-over-h3, expectedObserved: websocket-over-h3, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [diagnostic], primaryMetrics: [messageLatencyP95, failedOperations, timedOutOperations]}
+requiredMetrics: [messageLatencyMean, messageLatencyP50, messageLatencyP75, messageLatencyP90, messageLatencyP95, messageLatencyP99, completedOperations, failedOperations, timedOutOperations, totalTransferredBytes, effectiveStreams]
+artifacts: {required: [validation.json, protocol-proof.json, websocket-summary.json, payload-hash.json, frame-summary.json, result.json, load.stdout.log, load.stderr.log], optional: [qlog, tls-key-log, target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [fragmentation-unavailable, http1-upgrade-fallback, http2-extended-connect, payload-hash-unavailable]}
+networkProfile: clean
+tags: [http3, websocket, rfc9220, binary, echo, fragmentation, diagnostic]

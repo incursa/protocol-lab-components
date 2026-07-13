@@ -108,6 +108,14 @@ explicitly unsupported and rejects an unknown identity:
 pwsh ./scripts/package/Test-Http2WebSocketThreePackageSmoke.ps1
 ```
 
+Exercise all six exact RFC 9220 WebSocket-over-HTTP/3 identities, including the
+authority-locked three-frame fragmented binary diagnostic, with extracted
+scenario, aioquic executor, and aioquic target packages:
+
+```powershell
+pwsh ./scripts/package/Test-AioquicRfc9220WebSocketThreePackageSmoke.ps1
+```
+
 All wrappers call `Build-ProtocolLabComponentPackage.ps1`, which reads each component's `protocol-lab-package.json` and writes a `.plabpkg` under `artifacts/packages/`.
 Compiled payload wrappers may stage a runtime-specific package before compression while preserving the same package manifest layout and artifact root.
 
