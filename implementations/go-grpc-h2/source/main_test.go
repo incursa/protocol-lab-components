@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"io"
 	"testing"
 )
 
@@ -23,6 +24,37 @@ func TestSupportedUnaryFrames(t *testing.T) {
 		if !validScenarioPayload(tc.method, observedPayload, observedProtobuf) {
 			t.Fatalf("rejected %s/%d", tc.method, len(tc.payload))
 		}
+	}
+}
+
+func TestStreamingFrameSequenceIsCanonical(t *testing.T) {
+	payload := bytes.Repeat([]byte{'B'}, 1024)
+	protobuf := encodeTestProtobuf(payload)
+	frame, err := encodeFrame(protobuf, "identity")
+	if err != nil {
+		t.Fatal(err)
+	}
+	sequence := bytes.Repeat(frame, streamMessageCount)
+	reader := bytes.NewReader(sequence)
+	for index := 0; index < streamMessageCount; index++ {
+		observedFrame, observedProtobuf, observedPayload, err := readIdentityFrame(reader)
+		if err != nil {
+			t.Fatalf("message %d: %v", index, err)
+		}
+		if !bytes.Equal(observedFrame, frame) || !bytes.Equal(observedProtobuf, protobuf) || !validStreamingPayload(observedPayload, observedProtobuf) {
+			t.Fatalf("message %d drifted from the canonical byte scopes", index)
+		}
+	}
+	var extra [1]byte
+	if _, err := reader.Read(extra[:]); err != io.EOF {
+		t.Fatalf("expected exact stream exhaustion, observed %v", err)
+	}
+}
+
+func TestStreamingRejectsNonCanonicalPayload(t *testing.T) {
+	payload := bytes.Repeat([]byte{'X'}, 1024)
+	if validStreamingPayload(payload, encodeTestProtobuf(payload)) {
+		t.Fatal("streaming payload substitution accepted")
 	}
 }
 func TestRejectsPayloadSubstitution(t *testing.T) {

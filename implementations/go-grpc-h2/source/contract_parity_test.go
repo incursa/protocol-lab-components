@@ -40,11 +40,17 @@ type serviceContract struct {
 		Output             string `json:"output"`
 		ClientStreaming    bool   `json:"clientStreaming"`
 		ServerStreaming    bool   `json:"serverStreaming"`
+		RequestMessages    int    `json:"requestMessages"`
+		ResponseMessages   int    `json:"responseMessages"`
+		Behavior           string `json:"behavior"`
+		ResponsePolicy     string `json:"responsePolicy"`
+		CompletionTrigger  string `json:"completionTrigger"`
 		CompressionProfile string `json:"compressionProfile"`
 		MetadataProfile    string `json:"metadataProfile"`
 		TerminalStatus     struct {
-			Code int    `json:"code"`
-			Name string `json:"name"`
+			Code    int    `json:"code"`
+			Name    string `json:"name"`
+			Message string `json:"message"`
 		} `json:"terminalStatus"`
 	} `json:"methods"`
 }
@@ -116,24 +122,26 @@ func TestProtoAndImplementationDescriptorMatchPublicV2Contract(t *testing.T) {
 	assertIDs(t, compressionIDs(contract), []string{"gzip-semantic-v1", "identity-v1"}, "compression profiles")
 	assertIDs(t, metadataIDs(contract), []string{"fixed-ascii-and-binary-metadata-v1", "fixed-empty-user-metadata"}, "metadata profiles")
 	type methodBinding struct {
-		status                            int
-		statusName, compression, metadata string
+		requestMessages, responseMessages                int
+		status                                           int
+		statusName, statusMessage, compression, metadata string
+		behavior, responsePolicy, completionTrigger      string
 	}
 	expectedBindings := map[string]methodBinding{
-		"UnaryEcho":                  {0, "OK", "identity-v1", "fixed-empty-user-metadata"},
-		"ServerStreamingEcho":        {0, "OK", "identity-v1", "fixed-empty-user-metadata"},
-		"ClientStreamingEcho":        {0, "OK", "identity-v1", "fixed-empty-user-metadata"},
-		"BidirectionalStreamingEcho": {0, "OK", "identity-v1", "fixed-empty-user-metadata"},
-		"TrailersOnlyStatus":         {3, "INVALID_ARGUMENT", "identity-v1", "fixed-empty-user-metadata"},
-		"DeadlineExceeded":           {4, "DEADLINE_EXCEEDED", "identity-v1", "fixed-empty-user-metadata"},
-		"ClientCancellation":         {1, "CANCELLED", "identity-v1", "fixed-empty-user-metadata"},
-		"UnaryGzip":                  {0, "OK", "gzip-semantic-v1", "fixed-empty-user-metadata"},
-		"UnaryFixedMetadata":         {0, "OK", "identity-v1", "fixed-ascii-and-binary-metadata-v1"},
+		"UnaryEcho":                  {1, 1, 0, "OK", "", "identity-v1", "fixed-empty-user-metadata", "echo-request-payload", "messages-and-trailers", "request-message"},
+		"ServerStreamingEcho":        {1, 100, 0, "OK", "", "identity-v1", "fixed-empty-user-metadata", "repeat-request-payload-100-times", "messages-and-trailers", "request-message"},
+		"ClientStreamingEcho":        {100, 1, 0, "OK", "", "identity-v1", "fixed-empty-user-metadata", "respond-with-final-request-payload", "messages-and-trailers", "client-half-close-after-100-messages"},
+		"BidirectionalStreamingEcho": {100, 100, 0, "OK", "", "identity-v1", "fixed-empty-user-metadata", "ordered-one-to-one-echo", "messages-and-trailers", "client-half-close-after-100-messages"},
+		"TrailersOnlyStatus":         {1, 0, 3, "INVALID_ARGUMENT", "plab invalid fixture", "identity-v1", "fixed-empty-user-metadata", "return-invalid-argument-without-data", "trailers-only", "request-message"},
+		"DeadlineExceeded":           {1, 0, 4, "DEADLINE_EXCEEDED", "", "identity-v1", "fixed-empty-user-metadata", "remain-open-until-client-deadline", "client-observed-terminal-status", "client-deadline"},
+		"ClientCancellation":         {1, 0, 1, "CANCELLED", "", "identity-v1", "fixed-empty-user-metadata", "send-ready-initial-metadata-then-wait-for-client-cancel", "client-observed-terminal-status", "client-cancel-after-ready-initial-metadata"},
+		"UnaryGzip":                  {1, 1, 0, "OK", "", "gzip-semantic-v1", "fixed-empty-user-metadata", "echo-request-payload", "messages-and-trailers", "request-message"},
+		"UnaryFixedMetadata":         {1, 1, 0, "OK", "", "identity-v1", "fixed-ascii-and-binary-metadata-v1", "echo-request-payload-and-fixed-metadata", "messages-and-trailers", "request-message"},
 	}
 	for _, method := range contract.Methods {
 		expected, ok := expectedBindings[method.Name]
-		if !ok || expected.status != method.TerminalStatus.Code || expected.statusName != method.TerminalStatus.Name || expected.compression != method.CompressionProfile || expected.metadata != method.MetadataProfile {
-			t.Fatalf("method %s status/compression/metadata binding mismatch", method.Name)
+		if !ok || expected.requestMessages != method.RequestMessages || expected.responseMessages != method.ResponseMessages || expected.status != method.TerminalStatus.Code || expected.statusName != method.TerminalStatus.Name || expected.statusMessage != method.TerminalStatus.Message || expected.compression != method.CompressionProfile || expected.metadata != method.MetadataProfile || expected.behavior != method.Behavior || expected.responsePolicy != method.ResponsePolicy || expected.completionTrigger != method.CompletionTrigger {
+			t.Fatalf("method %s cardinality/behavior/status/compression/metadata binding mismatch", method.Name)
 		}
 	}
 }
