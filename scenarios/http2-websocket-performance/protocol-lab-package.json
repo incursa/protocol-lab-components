@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.scenario.http2-websocket-performance",
+  "packageVersion": "0.1.0",
+  "kind": "scenario-pack",
+  "displayName": "HTTP/2 RFC 8441 WebSocket Performance Scenario Pack",
+  "entryManifests": [
+    "scenarios/http2/websocket/rfc8441-extended-connect.yaml",
+    "scenarios/http2/websocket/rfc8441-control-frames.yaml",
+    "scenarios/http2/websocket/rfc8441-text-echo.yaml",
+    "scenarios/http2/websocket/rfc8441-binary-echo.yaml",
+    "scenarios/http2/websocket/rfc8441-close.yaml",
+    "scenarios/http2/websocket/rfc8441-multi-message-text-echo.yaml",
+    "suites/http2-websocket-performance-smoke.yaml",
+    "suites/http2-websocket-performance-comparison.yaml",
+    "load-profiles/websocket-smoke.yaml",
+    "load-profiles/websocket-comparison.yaml"
+  ],
+  "providedScenarios": [
+    {"scenarioId":"http2.websocket.rfc8441.extended-connect","displayName":"RFC 8441 Extended CONNECT","protocols":["h2","tls"]},
+    {"scenarioId":"http2.websocket.rfc8441.control-frames","displayName":"RFC 8441 Control Frames","protocols":["h2","tls"]},
+    {"scenarioId":"http2.websocket.rfc8441.text-echo","displayName":"RFC 8441 Text Echo","protocols":["h2","tls"]},
+    {"scenarioId":"http2.websocket.rfc8441.binary-echo","displayName":"RFC 8441 Binary Echo","protocols":["h2","tls"]},
+    {"scenarioId":"http2.websocket.rfc8441.close","displayName":"RFC 8441 Close","protocols":["h2","tls"]},
+    {"scenarioId":"http2.websocket.rfc8441.multi-message-text-echo","displayName":"RFC 8441 Ordered Multi-Message Text Echo","protocols":["h2","tls"]}
+  ],
+  "providedSuites": [
+    {"suiteId":"http2-websocket-performance-smoke","displayName":"HTTP/2 WebSocket Performance Smoke","protocols":["h2","tls"]},
+    {"suiteId":"http2-websocket-performance-comparison","displayName":"HTTP/2 WebSocket Performance Comparison Candidate","protocols":["h2","tls"]}
+  ]
+}

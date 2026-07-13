@@ -1,0 +1,10 @@
+id: http2-websocket-performance-smoke
+name: HTTP/2 WebSocket performance contract smoke suite
+description: Fast RFC 8441 establishment, control-frame, echo, and close validity selection.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: websocket-smoke
+scenarios: [http2.websocket.rfc8441.extended-connect, http2.websocket.rfc8441.control-frames, http2.websocket.rfc8441.text-echo, http2.websocket.rfc8441.binary-echo, http2.websocket.rfc8441.close]
+protocol: h2
+notes: Exact RFC 8441 binding proof is required.
+tags: [http2, websocket, smoke, non-publishable]

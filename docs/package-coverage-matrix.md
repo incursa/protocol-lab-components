@@ -41,6 +41,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | `aioquic-rfc9220-websocket` scenario pack | missing | added `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket` with suite `aioquic-rfc9220-websocket-proof` bound to `aioquic-rfc9220-websocket` |
 | `go-http1-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-http1-executor@0.3.0`; exact HTTP/1.1 validation plus pinned `oha@1.15.0` load generation |
 | `go-http2-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-http2-executor@0.3.0`; exact h2c smoke, diagnostic, and `16/128/8` balanced-round-robin comparison shapes |
+| HTTP/2 RFC 8441 WebSocket three-package lane | missing | local diagnostic `org.protocol-lab.components.scenario.http2-websocket-performance@0.1.0`, `go-http2-websocket-executor@0.1.0`, and independent `kestrel-http2-websocket@0.1.0` packages; all six exact identities prove TLS 1.3/ALPN h2, Extended CONNECT, raw framing, masking, payloads, ordering, control frames, and close semantics |
 | `go-tls13-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-tls13-executor@0.3.0`; exact TLS 1.3 full/resumed handshakes plus deterministic record throughput and six-case record coverage; remaining committed TLS identities fail closed as explicit `unsupported` |
 | `go-tls13-mtls-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-tls13-mtls-executor@0.1.0`; exact TLS 1.3 mutual-authentication handshake with pinned server/client certificate identities; every other committed TLS identity fails closed as explicit `unsupported` |
 | `go-utls-tls13-chacha20-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-utls-tls13-chacha20-executor@0.1.0`; pinned uTLS v1.8.2 custom ClientHello offers only TLS 1.3 ChaCha20/X25519 with no ticket, PSK, or early data; every other committed TLS identity fails closed as explicit `unsupported` |
@@ -93,6 +94,9 @@ This matrix tracks reusable component package coverage for implementations and e
 | `org.protocol-lab.components.executor.aioquic-rfc9220-websocket` | `executors/aioquic-rfc9220-websocket` |
 | `org.protocol-lab.components.executor.go-http1-executor` | `executors/go-http1-executor` |
 | `org.protocol-lab.components.executor.go-http2-executor` | `executors/go-http2-executor` |
+| `org.protocol-lab.components.executor.go-http2-websocket-executor` | `executors/go-http2-websocket-executor` |
+| `org.protocol-lab.components.implementation.kestrel-http2-websocket` | `implementations/kestrel-http2-websocket` |
+| `org.protocol-lab.components.scenario.http2-websocket-performance` | `scenarios/http2-websocket-performance` |
 | `org.protocol-lab.components.executor.go-tls13-executor` | `executors/go-tls13-executor` |
 | `org.protocol-lab.components.executor.go-tls13-mtls-executor` | `executors/go-tls13-mtls-executor` |
 | `org.protocol-lab.components.executor.go-utls-tls13-chacha20-executor` | `executors/go-utls-tls13-chacha20-executor` |

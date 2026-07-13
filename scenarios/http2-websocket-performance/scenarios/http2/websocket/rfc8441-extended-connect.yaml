@@ -1,0 +1,28 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: http2.websocket.rfc8441.extended-connect
+title: RFC 8441 WebSocket Extended CONNECT
+description: Establish and cleanly close a WebSocket using Extended CONNECT over exact HTTP/2.
+status: draft
+kind: workload
+layer: application
+protocol: h2
+family: websocket
+semanticTemplateId: websocket.connection.establish
+protocolStack: [websocket, h2, tls, tcp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc8441, https://www.rfc-editor.org/rfc/rfc9113]
+roles: [client, server]
+requires: {capabilities: [websocket.client, websocket.server, websocket.rfc8441], protocols: [h2], roles: [client, server]}
+trafficShape: connection-lifecycle
+websocket: {binding: http2-extended-connect, standard: rfc8441, path: /websocket, subprotocol: null, operation: establish, messageType: none, messageBytes: 0, messageCount: 0, fragmentation: none, masking: client-required, closeCode: 1000, authority: websocket.plab.test, extensions: none, bootstrapPolicy: rfc8441-extended-connect, closeReasonPolicy: empty-utf8-reason, connectionLifecycle: new-connection-per-operation, measuredWindow: opening-handshake, handshake: {binding: http2-extended-connect, settingsEnableConnectProtocol: 1, requestPseudoHeaders: {method: CONNECT, protocol: websocket, scheme: https, authority: websocket.plab.test, path: /websocket}, requestHeaders: {secWebSocketVersion: "13", originPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false, secWebSocketKeyPresent: false}, prohibitedConnectionHeadersPresent: false, responseStatus: 200, responseHeaders: {secWebSocketAcceptPresent: false, secWebSocketProtocolPresent: false, secWebSocketExtensionsPresent: false}}}
+executionProfile: {transportSecurity: tls, protocolVariant: websocket-h2-extended-connect, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+validation:
+  required: true
+  checks: [protocol:h2, alpn:h2, no-fallback, no-subprotocol, no-extensions, no-connection-headers, no-sec-websocket-accept, no-sec-websocket-key, sec-websocket-version:13, settings-enable-connect-protocol, extended-connect, pseudo-protocol:websocket, endpoint:/websocket, connection-established, close-code:1000, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: websocket-over-h2, expectedObserved: websocket-over-h2, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic, comparison, connection-churn], primaryMetrics: [connectionsPerSecond, connectionLatencyP50, connectionLatencyP95, connectionLatencyP99, failedOperations, timedOutOperations]}
+requiredMetrics: [connectionsPerSecond, connectionLatencyMean, connectionLatencyP50, connectionLatencyP75, connectionLatencyP90, connectionLatencyP95, connectionLatencyP99, completedOperations, failedOperations, timedOutOperations]
+artifacts: {required: [validation.json, protocol-proof.json, websocket-summary.json, result.json, load.stdout.log, load.stderr.log], optional: [http2-frame-summary.json, target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [http1-upgrade-fallback, settings-not-enabled, webtransport]}
+networkProfile: clean
+tags: [http2, websocket, rfc8441, extended-connect]

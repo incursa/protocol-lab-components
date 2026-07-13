@@ -1,0 +1,10 @@
+id: http2-websocket-performance-comparison
+name: HTTP/2 WebSocket performance comparison candidate suite
+description: Non-publishable RFC 8441 establishment and echo comparison selection.
+purpose: benchmark
+resultKind: benchmark
+loadProfileId: websocket-comparison
+scenarios: [http2.websocket.rfc8441.extended-connect, http2.websocket.rfc8441.text-echo, http2.websocket.rfc8441.binary-echo]
+protocol: h2
+notes: HTTP/2 WebSocket results are not matched with HTTP/1.1 or HTTP/3 bindings.
+tags: [http2, websocket, comparison, non-publishable]
