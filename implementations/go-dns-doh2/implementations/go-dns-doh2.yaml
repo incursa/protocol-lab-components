@@ -1,0 +1,46 @@
+schemaVersion: "1.0"
+id: go-dns-doh2
+name: Go DNS-over-HTTPS HTTP/2 Local Fixture Authority
+description: Authoritative target serving only dns.plab-test-a.canonical as POST /dns-query over exact HTTP/2, TLS 1.3, and h2 ALPN.
+family: go-secure-dns
+role: authoritative-server
+targetKind: process
+targetContract: process
+executable: bin/linux-x64/go-dns-doh2
+workingDirectory: .
+baseUrl: https://127.0.0.1:18531
+protocolBaseUrls: {doh2: https://127.0.0.1:18531}
+certificateMode: plab-secure-dns-single-leaf-p256-v1
+roles: [authoritative-server]
+protocols: [doh2]
+supportedProtocols: [doh2]
+supportedWorkloadFamilies: [dns.secure]
+supportedProtocolVersions: [DoH/HTTP2/TLS1.3]
+supportedScenarios: [dns.doh2.query.a]
+supportedTestCaseIds: [dns.doh2.query.a]
+scenarioCoverage:
+  dns.doh2.query.a: {status: supported, behavior: fixed local authoritative plab.test. IN A response via exact HTTP/2 POST /dns-query}
+  dns.classic.tcp.query.a: {status: unsupported, reason: Classic DNS/TCP is a separate evidence lane.}
+  dns.classic.udp-truncated-tcp-retry: {status: unsupported, reason: Classic DNS/UDP and fallback are absent.}
+  dns.classic.udp.query.a: {status: unsupported, reason: Classic DNS/UDP is a separate evidence lane.}
+  dns.doh3.get.a: {status: unsupported, reason: DoH3 GET is a separate evidence lane.}
+  dns.doh3.query.a: {status: unsupported, reason: DoH3 is a separate evidence lane.}
+  dns.doh3.query.aaaa: {status: unsupported, reason: The AAAA semantic fixture is not materialized.}
+  dns.doh3.query.cname-chain: {status: unsupported, reason: The CNAME-chain semantic fixture is not materialized.}
+  dns.doh3.query.large-dnssec-shaped: {status: unsupported, reason: The large DNSSEC-shaped fixture is not materialized.}
+  dns.doh3.query.nodata: {status: unsupported, reason: The NODATA semantic fixture is not materialized.}
+  dns.doh3.query.nxdomain: {status: unsupported, reason: The NXDOMAIN semantic fixture is not materialized.}
+  dns.doq.query.a: {status: unsupported, reason: DoQ is a separate evidence lane.}
+  dns.dot.query.a: {status: unsupported, reason: DoT is a separate evidence lane.}
+unsupportedKnownCases: [dns.classic.tcp.query.a, dns.classic.udp-truncated-tcp-retry, dns.classic.udp.query.a, dns.doh3.get.a, dns.doh3.query.a, dns.doh3.query.aaaa, dns.doh3.query.cname-chain, dns.doh3.query.large-dnssec-shaped, dns.doh3.query.nodata, dns.doh3.query.nxdomain, dns.doq.query.a, dns.dot.query.a]
+ports: [{name: doh2, protocol: tcp, default: 18531, hostPort: 18531, containerPort: 18531}]
+environment: {PLAB_DOH2_PORT: "18531"}
+startup: {port: {name: doh2, environmentVariable: PLAB_DOH2_PORT, default: 18531}, readiness: {protocol: process, timeoutSeconds: 10}}
+readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 500}
+capabilities: [dns.authoritative-server, dns.doh2, dns.local-fixture-only, http2, tls13, scenario.dns.doh2.query.a]
+entrypoint: {kind: process, path: bin/linux-x64/go-dns-doh2, arguments: [], workingDirectory: .}
+shutdownBehavior: graceful-termination
+artifactExports: []
+qlogSupport: false
+sslKeyLogSupport: false
+notes: No HTTP/1.1, resolver, upstream, cache, UDP, DoT, DoH3, or DoQ path exists. The package-local leaf private key is test-only and never an evidence artifact.

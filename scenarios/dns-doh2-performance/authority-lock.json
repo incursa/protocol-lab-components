@@ -1,0 +1,11 @@
+{
+  "repository":"https://github.com/incursa/protocol-lab",
+  "commit":"8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574",
+  "files":{
+    "scenarios/dns/doh2/query-a.yaml":"b4996d53ba882d96d656cf4a413fe0da0aba3dd53b417e03046e2629caa44571",
+    "suites/dns-doh2-performance-smoke.yaml":"77e509aec2612cc065df4c9d347085f7576eb97e32ad6bb25028b4ddad8e64a3",
+    "load-profiles/secure-dns-smoke.yaml":"d407b6edaa5580bd7f1d9bcce1b2c2a06add2782d11d9f98dcac91f51d5ab787",
+    "fixtures/canonical-plab-test-a.json":"8c36ff782770541c9a7d31a38719f12da2a8a7a42d47792bda7e840ebaf2c008",
+    "fixtures/secure-dns-tls13-profile-v1.json":"9725dbeffacd9d1d29d1c777c7748fc74a56fcf9236f7733a0e9bab390b33068"
+  }
+}

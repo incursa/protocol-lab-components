@@ -1,0 +1,9 @@
+{
+  "schemaVersion":"protocol-lab-package-v2",
+  "packageId":"org.protocol-lab.components.scenario.dns-doh2-performance",
+  "packageVersion":"0.1.0",
+  "kind":"scenario-pack",
+  "displayName":"DNS-over-HTTPS HTTP/2 Performance Smoke Scenario Pack",
+  "entryManifests":["scenarios/dns/doh2/query-a.yaml","suites/dns-doh2-performance-smoke.yaml","load-profiles/secure-dns-smoke.yaml","fixtures/canonical-plab-test-a.json","fixtures/secure-dns-tls13-profile-v1.json"],
+  "providedScenarios":[{"scenarioId":"dns.doh2.query.a","displayName":"DNS over HTTPS HTTP/2 Deterministic A Query","protocols":["doh2"]}]
+}
