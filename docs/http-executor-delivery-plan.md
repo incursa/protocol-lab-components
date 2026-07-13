@@ -310,7 +310,57 @@ Implemented local evidence:
 - diagnostic archives now build and validate with dirty-source attestations: Windows executor SHA-256 `d4ad537ea3f2d6d8cdcecf0ac96b14a2d03e5f1c5e7395e52e133df803b4c48b`, Linux executor SHA-256 `47c076b8b728c6ce4cd805163008a1b497ba0ec30efaa765bd59e373cb093534`, and portable .NET target SHA-256 `f60886c4d8bc88a0aeed9064bfb95ec17e513c087ec0a0cc4180fb9567f9ae9d`;
 - an extracted Windows executor/target package smoke completed 2,623 full TLS 1.3 handshakes at the requested `1/1/1` topology with zero failures and zero timeouts, exact `protocol-lab-tls` ALPN, `didResume: false`, the fixed leaf hashes, and all 13 executor artifacts. A direct evidence scan found no private-key text; the target archive alone contains the explicitly test-only private key.
 
-Completion update: the recognized TLS parser/admission path, authority-locked scenario package, real three-package runner smoke, and hash-bound Protocol Execution Result v2 are complete as recorded above. The evidence remains diagnostic because the component and runner worktrees are uncommitted and the package attestations record dirty source.
+Completion update: `tls.handshake.resumed` is complete as a clean-source,
+package-backed local diagnostic vertical. Component source commit `8bdaa67` and
+runner admission commit `43f0e9c` preserve the existing full-handshake lane
+while adding exact accepted single-use PSK resumption. The scenario package is
+locked to public authority commit
+`8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`.
+
+Clean package SHA-256 values:
+
+- scenario `org.protocol-lab.components.scenario.tls13-handshake-performance@0.1.0`: `bdb24e1ced0f6283fffa5010d58e5747ad80a1c39405d4e181552b7cc15d715e`;
+- executor `org.protocol-lab.components.executor.go-tls13-executor@0.2.0`: Windows `523fc97bf465e770aeb47b7d38ef13017fc2f4493245f0c9f1e1fd1302340de9`, Linux `4504d5c573bf8bd08f5b95ab744c6b5031c9424d4b561b77d8505e930c01ca69`;
+- target `org.protocol-lab.components.implementation.go-tls13@0.1.0`: Windows `69e1dbf8964a246b059cdf103728eb61bc15c8dc9141cd1a9918249fa82c44ac`, Linux `2e3d9feca1a0fe03f828c7142140ae1f2ef97cb1399572343c1b90a094aaee21`.
+
+The clean extracted component smoke completed `6448` resumed handshakes with
+zero failures/timeouts. The final real runner cell
+`tls13-resumed-clean-v2-direct-package-cell` completed `8097` operations with
+zero failures/timeouts. It proved exact TLS 1.3, X25519,
+`TLS_AES_128_GCM_SHA256`, ALPN `protocol-lab-tls`, authenticated DER/SPKI
+hashes, `didResume: true`, one unmeasured source full handshake and one
+single-use ticket per measured operation, no warmup-state reuse, no early data,
+zero application bytes, and exact executor/generator identities. Protocol
+Execution Result v2 passed the public Draft 2020-12 schema and all `12/12`
+referenced artifact hashes recomputed successfully. Evidence is under
+`C:\shared\src\incursa\.worktrees\protocol-lab-tls-resumed-runner\artifacts\tls-resumed-runner-evidence\tls13-resumed-clean-v2-direct-package-cell`.
+
+Exact runner invocation:
+
+```powershell
+pwsh -NoLogo -NoProfile -File scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1 `
+  -ImplementationIds go-tls13 `
+  -ScenarioIds tls.handshake.resumed `
+  -Protocol tls `
+  -OverrideLoadToolId go-tls13-executor `
+  -OverrideLoadToolMode process `
+  -LoadProfileId tls-smoke `
+  -ComponentPackageDirectory C:\shared\src\incursa\.worktrees\protocol-lab-components-tls-resumed\artifacts\tls-resumed-clean-packages `
+  -ComponentPackage 'org.protocol-lab.components.implementation.go-tls13.0.1.0.win-x64.plabpkg,org.protocol-lab.components.executor.go-tls13-executor.0.2.0.win-x64.plabpkg,org.protocol-lab.components.scenario.tls13-handshake-performance.0.1.0.plabpkg' `
+  -ComponentPackageMaterializationRoot C:\shared\src\incursa\.plab\tls-resumed-runner-clean-v2 `
+  -RunIdPrefix tls13-resumed-clean-v2 `
+  -Output C:\shared\src\incursa\.worktrees\protocol-lab-tls-resumed-runner\artifacts\tls-resumed-runner-evidence `
+  -Configuration Debug -NoRestore -NoBuild -FailOnError
+```
+
+The same executor recognizes
+`tls.handshake.full.tls12`, `tls.handshake.full.chacha20`,
+`tls.handshake.mutual-auth`, `tls.early-data.accepted`,
+`tls.early-data.rejected`, `tls.key-update.diagnostic`,
+`tls.record.coverage`, and `tls.record.throughput` as explicit
+`protocol-lab.unsupported.v1` outcomes with exit code `3`; none aliases the
+full or resumed scenario. These local smokes remain diagnostic and
+non-publishable.
 
 #### E8b — gRPC over HTTP/2 unary after TLS/ALPN
 
@@ -354,10 +404,11 @@ Also run package-local tests, the affected package builder, package-v2 conforman
 
 ## Remaining owner decisions
 
-1. Approve integration/commit of the isolated components and internal bridge changes; all current packages are dirty-source diagnostic artifacts and remain parity-ineligible.
-2. Select the runtime-model authority for independent CLI concurrency and comparison-group identity before H2 comparison work. Preserve configured stream capacity separately from observed active-stream evidence.
-3. Decide whether the first controlled TLS campaign must run both Windows and Linux hosts. Both executor archives are built; the target is a Linux container and still needs controlled live proof on each approved host topology.
-4. Select the next bounded vertical: gRPC server streaming, DoH2, or TLS resumption. Each requires its exact committed scenario identity and may not reuse the completed unary, DoT, or full-handshake semantics.
-5. Approve any controlled-lab campaign, package publication, or controller upload separately. The current evidence is local, single-host, dirty-source, and non-publishable.
+1. Select the runtime-model authority for independent CLI concurrency and comparison-group identity before H2 comparison work. Preserve configured stream capacity separately from observed active-stream evidence.
+2. Decide whether a future controlled TLS campaign must run both Windows and Linux hosts. Both executor and Go target archives are built; each approved host topology still requires controlled proof.
+3. Continue the active all-identities goal through gRPC unary breadth, HTTP/1.1 WebSocket breadth, sustained/streaming lanes, diagnostics, classic-DNS calibration, and retained RFC 9220 proof. Each identity requires its exact committed semantics and may not alias a neighboring completed scenario.
+4. Approve any controlled-lab campaign, package publication, controller upload, deployment, service restart, or lab-machine operation separately. Current evidence is local, single-host, diagnostic, and non-publishable.
 
-No commit, push, package publication, controller upload, service restart, deployment, public-site update, benchmark campaign, or lab-machine change is authorized by this plan.
+Local source commits are authorized and recorded above. No push, package
+publication, controller upload, service restart, deployment, public-site
+update, benchmark campaign, or lab-machine change is authorized by this plan.
