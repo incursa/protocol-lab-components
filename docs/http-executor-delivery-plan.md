@@ -473,6 +473,32 @@ ping/pong payload equality, and clean code-1000 close. HTTP/1.1 and HTTP/3
 WebSocket identities return explicit unsupported evidence; unknown identities
 fail closed. Evidence remains local, diagnostic, and non-publishable.
 
+Clean component source commit
+`6511ea4bcdd91d192e6f7cca65e53ab4f5a0816b` produced five
+parity-eligible package attestations. The scenario archive SHA-256 is
+`f25473baa73690634cf03a4c703a04e2c7b7f23362b4d1a15d4a5eacad76be1a`;
+executor archives are
+`be123f0fb6155e01716c5bcfc56d4f2bc6ad9bfcc68b488337cec59bdd92a969`
+for Windows and
+`c1912c488f95e59f535851f3f102e6a333e0250ecb8423e0304152eb66dcb18b`
+for Linux; target archives are
+`cc1ef78b9fecce05fd4d1034563acdcf8599d07133fbf75eb7c3f10fa548f92b`
+for Windows and
+`3b9dd0d228d5549a5c92b24953c24d471c3973cb5bf4cd5512ae3a173cd81a47`
+for Linux. All lock public authority commit
+`8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`.
+
+Extracted Windows evidence is under
+`artifacts/http2-websocket-clean-6511ea4-win-smoke`; extracted Linux evidence
+is under `artifacts/http2-websocket-clean-6511ea4-linux-smoke`. Each of the six
+exact identities completed one independently selected validation operation
+with zero failed and zero timed-out operations on both operating systems. The
+ordered cell proved 100 messages, the target logs proved six masked-client and
+six clean-close observations per operating system, all 18 adjacent HTTP/1.1
+and HTTP/3 identities returned explicit `unsupported` in the Windows package
+smoke, and the unknown-ID probe failed closed. These are local diagnostic
+component results, not runner admission, publishable evidence, or rankings.
+
 #### E8e — HTTP/1.1 WebSocket over TLS 1.3
 
 Status: the original five-ID `0.1.0` package and runner lane remains complete. Component version `0.2.0` adds two individually routed diagnostics with source, extracted-package, exact runner-admission, and Protocol Execution Result v2 proof.
