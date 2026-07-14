@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.openssl-s-server",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "implementation",
   "displayName": "OpenSSL s_server TLS Endpoint",
   "entryManifests": ["implementations/openssl-s-server.yaml"],

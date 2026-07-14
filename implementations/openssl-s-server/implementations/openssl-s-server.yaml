@@ -1,15 +1,19 @@
 schemaVersion: "1.0"
 id: openssl-s-server
 name: OpenSSL s_server 3.3.0 TLS Endpoint
-description: Unmodified OpenSSL s_server diagnostic endpoint for the exact canonical TLS 1.3 full handshake.
+description: Docker source-built OpenSSL s_server diagnostic endpoint for the exact canonical TLS 1.3 full handshake.
 family: openssl
 role: tls-diagnostic-endpoint
-targetKind: process
+targetKind: docker
 targetContract: process
-executable: run.sh
-workingDirectory: .
+image: incursa-protocol-lab-openssl-s-server:0.1.1
+dockerfile: docker/Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
 baseUrl: tls://127.0.0.1:18461
+dockerBaseUrl: tls://127.0.0.1:18461
 protocolBaseUrls: {tls: tls://127.0.0.1:18461}
+dockerProtocolBaseUrls: {tls: tls://127.0.0.1:18461}
 certificateMode: plab-single-leaf-p256-v1
 roles: [server, tls-diagnostic-endpoint]
 protocols: [tls]
@@ -30,17 +34,17 @@ scenarioCoverage:
   tls.record.coverage: {status: unsupported, reason: s_server does not implement the PLABTLS1 six-case direction and payload-hash command protocol used by the compatible executor.}
   tls.record.throughput: {status: unsupported, reason: s_server does not implement the PLABTLS1 deterministic 1 MiB server-to-client payload command used by the compatible executor.}
 unsupportedKnownCases: [tls.handshake.resumed, tls.handshake.full.tls12, tls.handshake.full.chacha20, tls.handshake.mutual-auth, tls.early-data.accepted, tls.early-data.rejected, tls.key-update.diagnostic, tls.record.coverage, tls.record.throughput]
-ports: [{name: tls, protocol: tcp, default: 18461}]
-environment: {PLAB_LISTEN_ADDRESS: 127.0.0.1:18461, PLAB_SCENARIO_ID: tls.handshake.full}
+ports: [{name: tls, protocol: tcp, default: 18461, hostPort: 18461, containerPort: 8443}]
+environment: {PLAB_SCENARIO_ID: tls.handshake.full}
 startup: {port: {name: tls, environmentVariable: PLAB_TARGET_PORT, default: 18461}, readiness: {protocol: process, timeoutSeconds: 10}}
 readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 250}
 capabilities: [tls.server, tls13, tlsX25519, tlsFullHandshake, scenario.tls.handshake.full]
-requiredExternalTools: [openssl@3.3.0]
 comparisonCohort: tls-endpoint-tool
 rankingEligibility: diagnostic-only
 entrypoint: {kind: bash, path: run.sh, arguments: [], workingDirectory: .}
-shutdownBehavior: process
+shutdownBehavior: docker-container
 artifactExports: []
 qlogSupport: false
 sslKeyLogSupport: false
-notes: This wrapper executes the unmodified upstream diagnostic tool and is not an application-server or production-origin implementation.
+executionMetadata: {manifest: protocol-lab.internal.json}
+notes: This package source-builds the unmodified upstream diagnostic tool in its Docker target and is not an application-server or production-origin implementation.

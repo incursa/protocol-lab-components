@@ -11,6 +11,6 @@ $ErrorActionPreference='Stop'
     -Root $Root `
     -OutputRoot $OutputRoot `
     -ComponentPath 'implementations/openssl-s-server' `
-    -RuntimeIdentifier portable `
+    -RuntimeIdentifier linux-x64 `
     -IncludeReadme `
     -AllowDirtySource:$AllowDirtySource
