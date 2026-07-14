@@ -41,8 +41,10 @@ Use the component-specific wrappers when iterating on one package:
 ```powershell
 pwsh ./scripts/package/Build-KestrelHttp2Package.ps1
 pwsh ./scripts/package/Build-CaddyHttp1Package.ps1
+pwsh ./scripts/package/Build-CaddyHttp2Package.ps1
 pwsh ./scripts/package/Build-CaddyHttp3Package.ps1
 pwsh ./scripts/package/Build-NginxHttp1Package.ps1
+pwsh ./scripts/package/Build-NginxHttp2Package.ps1
 pwsh ./scripts/package/Build-GoHttp1ExecutorPackage.ps1
 pwsh ./scripts/package/Build-GoTls13MtlsImplementationPackage.ps1
 pwsh ./scripts/package/Build-GoTls13MtlsExecutorPackage.ps1

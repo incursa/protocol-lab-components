@@ -34,8 +34,10 @@ implementations/
   kestrel-http1/
   kestrel-http2/
   caddy-http1/
+  caddy-http2/
   caddy-http3/
   nginx-http1/
+  nginx-http2/
   nginx-http3/
   kestrel-http3/
   aioquic-http3/
@@ -117,8 +119,10 @@ Implementation packages:
 - `org.protocol-lab.components.implementation.kestrel-http1`
 - `org.protocol-lab.components.implementation.kestrel-http2`
 - `org.protocol-lab.components.implementation.caddy-http1`
+- `org.protocol-lab.components.implementation.caddy-http2`
 - `org.protocol-lab.components.implementation.caddy-http3`
 - `org.protocol-lab.components.implementation.nginx-http1`
+- `org.protocol-lab.components.implementation.nginx-http2`
 - `org.protocol-lab.components.implementation.nginx-http3`
 - `org.protocol-lab.components.implementation.kestrel-http3`
 - `org.protocol-lab.components.implementation.aioquic-http3`
@@ -146,9 +150,15 @@ Scenario-pack packages:
 
 Kestrel packages are intentionally lane scoped. Keep HTTP/1, HTTP/2, and HTTP/3 as separate packages so controller inventory can select exact protocol behavior and report unsupported cells explicitly.
 
-Caddy packages follow the same lane split. `caddy-http1` and `caddy-http3` are separate packages so HTTP/1 and HTTP/3 support is never inferred across protocols.
+Caddy packages follow the same lane split. `caddy-http1`, `caddy-http2`, and
+`caddy-http3` are separate packages so support is never inferred across
+protocols. `caddy-http2` is specifically the h2c prior-knowledge variant;
+TLS/ALPN is not implied.
 
-nginx packages follow the same lane split. `nginx-http1` and `nginx-http3` are separate packages, and `nginx-http3` proves `--with-http_v3_module` before serving.
+nginx packages follow the same lane split. `nginx-http1`, `nginx-http2`, and
+`nginx-http3` are separate packages. `nginx-http2` proves
+`--with-http_v2_module` and exercises h2c prior knowledge; `nginx-http3` proves
+`--with-http_v3_module` before serving.
 
 Incursa raw QUIC implementation packages remain implementation-owned by `quic-dotnet`. This repository packages the reusable raw QUIC scenario and executor pieces so controller jobs do not have to source them from local `protocol-lab-internal` scripts. The `quic-go-raw` package is a separate ecosystem target package and initially advertises only `quic.transport.stream-throughput.1mb` and `quic.transport.multiplex.100x64kb`.
 

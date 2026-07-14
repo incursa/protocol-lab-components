@@ -1,0 +1,113 @@
+schemaVersion: "1.0"
+id: nginx-http2
+name: nginx HTTP/2
+description: Docker-backed nginx cleartext HTTP/2 prior-knowledge target with explicit http_v2 module proof.
+family: nginx
+role: server
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-nginx-http2:0.1.0
+dockerfile: docker/nginx.Dockerfile
+buildContext: docker
+dockerNetworkMode: published-port
+baseUrl: http://127.0.0.1:8084
+dockerBaseUrl: http://127.0.0.1:8084
+protocolBaseUrls:
+  h2: http://127.0.0.1:8084
+dockerProtocolBaseUrls:
+  h2: http://127.0.0.1:8084
+certificateMode: none
+roles:
+  - server
+protocols:
+  - h2
+supportedProtocols:
+  - h2
+supportedWorkloadFamilies:
+  - http.application
+protocolVersions:
+  - h2c-prior-knowledge
+supportedProtocolVersions:
+  - h2c-prior-knowledge
+supportedTestCaseIds:
+  - http2.core.plaintext
+  - http2.core.json
+supportedScenarios:
+  - http2.core.plaintext
+  - http2.core.json
+scenarioCoverage:
+  http2.core.plaintext:
+    status: supported
+    executorId: go-http2-executor
+    transportVariant: h2c-prior-knowledge
+    endpoint: /plaintext
+  http2.core.json:
+    status: supported
+    executorId: go-http2-executor
+    transportVariant: h2c-prior-knowledge
+    endpoint: /json
+  http2-tls-alpn:
+    status: unsupported
+    reason: This package has no TLS listener or certificate material and the compatible go-http2-executor does not implement TLS/ALPN.
+unsupportedKnownCases:
+  - h1-package-lane
+  - h3
+  - http2-tls-alpn
+  - websocket
+  - server-sent-events
+ports:
+  - name: h2
+    protocol: tcp
+    default: 8084
+    hostPort: 8084
+    containerPort: 8080
+environment:
+  PLAB_HTTP_PORT: "8084"
+startup:
+  port:
+    name: h2
+    environmentVariable: PLAB_HTTP_PORT
+    default: 8084
+  readiness:
+    protocol: process
+    expectedState: started
+readinessCheck:
+  type: processStarted
+  timeoutSeconds: 30
+  startupDelayMilliseconds: 750
+targetCapabilityProof:
+  id: nginx-http2-module
+  required: true
+  dockerExecArguments:
+    - nginx
+    - -V
+  expectedOutputContains: --with-http_v2_module
+capabilities:
+  - http.server
+  - httpPlaintext
+  - httpJson
+  - http2.h2cPriorKnowledge
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+endpoints:
+  plaintext:
+    method: GET
+    path: /plaintext
+  json:
+    method: GET
+    path: /json
+shutdownBehavior: process
+artifactExports:
+  - command.txt
+  - nginx-version.txt
+  - stdout.txt
+  - stderr.txt
+  - result.json
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata:
+  manifest: protocol-lab.internal.json
+notes: Exact h2c prior-knowledge lane compatible with go-http2-executor@0.3.0; TLS/ALPN is explicitly outside this package.

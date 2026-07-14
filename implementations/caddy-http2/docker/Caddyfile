@@ -1,0 +1,23 @@
+{
+	admin off
+	auto_https off
+	servers :8080 {
+		protocols h2c
+	}
+}
+
+http://:8080 {
+	bind 0.0.0.0
+
+	header /health Content-Type "text/plain"
+	respond /health "ok" 200
+
+	header /plaintext Content-Type "text/plain"
+	respond /plaintext "Hello, World!" 200
+
+	header /json Content-Type "application/json"
+	respond /json "{\"message\":\"Hello, World!\"}" 200
+
+	header /protocol-lab/metadata Content-Type "application/json"
+	respond /protocol-lab/metadata "{\"implementationId\":\"caddy-http2\",\"protocol\":\"h2c-prior-knowledge\",\"packageId\":\"org.protocol-lab.components.implementation.caddy-http2\",\"supportedScenarios\":[\"http2.core.plaintext\",\"http2.core.json\"]}" 200
+}
