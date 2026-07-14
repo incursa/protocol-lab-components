@@ -525,68 +525,81 @@ Status: the original five-ID `0.1.0` package and runner lane remains complete. C
 
 #### E8f — HTTP/3 RFC 9220 fragmented binary diagnostic
 
-Component version `0.2.1` corrects the existing aioquic RFC 9220 package family
-without creating a generic WebSocket lane. The scenario package
-`org.protocol-lab.components.scenario.aioquic-rfc9220-websocket@0.2.1`
-authority-locks all six exact public scenario files byte-for-byte to public
-commit `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`; the executor is
-`org.protocol-lab.components.executor.aioquic-rfc9220-websocket@0.2.1`; and
-the target is `org.protocol-lab.components.implementation.aioquic-http3@0.2.1`.
-Version `0.2.0` is superseded because five of its packaged scenario files used
-legacy v1 shapes even though runtime behavior was exact; only the fragmented
-identity was already byte-identical to v2 authority.
-The five established RFC 9220 identities remain independently selectable.
-Exact selection is mandatory: 19 generic, HTTP/1.1, and RFC 8441 identities
-return `unsupported`, while unknown identities fail closed with exit code 2.
+The immutable authority pack is
+`org.protocol-lab.components.scenario.http3-websocket-performance@0.2.2`.
+It locks all six exact public scenario files plus `websocket-smoke` and
+`diagnostic` byte-for-byte to public commit
+`8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`. The corrected runtime packages are
+`org.protocol-lab.components.executor.aioquic-rfc9220-websocket@0.3.0` and
+origin-server target
+`org.protocol-lab.components.implementation.aioquic-http3@0.3.0`. The older
+`0.2.1` executor/target package evidence is superseded and is not used for
+admission or completion claims.
 
-The superseded `0.2.0` source and package hashes are retained in Git history at
-commit `6fa37faa919e17af8ff8df7af4b81ac92fd82fa4`; they are not current authority
-parity evidence. Clean `0.2.1` source commit
-`ffa9cc56d970a638ffac1dcca11ec988078df157` produced parity-eligible package
-hashes: scenario
-`c1021c39da39b7fdc4830a90f137d9a194f4ad6021cc79ab94d54fff3422cb86`,
-executor `decc7f34309bcc2250bf974f277cfb2aac7c0b77a6105c6a1874b46f3b2f4883`,
-and target `f7acec275fab8cbefac81bfeb4845c5f67c83898b7e6adb302ea43e801de37ce`.
-All three attestations report clean, parity-eligible source and pass
-`Test-ProtocolLabPackageBuildAttestation.ps1 -RequireParityEligible`.
+Clean source commit `ba59685252338576315e722ab561106ef0d91701`
+produced the portable package SHA-256 values scenario
+`dc052b415227dc30b42a14e5590de096e82f7a4dc7e15a9cce1bb5dda90ad28d`,
+executor `9c09c853d65aff7fd3868f7f754ce096afdc8b6da0376ebafdb86aa64a8e7e60`,
+and target `96d9c166ae58c7e290aff76e5efd3b8b66916cff2916a8b5bdb4d2fc8dd34965`.
+Clean runtime-specific archive hashes are executor Windows
+`952f9c9bb9b6af72a4d7b38d5b2dceeb3b11a804a16edf851b0f56497ef79a6c`,
+target Windows
+`09d1495ceacd1e1154f1579559f179ea1bd2de8e08a73feeb3dd63eb5c74ff23`,
+executor Linux
+`6bba10ffcab7e922b973b8ecf5422416f7733f0743e864f1b76eaa0daeeebd12`,
+and target Linux
+`757198329e642cc415c568f12420ba31d8c3f2b166608d8cdb4b0b09338d6b42`.
+All seven archive/attestation pairs report clean source, pass the
+parity-eligible attestation validator, and preserve source-to-extracted
+authority parity.
 
-The six authority hashes are extended CONNECT
-`59640ee041d85d36ef484c915658e96f7772207637069e36e190cb6a74c4950a`,
-control frames
-`f08929cde090744524fb880805adbfd892d96f663ad080b3cf4c2b5f83c2d645`,
-text echo
-`9b1b3a9cb0639b37bfaa5319d9e4a4368cd074ed60673944e574317b3be6038c`,
-binary echo
-`167efd8e61b5b9d1a3d7d5bfee3fa8f38c7fabc6dfe94635d01f7ff640b1ef03`,
-close `15d2f7b1a0e00ab5bfee3aa890d6a351e6d06cb38db8bda74ace315b42225303`,
-and fragmented binary echo
-`76bb1c269d42b5ba53742bf5c69e8f2728427406946a7cf2802023f482959725`.
-The package parity test checks these bytes and the exact v2 fields consumed by
-both executor and target.
+The extracted three-package proof built immutable executor image
+`sha256:96fc97c790a0ca4115e74f37efe6d866514fb146a5e490d379591813227cb23a`
+and target image
+`sha256:c687a4cea8aa7126eb3e8e91b6f845d0e9a7b6fcda2a0254a80f29b9d6a1bb1c`.
+Every cell authenticated the fixed `websocket.plab.test` certificate with leaf
+DER SHA-256
+`fe996190f39355e3cfc201cbb7e2cba962a701b94ed08ff49e68e830216d0109`
+and SPKI SHA-256
+`c2440fbe955033f341ca625c1804e21b50066d952ab24a4b53007dc1cfbf410c`.
+It also proved exact QUICv1, TLS 1.3, ALPN `h3`, HTTP/3 Extended CONNECT,
+`SETTINGS_ENABLE_CONNECT_PROTOCOL=1`, pseudo-headers, no fallback or forbidden
+WebSocket headers, client masking, deterministic payload/hash, clean code-1000
+close, executor/generator/parser identities, origin-server role parity,
+requested/effective load, archive/image materialization, and required raw
+stdout/stderr and protocol artifacts.
 
-Clean archives are under
-`artifacts/rfc9220-authority-parity-clean-ffa9cc5`; the extracted Windows proof
-is under `artifacts/rfc9220-authority-parity-clean-ffa9cc5-win-smoke`; and the
-extracted Linux-wrapper proof is under
-`artifacts/rfc9220-authority-parity-clean-ffa9cc5-linux-smoke`. The Windows
-proof used `Test-AioquicRfc9220WebSocketThreePackageSmoke.ps1`; the Linux proof
-ran the extracted `execute.sh` for each exact ID against the extracted target
-image. Each entrypoint completed six operations with zero failures and zero
-timeouts. Windows checked all 19 unsupported IDs and Linux sampled the RFC8441
-boundary; both rejected an unknown RFC9220 ID with exit code 2.
-All six exact identities completed one operation with zero failures and zero
-timeouts on both operating-system entrypoints. The new cell proves TLS 1.3,
-ALPN `h3`, HTTP/3 Extended CONNECT, `SETTINGS_ENABLE_CONNECT_PROTOCOL=1`, no
-fallback or forbidden WebSocket headers, client masking, frame payloads
-`[1024, 2048, 2928]`, binary/continuation/continuation opcodes, FIN
-`false/false/true`, no interleaved control frames, exact ordered reassembly of
-6000 `0xA5` bytes with SHA-256
+The five core identities used one QUIC connection, concurrency and observed
+active streams `1`, one-second warmup, and five-second measured duration.
+Completed counts were extended CONNECT `661`, control frames `2,127`, text
+echo `2,273`, binary echo `714`, and close `686`, all with zero failures and
+timeouts. The fragmented diagnostic used one QUIC connection, concurrency and
+observed active streams `8`, one-second warmup, ten-second measured duration,
+one-second cooldown, and ten-second timeout. It completed `3,075` operations
+with zero failures/timeouts and proved every message as exact masked fragment
+payloads `[1024, 2048, 2928]`, binary/continuation/continuation opcodes, FIN
+`false/false/true`, no interleaved control frame, ordered reassembly of 6000
+`0xA5` bytes with SHA-256
 `8f8d8f75d55c80475ffb0c12b1ede7083d6df689e8ef04f05176c5050873bfb7`,
-exact echo, and clean code-1000 close. Package-local client and target tests,
-the unchanged HTTP/3 status endpoint, extracted image builds, package-v2
-manifests, license presence, and all three clean attestations passed. This is
-local diagnostic component evidence only; runner admission, publication,
-comparison, and ranking remain out of scope.
+and exact binary echo. Normalized results include `messagesPerSecond` and
+`bytesPerSecond`; frame artifacts retain bounded samples plus total counts.
+
+Because `aioquic-http3@0.3.0` is a shared target, focused regression proof also
+passed its prior exact origin behavior: `/status` returned 22 deterministic
+bytes, `/bytes/1024` returned the deterministic 1 KiB sequence,
+`/headers/response?count=50&size=32` returned 50 exact workload headers, and an
+unknown path remained an exact 404. The package does not broaden any scenario
+claim, and raw QUIC, HTTP/1, HTTP/2, unproven larger payloads, and other known
+cases remain explicit unsupported/unproven inventory.
+
+Clean packages are under
+`C:\shared\src\incursa\.artifacts\rfc9220-corrected-packages-20260713-v2`.
+Extracted proof is under
+`C:\shared\src\incursa\.worktrees\protocol-lab-components-rfc9220-corrected\artifacts\rfc9220-corrected-extracted-smoke-v2`.
+This is local diagnostic component evidence only. The result shape and parser
+metadata are runner-admissible inputs, but a real internal runner parser and
+admission smoke remain separate work; publication, comparison, and ranking are
+not claimed.
 
 The remaining explicit `unsupported` identities are `websocket.echo`,
 `http1.websocket.rfc6455.cleartext.upgrade`,
