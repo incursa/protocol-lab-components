@@ -18,10 +18,10 @@ $scenarios = @(
     'http1.websocket.rfc6455.cleartext.close'
 )
 $targets = @(
-    [pscustomobject]@{ id='websocat-http1-websocket'; packageId='org.protocol-lab.components.implementation.websocat-http1-websocket'; packageVersion='0.1.1'; image='incursa-protocol-lab-websocat-http1-websocket:0.1.1'; dockerfile='docker/Websocat.Dockerfile'; port=18092; diagnosticOnly=$true; scenarios=@('http1.websocket.rfc6455.cleartext.upgrade','http1.websocket.rfc6455.cleartext.control-frames','http1.websocket.rfc6455.cleartext.text-echo','http1.websocket.rfc6455.cleartext.close') },
-    [pscustomobject]@{ id='node-ws-websocket'; packageId='org.protocol-lab.components.implementation.node-ws-websocket'; packageVersion='0.1.1'; image='incursa-protocol-lab-node-ws-websocket:0.1.1'; dockerfile='docker/NodeWs.Dockerfile'; port=18093; diagnosticOnly=$false; scenarios=$scenarios },
-    [pscustomobject]@{ id='jetty-websocket'; packageId='org.protocol-lab.components.implementation.jetty-websocket'; packageVersion='0.1.2'; image='incursa-protocol-lab-jetty-websocket:0.1.2'; dockerfile='docker/Jetty.Dockerfile'; port=18094; diagnosticOnly=$false; scenarios=$scenarios },
-    [pscustomobject]@{ id='uwebsockets-websocket'; packageId='org.protocol-lab.components.implementation.uwebsockets-websocket'; packageVersion='0.1.1'; image='incursa-protocol-lab-uwebsockets-websocket:0.1.1'; dockerfile='docker/UWebSockets.Dockerfile'; port=18095; diagnosticOnly=$false; scenarios=$scenarios }
+    [pscustomobject]@{ id='websocat-http1-websocket'; packageId='org.protocol-lab.components.implementation.websocat-http1-websocket'; packageVersion='0.1.1'; image='incursa-protocol-lab-websocat-http1-websocket:0.1.1'; dockerfile='docker/Websocat.Dockerfile'; port=18092; startupDelaySeconds=1; diagnosticOnly=$true; scenarios=@('http1.websocket.rfc6455.cleartext.upgrade','http1.websocket.rfc6455.cleartext.control-frames','http1.websocket.rfc6455.cleartext.text-echo','http1.websocket.rfc6455.cleartext.close') },
+    [pscustomobject]@{ id='node-ws-websocket'; packageId='org.protocol-lab.components.implementation.node-ws-websocket'; packageVersion='0.1.1'; image='incursa-protocol-lab-node-ws-websocket:0.1.1'; dockerfile='docker/NodeWs.Dockerfile'; port=18093; startupDelaySeconds=1; diagnosticOnly=$false; scenarios=$scenarios },
+    [pscustomobject]@{ id='jetty-websocket'; packageId='org.protocol-lab.components.implementation.jetty-websocket'; packageVersion='0.1.2'; image='incursa-protocol-lab-jetty-websocket:0.1.2'; dockerfile='docker/Jetty.Dockerfile'; port=18094; startupDelaySeconds=3; diagnosticOnly=$false; scenarios=$scenarios },
+    [pscustomobject]@{ id='uwebsockets-websocket'; packageId='org.protocol-lab.components.implementation.uwebsockets-websocket'; packageVersion='0.1.1'; image='incursa-protocol-lab-uwebsockets-websocket:0.1.1'; dockerfile='docker/UWebSockets.Dockerfile'; port=18095; startupDelaySeconds=1; diagnosticOnly=$false; scenarios=$scenarios }
 )
 
 if (-not $SkipBuild) {
@@ -87,7 +87,7 @@ try {
         $containerId = (& docker run -d --rm --name $containerName -p "$($target.port):18081/tcp" $target.image).Trim()
         if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($containerId)) { throw "$($target.id) container failed to start." }
         try {
-            Start-Sleep -Seconds 1
+            Start-Sleep -Seconds $target.startupDelaySeconds
             $running = (& docker inspect --format '{{.State.Running}}' $containerName 2>$null).Trim()
             if ($running -ne 'true') {
                 throw "$($target.id) readiness failed: $(& docker logs $containerName 2>&1 | Out-String)"
