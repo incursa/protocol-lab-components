@@ -12,6 +12,7 @@ $requiredFiles = @(
     "scenarios/http3/websocket/rfc9220-close.yaml",
     "scenarios/http3/websocket/rfc9220-fragmented-binary-echo.yaml",
     "suites/aioquic-rfc9220-websocket-proof.yaml",
+    "load-profiles/websocket-smoke.yaml",
     "tests/test_authority_parity.py"
 )
 
@@ -28,6 +29,6 @@ foreach ($entry in $authority.files.PSObject.Properties) {
     $hash = (Get-FileHash (Join-Path $packageRoot $entry.Name) -Algorithm SHA256).Hash.ToLowerInvariant()
     if ($hash -ne $entry.Value) { throw "RFC9220 scenario authority hash mismatch: $($entry.Name)" }
 }
-if (@($authority.files.PSObject.Properties).Count -ne 6) { throw 'RFC9220 authority lock must contain exactly six scenarios.' }
+if (@($authority.files.PSObject.Properties).Count -ne 7) { throw 'RFC9220 authority lock must contain exactly six scenarios and one load profile.' }
 
 Write-Host "aioquic RFC9220 WebSocket scenario package authority lock is valid."

@@ -13,6 +13,7 @@ required_files=(
   "scenarios/http3/websocket/rfc9220-close.yaml"
   "scenarios/http3/websocket/rfc9220-fragmented-binary-echo.yaml"
   "suites/aioquic-rfc9220-websocket-proof.yaml"
+  "load-profiles/websocket-smoke.yaml"
   "tests/test_authority_parity.py"
 )
 

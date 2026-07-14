@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.tls13-handshake-performance",
-  "packageVersion": "0.2.0",
+  "packageVersion": "0.2.1",
   "kind": "scenario-pack",
   "displayName": "TLS Performance Contract Scenario Pack",
   "entryManifests": [
@@ -34,5 +34,9 @@
     { "scenarioId": "tls.key-update.diagnostic", "displayName": "TLS KeyUpdate Diagnostic", "protocols": ["tls"] },
     { "scenarioId": "tls.record.coverage", "displayName": "TLS Record Coverage", "protocols": ["tls"] },
     { "scenarioId": "tls.record.throughput", "displayName": "TLS Record Throughput", "protocols": ["tls"] }
+  ],
+  "providedSuites": [
+    { "suiteId": "tls-performance-smoke", "displayName": "TLS Performance Smoke", "protocols": ["tls"] },
+    { "suiteId": "tls-contract-breadth-smoke", "displayName": "TLS Contract Breadth Smoke", "protocols": ["tls"] }
   ]
 }

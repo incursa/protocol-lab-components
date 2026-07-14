@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.aioquic-rfc9220-websocket",
-  "packageVersion": "0.2.1",
+  "packageVersion": "0.2.2",
   "kind": "scenario-pack",
   "displayName": "aioquic RFC9220 WebSocket-over-H3 Scenario Pack",
   "entryManifests": [
@@ -11,7 +11,8 @@
     "scenarios/http3/websocket/rfc9220-binary-echo.yaml",
     "scenarios/http3/websocket/rfc9220-close.yaml",
     "scenarios/http3/websocket/rfc9220-fragmented-binary-echo.yaml",
-    "suites/aioquic-rfc9220-websocket-proof.yaml"
+    "suites/aioquic-rfc9220-websocket-proof.yaml",
+    "load-profiles/websocket-smoke.yaml"
   ],
   "providedScenarios": [
     {
@@ -73,6 +74,16 @@
       ],
       "testExecutors": [
         "aioquic-rfc9220-websocket"
+      ]
+    }
+  ],
+  "providedLoadProfiles": [
+    {
+      "loadProfileId": "websocket-smoke",
+      "displayName": "WebSocket Contract Smoke",
+      "protocols": [
+        "h3",
+        "websocket"
       ]
     }
   ]
