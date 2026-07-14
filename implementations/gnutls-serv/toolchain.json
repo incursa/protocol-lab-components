@@ -1,0 +1,14 @@
+{
+  "implementation": {
+    "id": "gnutls-serv",
+    "version": "0.1.0",
+    "upstreamProgram": "gnutls-serv",
+    "upstreamVersion": "3.8.9",
+    "upstreamTag": "3.8.9",
+    "upstreamCommit": "011bda1be01e4a47224adb3cbc32fcb06cba7be1",
+    "source": "https://gitlab.com/gnutls/gnutls",
+    "license": "GPL-3.0-or-later",
+    "binaryBundled": false,
+    "acquisitionMode": "external-tool-exact-version"
+  }
+}

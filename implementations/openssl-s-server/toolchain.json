@@ -1,0 +1,14 @@
+{
+  "implementation": {
+    "id": "openssl-s-server",
+    "version": "0.1.0",
+    "upstreamProgram": "openssl s_server",
+    "upstreamVersion": "3.3.0",
+    "upstreamTag": "openssl-3.3.0",
+    "upstreamCommit": "24e7fcf7aff2caadbdee879f615c63981ed132dc",
+    "source": "https://github.com/openssl/openssl",
+    "license": "Apache-2.0",
+    "binaryBundled": false,
+    "acquisitionMode": "external-tool-exact-version"
+  }
+}

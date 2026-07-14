@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {"os":"windows","arch":"x64","entrypoint":{"kind":"pwsh","path":"run.ps1","arguments":[],"workingDirectory":"."}},
+    {"os":"linux","arch":"x64","entrypoint":{"kind":"bash","path":"run.sh","arguments":[],"workingDirectory":"."}}
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": false,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [{"name":"openssl","value":"3.3.0"}]
+  },
+  "runtime": {
+    "acquisitionMode": "external-tool",
+    "executable": "openssl",
+    "requiredVersion": "3.3.0",
+    "upstreamTag": "openssl-3.3.0",
+    "upstreamCommit": "24e7fcf7aff2caadbdee879f615c63981ed132dc"
+  },
+  "knownLimitations": [
+    "Only the exact TLS 1.3 full-handshake row is declared.",
+    "The package does not treat the s_server echo, HTTP, or reverse modes as the ProtocolLab record command protocol.",
+    "The external OpenSSL executable is version-gated before the endpoint starts."
+  ]
+}

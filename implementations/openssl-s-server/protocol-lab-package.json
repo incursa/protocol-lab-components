@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.openssl-s-server",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "OpenSSL s_server TLS Endpoint",
+  "entryManifests": ["implementations/openssl-s-server.yaml"],
+  "providedImplementations": [{
+    "implementationId": "openssl-s-server",
+    "displayName": "OpenSSL s_server 3.3.0 TLS Endpoint",
+    "protocols": ["tls"],
+    "scenarios": ["tls.handshake.full"]
+  }],
+  "dependencies": {}
+}

@@ -10,6 +10,9 @@ This documentation supports the component package repository.
   packaging behavior.
 - [Package coverage matrix](package-coverage-matrix.md) records implementation
   and executor package coverage against visible ProtocolLab comparison lanes.
+- [TLS endpoint/tool feasibility](tls-endpoint-tool-feasibility.md) records the
+  exact OpenSSL and GnuTLS wrapper boundary plus the repository-backed rustls
+  and s2n-tls no-package decisions.
 - [Contributor agreement automation](contributor-agreement-automation.md)
   records the owner setup required for the CLA workflow.
 - The QUIC/HTTP/3 parity matrix lives in
