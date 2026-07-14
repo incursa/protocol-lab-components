@@ -315,6 +315,8 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'implementations/caddy-http1'; script = 'Build-CaddyHttp1Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/caddy-http3'; script = 'Build-CaddyHttp3Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/nginx-http1'; script = 'Build-NginxHttp1Package.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/apache-http1'; script = 'Build-ApacheHttp1Package.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/apache-http2'; script = 'Build-ApacheHttp2Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/nginx-http3'; script = 'Build-NginxHttp3Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/quic-go-http3'; script = 'Build-QuicGoHttp3Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/quic-go-raw'; script = 'Build-QuicGoRawPackage.ps1'; arguments = @() },

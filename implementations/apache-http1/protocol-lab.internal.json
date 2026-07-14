@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "linux-containers",
+        "value": "true"
+      }
+    ],
+    "runtimeImages": [
+      {
+        "name": "ubuntu/apache2",
+        "version": "24.04",
+        "reference": "ubuntu/apache2@sha256:6563a8f98ce5469715962cf217335ec73842e56abb3720094a15f2b6747b87bc",
+        "apacheVersion": "2.4.58-1ubuntu8.11"
+      }
+    ]
+  }
+}

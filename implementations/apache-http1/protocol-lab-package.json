@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.apache-http1",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Apache httpd HTTP/1.1 Implementation",
+  "entryManifests": [
+    "implementations/apache-http1.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "apache-http1",
+      "displayName": "Apache httpd HTTP/1.1",
+      "protocols": [
+        "h1"
+      ],
+      "scenarios": [
+        "http1.core.plaintext",
+        "http1.core.json"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      }
+    ]
+  }
+}
