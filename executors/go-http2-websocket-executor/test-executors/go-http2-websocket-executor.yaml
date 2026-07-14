@@ -1,5 +1,5 @@
-executorIdentity: {id: go-http2-websocket-executor, name: Go HTTP/2 RFC 8441 WebSocket Test Executor, version: 0.1.0, vendor: Incursa}
-versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.1.0}
+executorIdentity: {id: go-http2-websocket-executor, name: Go HTTP/2 RFC 8441 WebSocket Test Executor, version: 0.2.0, vendor: Incursa}
+versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.2.0}
 claimedCapabilities:
   - {id: http2.websocket.rfc8441.extended-connect, status: supported}
   - {id: http2.websocket.rfc8441.control-frames, status: supported}
@@ -11,6 +11,8 @@ claimedCapabilities:
   - {id: raw-http2-pseudo-header-proof, status: supported}
   - {id: rfc6455-client-masking-proof, status: supported}
   - {id: exact-tls1.3-alpn-h2-proof, status: supported}
+  - {id: one-connection-eight-concurrent-streams, status: supported}
+  - {id: strict-per-stream-ordered-100-message-operations, status: supported}
   - {id: rfc6455-over-http1, status: unsupported}
   - {id: rfc9220-over-http3, status: unsupported}
 supportedTestSelectors:
@@ -40,7 +42,13 @@ supportedArtifactTypes:
   - {type: result.json, producedByStates: [stopped, failed]}
   - {type: http2-websocket-executor-result.json, producedByStates: [stopped, failed]}
   - {type: websocket-load-summary.json, producedByStates: [stopped, failed]}
+  - {type: websocket-warmup-summary.json, producedByStates: [stopped, failed]}
+  - {type: http2-websocket-topology.json, producedByStates: [stopped, failed]}
+  - {type: executor-identity.json, producedByStates: [stopped, failed]}
+  - {type: load-generator-identity.json, producedByStates: [stopped, failed]}
+  - {type: load.stdout.log, producedByStates: [stopped, failed]}
+  - {type: load.stderr.log, producedByStates: [stopped, failed]}
   - {type: unsupported.json, producedByStates: [failed]}
-metricsAvailability: {available: true, availableKinds: [validation, connections-per-second, messages-per-second, bytes-per-second, latency-percentiles, operation-outcomes, effective-streams]}
+metricsAvailability: {available: true, availableKinds: [validation, connections-per-second, messages-per-second, bytes-per-second, latency-percentiles, operation-outcomes, configured-capacity, observed-active-connections, effective-concurrency, effective-streams]}
 parser: {id: protocol-lab-websocket-h2-json, type: protocol-lab-websocket-h2-json, preservesRawOutput: true}
 telemetry: {supported: true, supported_contract_versions: [telemetry-bundle-v1], supported_scopes: [test-executor, load-generator], supported_artifact_kinds: [summary, metrics, stdout, stderr, raw], export_modes: [inline, artifact-bundle]}
