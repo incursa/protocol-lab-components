@@ -6,7 +6,7 @@ family: grpc-dotnet
 role: server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-grpc-dotnet:0.1.0
+image: incursa-protocol-lab-grpc-dotnet:0.1.1
 dockerfile: docker/Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
@@ -42,7 +42,7 @@ startup:
   port: {name: grpc-h2, environmentVariable: PLAB_TARGET_PORT, default: 18444}
   readiness: {protocol: process, timeoutSeconds: 30}
 readinessCheck: {type: processStarted, timeoutSeconds: 30, startupDelayMilliseconds: 1500}
-capabilities: [grpc.h2, grpc.streaming, grpc.terminal-outcomes, grpc.channel-churn, tls13, alpn.h2]
+capabilities: [scenario.grpc.h2.unary.echo, scenario.grpc.h2.unary.empty, scenario.grpc.h2.unary.fixed-metadata, scenario.grpc.h2.unary.gzip, scenario.grpc.h2.unary.large, scenario.grpc.h2.server-streaming.echo, scenario.grpc.h2.client-streaming.echo, scenario.grpc.h2.bidi-streaming.echo, scenario.grpc.h2.trailers-only-status, scenario.grpc.h2.deadline-exceeded, scenario.grpc.h2.client-cancellation, scenario.grpc.h2.unary.echo-new-channel, grpc.h2, grpc.streaming, grpc.terminal-outcomes, grpc.channel-churn, tls13, alpn.h2]
 entrypoint: {kind: pwsh, path: run.ps1, arguments: [], workingDirectory: .}
 shutdownBehavior: process
 artifactExports: [command.txt, stdout.txt, stderr.txt, result.json]

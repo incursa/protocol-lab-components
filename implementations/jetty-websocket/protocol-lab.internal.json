@@ -8,12 +8,12 @@
     "requiresDotNet": false, "requiresDocker": true, "requiresPwsh": true, "requiresBash": true, "requiresGo": false,
     "requiredCapabilities": [{"name": "docker", "value": "true"}],
     "images": [{
-      "name": "jetty-websocket", "image": "incursa-protocol-lab-jetty-websocket:0.1.0",
+      "name": "jetty-websocket", "image": "incursa-protocol-lab-jetty-websocket:0.1.1",
       "baseImage": "eclipse-temurin:21.0.8_9-jre-alpine-3.22", "baseImageIndexDigest": "eclipse-temurin@sha256:990397e0495ac088ab6ee3d949a2e97b715a134d8b96c561c5d130b3786a489d", "baseImageLinuxAmd64Digest": "eclipse-temurin@sha256:464a8b23a76a845a1fc264c1556490c3617ee6f294c05b59c8e39deab0c9e1bb",
       "sourceVersion": "12.1.9", "sourceCommit": "b1fb145d4b0ea34d7636012359604367f4de7496", "license": "EPL-2.0 OR Apache-2.0",
       "capabilityProof": "Maven resolves org.eclipse.jetty websocket artifacts at exact version 12.1.9 and packages a version-reporting adapter"
     }]
   },
-  "commands": {"buildTemplate": "docker build --pull -f docker/Jetty.Dockerfile -t incursa-protocol-lab-jetty-websocket:0.1.0 docker", "versionProofTemplate": "docker run --rm incursa-protocol-lab-jetty-websocket:0.1.0 --version", "serverTemplate": "docker run --rm -p <port>:18081/tcp incursa-protocol-lab-jetty-websocket:0.1.0"},
+  "commands": {"buildTemplate": "docker build --pull -f docker/Jetty.Dockerfile -t incursa-protocol-lab-jetty-websocket:0.1.1 docker", "versionProofTemplate": "docker run --rm incursa-protocol-lab-jetty-websocket:0.1.1 --version", "serverTemplate": "docker run --rm -p <port>:18081/tcp incursa-protocol-lab-jetty-websocket:0.1.1"},
   "knownLimitations": ["The package selects Jetty's HTTP/1.1 Upgrade binding only; Jetty HTTP/2 WebSocket bindings are not claimed.", "The thin adapter implements only the five canonical ProtocolLab cleartext scenarios."]
 }

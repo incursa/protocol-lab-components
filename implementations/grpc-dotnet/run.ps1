@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([int]$Port=18444,[switch]$SkipBuild,[switch]$PlanOnly,[switch]$ProofOnly,[string]$Image='incursa-protocol-lab-grpc-dotnet:0.1.0',[string]$OutputRoot='artifacts/grpc-dotnet')
+param([int]$Port=18444,[switch]$SkipBuild,[switch]$PlanOnly,[switch]$ProofOnly,[string]$Image='incursa-protocol-lab-grpc-dotnet:0.1.1',[string]$OutputRoot='artifacts/grpc-dotnet')
 $ErrorActionPreference='Stop'; $root=$PSScriptRoot; $out=if([IO.Path]::IsPathRooted($OutputRoot)){$OutputRoot}else{Join-Path $root $OutputRoot}; New-Item -ItemType Directory -Force $out|Out-Null
 $build=@('build','--pull','-f','docker/Dockerfile','-t',$Image,'.'); $run=@('run','--rm','-p',"${Port}:18444/tcp",$Image); (($build -join ' '),($run -join ' '))|Set-Content (Join-Path $out 'command.txt')
 if($PlanOnly){return}; Push-Location $root; try{if(-not $SkipBuild){& docker @build;if($LASTEXITCODE){throw 'Docker build failed.'}}; $proof=(& docker run --rm --entrypoint dotnet $Image --info 2>&1|Out-String);$proof|Set-Content (Join-Path $out 'runtime-version.txt');if($LASTEXITCODE){throw 'Runtime proof failed.'};if($ProofOnly){return};& docker @run > (Join-Path $out 'stdout.txt') 2> (Join-Path $out 'stderr.txt');if($LASTEXITCODE){throw 'Server failed.'}}finally{Pop-Location}

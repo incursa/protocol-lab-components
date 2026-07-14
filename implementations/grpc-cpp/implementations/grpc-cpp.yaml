@@ -6,7 +6,7 @@ family: grpc-cpp
 role: server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-grpc-cpp:0.1.0
+image: incursa-protocol-lab-grpc-cpp:0.1.1
 dockerfile: docker/Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
@@ -40,7 +40,7 @@ ports: [{name: grpc-h2, protocol: tcp, default: 18444, hostPort: 18444, containe
 environment: {PLAB_TARGET_PORT: "18444"}
 startup: {port: {name: grpc-h2, environmentVariable: PLAB_TARGET_PORT, default: 18444}, readiness: {protocol: process, timeoutSeconds: 60}}
 readinessCheck: {type: processStarted, timeoutSeconds: 60, startupDelayMilliseconds: 1500}
-capabilities: [grpc.h2, grpc.terminal-outcomes, tls13, alpn.h2]
+capabilities: [scenario.grpc.h2.deadline-exceeded, scenario.grpc.h2.client-cancellation, grpc.h2, grpc.terminal-outcomes, tls13, alpn.h2]
 entrypoint: {kind: pwsh, path: run.ps1, arguments: [], workingDirectory: .}
 shutdownBehavior: process
 artifactExports: [command.txt, stdout.txt, stderr.txt, result.json]

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.node-ws-websocket",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "implementation",
   "displayName": "Node ws HTTP/1.1 WebSocket Origin",
   "entryManifests": ["implementations/node-ws-websocket.yaml"],

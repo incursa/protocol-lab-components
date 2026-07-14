@@ -1,6 +1,6 @@
 # websocat HTTP/1.1 WebSocket diagnostic origin
 
-`org.protocol-lab.components.implementation.websocat-http1-websocket@0.1.0`
+`org.protocol-lab.components.implementation.websocat-http1-websocket@0.1.1`
 wraps the upstream websocat 1.14.1 mirror server for four exact cleartext
 RFC 6455 scenarios: Upgrade, control frames, text echo, and close. Binary echo
 is explicitly unsupported because mirror mode does not preserve the exact

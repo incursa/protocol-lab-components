@@ -1,5 +1,5 @@
 {
-  "schemaVersion":"protocol-lab-package-v2","packageId":"org.protocol-lab.components.implementation.grpc-js","packageVersion":"0.1.0","kind":"implementation","displayName":"Node grpc-js gRPC over HTTP/2 Target","entryManifests":["implementations/grpc-js.yaml"],
+  "schemaVersion":"protocol-lab-package-v2","packageId":"org.protocol-lab.components.implementation.grpc-js","packageVersion":"0.1.1","kind":"implementation","displayName":"Node grpc-js gRPC over HTTP/2 Target","entryManifests":["implementations/grpc-js.yaml"],
   "providedImplementations":[{"implementationId":"grpc-js","displayName":"Node grpc-js gRPC over HTTP/2 Target","protocols":["h2"],"scenarios":["grpc.h2.unary.echo","grpc.h2.unary.fixed-metadata","grpc.h2.unary.large","grpc.h2.server-streaming.echo","grpc.h2.client-streaming.echo","grpc.h2.bidi-streaming.echo","grpc.h2.deadline-exceeded","grpc.h2.client-cancellation","grpc.h2.unary.echo-new-channel"]}],
   "dependencies":{"requiredCapabilities":[{"name":"docker","value":"true"}]}
 }

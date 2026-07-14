@@ -7,8 +7,8 @@
   "dependencies": {
     "requiresDotNet": false, "requiresDocker": true, "requiresPwsh": true, "requiresBash": true, "requiresGo": false,
     "requiredCapabilities": [{"name":"docker","value":"true"}],
-    "images": [{"name":"grpc-dotnet","image":"incursa-protocol-lab-grpc-dotnet:0.1.0","baseImage":"mcr.microsoft.com/dotnet/aspnet:10.0-noble","baseImageIndexDigest":"mcr.microsoft.com/dotnet/aspnet@sha256:7644f992230d35cf230017189d4038c0ae0f7388b13f4f7ae1900a155bafb597","sourceVersion":"grpc-dotnet 2.71.0 / .NET 10.0","license":"Apache-2.0","capabilityProof":"all twelve declared scenarios pass go-grpc-h2-executor@0.4.0"}]
+    "images": [{"name":"grpc-dotnet","image":"incursa-protocol-lab-grpc-dotnet:0.1.1","baseImage":"mcr.microsoft.com/dotnet/aspnet:10.0-noble","baseImageIndexDigest":"mcr.microsoft.com/dotnet/aspnet@sha256:7644f992230d35cf230017189d4038c0ae0f7388b13f4f7ae1900a155bafb597","sourceVersion":"grpc-dotnet 2.71.0 / .NET 10.0","license":"Apache-2.0","capabilityProof":"all twelve declared scenarios pass go-grpc-h2-executor@0.4.0"}]
   },
-  "commands": {"buildTemplate":"docker build --pull -f docker/Dockerfile -t incursa-protocol-lab-grpc-dotnet:0.1.0 .","serverTemplate":"docker run --rm -p <port>:18444/tcp incursa-protocol-lab-grpc-dotnet:0.1.0"},
+  "commands": {"buildTemplate":"docker build --pull -f docker/Dockerfile -t incursa-protocol-lab-grpc-dotnet:0.1.1 .","serverTemplate":"docker run --rm -p <port>:18444/tcp incursa-protocol-lab-grpc-dotnet:0.1.1"},
   "knownLimitations": ["Canonical ProtocolLab service adapter; it is not an upstream benchmark service.","gRPC-Web, h2c, gRPC over HTTP/3, retries, and hedging are unsupported."]
 }

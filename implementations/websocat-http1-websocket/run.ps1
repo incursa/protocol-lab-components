@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Image = 'incursa-protocol-lab-websocat-http1-websocket:0.1.0',
+    [string]$Image = 'incursa-protocol-lab-websocat-http1-websocket:0.1.1',
     [int]$Port = 18082,
     [switch]$SkipBuild,
     [switch]$PlanOnly,

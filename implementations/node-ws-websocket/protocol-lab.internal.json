@@ -8,12 +8,12 @@
     "requiresDotNet": false, "requiresDocker": true, "requiresPwsh": true, "requiresBash": true, "requiresGo": false,
     "requiredCapabilities": [{"name": "docker", "value": "true"}],
     "images": [{
-      "name": "node-ws-websocket", "image": "incursa-protocol-lab-node-ws-websocket:0.1.0",
+      "name": "node-ws-websocket", "image": "incursa-protocol-lab-node-ws-websocket:0.1.1",
       "baseImage": "node:24.11.1-alpine3.22", "baseImageIndexDigest": "node@sha256:2867d550cf9d8bb50059a0fff528741f11a84d985c732e60e19e8e75c7239c43", "baseImageLinuxAmd64Digest": "node@sha256:d7a3af308e4006ba6d66bbae980fe39c118049b4a5eeaac8fa89e00944a2496b",
       "sourceVersion": "8.21.0", "sourceCommit": "bca91adf15677e47dbe4f959653452727be28b94", "license": "MIT",
       "capabilityProof": "package-lock.json pins ws 8.21.0 with registry integrity sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g=="
     }]
   },
-  "commands": {"buildTemplate": "docker build --pull -f docker/NodeWs.Dockerfile -t incursa-protocol-lab-node-ws-websocket:0.1.0 docker", "versionProofTemplate": "docker run --rm incursa-protocol-lab-node-ws-websocket:0.1.0 --version", "serverTemplate": "docker run --rm -p <port>:18081/tcp incursa-protocol-lab-node-ws-websocket:0.1.0"},
+  "commands": {"buildTemplate": "docker build --pull -f docker/NodeWs.Dockerfile -t incursa-protocol-lab-node-ws-websocket:0.1.1 docker", "versionProofTemplate": "docker run --rm incursa-protocol-lab-node-ws-websocket:0.1.1 --version", "serverTemplate": "docker run --rm -p <port>:18081/tcp incursa-protocol-lab-node-ws-websocket:0.1.1"},
   "knownLimitations": ["The package is cleartext HTTP/1.1 Upgrade only.", "The thin adapter disables permessage-deflate and implements only the five canonical ProtocolLab cleartext scenarios."]
 }

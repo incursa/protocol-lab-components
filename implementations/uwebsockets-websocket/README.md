@@ -1,6 +1,6 @@
 # uWebSockets HTTP/1.1 WebSocket origin
 
-`org.protocol-lab.components.implementation.uwebsockets-websocket@0.1.0`
+`org.protocol-lab.components.implementation.uwebsockets-websocket@0.1.1`
 builds upstream uWebSockets 20.79.0 at commit
 `fe7c01a477b688a7743f754fee33bdd78d52ad91` with its pinned uSockets submodule
 and a minimal native echo adapter.

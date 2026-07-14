@@ -8,12 +8,12 @@
     "requiresDotNet": false, "requiresDocker": true, "requiresPwsh": true, "requiresBash": true, "requiresGo": false,
     "requiredCapabilities": [{"name": "docker", "value": "true"}],
     "images": [{
-      "name": "websocat-http1-websocket", "image": "incursa-protocol-lab-websocat-http1-websocket:0.1.0",
+      "name": "websocat-http1-websocket", "image": "incursa-protocol-lab-websocat-http1-websocket:0.1.1",
       "baseImage": "alpine:3.22.1", "baseImageIndexDigest": "alpine@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1", "baseImageLinuxAmd64Digest": "alpine@sha256:eafc1edb577d2e9b458664a15f23ea1c370214193226069eb22921169fc7e43f",
       "sourceVersion": "v1.14.1", "sourceCommit": "aed97cb0fcf2ce051e2f81831dfffb85b2e48019", "license": "MIT",
       "capabilityProof": "websocat --version reports websocat 1.14.1; binary SHA-256 is 66f8dd3a0394761556339117f8bb5123bddefd44e087af2a72ec22b0bd08d514"
     }]
   },
-  "commands": {"buildTemplate": "docker build --pull -f docker/Websocat.Dockerfile -t incursa-protocol-lab-websocat-http1-websocket:0.1.0 docker", "versionProofTemplate": "docker run --rm --entrypoint /usr/local/bin/websocat incursa-protocol-lab-websocat-http1-websocket:0.1.0 --version", "serverTemplate": "docker run --rm -p <port>:18081/tcp incursa-protocol-lab-websocat-http1-websocket:0.1.0"},
+  "commands": {"buildTemplate": "docker build --pull -f docker/Websocat.Dockerfile -t incursa-protocol-lab-websocat-http1-websocket:0.1.1 docker", "versionProofTemplate": "docker run --rm --entrypoint /usr/local/bin/websocat incursa-protocol-lab-websocat-http1-websocket:0.1.1 --version", "serverTemplate": "docker run --rm -p <port>:18081/tcp incursa-protocol-lab-websocat-http1-websocket:0.1.1"},
   "knownLimitations": ["Diagnostic-only baseline; exclude from primary performance rankings.", "websocat supports HTTP/1.1 Upgrade only and does not support RFC 8441 or RFC 9220.", "websocat v1 uses older dependencies and has documented backpressure/socket limitations."]
 }

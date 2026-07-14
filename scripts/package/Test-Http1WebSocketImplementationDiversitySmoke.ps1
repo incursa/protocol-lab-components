@@ -18,10 +18,10 @@ $scenarios = @(
     'http1.websocket.rfc6455.cleartext.close'
 )
 $targets = @(
-    [pscustomobject]@{ id='websocat-http1-websocket'; packageId='org.protocol-lab.components.implementation.websocat-http1-websocket'; image='incursa-protocol-lab-websocat-http1-websocket:0.1.0'; dockerfile='docker/Websocat.Dockerfile'; port=18092; diagnosticOnly=$true; scenarios=@('http1.websocket.rfc6455.cleartext.upgrade','http1.websocket.rfc6455.cleartext.control-frames','http1.websocket.rfc6455.cleartext.text-echo','http1.websocket.rfc6455.cleartext.close') },
-    [pscustomobject]@{ id='node-ws-websocket'; packageId='org.protocol-lab.components.implementation.node-ws-websocket'; image='incursa-protocol-lab-node-ws-websocket:0.1.0'; dockerfile='docker/NodeWs.Dockerfile'; port=18093; diagnosticOnly=$false; scenarios=$scenarios },
-    [pscustomobject]@{ id='jetty-websocket'; packageId='org.protocol-lab.components.implementation.jetty-websocket'; image='incursa-protocol-lab-jetty-websocket:0.1.0'; dockerfile='docker/Jetty.Dockerfile'; port=18094; diagnosticOnly=$false; scenarios=$scenarios },
-    [pscustomobject]@{ id='uwebsockets-websocket'; packageId='org.protocol-lab.components.implementation.uwebsockets-websocket'; image='incursa-protocol-lab-uwebsockets-websocket:0.1.0'; dockerfile='docker/UWebSockets.Dockerfile'; port=18095; diagnosticOnly=$false; scenarios=$scenarios }
+    [pscustomobject]@{ id='websocat-http1-websocket'; packageId='org.protocol-lab.components.implementation.websocat-http1-websocket'; image='incursa-protocol-lab-websocat-http1-websocket:0.1.1'; dockerfile='docker/Websocat.Dockerfile'; port=18092; diagnosticOnly=$true; scenarios=@('http1.websocket.rfc6455.cleartext.upgrade','http1.websocket.rfc6455.cleartext.control-frames','http1.websocket.rfc6455.cleartext.text-echo','http1.websocket.rfc6455.cleartext.close') },
+    [pscustomobject]@{ id='node-ws-websocket'; packageId='org.protocol-lab.components.implementation.node-ws-websocket'; image='incursa-protocol-lab-node-ws-websocket:0.1.1'; dockerfile='docker/NodeWs.Dockerfile'; port=18093; diagnosticOnly=$false; scenarios=$scenarios },
+    [pscustomobject]@{ id='jetty-websocket'; packageId='org.protocol-lab.components.implementation.jetty-websocket'; image='incursa-protocol-lab-jetty-websocket:0.1.1'; dockerfile='docker/Jetty.Dockerfile'; port=18094; diagnosticOnly=$false; scenarios=$scenarios },
+    [pscustomobject]@{ id='uwebsockets-websocket'; packageId='org.protocol-lab.components.implementation.uwebsockets-websocket'; image='incursa-protocol-lab-uwebsockets-websocket:0.1.1'; dockerfile='docker/UWebSockets.Dockerfile'; port=18095; diagnosticOnly=$false; scenarios=$scenarios }
 )
 
 if (-not $SkipBuild) {
@@ -75,7 +75,7 @@ $env:PLAB_OPERATION_TIMEOUT_MILLISECONDS='5000'
 $results = [Collections.Generic.List[object]]::new()
 try {
     foreach ($target in $targets) {
-        $targetPackage = Get-ChildItem $OutputRoot -File -Filter "$($target.packageId).0.1.0.plabpkg" | Select-Object -First 1
+        $targetPackage = Get-ChildItem $OutputRoot -File -Filter "$($target.packageId).0.1.1.plabpkg" | Select-Object -First 1
         if ($null -eq $targetPackage) { throw "$($target.id) package artifact was not found." }
         $targetRoot = Join-Path $SmokeRoot "targets/$($target.id)"
         [IO.Compression.ZipFile]::ExtractToDirectory($targetPackage.FullName, $targetRoot)
@@ -110,7 +110,7 @@ try {
         finally { & docker rm -f $containerName 2>$null | Out-Null }
     }
 
-    $packageEvidence = @($scenarioPackage, $executorPackage) + @($targets | ForEach-Object { Get-ChildItem $OutputRoot -File -Filter "$($_.packageId).0.1.0.plabpkg" | Select-Object -First 1 })
+    $packageEvidence = @($scenarioPackage, $executorPackage) + @($targets | ForEach-Object { Get-ChildItem $OutputRoot -File -Filter "$($_.packageId).0.1.1.plabpkg" | Select-Object -First 1 })
     $summary = [ordered]@{
         status='passed'
         scenarioCount=$scenarios.Count

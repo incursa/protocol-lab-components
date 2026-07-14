@@ -8,12 +8,12 @@
     "requiresDotNet": false, "requiresDocker": true, "requiresPwsh": true, "requiresBash": true, "requiresGo": false,
     "requiredCapabilities": [{"name": "docker", "value": "true"}],
     "images": [{
-      "name": "uwebsockets-websocket", "image": "incursa-protocol-lab-uwebsockets-websocket:0.1.0",
+      "name": "uwebsockets-websocket", "image": "incursa-protocol-lab-uwebsockets-websocket:0.1.1",
       "baseImage": "debian:bookworm-slim", "baseImageIndexDigest": "debian@sha256:7b140f374b289a7c2befc338f42ebe6441b7ea838a042bbd5acbfca6ec875818", "baseImageLinuxAmd64Digest": "debian@sha256:63a496b5d3b99214b39f5ed70eb71a61e590a77979c79cbee4faf991f8c0783e",
       "sourceVersion": "v20.79.0", "sourceCommit": "fe7c01a477b688a7743f754fee33bdd78d52ad91", "license": "Apache-2.0",
       "capabilityProof": "Docker build checks out exact uWebSockets commit fe7c01a477b688a7743f754fee33bdd78d52ad91 with uSockets commit 86097c490263ab662d62e8e7b541390bdec7d149"
     }]
   },
-  "commands": {"buildTemplate": "docker build --pull -f docker/UWebSockets.Dockerfile -t incursa-protocol-lab-uwebsockets-websocket:0.1.0 docker", "versionProofTemplate": "docker run --rm incursa-protocol-lab-uwebsockets-websocket:0.1.0 --version", "serverTemplate": "docker run --rm -p <port>:18081/tcp incursa-protocol-lab-uwebsockets-websocket:0.1.0"},
+  "commands": {"buildTemplate": "docker build --pull -f docker/UWebSockets.Dockerfile -t incursa-protocol-lab-uwebsockets-websocket:0.1.1 docker", "versionProofTemplate": "docker run --rm incursa-protocol-lab-uwebsockets-websocket:0.1.1 --version", "serverTemplate": "docker run --rm -p <port>:18081/tcp incursa-protocol-lab-uwebsockets-websocket:0.1.1"},
   "knownLimitations": ["The package is cleartext HTTP/1.1 Upgrade only.", "Compression and automatic server pings are disabled; the thin adapter implements only the five canonical ProtocolLab scenarios."]
 }

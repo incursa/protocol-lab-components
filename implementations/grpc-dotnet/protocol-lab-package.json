@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.grpc-dotnet",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "implementation",
   "displayName": "grpc-dotnet gRPC over HTTP/2 Target",
   "entryManifests": ["implementations/grpc-dotnet.yaml"],

@@ -6,7 +6,7 @@ family: websocat
 role: origin-server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-websocat-http1-websocket:0.1.0
+image: incursa-protocol-lab-websocat-http1-websocket:0.1.1
 dockerfile: docker/Websocat.Dockerfile
 buildContext: docker
 dockerNetworkMode: published-port
@@ -32,7 +32,7 @@ ports: [{name: websocket, protocol: tcp, default: 18082, hostPort: 18082, contai
 environment: {PLAB_TARGET_PORT: "18082"}
 startup: {port: {name: websocket, environmentVariable: PLAB_TARGET_PORT, default: 18082}, readiness: {protocol: process, timeoutSeconds: 30}}
 readinessCheck: {type: processStarted, timeoutSeconds: 30, startupDelayMilliseconds: 500}
-capabilities: [websocket.server, websocket.rfc6455, websocket.text-echo, websocket.control-frames, websocket.close]
+capabilities: [scenario.http1.websocket.rfc6455.cleartext.upgrade, scenario.http1.websocket.rfc6455.cleartext.control-frames, scenario.http1.websocket.rfc6455.cleartext.text-echo, scenario.http1.websocket.rfc6455.cleartext.close, websocket.server, websocket.rfc6455, websocket.text-echo, websocket.control-frames, websocket.close]
 entrypoint: {kind: pwsh, path: run.ps1, arguments: [], workingDirectory: .}
 shutdownBehavior: process
 artifactExports: [command.txt, version.txt, stdout.txt, stderr.txt, result.json]
