@@ -1,14 +1,16 @@
 {
   "implementation": {
     "id": "openssl-s-server",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "upstreamProgram": "openssl s_server",
     "upstreamVersion": "3.3.0",
     "upstreamTag": "openssl-3.3.0",
     "upstreamCommit": "24e7fcf7aff2caadbdee879f615c63981ed132dc",
     "source": "https://github.com/openssl/openssl",
     "license": "Apache-2.0",
+    "sourceArchive": "https://github.com/openssl/openssl/releases/download/openssl-3.3.0/openssl-3.3.0.tar.gz",
+    "sourceArchiveSha256": "53e66b043322a606abf0087e7699a0e033a37fa13feb9742df35c3a33b18fb02",
     "binaryBundled": false,
-    "acquisitionMode": "external-tool-exact-version"
+    "acquisitionMode": "docker-source-build-exact-version"
   }
 }

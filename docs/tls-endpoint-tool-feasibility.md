@@ -13,13 +13,18 @@ ranking.
 
 | Candidate | Pinned upstream | Decision | Exact rows |
 | --- | --- | --- | --- |
-| OpenSSL `s_server` | OpenSSL `3.3.0`, tag `openssl-3.3.0`, commit `24e7fcf7aff2caadbdee879f615c63981ed132dc`, Apache-2.0 | wrapper admitted with exact runtime version gate | `tls.handshake.full` only |
-| GnuTLS `gnutls-serv` | GnuTLS `3.8.9`, tag `3.8.9`, commit `011bda1be01e4a47224adb3cbc32fcb06cba7be1`, GPL-3.0-or-later | wrapper admitted with exact runtime version gate | `tls.handshake.full` only |
+| OpenSSL `s_server` | OpenSSL `3.3.0`, tag object `24e7fcf7aff2caadbdee879f615c63981ed132dc`, source commit `4cb31128b5790819dfeea2739fbde265f71a10a2`, Apache-2.0 | `0.1.1` Docker target admitted with source archive and base-image digests; no host OpenSSL dependency | `tls.handshake.full` only |
+| GnuTLS `gnutls-serv` | GnuTLS `3.8.9`, tag object `011bda1be01e4a47224adb3cbc32fcb06cba7be1`, source commit `477a733247460b94cd2b37a10579c27ca6fc196f`, GPL-3.0-or-later | `0.1.1` Docker target admitted with source archive and base-image digests; no host GnuTLS dependency | `tls.handshake.full` only |
 
 The upstream CLIs expose enough controls for the full TLS 1.3 row: certificate
 and key, TLS version, AES-128-GCM-SHA256, X25519, ECDSA P-256/SHA-256, and ALPN.
 Tickets are disabled to keep the row fresh. The existing Go executor validates
 the actual negotiation and canonical certificate identity.
+
+Version `0.1.1` removes the prior exact host-tool capability gates. Each
+package now source-builds its upstream release inside a Docker target pinned by
+release archive SHA-256 and Debian base-image digest. This makes the targets
+self-contained on Linux x64 ProtocolLab workers that provide Docker.
 
 Neither tool implements the `PLABTLS1` record command protocol, so echo,
 reverse, HTTP, record-fragment, or buffer-size modes cannot stand in for
