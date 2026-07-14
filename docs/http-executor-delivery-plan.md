@@ -34,7 +34,7 @@ Final Linux package SHA-256 values are: TLS executor `b9c5ad8a9e5d2eafb4be2d234c
 
 Runner admission is exact rather than family-substituting. Target manifests carry an exact `scenario.<id>` capability, and the runner requires that capability before using the package-executor role bridge. The TLS parser checks TLS version, cipher, key exchange, ALPN, certificate DER/SPKI identity, no resumption, no early data, zero application bytes, load echo, identities, outcomes, and artifacts. The gRPC parser additionally checks the committed service digest, HTTP/2/TLS proof, channel reuse, 128/131/136 byte scopes and hashes, status/media type/trailers, and all terminal counts. The DoT parser checks local-authoritative-only semantics, exact DNS question/answer/TTL, canonical 27/43-byte hashes, two-octet framing, message-ID correlation, TLS/ALPN identity, and separate malformed/retry/failure/timeout counts. The DoH2 parser independently requires TLS 1.3 with ALPN `h2`, HTTP/2 without fallback, POST `/dns-query`, exact request and response media/cache semantics, message ID zero, canonical response normalization, genuine connection-establishment timing, and the same local-authoritative-only DNS identity.
 
-Explicit runner-unsupported inventories remain fail closed. TLS: `tls.early-data.accepted`, `tls.early-data.rejected`, and `tls.key-update.diagnostic`. gRPC/H2 has no remaining unsupported committed scenario ID in the `0.4.0` package and integrated runner. DNS: `dns.classic.tcp.query.a`, `dns.classic.udp-truncated-tcp-retry`, `dns.classic.udp.query.a`, `dns.doh3.get.a`, `dns.doh3.query.a`, `dns.doh3.query.aaaa`, `dns.doh3.query.cname-chain`, `dns.doh3.query.large-dnssec-shaped`, `dns.doh3.query.nodata`, and `dns.doh3.query.nxdomain`. WebSocket runner gaps remain all six RFC 8441 IDs and `http3.websocket.rfc9220.fragmented-binary-echo`; both now have exact component packages awaiting runner slices. The five RFC 9220 core IDs retain their existing runner support but must pass regression against scenario `0.2.2` with executor and target `0.2.1`; no generic WebSocket substitution is allowed.
+The current consolidated runner has no remaining unsupported executable identity in the requested TLS, gRPC/H2, secure-DNS, RFC 6455, RFC 8441, or RFC 9220 catalogs. The historical slice-specific unsupported inventories below record the fail-closed state at each checkpoint; they are not the current completion state. The generic `websocket.echo` identity remains an intentional non-executable public placeholder with no load shape and is not substituted by any packaged WebSocket lane.
 
 Verification commands included `go test -race -count=1 ./...` and `go vet ./...` for every affected Go executor and target; warning-as-error builds for affected .NET projects; `Validate-ProtocolLabComponentManifests.ps1`; affected package builders and build-attestation validators; exact extracted three-package smokes; public repository health validation where public files changed; Protocol Execution Result v2 JSON Schema plus artifact-hash validation for runner evidence; and `git diff --check`. Only archives whose individual records explicitly say clean and parity-eligible carry that status. Historical dirty-source package hashes and same-host cells remain diagnostic-only. No package in this plan has been published, and all local smoke evidence remains non-publishable.
 
@@ -722,6 +722,37 @@ DoH3 archives under
 `protocol-lab-components-dns-doh3/artifacts/dns-doh3-clean-0500afb` until a
 separately authorized immutable release replaces them.
 
+#### E8h — all requested executor identities closed through the runner
+
+The dependency-ordered executor goal is complete for every executable identity
+committed at public authority
+`8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`: 10 TLS, 12 gRPC over HTTP/2,
+13 secure-DNS, 12 RFC 6455 WebSocket-over-HTTP/1.1, 6 RFC 8441
+WebSocket-over-HTTP/2, and 6 RFC 9220 WebSocket-over-HTTP/3 scenarios. Exact
+scenario, executor, and implementation packages are admitted independently;
+unknown or adjacent identities fail closed rather than aliasing a completed
+scenario.
+
+The final RFC 8441 component package checkpoint is components commit
+`c21701c`; its runner bridge is `fbce6be`. The final RFC 9220 component package
+checkpoint is components commit `c21701c`; its runner bridge was integrated as
+`6569bb2`. RFC 9220 final evidence used exact scenario package
+`org.protocol-lab.components.scenario.http3-websocket-performance@0.2.2`
+SHA-256 `dc052b415227dc30b42a14e5590de096e82f7a4dc7e15a9cce1bb5dda90ad28d`,
+executor package `org.protocol-lab.components.executor.aioquic-rfc9220-websocket@0.3.0`
+Windows SHA-256 `952f9c9bb9b6af72a4d7b38d5b2dceeb3b11a804a16edf851b0f56497ef79a6c`,
+and implementation package `org.protocol-lab.components.implementation.aioquic-http3@0.3.0`
+Windows SHA-256 `09d1495ceacd1e1154f1579559f179ea1bd2de8e08a73feeb3dd63eb5c74ff23`.
+The five core cells and fragmented diagnostic all passed public Protocol
+Execution Result v2 schema validation and all 162 referenced artifact hashes,
+with zero failed or timed-out operations.
+
+This closes local package-backed diagnostic coverage, not controlled-lab or
+publishable evidence. `websocket.echo` remains a non-executable placeholder.
+Package publication, controller upload, deployment, service restart,
+controlled-lab execution, comparison, ranking, and public-site publication
+remain outside this authorization.
+
 ## Verification floor
 
 For every components slice:
@@ -738,7 +769,7 @@ Also run package-local tests, the affected package builder, package-v2 conforman
 
 1. Select the runtime-model authority for independent CLI concurrency and comparison-group identity before H2 comparison work. Preserve configured stream capacity separately from observed active-stream evidence.
 2. Decide whether a future controlled TLS campaign must run both Windows and Linux hosts. Both executor and Go target archives are built; each approved host topology still requires controlled proof.
-3. Continue the active all-identities goal through gRPC unary breadth, HTTP/1.1 WebSocket breadth, sustained/streaming lanes, diagnostics, classic-DNS calibration, and retained RFC 9220 proof. Each identity requires its exact committed semantics and may not alias a neighboring completed scenario.
+3. Decide whether to retire, redefine, or continue retaining the non-executable `websocket.echo` placeholder in public authority. Until then it remains explicitly unsupported and may not alias an RFC 6455, RFC 8441, or RFC 9220 identity.
 4. Approve any controlled-lab campaign, package publication, controller upload, deployment, service restart, or lab-machine operation separately. Current evidence is local, single-host, diagnostic, and non-publishable.
 
 Local source commits are authorized and recorded above. No push, package
