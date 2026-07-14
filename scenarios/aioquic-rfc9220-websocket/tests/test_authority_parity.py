@@ -12,7 +12,10 @@ EXPECTED = {
     "rfc9220-close.yaml": ("15d2f7b1a0e00ab5bfee3aa890d6a351e6d06cb38db8bda74ace315b42225303", "operation: close", "closeCode: 1000"),
     "rfc9220-fragmented-binary-echo.yaml": ("76bb1c269d42b5ba53742bf5c69e8f2728427406946a7cf2802023f482959725", "operation: binary-echo", "framePayloadBytes: [1024, 2048, 2928]"),
 }
-LOAD_PROFILE = ("load-profiles/websocket-smoke.yaml", "f2005bfa254815f7d4975aefc39f0b9a6da79b0d2507178775cd4b0b3032c645")
+LOAD_PROFILES = {
+    "load-profiles/websocket-smoke.yaml": ("f2005bfa254815f7d4975aefc39f0b9a6da79b0d2507178775cd4b0b3032c645", ["schemaVersion: protocol-lab.load-profile.v2", "id: websocket-smoke", "purpose: smoke", "connections: 1", "concurrency: 1", "publishable: false"]),
+    "load-profiles/diagnostic.yaml": ("0e0b798a876a7cdf309e9f0138bff089b92666d60d9a69037b7e0d1b1ef34968", ["schemaVersion: protocol-lab.load-profile.v1", "id: diagnostic", "purpose: diagnostic", "publishable: false"]),
+}
 
 
 def require(text, tokens, label):
@@ -29,8 +32,8 @@ def main():
     args = parser.parse_args()
     scenario_root = Path(args.scenario_root).resolve()
     lock = json.loads((scenario_root / "authority-lock.json").read_text(encoding="utf-8"))
-    if lock["authorityCommit"] != "8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574" or len(lock["files"]) != 7:
-        raise SystemExit("authority identity or seven-file cardinality mismatch")
+    if lock["authorityCommit"] != "8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574" or len(lock["files"]) != 8:
+        raise SystemExit("authority identity or eight-file cardinality mismatch")
     observed = {}
     common = ["schemaVersion: \"2.0\"", "version: 2.0.0", "protocol: h3", "family: websocket", "binding: http3-extended-connect", "standard: rfc9220", "path: /websocket-proof", "authority: websocket.plab.test", "settingsEnableConnectProtocol: 1", "method: CONNECT", "protocol: websocket", "scheme: https", "secWebSocketVersion: \"13\"", "responseStatus: 200", "requested: websocket-over-h3", "expectedObserved: websocket-over-h3", "fallbackAllowed: false"]
     for name, (expected_hash, operation, detail) in EXPECTED.items():
@@ -42,12 +45,12 @@ def main():
         text = data.decode("utf-8")
         require(text, common + [operation, detail], name)
         observed[relative] = digest
-    load_profile_path, load_profile_hash = LOAD_PROFILE
-    load_profile_data = (scenario_root / load_profile_path).read_bytes()
-    if lock["files"].get(load_profile_path) != load_profile_hash or hashlib.sha256(load_profile_data).hexdigest() != load_profile_hash:
-        raise SystemExit(f"authority hash mismatch: {load_profile_path}")
-    require(load_profile_data.decode("utf-8"), ["schemaVersion: protocol-lab.load-profile.v2", "id: websocket-smoke", "purpose: smoke", "connections: 1", "concurrency: 1", "publishable: false"], "websocket-smoke")
-    observed[load_profile_path] = load_profile_hash
+    for load_profile_path, (load_profile_hash, tokens) in LOAD_PROFILES.items():
+        load_profile_data = (scenario_root / load_profile_path).read_bytes()
+        if lock["files"].get(load_profile_path) != load_profile_hash or hashlib.sha256(load_profile_data).hexdigest() != load_profile_hash:
+            raise SystemExit(f"authority hash mismatch: {load_profile_path}")
+        require(load_profile_data.decode("utf-8"), tokens, load_profile_path)
+        observed[load_profile_path] = load_profile_hash
     if args.executor_root and args.target_root:
         executor = (Path(args.executor_root) / "docker/aioquic_http3_websocket_client.py").read_text(encoding="utf-8")
         target = (Path(args.target_root) / "docker/aioquic_http3_server.py").read_text(encoding="utf-8")

@@ -1,0 +1,10 @@
+id: http2-websocket-multi-message-diagnostic
+name: HTTP/2 WebSocket ordered multi-message diagnostic suite
+description: Non-publishable RFC 8441 ordered multi-message diagnostic selection.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: diagnostic
+scenarios: [http2.websocket.rfc8441.multi-message-text-echo]
+protocol: h2
+notes: Exact RFC 8441 binding and strict ordered 100-message echo proof are required.
+tags: [http2, websocket, diagnostic, non-publishable]

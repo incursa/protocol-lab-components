@@ -8,6 +8,7 @@
     "scenarios/http3/websocket/rfc9220-binary-echo.yaml": "167efd8e61b5b9d1a3d7d5bfee3fa8f38c7fabc6dfe94635d01f7ff640b1ef03",
     "scenarios/http3/websocket/rfc9220-close.yaml": "15d2f7b1a0e00ab5bfee3aa890d6a351e6d06cb38db8bda74ace315b42225303",
     "scenarios/http3/websocket/rfc9220-fragmented-binary-echo.yaml": "76bb1c269d42b5ba53742bf5c69e8f2728427406946a7cf2802023f482959725",
-    "load-profiles/websocket-smoke.yaml": "f2005bfa254815f7d4975aefc39f0b9a6da79b0d2507178775cd4b0b3032c645"
+    "load-profiles/websocket-smoke.yaml": "f2005bfa254815f7d4975aefc39f0b9a6da79b0d2507178775cd4b0b3032c645",
+    "load-profiles/diagnostic.yaml": "0e0b798a876a7cdf309e9f0138bff089b92666d60d9a69037b7e0d1b1ef34968"
   }
 }

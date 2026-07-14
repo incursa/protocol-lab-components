@@ -10,7 +10,6 @@ scenarios:
   - http3.websocket.rfc9220.text-echo
   - http3.websocket.rfc9220.binary-echo
   - http3.websocket.rfc9220.close
-  - http3.websocket.rfc9220.fragmented-binary-echo
 protocol: h3
 protocols:
   - h3

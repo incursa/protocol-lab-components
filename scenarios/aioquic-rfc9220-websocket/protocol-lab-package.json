@@ -12,7 +12,9 @@
     "scenarios/http3/websocket/rfc9220-close.yaml",
     "scenarios/http3/websocket/rfc9220-fragmented-binary-echo.yaml",
     "suites/aioquic-rfc9220-websocket-proof.yaml",
-    "load-profiles/websocket-smoke.yaml"
+    "suites/aioquic-rfc9220-websocket-fragmentation-diagnostic.yaml",
+    "load-profiles/websocket-smoke.yaml",
+    "load-profiles/diagnostic.yaml"
   ],
   "providedScenarios": [
     {
@@ -75,12 +77,31 @@
       "testExecutors": [
         "aioquic-rfc9220-websocket"
       ]
+    },
+    {
+      "suiteId": "aioquic-rfc9220-websocket-fragmentation-diagnostic",
+      "displayName": "aioquic RFC9220 WebSocket-over-H3 fragmentation diagnostic suite",
+      "protocols": [
+        "h3",
+        "websocket"
+      ],
+      "testExecutors": [
+        "aioquic-rfc9220-websocket"
+      ]
     }
   ],
   "providedLoadProfiles": [
     {
       "loadProfileId": "websocket-smoke",
       "displayName": "WebSocket Contract Smoke",
+      "protocols": [
+        "h3",
+        "websocket"
+      ]
+    },
+    {
+      "loadProfileId": "diagnostic",
+      "displayName": "Diagnostic",
       "protocols": [
         "h3",
         "websocket"
