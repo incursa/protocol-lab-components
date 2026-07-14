@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.gnutls-serv",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "GnuTLS gnutls-serv TLS Endpoint",
+  "entryManifests": ["implementations/gnutls-serv.yaml"],
+  "providedImplementations": [{
+    "implementationId": "gnutls-serv",
+    "displayName": "GnuTLS gnutls-serv 3.8.9 TLS Endpoint",
+    "protocols": ["tls"],
+    "scenarios": ["tls.handshake.full"]
+  }],
+  "dependencies": {}
+}

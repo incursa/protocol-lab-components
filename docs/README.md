@@ -13,6 +13,9 @@ This documentation supports the component package repository.
 - [Implementation diversity wishlist](implementation-diversity-wishlist.md)
   defines the staged wrapper and thin-adapter backlog for HTTP, TLS, secure DNS,
   gRPC, and WebSocket implementations, including real-lab proof requirements.
+- [TLS endpoint/tool feasibility](tls-endpoint-tool-feasibility.md) records the
+  exact OpenSSL and GnuTLS wrapper boundary plus the repository-backed rustls
+  and s2n-tls no-package decisions.
 - [Contributor agreement automation](contributor-agreement-automation.md)
   records the owner setup required for the CLA workflow.
 - The QUIC/HTTP/3 parity matrix lives in

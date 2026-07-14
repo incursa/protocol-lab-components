@@ -295,6 +295,8 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'implementations/go-tls13-chacha20'; script = 'Build-GoTls13Chacha20ImplementationPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'implementations/openssl-tls13-key-update'; script = 'Build-OpenSslTls13KeyUpdateImplementationPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'implementations/openssl-tls13-key-update'; script = 'Build-OpenSslTls13KeyUpdateImplementationPackage.ps1'; arguments = @('linux-x64') },
+    [pscustomobject]@{ componentPath = 'implementations/openssl-s-server'; script = 'Build-OpenSslSServerPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/gnutls-serv'; script = 'Build-GnuTlsServPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/go-tls12'; script = 'Build-GoTls12ImplementationPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-tls12'; script = 'Build-GoTls12ImplementationPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-grpc-h2'; script = 'Build-GoGrpcH2ImplementationPackage.ps1'; arguments = @('win-x64') },
