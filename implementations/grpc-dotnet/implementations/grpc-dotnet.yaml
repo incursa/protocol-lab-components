@@ -1,0 +1,51 @@
+schemaVersion: "1.0"
+id: grpc-dotnet
+name: grpc-dotnet gRPC over HTTP/2 Target
+description: Minimal ASP.NET Core grpc-dotnet adapter for the canonical ProtocolLab protobuf service.
+family: grpc-dotnet
+role: server
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-grpc-dotnet:0.1.0
+dockerfile: docker/Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+baseUrl: https://127.0.0.1:18444
+dockerBaseUrl: https://127.0.0.1:18444
+protocolBaseUrls: {h2: https://127.0.0.1:18444}
+dockerProtocolBaseUrls: {h2: https://127.0.0.1:18444}
+certificateMode: package-test-root
+roles: [server]
+protocols: [h2]
+supportedProtocols: [h2]
+supportedProtocolVersions: [HTTP/2.0]
+supportedWorkloadFamilies: [grpc]
+supportedScenarios: &scenarios [grpc.h2.unary.echo, grpc.h2.unary.empty, grpc.h2.unary.fixed-metadata, grpc.h2.unary.gzip, grpc.h2.unary.large, grpc.h2.server-streaming.echo, grpc.h2.client-streaming.echo, grpc.h2.bidi-streaming.echo, grpc.h2.trailers-only-status, grpc.h2.deadline-exceeded, grpc.h2.client-cancellation, grpc.h2.unary.echo-new-channel]
+supportedTestCaseIds: *scenarios
+scenarioCoverage:
+  grpc.h2.unary.echo: {status: supported, behavior: exact 128-byte unary echo}
+  grpc.h2.unary.empty: {status: supported, behavior: exact empty proto3 unary echo}
+  grpc.h2.unary.fixed-metadata: {status: supported, behavior: exact request initial-response and trailing metadata}
+  grpc.h2.unary.gzip: {status: supported, behavior: framework gzip request decompression and compressed echo response}
+  grpc.h2.unary.large: {status: supported, behavior: exact one-MiB unary echo}
+  grpc.h2.server-streaming.echo: {status: supported, behavior: 100 ordered response messages}
+  grpc.h2.client-streaming.echo: {status: supported, behavior: 100 requests and final-payload response}
+  grpc.h2.bidi-streaming.echo: {status: supported, behavior: 100 ordered request-response messages}
+  grpc.h2.trailers-only-status: {status: supported, behavior: INVALID_ARGUMENT without response message}
+  grpc.h2.deadline-exceeded: {status: supported, behavior: withholds response beyond client 50 ms deadline}
+  grpc.h2.client-cancellation: {status: supported, behavior: ready initial metadata then waits for client cancellation}
+  grpc.h2.unary.echo-new-channel: {status: supported, behavior: canonical unary endpoint for one channel per operation}
+unsupportedKnownCases: [grpc-web, grpc-over-h3, h1, h2c, retries, hedging]
+ports: [{name: grpc-h2, protocol: tcp, default: 18444, hostPort: 18444, containerPort: 18444}]
+environment: {PLAB_TARGET_PORT: "18444"}
+startup:
+  port: {name: grpc-h2, environmentVariable: PLAB_TARGET_PORT, default: 18444}
+  readiness: {protocol: process, timeoutSeconds: 30}
+readinessCheck: {type: processStarted, timeoutSeconds: 30, startupDelayMilliseconds: 1500}
+capabilities: [grpc.h2, grpc.streaming, grpc.terminal-outcomes, grpc.channel-churn, tls13, alpn.h2]
+entrypoint: {kind: pwsh, path: run.ps1, arguments: [], workingDirectory: .}
+shutdownBehavior: process
+artifactExports: [command.txt, stdout.txt, stderr.txt, result.json]
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Thin framework adapter generated from the canonical ProtocolLab proto; exact executor proof is required before live support is claimed.
