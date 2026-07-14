@@ -37,22 +37,22 @@
     "images": [
       {
         "name": "nginx-http2",
-        "image": "incursa-protocol-lab-nginx-http2:0.1.0",
+        "image": "incursa-protocol-lab-nginx-http2:0.1.1",
         "baseImage": "nginx:1.29.0-alpine",
         "baseImageIndexDigest": "nginx@sha256:d67ea0d64d518b1bb04acde3b00f722ac3e9764b3209a9b0a98924ba35e4b779",
         "baseImageLinuxAmd64Digest": "nginx@sha256:845b5424415de5f77dd5753cbb7c1be8bd8e44cc81f20f9705783a02f8848317",
         "sourceVersion": "release-1.29.0",
         "sourceCommit": "235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f",
         "license": "BSD-2-Clause",
-        "capabilityProof": "docker run --rm --entrypoint nginx incursa-protocol-lab-nginx-http2:0.1.0 -V includes --with-http_v2_module"
+        "capabilityProof": "docker run --rm --entrypoint nginx incursa-protocol-lab-nginx-http2:0.1.1 -V includes --with-http_v2_module"
       }
     ]
   },
   "commands": {
-    "buildTemplate": "docker build --pull -f docker/nginx.Dockerfile -t incursa-protocol-lab-nginx-http2:0.1.0 docker",
-    "moduleProofTemplate": "docker run --rm --entrypoint nginx incursa-protocol-lab-nginx-http2:0.1.0 -V",
-    "configTestTemplate": "docker run --rm incursa-protocol-lab-nginx-http2:0.1.0 nginx -t",
-    "serverTemplate": "docker run --rm -p <port>:8080/tcp incursa-protocol-lab-nginx-http2:0.1.0",
+    "buildTemplate": "docker build --pull -f docker/nginx.Dockerfile -t incursa-protocol-lab-nginx-http2:0.1.1 docker",
+    "moduleProofTemplate": "docker run --rm --entrypoint nginx incursa-protocol-lab-nginx-http2:0.1.1 -V",
+    "configTestTemplate": "docker run --rm incursa-protocol-lab-nginx-http2:0.1.1 nginx -t",
+    "serverTemplate": "docker run --rm -p <port>:8080/tcp incursa-protocol-lab-nginx-http2:0.1.1",
     "planOnly": "pwsh ./run.ps1 -PlanOnly",
     "proofOnly": "pwsh ./run.ps1 -ProofOnly"
   },

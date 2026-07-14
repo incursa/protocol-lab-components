@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.nginx-http2",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "implementation",
   "displayName": "nginx HTTP/2 Implementation",
   "entryManifests": [

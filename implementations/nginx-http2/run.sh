@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-image="${PLAB_NGINX_HTTP2_IMAGE:-incursa-protocol-lab-nginx-http2:0.1.0}"
+image="${PLAB_NGINX_HTTP2_IMAGE:-incursa-protocol-lab-nginx-http2:0.1.1}"
 port="${PLAB_HTTP_PORT:-${PORT:-8084}}"
 skip_build="${PLAB_SKIP_BUILD:-false}"
 plan_only="${PLAB_PLAN_ONLY:-false}"

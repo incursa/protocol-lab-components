@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Image = 'incursa-protocol-lab-nginx-http2:0.1.0',
+    [string]$Image = 'incursa-protocol-lab-nginx-http2:0.1.1',
     [int]$Port = 8084,
     [switch]$SkipBuild,
     [switch]$PlanOnly,

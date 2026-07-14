@@ -36,7 +36,7 @@ pwsh ./scripts/package/Build-NginxHttp2Package.ps1
 ## Live local executor smoke
 
 ```powershell
-docker run --rm -d --name protocol-lab-nginx-http2 -p 8084:8080 incursa-protocol-lab-nginx-http2:0.1.0
+docker run --rm -d --name protocol-lab-nginx-http2 -p 8084:8080 incursa-protocol-lab-nginx-http2:0.1.1
 pwsh ./executors/go-http2-executor/execute.ps1 `
   -TargetBaseUrl http://127.0.0.1:8084 `
   -OutputDirectory ./artifacts/nginx-http2-executor-smoke
