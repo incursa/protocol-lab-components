@@ -8,7 +8,7 @@ comparisonCohort: general-purpose-http-origin
 rankingEligibility: eligible-after-live-validation
 targetKind: container
 targetContract: process
-executable: run.ps1
+executable: run.sh
 workingDirectory: .
 baseUrl: http://127.0.0.1:8080
 protocolBaseUrls:
@@ -26,8 +26,8 @@ supportedWorkloadFamilies:
 protocolVersions:
   - http/1.1
 entrypoint:
-  kind: pwsh
-  path: run.ps1
+  kind: bash
+  path: run.sh
   arguments: []
   workingDirectory: .
 ports:

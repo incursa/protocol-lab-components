@@ -8,7 +8,7 @@ comparisonCohort: general-purpose-http-origin
 rankingEligibility: eligible-per-validated-execution-variant
 targetKind: container
 targetContract: process
-executable: run.ps1
+executable: run.sh
 workingDirectory: .
 baseUrl: http://127.0.0.1:8082
 protocolBaseUrls:
@@ -51,8 +51,8 @@ executionVariants:
       status: unavailable
       reason: go-http2-executor@0.3.0 supports h2c only and rejects HTTPS targets; no compatible general HTTP/2 TLS executor package exists.
 entrypoint:
-  kind: pwsh
-  path: run.ps1
+  kind: bash
+  path: run.sh
   arguments: []
   workingDirectory: .
 ports:
