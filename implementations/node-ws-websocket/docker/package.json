@@ -1,0 +1,9 @@
+{
+  "name": "protocol-lab-node-ws-websocket",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "ws": "8.21.0"
+  }
+}

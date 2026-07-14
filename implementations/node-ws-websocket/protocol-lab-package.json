@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.node-ws-websocket",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Node ws HTTP/1.1 WebSocket Origin",
+  "entryManifests": ["implementations/node-ws-websocket.yaml"],
+  "providedImplementations": [{
+    "implementationId": "node-ws-websocket",
+    "displayName": "Node ws HTTP/1.1 WebSocket Origin",
+    "protocols": ["h1"],
+    "scenarios": ["http1.websocket.rfc6455.cleartext.upgrade", "http1.websocket.rfc6455.cleartext.control-frames", "http1.websocket.rfc6455.cleartext.text-echo", "http1.websocket.rfc6455.cleartext.binary-echo", "http1.websocket.rfc6455.cleartext.close"]
+  }],
+  "dependencies": {"requiredCapabilities": [{"name": "docker", "value": "true"}]}
+}
