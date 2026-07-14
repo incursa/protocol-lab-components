@@ -10,6 +10,9 @@ This documentation supports the component package repository.
   packaging behavior.
 - [Package coverage matrix](package-coverage-matrix.md) records implementation
   and executor package coverage against visible ProtocolLab comparison lanes.
+- [Implementation diversity wishlist](implementation-diversity-wishlist.md)
+  defines the staged wrapper and thin-adapter backlog for HTTP, TLS, secure DNS,
+  gRPC, and WebSocket implementations, including real-lab proof requirements.
 - [Contributor agreement automation](contributor-agreement-automation.md)
   records the owner setup required for the CLA workflow.
 - The QUIC/HTTP/3 parity matrix lives in
