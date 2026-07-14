@@ -6,7 +6,7 @@ ProtocolLab fixtures.
 
 ## Exact supported slice
 
-- Package: `org.protocol-lab.components.implementation.apache-http2@0.1.0`
+- Package: `org.protocol-lab.components.implementation.apache-http2@0.1.3`
 - Implementation: `apache-http2`
 - Scenarios: `http2.core.plaintext`, `http2.core.json`
 - Default variant: `http2-h2c-prior-knowledge`

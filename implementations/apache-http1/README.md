@@ -6,7 +6,7 @@ general-purpose HTTP origin row, not a CGI application or custom module.
 
 ## Exact supported slice
 
-- Package: `org.protocol-lab.components.implementation.apache-http1@0.1.0`
+- Package: `org.protocol-lab.components.implementation.apache-http1@0.1.4`
 - Implementation: `apache-http1`
 - Protocol: exact HTTP/1.1
 - Executor: `go-http1-executor@0.3.0`

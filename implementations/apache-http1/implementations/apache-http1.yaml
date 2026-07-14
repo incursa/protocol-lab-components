@@ -6,12 +6,16 @@ family: apache-httpd
 role: server
 comparisonCohort: general-purpose-http-origin
 rankingEligibility: eligible-after-live-validation
-targetKind: container
+targetKind: docker
 targetContract: process
-executable: run.sh
-workingDirectory: .
+image: incursa-protocol-lab-apache-http1:0.1.4
+dockerfile: Dockerfile
+buildContext: .
 baseUrl: http://127.0.0.1:8080
+dockerBaseUrl: http://127.0.0.1:8080
 protocolBaseUrls:
+  h1: http://127.0.0.1:8080
+dockerProtocolBaseUrls:
   h1: http://127.0.0.1:8080
 dockerNetworkMode: published-port
 certificateMode: none
@@ -34,6 +38,8 @@ ports:
   - name: http
     protocol: tcp
     default: 8080
+    hostPort: 8080
+    containerPort: 8080
 environment:
   PLAB_HTTP_PORT: "8080"
 startup:
@@ -105,7 +111,7 @@ endpoints:
     path: /headers/response
     advertisedScenario: false
     reason: No compatible HTTP/1 header executor row is currently packaged.
-shutdownBehavior: container-process
+shutdownBehavior: runner-owned-docker-container
 artifactExports:
   - apache-http1.stdout.log
   - apache-http1.stderr.log

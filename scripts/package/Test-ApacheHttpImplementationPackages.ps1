@@ -97,10 +97,10 @@ if (-not $SkipBuild) {
 $packages = [ordered]@{
     http1Scenario = Get-OnePackage 'org.protocol-lab.components.scenario.http1-performance.0.1.1.plabpkg'
     http1Executor = Get-OnePackage 'org.protocol-lab.components.executor.go-http1-executor.0.3.1.win-x64.plabpkg'
-    http1Target = Get-OnePackage 'org.protocol-lab.components.implementation.apache-http1.0.1.3.plabpkg'
+    http1Target = Get-OnePackage 'org.protocol-lab.components.implementation.apache-http1.0.1.4.plabpkg'
     http2Scenario = Get-OnePackage 'org.protocol-lab.components.scenario.http2-performance.0.2.1.plabpkg'
     http2Executor = Get-OnePackage 'org.protocol-lab.components.executor.go-http2-executor.0.3.0.win-x64.plabpkg'
-    http2Target = Get-OnePackage 'org.protocol-lab.components.implementation.apache-http2.0.1.2.plabpkg'
+    http2Target = Get-OnePackage 'org.protocol-lab.components.implementation.apache-http2.0.1.3.plabpkg'
 }
 
 Remove-Item -LiteralPath $SmokeRoot -Recurse -Force -ErrorAction SilentlyContinue

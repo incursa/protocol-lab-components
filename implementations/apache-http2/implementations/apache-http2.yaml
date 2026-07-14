@@ -6,12 +6,16 @@ family: apache-httpd
 role: server
 comparisonCohort: general-purpose-http-origin
 rankingEligibility: eligible-per-validated-execution-variant
-targetKind: container
+targetKind: docker
 targetContract: process
-executable: run.sh
-workingDirectory: .
+image: incursa-protocol-lab-apache-http2:0.1.3
+dockerfile: Dockerfile
+buildContext: .
 baseUrl: http://127.0.0.1:8082
+dockerBaseUrl: http://127.0.0.1:8082
 protocolBaseUrls:
+  h2: http://127.0.0.1:8082
+dockerProtocolBaseUrls:
   h2: http://127.0.0.1:8082
 dockerNetworkMode: published-port
 certificateMode: package-test-certificate
@@ -59,9 +63,13 @@ ports:
   - name: h2c
     protocol: tcp
     default: 8082
+    hostPort: 8082
+    containerPort: 8082
   - name: h2-tls
     protocol: tcp
     default: 8443
+    hostPort: 8443
+    containerPort: 8443
 environment:
   PLAB_PROTOCOL_VARIANT: http2-h2c-prior-knowledge
   PLAB_HTTP_PORT: "8082"
@@ -129,7 +137,7 @@ endpoints:
     path: /headers/response
     advertisedScenario: false
     reason: No compatible general HTTP/2 header executor row is currently packaged.
-shutdownBehavior: container-process
+shutdownBehavior: runner-owned-docker-container
 artifactExports:
   - apache-http2.stdout.log
   - apache-http2.stderr.log
