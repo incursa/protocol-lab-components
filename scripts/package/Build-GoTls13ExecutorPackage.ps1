@@ -9,6 +9,16 @@ param(
 $ErrorActionPreference = 'Stop'
 $componentRoot = Join-Path $Root 'executors/go-tls13-executor'
 $sourceRoot = Join-Path $componentRoot 'source'
+$expectedVersion = '0.3.1'
+$packageManifest = Get-Content (Join-Path $componentRoot 'protocol-lab-package.json') -Raw | ConvertFrom-Json
+$executorManifest = Get-Content (Join-Path $componentRoot 'test-executors/go-tls13-executor.yaml') -Raw
+$toolchain = Get-Content (Join-Path $componentRoot 'toolchain.json') -Raw | ConvertFrom-Json
+if ($packageManifest.packageVersion -ne $expectedVersion -or
+    $executorManifest -notmatch "(?m)^  version: $([regex]::Escape($expectedVersion))$" -or
+    $executorManifest -notmatch "(?m)^  executorVersion: $([regex]::Escape($expectedVersion))$" -or
+    $toolchain.loadGenerator.version -ne $expectedVersion) {
+    throw "go-tls13-executor immutable identity surfaces must all be $expectedVersion."
+}
 & go -C $sourceRoot test -count=1 ./...
 if ($LASTEXITCODE -ne 0) { throw "go-tls13-executor tests failed with exit code $LASTEXITCODE." }
 

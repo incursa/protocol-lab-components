@@ -93,6 +93,7 @@ $publicAllowedProperties = @(
     'providedTestExecutors',
     'providedScenarios',
     'providedSuites',
+    'providedLoadProfiles',
     'providedSpecificationCoverage',
     'dependencies'
 )
@@ -284,6 +285,44 @@ foreach ($file in $publicManifestFiles) {
             }
         }
 
+        $providedSuiteEntries = if ($manifest.PSObject.Properties.Name.Contains('providedSuites')) { @($manifest.providedSuites) } else { @() }
+        foreach ($provided in $providedSuiteEntries) {
+            $providedId = [string]$provided.suiteId
+            Test-AllowedProperties `
+                -Value $provided `
+                -Allowed @('suiteId', 'displayName', 'protocols', 'purpose', 'resultKind', 'testExecutors') `
+                -Context "$($file.FullName): providedSuites entry '$providedId'"
+
+            if (-not (Test-Token -Value $providedId)) {
+                $errors.Add("$($file.FullName): providedSuites entry is missing a valid suiteId.")
+            }
+
+            if ($provided.PSObject.Properties.Name.Contains('protocols') -and -not (Test-StringArray -Value $provided.protocols)) {
+                $errors.Add("$($file.FullName): provided suite '$providedId' protocols must contain one or more protocol IDs when declared.")
+            }
+
+            if ($provided.PSObject.Properties.Name.Contains('testExecutors') -and -not (Test-StringArray -Value $provided.testExecutors)) {
+                $errors.Add("$($file.FullName): provided suite '$providedId' testExecutors must contain one or more exact executor IDs when declared.")
+            }
+        }
+
+        $providedLoadProfileEntries = if ($manifest.PSObject.Properties.Name.Contains('providedLoadProfiles')) { @($manifest.providedLoadProfiles) } else { @() }
+        foreach ($provided in $providedLoadProfileEntries) {
+            $providedId = [string]$provided.loadProfileId
+            Test-AllowedProperties `
+                -Value $provided `
+                -Allowed @('loadProfileId', 'displayName', 'protocols') `
+                -Context "$($file.FullName): providedLoadProfiles entry '$providedId'"
+
+            if (-not (Test-Token -Value $providedId)) {
+                $errors.Add("$($file.FullName): providedLoadProfiles entry is missing a valid loadProfileId.")
+            }
+
+            if (-not (Test-StringArray -Value $provided.protocols)) {
+                $errors.Add("$($file.FullName): provided load profile '$providedId' must declare one or more protocols.")
+            }
+        }
+
         $specificationCoverageEntries = if ($manifest.PSObject.Properties.Name.Contains('providedSpecificationCoverage')) {
             @($manifest.providedSpecificationCoverage)
         }
@@ -348,6 +387,7 @@ $internalPublicFields = @(
     'providedTestExecutors',
     'providedScenarios',
     'providedSuites',
+    'providedLoadProfiles',
     'providedSpecificationCoverage'
 )
 

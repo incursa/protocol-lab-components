@@ -27,9 +27,9 @@ import (
 
 const (
 	executorID                 = "go-tls13-executor"
-	executorVersion            = "0.3.0"
+	executorVersion            = "0.3.1"
 	loadGeneratorID            = "go-crypto-tls13-load"
-	loadGeneratorVersion       = "0.3.0"
+	loadGeneratorVersion       = "0.3.1"
 	fullScenarioID             = "tls.handshake.full"
 	resumedScenarioID          = "tls.handshake.resumed"
 	recordThroughputScenarioID = "tls.record.throughput"

@@ -3,7 +3,7 @@ name: aioquic RFC9220 WebSocket-over-H3 proof suite
 description: Package-backed RFC9220 WebSocket-over-H3 proof suite for a supplied HTTP/3 WebSocket proof endpoint.
 purpose: proof
 resultKind: validation
-loadProfileId: smoke
+loadProfileId: websocket-smoke
 scenarios:
   - http3.websocket.rfc9220.extended-connect
   - http3.websocket.rfc9220.control-frames

@@ -97,6 +97,12 @@ function Get-ProvidedIds {
         }
     }
 
+    foreach ($provided in @($Manifest.providedLoadProfiles)) {
+        if ($provided.loadProfileId) {
+            [void]$ids.Add([string]$provided.loadProfileId)
+        }
+    }
+
     return @($ids)
 }
 
