@@ -15,7 +15,7 @@ Remove-Item -LiteralPath $staging -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force (Join-Path $packageRoot "bin/$RuntimeIdentifier"),(Join-Path $packageRoot test-executors),(Join-Path $packageRoot certs),(Join-Path $packageRoot 'third-party-licenses/openssl')|Out-Null
 $binaryName=if($RuntimeIdentifier-eq'win-x64'){'openssl-tls13-key-update-executor.exe'}else{'openssl-tls13-key-update-executor'}
 Copy-Item -LiteralPath $build.binary -Destination (Join-Path $packageRoot "bin/$RuntimeIdentifier/$binaryName")
-if($RuntimeIdentifier-eq'win-x64'){Copy-Item -LiteralPath (Join-Path $build.buildRoot 'libcrypto-3-x64__.dll'),(Join-Path $build.buildRoot 'libssl-3-x64__.dll') -Destination (Join-Path $packageRoot "bin/$RuntimeIdentifier")}
+if($RuntimeIdentifier-eq'win-x64'-and$build.linkage-eq'dynamic-package-local'){Copy-Item -LiteralPath (Join-Path $build.buildRoot 'libcrypto-3-x64__.dll'),(Join-Path $build.buildRoot 'libssl-3-x64__.dll') -Destination (Join-Path $packageRoot "bin/$RuntimeIdentifier")}
 Copy-Item -LiteralPath (Join-Path $componentRoot protocol-lab-package.json),(Join-Path $componentRoot toolchain.json),(Join-Path $componentRoot THIRD-PARTY-NOTICES.md) -Destination $packageRoot
 Copy-Item -LiteralPath (Join-Path $componentRoot 'test-executors/openssl-tls13-key-update-executor.yaml') -Destination (Join-Path $packageRoot test-executors)
 Copy-Item -LiteralPath (Join-Path $componentRoot 'certs/root.pem') -Destination (Join-Path $packageRoot certs)
