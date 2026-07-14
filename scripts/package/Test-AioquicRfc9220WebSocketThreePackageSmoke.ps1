@@ -35,12 +35,18 @@ $scenarioManifest = Expand-One $scenarioArchive $scenarioRoot
 $executorManifest = Expand-One $executorArchive $executorRoot
 $targetManifest = Expand-One $targetArchive $targetRoot
 if ($scenarioManifest.providedScenarios.Count -ne 6 -or $executorManifest.providedTestExecutors[0].scenarios.Count -ne 6) { throw 'Scenario or executor package does not claim exactly six RFC9220 identities.' }
-if (@($scenarioManifest.providedLoadProfiles).Count -ne 1 -or $scenarioManifest.providedLoadProfiles[0].loadProfileId -ne 'websocket-smoke') { throw 'Scenario package does not provide exactly websocket-smoke.' }
+if ((@($scenarioManifest.providedLoadProfiles.loadProfileId) -join ',') -ne 'websocket-smoke,diagnostic') { throw 'Scenario package load-profile declarations mismatch.' }
+if ((@($scenarioManifest.providedSuites.suiteId) -join ',') -ne 'aioquic-rfc9220-websocket-proof,aioquic-rfc9220-websocket-fragmentation-diagnostic') { throw 'Scenario package suite declarations mismatch.' }
 if (@($targetManifest.providedImplementations[0].scenarios | Where-Object { $_ -like 'http3.websocket.rfc9220.*' }).Count -ne 6) { throw 'Target package does not claim exactly six RFC9220 identities.' }
 $authority = Get-Content (Join-Path $scenarioRoot 'authority-lock.json') -Raw | ConvertFrom-Json
 if ($authority.authorityCommit -ne '8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574') { throw 'Authority commit mismatch.' }
 $profilePath = Join-Path $scenarioRoot 'load-profiles/websocket-smoke.yaml'
 if (-not (Test-Path $profilePath) -or (Get-FileHash $profilePath -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'f2005bfa254815f7d4975aefc39f0b9a6da79b0d2507178775cd4b0b3032c645') { throw 'Extracted websocket-smoke authority bytes mismatch.' }
+$diagnosticPath = Join-Path $scenarioRoot 'load-profiles/diagnostic.yaml'
+if (-not (Test-Path $diagnosticPath) -or (Get-FileHash $diagnosticPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne '0e0b798a876a7cdf309e9f0138bff089b92666d60d9a69037b7e0d1b1ef34968') { throw 'Extracted diagnostic authority bytes mismatch.' }
+$coreSuite = Get-Content (Join-Path $scenarioRoot 'suites/aioquic-rfc9220-websocket-proof.yaml') -Raw
+$diagnosticSuite = Get-Content (Join-Path $scenarioRoot 'suites/aioquic-rfc9220-websocket-fragmentation-diagnostic.yaml') -Raw
+if ($coreSuite -match 'fragmented-binary-echo' -or $coreSuite -notmatch 'loadProfileId: websocket-smoke' -or $diagnosticSuite -notmatch 'loadProfileId: diagnostic' -or $diagnosticSuite -notmatch 'http3.websocket.rfc9220.fragmented-binary-echo') { throw 'Extracted RFC9220 suite routing mismatch.' }
 foreach ($root in @($executorRoot, $targetRoot)) { if (-not (Test-Path (Join-Path $root 'third-party/aioquic-LICENSE.txt'))) { throw "aioquic license missing from $root" } }
 & python (Join-Path $scenarioRoot 'tests/test_authority_parity.py') --scenario-root $scenarioRoot --executor-root $executorRoot --target-root $targetRoot | Out-Host
 if ($LASTEXITCODE -ne 0) { throw 'Extracted six-scenario authority parity failed.' }
@@ -77,6 +83,8 @@ try {
     )
     $outcomes = @()
     foreach ($scenarioId in $ids) {
+        $loadProfileId = if ($scenarioId -eq 'http3.websocket.rfc9220.fragmented-binary-echo') { 'diagnostic' } else { 'websocket-smoke' }
+        $env:PLAB_LOAD_PROFILE_ID = $loadProfileId
         $output = Join-Path $ArtifactRoot ('evidence/' + ($scenarioId -replace '\.', '-'))
         & (Join-Path $executorRoot 'execute.ps1') -ScenarioId $scenarioId -TargetUrl 'https://127.0.0.1:18462/websocket-proof' -OutputRoot $output -Image $executorImage -SkipBuild
         if ($LASTEXITCODE -ne 0) { throw "$scenarioId executor failed with exit code $LASTEXITCODE" }
@@ -89,7 +97,7 @@ try {
         if ($scenarioId -eq 'http3.websocket.rfc9220.fragmented-binary-echo') {
             if (($proof.fragmentPayloadBytes -join ',') -ne '1024,2048,2928' -or ($proof.fragmentOpcodes -join ',') -ne 'binary,continuation,continuation' -or ($proof.fragmentFin -join ',') -ne 'False,False,True' -or $proof.interleavedControlFrames -or $proof.reassembledPayloadBytes -ne 6000 -or $proof.reassembledPayloadSha256 -ne '8f8d8f75d55c80475ffb0c12b1ede7083d6df689e8ef04f05176c5050873bfb7') { throw 'Fragmented binary proof mismatch.' }
         }
-        $outcomes += [pscustomobject]@{ scenarioId = $scenarioId; completed = 1; failed = 0; timedOut = 0 }
+        $outcomes += [pscustomobject]@{ scenarioId = $scenarioId; loadProfileId = $loadProfileId; completed = 1; failed = 0; timedOut = 0 }
     }
     $unsupported = @('websocket.echo', 'http1.websocket.rfc6455.cleartext.upgrade', 'http1.websocket.rfc6455.cleartext.control-frames', 'http1.websocket.rfc6455.cleartext.text-echo', 'http1.websocket.rfc6455.cleartext.binary-echo', 'http1.websocket.rfc6455.cleartext.close', 'http1.websocket.rfc6455.tls.upgrade', 'http1.websocket.rfc6455.tls.control-frames', 'http1.websocket.rfc6455.tls.text-echo', 'http1.websocket.rfc6455.tls.binary-echo', 'http1.websocket.rfc6455.tls.close', 'http1.websocket.rfc6455.tls.subprotocol-text-echo', 'http1.websocket.rfc6455.tls.permessage-deflate-binary-echo', 'http2.websocket.rfc8441.extended-connect', 'http2.websocket.rfc8441.control-frames', 'http2.websocket.rfc8441.text-echo', 'http2.websocket.rfc8441.binary-echo', 'http2.websocket.rfc8441.close', 'http2.websocket.rfc8441.multi-message-text-echo')
     foreach ($scenarioId in $unsupported) {

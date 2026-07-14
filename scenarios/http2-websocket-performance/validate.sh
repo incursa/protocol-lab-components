@@ -11,4 +11,5 @@ test "$(sha256sum "$root/suites/http2-websocket-performance-smoke.yaml" | cut -d
 test "$(sha256sum "$root/suites/http2-websocket-performance-comparison.yaml" | cut -d' ' -f1)" = "f2363e48443248e6809939908a1f523134dfdd206530f57adb12af5e3118e2cc"
 test "$(sha256sum "$root/load-profiles/websocket-smoke.yaml" | cut -d' ' -f1)" = "f2005bfa254815f7d4975aefc39f0b9a6da79b0d2507178775cd4b0b3032c645"
 test "$(sha256sum "$root/load-profiles/websocket-comparison.yaml" | cut -d' ' -f1)" = "7fb534db4d2b498a6b74d0c9aa8485838986d306f57950c2b8c56a6c6c6e6dc9"
+test "$(sha256sum "$root/load-profiles/diagnostic.yaml" | cut -d' ' -f1)" = "0e0b798a876a7cdf309e9f0138bff089b92666d60d9a69037b7e0d1b1ef34968"
 echo "Validated HTTP/2 WebSocket scenario package authority lock."
