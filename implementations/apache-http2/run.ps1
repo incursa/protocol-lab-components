@@ -22,6 +22,7 @@ if ($Port -eq 0) {
 }
 if ($Port -lt 1 -or $Port -gt 65535) { throw "Port must be between 1 and 65535." }
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) { throw "docker executable was not found on PATH." }
+if ([string]::IsNullOrWhiteSpace($ContainerName)) { $ContainerName = "protocol-lab-apache-http2-$PID" }
 
 $containerPort = if ($normalizedVariant -eq 'h2c') { 8082 } else { 8443 }
 $configName = if ($normalizedVariant -eq 'h2c') { 'apache-http2-h2c.conf' } else { 'apache-http2-tls.conf' }
@@ -45,11 +46,12 @@ try {
     if ($normalizedVariant -eq 'tls-alpn') {
         $arguments += @('--mount', "type=bind,source=$(Join-Path $PSScriptRoot 'certs'),target=/run/protocol-lab-certs,readonly")
     }
-    if (-not [string]::IsNullOrWhiteSpace($ContainerName)) { $arguments += @('--name', $ContainerName) }
+    $arguments += @('--name', $ContainerName)
     $arguments += @('--entrypoint', '/bin/sh', $image, '-ec', $moduleCommand)
     & docker @arguments
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 finally {
+    & docker rm --force $ContainerName 2>$null | Out-Null
     Remove-Item -LiteralPath $runRoot -Recurse -Force -ErrorAction SilentlyContinue
 }

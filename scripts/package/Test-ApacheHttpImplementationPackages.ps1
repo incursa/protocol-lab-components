@@ -95,12 +95,12 @@ if (-not $SkipBuild) {
 }
 
 $packages = [ordered]@{
-    http1Scenario = Get-OnePackage 'org.protocol-lab.components.scenario.http1-performance.0.1.0.plabpkg'
-    http1Executor = Get-OnePackage 'org.protocol-lab.components.executor.go-http1-executor.0.3.0.win-x64.plabpkg'
-    http1Target = Get-OnePackage 'org.protocol-lab.components.implementation.apache-http1.0.1.0.plabpkg'
-    http2Scenario = Get-OnePackage 'org.protocol-lab.components.scenario.http2-performance.0.2.0.plabpkg'
+    http1Scenario = Get-OnePackage 'org.protocol-lab.components.scenario.http1-performance.0.1.1.plabpkg'
+    http1Executor = Get-OnePackage 'org.protocol-lab.components.executor.go-http1-executor.0.3.1.win-x64.plabpkg'
+    http1Target = Get-OnePackage 'org.protocol-lab.components.implementation.apache-http1.0.1.3.plabpkg'
+    http2Scenario = Get-OnePackage 'org.protocol-lab.components.scenario.http2-performance.0.2.1.plabpkg'
     http2Executor = Get-OnePackage 'org.protocol-lab.components.executor.go-http2-executor.0.3.0.win-x64.plabpkg'
-    http2Target = Get-OnePackage 'org.protocol-lab.components.implementation.apache-http2.0.1.0.plabpkg'
+    http2Target = Get-OnePackage 'org.protocol-lab.components.implementation.apache-http2.0.1.2.plabpkg'
 }
 
 Remove-Item -LiteralPath $SmokeRoot -Recurse -Force -ErrorAction SilentlyContinue
@@ -129,7 +129,7 @@ try {
     $http1Process = Start-Process -FilePath (Get-Command pwsh).Source -ArgumentList @('-NoLogo', '-NoProfile', '-File', (Join-Path $roots.http1Target 'run.ps1'), '-Port', $http1Port, '-ContainerName', $http1Container) -WorkingDirectory $roots.http1Target -RedirectStandardOutput $http1Out -RedirectStandardError $http1Err -WindowStyle Hidden -PassThru
     try {
         Wait-TargetPort -Port $http1Port -Process $http1Process -StderrPath $http1Err
-        $env:PLAB_EXECUTOR_ID = 'go-http1-executor'; $env:PLAB_EXECUTOR_VERSION = '0.3.0'; $env:PLAB_PROTOCOL = 'h1'; Remove-Item Env:PLAB_PROTOCOL_VARIANT -ErrorAction SilentlyContinue
+        $env:PLAB_EXECUTOR_ID = 'go-http1-executor'; $env:PLAB_EXECUTOR_VERSION = '0.3.1'; $env:PLAB_PROTOCOL = 'h1'; Remove-Item Env:PLAB_PROTOCOL_VARIANT -ErrorAction SilentlyContinue
         $artifactRoot = Join-Path $SmokeRoot 'http1-executor-artifacts'; New-Item -ItemType Directory -Force -Path $artifactRoot | Out-Null
         $run = Start-Process -FilePath (Join-Path $roots.http1Executor 'bin/win-x64/go-http1-executor.exe') -ArgumentList @('--target-url', "http://127.0.0.1:$http1Port", '--output-dir', $artifactRoot, '--validation-only') -WorkingDirectory $roots.http1Executor -RedirectStandardOutput (Join-Path $artifactRoot 'executor.stdout.log') -RedirectStandardError (Join-Path $artifactRoot 'executor.stderr.log') -WindowStyle Hidden -PassThru -Wait
         if ($run.ExitCode -ne 0) { throw "HTTP/1 executor exited $($run.ExitCode): $(Get-Content (Join-Path $artifactRoot 'executor.stderr.log') -Raw)" }

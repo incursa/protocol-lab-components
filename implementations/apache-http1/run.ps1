@@ -13,6 +13,7 @@ if ($Port -eq 0) {
 }
 if ($Port -lt 1 -or $Port -gt 65535) { throw "Port must be between 1 and 65535." }
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) { throw "docker executable was not found on PATH." }
+if ([string]::IsNullOrWhiteSpace($ContainerName)) { $ContainerName = "protocol-lab-apache-http1-$PID" }
 
 $runRoot = Join-Path ([System.IO.Path]::GetTempPath()) "protocol-lab-apache-http1-$PID"
 $fixtureRoot = Join-Path $runRoot 'fixtures'
@@ -30,11 +31,12 @@ try {
         '--mount', "type=bind,source=$fixtureRoot,target=/var/www/protocol-lab,readonly",
         '--mount', "type=bind,source=$(Join-Path $PSScriptRoot 'apache-http1.conf'),target=/etc/apache2/conf-enabled/zzz-protocol-lab-http1.conf,readonly"
     )
-    if (-not [string]::IsNullOrWhiteSpace($ContainerName)) { $arguments += @('--name', $ContainerName) }
+    $arguments += @('--name', $ContainerName)
     $arguments += @('--entrypoint', '/bin/sh', $image, '-ec', 'a2enmod headers >/dev/null && exec apache2-foreground')
     & docker @arguments
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 finally {
+    & docker rm --force $ContainerName 2>$null | Out-Null
     Remove-Item -LiteralPath $runRoot -Recurse -Force -ErrorAction SilentlyContinue
 }
