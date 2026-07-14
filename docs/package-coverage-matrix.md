@@ -1,6 +1,6 @@
 # ProtocolLab Package Coverage Matrix
 
-Observed: 2026-07-13
+Observed: 2026-07-14
 
 This matrix tracks reusable component package coverage for implementations and executors that should be visible in ProtocolLab comparisons. It separates package inventory from proof quality: `supported` means the package metadata and wrapper advertise the row; live benchmark or conformance evidence remains tied to report artifacts.
 
@@ -41,6 +41,8 @@ This matrix tracks reusable component package coverage for implementations and e
 | HTTP/3 WebSocket scenario pack | missing | immutable corrected `org.protocol-lab.components.scenario.http3-websocket-performance@0.2.2` authority-locks the six RFC9220 v2 scenarios and exact `websocket-smoke`/`diagnostic` profiles |
 | `go-http1-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-http1-executor@0.3.0`; exact HTTP/1.1 validation plus pinned `oha@1.15.0` load generation |
 | `go-http2-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-http2-executor@0.3.0`; exact h2c smoke, diagnostic, and `16/128/8` balanced-round-robin comparison shapes |
+| `apache-http1` | missing | added `org.protocol-lab.components.implementation.apache-http1@0.1.0`; unmodified digest-pinned Apache httpd, exact HTTP/1.1 plaintext/JSON executor proof, and deterministic non-advertised download/header fixtures |
+| `apache-http2` | missing | added `org.protocol-lab.components.implementation.apache-http2@0.1.0`; unmodified digest-pinned Apache httpd/mod_http2 with exact h2c plaintext/JSON executor proof and a distinct TLS/ALPN startup variant retained as executor-unavailable/non-ranking |
 | HTTP/2 RFC 8441 WebSocket three-package lane | missing | local diagnostic `org.protocol-lab.components.scenario.http2-websocket-performance@0.1.0`, `go-http2-websocket-executor@0.1.0`, and independent `kestrel-http2-websocket@0.1.0` packages; all six exact identities prove TLS 1.3/ALPN h2, Extended CONNECT, raw framing, masking, payloads, ordering, control frames, and close semantics |
 | `go-tls13-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-tls13-executor@0.3.0`; exact TLS 1.3 full/resumed handshakes plus deterministic record throughput and six-case record coverage; remaining committed TLS identities fail closed as explicit `unsupported` |
 | `go-tls13-mtls-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-tls13-mtls-executor@0.1.0`; exact TLS 1.3 mutual-authentication handshake with pinned server/client certificate identities; every other committed TLS identity fails closed as explicit `unsupported` |
@@ -100,6 +102,8 @@ This matrix tracks reusable component package coverage for implementations and e
 | `org.protocol-lab.components.executor.aioquic-rfc9220-websocket` | `executors/aioquic-rfc9220-websocket` |
 | `org.protocol-lab.components.executor.go-http1-executor` | `executors/go-http1-executor` |
 | `org.protocol-lab.components.executor.go-http2-executor` | `executors/go-http2-executor` |
+| `org.protocol-lab.components.implementation.apache-http1` | `implementations/apache-http1` |
+| `org.protocol-lab.components.implementation.apache-http2` | `implementations/apache-http2` |
 | `org.protocol-lab.components.executor.go-http2-websocket-executor` | `executors/go-http2-websocket-executor` |
 | `org.protocol-lab.components.implementation.kestrel-http2-websocket` | `implementations/kestrel-http2-websocket` |
 | `org.protocol-lab.components.scenario.http2-websocket-performance` | `scenarios/http2-websocket-performance` |

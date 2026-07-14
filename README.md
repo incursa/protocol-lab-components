@@ -38,6 +38,8 @@ implementations/
   caddy-http3/
   nginx-http1/
   nginx-http2/
+  apache-http1/
+  apache-http2/
   nginx-http3/
   kestrel-http3/
   aioquic-http3/
@@ -123,6 +125,8 @@ Implementation packages:
 - `org.protocol-lab.components.implementation.caddy-http3`
 - `org.protocol-lab.components.implementation.nginx-http1`
 - `org.protocol-lab.components.implementation.nginx-http2`
+- `org.protocol-lab.components.implementation.apache-http1`
+- `org.protocol-lab.components.implementation.apache-http2`
 - `org.protocol-lab.components.implementation.nginx-http3`
 - `org.protocol-lab.components.implementation.kestrel-http3`
 - `org.protocol-lab.components.implementation.aioquic-http3`
@@ -159,6 +163,11 @@ nginx packages follow the same lane split. `nginx-http1`, `nginx-http2`, and
 `nginx-http3` are separate packages. `nginx-http2` proves
 `--with-http_v2_module` and exercises h2c prior knowledge; `nginx-http3` proves
 `--with-http_v3_module` before serving.
+
+Apache packages are lane scoped as `apache-http1` and `apache-http2`. They use
+an unmodified digest-pinned upstream container with config/static fixtures;
+the HTTP/2 h2c variant is executor-backed, while its separate TLS/ALPN variant
+remains validation-unavailable until a compatible exact executor exists.
 
 Incursa raw QUIC implementation packages remain implementation-owned by `quic-dotnet`. This repository packages the reusable raw QUIC scenario and executor pieces so controller jobs do not have to source them from local `protocol-lab-internal` scripts. The `quic-go-raw` package is a separate ecosystem target package and initially advertises only `quic.transport.stream-throughput.1mb` and `quic.transport.multiplex.100x64kb`.
 

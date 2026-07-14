@@ -45,6 +45,8 @@ pwsh ./scripts/package/Build-CaddyHttp2Package.ps1
 pwsh ./scripts/package/Build-CaddyHttp3Package.ps1
 pwsh ./scripts/package/Build-NginxHttp1Package.ps1
 pwsh ./scripts/package/Build-NginxHttp2Package.ps1
+pwsh ./scripts/package/Build-ApacheHttp1Package.ps1
+pwsh ./scripts/package/Build-ApacheHttp2Package.ps1
 pwsh ./scripts/package/Build-GoHttp1ExecutorPackage.ps1
 pwsh ./scripts/package/Build-GoTls13MtlsImplementationPackage.ps1
 pwsh ./scripts/package/Build-GoTls13MtlsExecutorPackage.ps1
@@ -130,6 +132,17 @@ scenario, aioquic executor, and aioquic target packages:
 ```powershell
 pwsh ./scripts/package/Test-AioquicRfc9220WebSocketThreePackageSmoke.ps1
 ```
+
+Exercise materialized Apache HTTP/1.1 and HTTP/2 h2c target packages with the
+matching extracted scenario and Go executor packages, retaining exact protocol,
+payload, and no-fallback proof, with:
+
+```powershell
+pwsh ./scripts/package/Test-ApacheHttpImplementationPackages.ps1
+```
+
+The Apache HTTP/2 TLS/ALPN startup variant remains explicitly unavailable to
+the current h2c-only Go executor and is not substituted into this smoke.
 
 All wrappers call `Build-ProtocolLabComponentPackage.ps1`, which reads each component's `protocol-lab-package.json` and writes a `.plabpkg` under `artifacts/packages/`.
 Compiled payload wrappers may stage a runtime-specific package before compression while preserving the same package manifest layout and artifact root.

@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "executionVariants": [
+    {
+      "variantId": "http2-h2c-prior-knowledge",
+      "arguments": [
+        "-Variant",
+        "h2c"
+      ],
+      "transportSecurity": "cleartext",
+      "default": true,
+      "testExecutorId": "go-http2-executor",
+      "executorCompatibility": "supported"
+    },
+    {
+      "variantId": "http2-tls-alpn",
+      "arguments": [
+        "-Variant",
+        "tls-alpn"
+      ],
+      "transportSecurity": "tls",
+      "default": false,
+      "testExecutorId": null,
+      "executorCompatibility": "unavailable",
+      "unavailableReason": "go-http2-executor@0.3.0 accepts only cleartext h2c prior knowledge and rejects HTTPS targets."
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "linux-containers",
+        "value": "true"
+      }
+    ],
+    "runtimeImages": [
+      {
+        "name": "ubuntu/apache2",
+        "version": "24.04",
+        "reference": "ubuntu/apache2@sha256:6563a8f98ce5469715962cf217335ec73842e56abb3720094a15f2b6747b87bc",
+        "apacheVersion": "2.4.58-1ubuntu8.11",
+        "modHttp2": "enabled-at-startup",
+        "nghttp2Version": "1.59.0-1ubuntu0.2"
+      }
+    ]
+  }
+}

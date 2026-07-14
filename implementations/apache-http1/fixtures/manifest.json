@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "protocol-lab.apache-static-fixtures.v1",
+  "files": [
+    { "path": "health", "length": 2, "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df" },
+    { "path": "plaintext", "length": 13, "sha256": "dffd6021bb2bd5b0af676290809ec3a53191dd81c7f70a4b28688a362182986f" },
+    { "path": "json", "length": 27, "sha256": "8811a6f55cb434d10921bccf7108016db61792083bb929eef0e592e376a0db9a" },
+    { "path": "headers", "length": 7, "sha256": "378f37b1fb33fa4dafba6519a48e06447ecaa58af290729cc3d357bcadd9926c" },
+    { "path": "metadata", "length": 150, "sha256": "d3d6169bc3705d488a7b21da73689ddcfd8f59109e300f4a8d08462d2a5180dd" },
+    { "path": "bytes-1024", "length": 1024, "sha256": "49abd65bbf7f7e40c7055093ed2e3fd75f2f602f2c5fcf955c213e3135eb03f7" }
+  ]
+}

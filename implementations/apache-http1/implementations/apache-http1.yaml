@@ -1,0 +1,114 @@
+schemaVersion: "1.0"
+id: apache-http1
+name: Apache httpd HTTP/1.1
+description: Lane-scoped Apache HTTP Server origin using unmodified upstream httpd and deterministic static/config-backed fixtures.
+family: apache-httpd
+role: server
+comparisonCohort: general-purpose-http-origin
+rankingEligibility: eligible-after-live-validation
+targetKind: container
+targetContract: process
+executable: run.ps1
+workingDirectory: .
+baseUrl: http://127.0.0.1:8080
+protocolBaseUrls:
+  h1: http://127.0.0.1:8080
+dockerNetworkMode: published-port
+certificateMode: none
+roles:
+  - server
+protocols:
+  - h1
+supportedProtocols:
+  - h1
+supportedWorkloadFamilies:
+  - http.application
+protocolVersions:
+  - http/1.1
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+ports:
+  - name: http
+    protocol: tcp
+    default: 8080
+environment:
+  PLAB_HTTP_PORT: "8080"
+startup:
+  port:
+    name: http
+    environmentVariable: PLAB_HTTP_PORT
+    default: 8080
+  readiness:
+    protocol: http
+    path: /health
+    expectedStatus: 200
+readinessCheck:
+  type: http
+  url: http://127.0.0.1:${PLAB_HTTP_PORT}/health
+  timeoutSeconds: 20
+capabilities:
+  - http.server
+  - httpPlaintext
+  - httpJson
+  - httpBytes1Kb
+  - deterministicResponseHeaders
+supportedProtocolVersions:
+  - http/1.1
+supportedTestCaseIds:
+  - http1.core.plaintext
+  - http1.core.json
+supportedScenarios:
+  - http1.core.plaintext
+  - http1.core.json
+executorCompatibility:
+  - testExecutorId: go-http1-executor
+    packageId: org.protocol-lab.components.executor.go-http1-executor
+    minimumVersion: 0.3.0
+    status: supported
+unsupportedKnownCases:
+  - h2
+  - h3
+  - https
+  - request-body-echo
+  - upload-processing
+  - server-side-payload-hashing
+  - application-streaming
+  - websocket
+  - server-sent-events
+requiredExternalTools:
+  - docker
+runtime:
+  upstreamProgram: Apache HTTP Server
+  upstreamProgramModified: false
+  imageReference: ubuntu/apache2@sha256:6563a8f98ce5469715962cf217335ec73842e56abb3720094a15f2b6747b87bc
+  apacheVersion: 2.4.58-1ubuntu8.11
+endpoints:
+  health:
+    method: GET
+    path: /health
+  plaintext:
+    method: GET
+    path: /plaintext
+  json:
+    method: GET
+    path: /json
+  bytes1kb:
+    method: GET
+    path: /bytes/1024
+    advertisedScenario: false
+    reason: The current go-http1-executor does not execute the HTTP/1 payload scenario.
+  responseHeaders:
+    method: GET
+    path: /headers/response
+    advertisedScenario: false
+    reason: No compatible HTTP/1 header executor row is currently packaged.
+shutdownBehavior: container-process
+artifactExports:
+  - apache-http1.stdout.log
+  - apache-http1.stderr.log
+qlogSupport: false
+sslKeyLogSupport: false
+notes: CGI and custom modules are intentionally absent. Downloads and fixed headers are available as deterministic fixtures but are not advertised as scenarios until an exact compatible executor exists.

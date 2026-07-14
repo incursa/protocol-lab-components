@@ -1,0 +1,138 @@
+schemaVersion: "1.0"
+id: apache-http2
+name: Apache httpd HTTP/2
+description: Lane-scoped Apache HTTP Server origin using unmodified upstream httpd/mod_http2 and deterministic static/config-backed fixtures.
+family: apache-httpd
+role: server
+comparisonCohort: general-purpose-http-origin
+rankingEligibility: eligible-per-validated-execution-variant
+targetKind: container
+targetContract: process
+executable: run.ps1
+workingDirectory: .
+baseUrl: http://127.0.0.1:8082
+protocolBaseUrls:
+  h2: http://127.0.0.1:8082
+dockerNetworkMode: published-port
+certificateMode: package-test-certificate
+roles:
+  - server
+protocols:
+  - h2
+supportedProtocols:
+  - h2
+supportedWorkloadFamilies:
+  - http.application
+protocolVersions:
+  - h2c
+  - h2
+executionVariants:
+  - id: http2-h2c-prior-knowledge
+    transportSecurity: cleartext
+    protocolVersion: h2c
+    baseUrl: http://127.0.0.1:8082
+    wrapperArgument: h2c
+    implementationStatus: supported
+    executorCompatibility:
+      testExecutorId: go-http2-executor
+      packageId: org.protocol-lab.components.executor.go-http2-executor
+      minimumVersion: 0.3.0
+      status: supported
+  - id: http2-tls-alpn
+    transportSecurity: tls
+    protocolVersion: h2
+    alpn: h2
+    baseUrl: https://127.0.0.1:8443
+    wrapperArgument: tls-alpn
+    implementationStatus: supported
+    validationStatus: unavailable
+    rankingEligibility: unavailable
+    executorCompatibility:
+      status: unavailable
+      reason: go-http2-executor@0.3.0 supports h2c only and rejects HTTPS targets; no compatible general HTTP/2 TLS executor package exists.
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+ports:
+  - name: h2c
+    protocol: tcp
+    default: 8082
+  - name: h2-tls
+    protocol: tcp
+    default: 8443
+environment:
+  PLAB_PROTOCOL_VARIANT: http2-h2c-prior-knowledge
+  PLAB_HTTP_PORT: "8082"
+  PLAB_HTTPS_PORT: "8443"
+startup:
+  port:
+    name: h2c
+    environmentVariable: PLAB_HTTP_PORT
+    default: 8082
+  readiness:
+    type: processStarted
+readinessCheck:
+  type: processStarted
+  timeoutSeconds: 20
+  startupDelayMilliseconds: 1000
+capabilities:
+  - http.server
+  - httpPlaintext
+  - httpJson
+  - httpBytes1Kb
+  - deterministicResponseHeaders
+supportedProtocolVersions:
+  - h2c
+  - h2
+supportedTestCaseIds:
+  - http2.core.plaintext
+  - http2.core.json
+supportedScenarios:
+  - http2.core.plaintext
+  - http2.core.json
+unsupportedKnownCases:
+  - h1-evidence
+  - h3
+  - request-body-echo
+  - upload-processing
+  - server-side-payload-hashing
+  - application-streaming
+  - websocket-rfc8441-origin
+  - server-sent-events
+requiredExternalTools:
+  - docker
+runtime:
+  upstreamProgram: Apache HTTP Server with mod_http2
+  upstreamProgramModified: false
+  imageReference: ubuntu/apache2@sha256:6563a8f98ce5469715962cf217335ec73842e56abb3720094a15f2b6747b87bc
+  apacheVersion: 2.4.58-1ubuntu8.11
+  nghttp2Version: 1.59.0-1ubuntu0.2
+endpoints:
+  health:
+    method: GET
+    path: /health
+  plaintext:
+    method: GET
+    path: /plaintext
+  json:
+    method: GET
+    path: /json
+  bytes1kb:
+    method: GET
+    path: /bytes/1024
+    advertisedScenario: false
+    reason: The current go-http2-executor does not execute an HTTP/2 payload scenario.
+  responseHeaders:
+    method: GET
+    path: /headers/response
+    advertisedScenario: false
+    reason: No compatible general HTTP/2 header executor row is currently packaged.
+shutdownBehavior: container-process
+artifactExports:
+  - apache-http2.stdout.log
+  - apache-http2.stderr.log
+qlogSupport: false
+sslKeyLogSupport: false
+notes: h2c prior knowledge is the default and current executor-backed variant. TLS/ALPN h2 is separately selectable and locally smoke-tested, but remains validation-unavailable and non-ranking until a compatible exact executor exists. CGI, custom modules, uploads, hashing, and application streaming are absent.

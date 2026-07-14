@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.apache-http2",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Apache httpd HTTP/2 Implementation",
+  "entryManifests": [
+    "implementations/apache-http2.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "apache-http2",
+      "displayName": "Apache httpd HTTP/2",
+      "protocols": [
+        "h2"
+      ],
+      "scenarios": [
+        "http2.core.plaintext",
+        "http2.core.json"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      }
+    ]
+  }
+}

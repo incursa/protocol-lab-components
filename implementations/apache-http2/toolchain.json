@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "protocol-lab.external-runtime-pin.v1",
+  "program": "Apache HTTP Server with mod_http2",
+  "programVersion": "2.4.58-1ubuntu8.11",
+  "distribution": "Ubuntu 24.04",
+  "containerImage": "ubuntu/apache2@sha256:6563a8f98ce5469715962cf217335ec73842e56abb3720094a15f2b6747b87bc",
+  "serverVersionOutput": "Apache/2.4.58 (Ubuntu)",
+  "modHttp2Path": "/usr/lib/apache2/modules/mod_http2.so",
+  "nghttp2Version": "1.59.0-1ubuntu0.2",
+  "license": "Apache-2.0",
+  "redistribution": "source-and-config-only-wrapper",
+  "verifiedAtUtc": "2026-07-14T00:00:00Z"
+}
