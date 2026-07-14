@@ -35,10 +35,10 @@ This matrix tracks reusable component package coverage for implementations and e
 | `quic-go-raw` | no raw QUIC implementation package | added `org.protocol-lab.components.implementation.quic-go-raw` for `quic.transport.stream-throughput.1mb` and `quic.transport.multiplex.100x64kb` only |
 | `quic-go-raw-load` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
 | `h3spec-http3-qpack` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
-| `aioquic-rfc9220-websocket` | source executor package present | `0.2.1` exact six-ID RFC9220 v2 executor plus `aioquic-http3@0.2.1` target; all six scenario bytes are authority-locked, and `0.2.0` is superseded because only its fragmented identity matched v2 authority |
+| `aioquic-rfc9220-websocket` | source executor package present | corrected `0.3.0` exact six-ID RFC9220 executor plus origin-server `aioquic-http3@0.3.0`; it requires authenticated certificate proof, exact sustained profiles, executor/generator/parser identities, archive and immutable image digests, bounded raw artifacts, and fail-closed selection |
 | `h3spec-http3-qpack` scenario pack | missing | added `org.protocol-lab.components.scenario.h3spec-http3-qpack` with suite `h3spec-http3-qpack-focused` bound to `h3spec-http3-qpack` |
 | `http3-peer-characterization` scenario pack | missing | added `org.protocol-lab.components.scenario.http3-peer-characterization` with suite `http3-peer-characterization` for diagnostic external peer rows |
-| `aioquic-rfc9220-websocket` scenario pack | missing | added `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket` with suite `aioquic-rfc9220-websocket-proof` bound to `aioquic-rfc9220-websocket` |
+| HTTP/3 WebSocket scenario pack | missing | immutable corrected `org.protocol-lab.components.scenario.http3-websocket-performance@0.2.2` authority-locks the six RFC9220 v2 scenarios and exact `websocket-smoke`/`diagnostic` profiles |
 | `go-http1-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-http1-executor@0.3.0`; exact HTTP/1.1 validation plus pinned `oha@1.15.0` load generation |
 | `go-http2-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-http2-executor@0.3.0`; exact h2c smoke, diagnostic, and `16/128/8` balanced-round-robin comparison shapes |
 | HTTP/2 RFC 8441 WebSocket three-package lane | missing | local diagnostic `org.protocol-lab.components.scenario.http2-websocket-performance@0.1.0`, `go-http2-websocket-executor@0.1.0`, and independent `kestrel-http2-websocket@0.1.0` packages; all six exact identities prove TLS 1.3/ALPN h2, Extended CONNECT, raw framing, masking, payloads, ordering, control frames, and close semantics |
@@ -129,7 +129,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | `org.protocol-lab.components.scenario.raw-quic-transport` | `scenarios/raw-quic-transport` |
 | `org.protocol-lab.components.scenario.h3spec-http3-qpack` | `scenarios/h3spec-http3-qpack` |
 | `org.protocol-lab.components.scenario.http3-peer-characterization` | `scenarios/http3-peer-characterization` |
-| `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket` | `scenarios/aioquic-rfc9220-websocket` |
+| `org.protocol-lab.components.scenario.http3-websocket-performance` | `scenarios/aioquic-rfc9220-websocket` |
 
 ## Registered Package
 

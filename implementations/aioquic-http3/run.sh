@@ -2,7 +2,7 @@
 set -euo pipefail
 
 mode="${PLAB_MODE:-Client}"
-image="${PLAB_IMAGE:-incursa-protocol-lab-aioquic-http3:0.2.1}"
+image="${PLAB_IMAGE:-incursa-protocol-lab-aioquic-http3:0.3.0}"
 plan_only="${PLAB_PLAN_ONLY:-0}"
 skip_build="${PLAB_SKIP_BUILD:-0}"
 artifact_root="${PLAB_ARTIFACT_ROOT:-artifacts/aioquic-http3}"
@@ -16,8 +16,8 @@ fi
 if [ "$mode" = "Server" ]; then
   port="${PLAB_PORT:-4433}"
   www_root="${PLAB_WWW_ROOT:-www}"
-  cert_path="${PLAB_CERT_PATH:-certs/cert.pem}"
-  key_path="${PLAB_KEY_PATH:-certs/priv.key}"
+  cert_path="${PLAB_CERT_PATH:-certs/leaf.pem}"
+  key_path="${PLAB_KEY_PATH:-certs/leaf-key.pem}"
   commands+=("docker run --rm -p ${port}:4433/udp -v $PWD/$www_root:/www:ro -v $PWD/$(dirname "$cert_path"):/certs:ro $image /usr/local/bin/aioquic-http3-server /www /certs/$(basename "$cert_path") /certs/$(basename "$key_path") 4433")
 else
   url="${PLAB_URL:-https://host.docker.internal:8443/status}"

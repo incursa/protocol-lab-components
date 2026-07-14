@@ -45,58 +45,21 @@
     "images": [
       {
         "name": "aioquic-rfc9220-websocket",
-        "image": "incursa-protocol-lab-aioquic-rfc9220-websocket:0.2.1",
+        "image": "incursa-protocol-lab-aioquic-rfc9220-websocket:0.3.0",
         "baseImage": "python:3.12-slim",
-        "package": "aioquic==1.3.0",
-        "sourceProofImage": "incursa-http3-external-interop-aioquic:latest",
-        "sourceProofImageId": "sha256:b022b70e9f351326bf2951c5a56c5a00808b9f0b226a363d8b1b27014352d975",
-        "sourceProofRepoDigest": "incursa-http3-external-interop-aioquic@sha256:b022b70e9f351326bf2951c5a56c5a00808b9f0b226a363d8b1b27014352d975",
-        "source": "C:/src/incursa/quic-dotnet/.artifacts/http3-websocket-external-aioquic/20260619T-rfc9220-aioquic-001/rfc9220-external-aioquic-proof.json"
+        "package": "aioquic==1.3.0"
       }
     ]
   },
   "commands": {
-    "buildTemplate": "docker build --build-arg AIOQUIC_VERSION=1.3.0 -f docker/aioquic-rfc9220-websocket.Dockerfile -t incursa-protocol-lab-aioquic-rfc9220-websocket:0.2.1 .",
-    "clientTemplate": "aioquic-http3-websocket-client <url> <result-path> --scenario-id <exact-id> --timeout <seconds>"
+    "buildTemplate": "docker build --build-arg AIOQUIC_VERSION=1.3.0 -f docker/aioquic-rfc9220-websocket.Dockerfile -t incursa-protocol-lab-aioquic-rfc9220-websocket:0.3.0 .",
+    "clientTemplate": "aioquic-http3-websocket-client <url> <result-path> --scenario-id <exact-id> --load-profile-id <exact-profile> --package-and-image-digests <immutable-values>"
   },
   "knownLimitations": [
     "Executor-only package; it does not start or own the target HTTP/3 WebSocket server lifecycle.",
     "The executor requires one exact committed RFC9220 scenario identity and never substitutes another operation.",
     "The fragmented diagnostic is exactly 6000 bytes of 0xA5 in masked frame payloads 1024, 2048, and 2928 with no interleaved control frame.",
-    "This package is RFC9220 WebSocket-over-H3 diagnostic evidence, not broad WebSocket interoperability coverage."
-  ],
-  "externalInteropEvidence": {
-    "evidenceClass": "local-external-aioquic-peer",
-    "passingRows": [
-      {
-        "target": "aioquic-rfc9220-websocket-client__incursa-server",
-        "scenarios": [
-          "extended-connect",
-          "server-ping-client-pong",
-          "client-ping-server-pong",
-          "text-echo",
-          "binary-echo-6000",
-          "close-echo"
-        ],
-        "requirementIds": [
-          "REQ-QUIC-RFC9220-0017",
-          "REQ-QUIC-RFC9220-0018",
-          "REQ-QUIC-RFC9220-0019",
-          "REQ-QUIC-RFC9220-0022",
-          "REQ-QUIC-RFC9220-0030",
-          "REQ-QUIC-RFC9220-0031"
-        ],
-        "artifactRun": "C:/src/incursa/quic-dotnet/.artifacts/http3-websocket-external-aioquic/20260619T-rfc9220-aioquic-001"
-      }
-    ],
-    "blockedRows": [
-      {
-        "target": "aioquic-rfc9220-websocket-server",
-        "scenarios": [
-          "*"
-        ],
-        "reason": "aioquic is packaged here as a client-side RFC9220 proof executor only."
-      }
-    ]
-  }
+    "This package is RFC9220 WebSocket-over-H3 diagnostic evidence, not broad WebSocket interoperability coverage.",
+    "Package and image digests are mandatory; execution fails closed when immutable materialization proof is absent."
+  ]
 }

@@ -1,13 +1,13 @@
 executorIdentity:
   id: aioquic-rfc9220-websocket
   name: aioquic RFC9220 WebSocket-over-H3 Test Executor
-  version: 0.2.1
+  version: 0.3.0
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.2.1
+  executorVersion: 0.3.0
 claimedCapabilities:
   - id: http3.websocket.rfc9220.extended-connect
     status: supported
@@ -114,11 +114,47 @@ supportedArtifactTypes:
     producedByStates:
       - stopped
       - failed
+  - type: tls-negotiation.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: quic-summary.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: materialization-proof.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: executor-identity.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: load-generator-identity.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: parser-identity.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: tls-peer-certificate.der
+    producedByStates:
+      - stopped
+      - failed
 metricsAvailability:
   available: true
   availableKinds:
-    - session
     - validation
+    - connections-per-second
+    - messages-per-second
+    - bytes-per-second
+    - latency-percentiles
+    - operation-outcomes
+parser:
+  id: protocol-lab-rfc9220-json
+  type: protocol-lab-rfc9220-json
+  preservesRawOutput: true
 telemetry:
   supported: true
   supported_contract_versions:
