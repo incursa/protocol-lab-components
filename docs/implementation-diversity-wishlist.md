@@ -1,6 +1,6 @@
 # ProtocolLab Implementation Diversity Wishlist
 
-Updated: 2026-07-13
+Updated: 2026-07-14
 
 This is the delivery backlog for expanding ProtocolLab's real implementation
 testing surface after the public contracts, scenarios, and test executors have
@@ -58,7 +58,7 @@ runner work does not depend on dirty or divergent worktrees:
 | --- | --- | --- | --- |
 | Public ProtocolLab contracts | `f8117f3967c35f91baa9a19277d52f9e2c4a0c85` | Exact HTTP/2 comparison topology plus the non-publishable `http2-performance-smoke` implementation selector | Suite schema validation passed; no implementation code |
 | ProtocolLab components | `4fe33d6584354f8f31b1a3294abe49fa42b0fee1` | Consolidated scenario and executor package identities | Clean component integration head used by every implementation lane |
-| ProtocolLab internal runner | `443e8e70e62e1670728411d70242206f0c2fe075` | Consolidated exact executor admission and Protocol Execution Result v2 paths, plus package-backed Docker image materialization | Baseline restore/build and 291 focused tests passed; the Docker-build fix passed all 34 `LabWorkerExecutorTests`; Linux worker bundle SHA-256 `4384fda5ffa426b63fe02996a9dc65e6c16358363cea70ed10e5c1528952cc17` awaits the SUT-worker refresh |
+| ProtocolLab internal runner | `3aea501` (including `443e8e70e62e1670728411d70242206f0c2fe075`) | Consolidated exact executor admission and Protocol Execution Result v2 paths, package-backed Docker image materialization, and execution-only package capability application | All 34 focused `LabWorkerExecutorTests` and all 43 `LabPackageTests` passed. Controller bundle `bddb13cf...` and worker bundle `0c6d0b2a...` await the controller/SUT-worker refresh. |
 
 Implementation work is integrated through
 `codex/implementation-diversity-20260713`. Runner proof work is isolated in
@@ -74,14 +74,15 @@ provenance.
 
 | Cohort | Package(s) | Status | Local package evidence | Controller/job evidence |
 | --- | --- | --- | --- | --- |
-| HTTP/2 origins | `caddy-http2`, `nginx-http2` | controller-admitted | Extracted immutable packages passed both exact h2c scenarios with HTTP/2.0 observed and no fallback | Job `job-9bb04a815b6549e5af491bfd18f6a520` retained 164 artifacts but classified all cells `target-unsupported`: deployed worker did not build absent package images. Runner fix `443e8e7` and bundle `4384fda...` are ready for refresh/retry. |
-| HTTP origins | `apache-http1`, `apache-http2` | implementing | Pending lane integration | Pending |
-| TLS endpoint tools | `openssl-s-server`, `gnutls-serv` | controller-admitted | Exact `tls.handshake.full` extracted-package proof passed for both; integrated package hashes are `ee5ebc70...` and `d0439be8...` | Job `job-a290a600ef9b4037ad279a7ec6d01e47` retained 110 artifacts but classified both cells `validation-unsupported` because the deployed runner rejected the scenario's client role before starting the server. Current runner's package-executor target fallback and bundle are ready for refresh/retry. |
+| HTTP/2 origins | `caddy-http2`, `nginx-http2` | controller-admitted | Extracted immutable packages `ceec7600...` and `74c60b2f...` passed both exact h2c scenarios with HTTP/2.0 observed and no fallback | Job `job-9bb04a815b6549e5af491bfd18f6a520` retained 164 artifacts but classified all cells `target-unsupported`: the deployed worker did not build absent package images. Runner fix `443e8e7` and worker bundle `0c6d0b2a...` are ready for refresh/retry. |
+| HTTP origins | `apache-http1`, `apache-http2` | controller-admitted | Six-package Apache smoke passed exact HTTP/1.1 and h2c rows; current packages are HTTP/1 `0.1.2` / `57870a74...` and HTTP/2 `0.1.1` / `448ad643...` | Job `job-621e5d80db2e424f8eafc8bc78bad083` proved the HTTP/1 target healthy and both validations passed, but the stale deployed CLI omitted `PLAB_TARGET_BASE_URL`; benchmark evidence is not accepted until the refreshed-runner retry. |
+| TLS endpoint tools | `openssl-s-server`, `gnutls-serv` | controller-admitted | Self-contained Docker packages `e270dcc3...` and `5bf19a9c...` passed exact `tls.handshake.full` TLS 1.3/AES-128-GCM/X25519/ALPN/certificate/non-resumption/zero-byte proof | Job `job-a290a600ef9b4037ad279a7ec6d01e47` retained 110 artifacts but classified both cells `validation-unsupported` because the deployed runner rejected the scenario's client role before starting the server. The current runner bundle is ready for refresh/retry. |
 | TLS wrapper candidates | rustls example, s2n-tls utility | closed-by-decision | Repository-backed feasibility audit in `docs/tls-endpoint-tool-feasibility.md`; neither unmodified upstream utility exposes the complete package contract | Not applicable |
-| Authoritative secure DNS | Technitium DoT/DoH2/DoH3/DoQ; BIND DoT/DoH2 | implementing | Isolated package lane active | Pending |
-| Resolver secure DNS | Unbound DoT/DoH2 | implementing | Isolated package lane active | Pending |
-| gRPC runtimes | grpc-dotnet, Java/Netty, C++, grpc-js | implementing | Isolated package lane active | Pending |
-| WebSocket runtimes | websocat, Node `ws`, Jetty, uWebSockets | planned | Pending | Pending |
+| Authoritative secure DNS | BIND DoT | controller-admitted | `bind9-dot@0.1.0` / `de8abf6e...` passed 5,241 exact local operations with TLS 1.3, ALPN `dot`, canonical answers, and zero failures/timeouts | Controller preview is 1 runnable, 0 unsupported/unavailable/invalid; live job awaits runner refresh. |
+| Authoritative secure DNS | Technitium DoT/DoH2/DoH3/DoQ; BIND DoH2 | closed-by-decision | Exact ALPN, cipher, HTTP-header, redistribution, and current scenario/executor gaps are retained in package-local decision READMEs | Not applicable until the named gaps are closed. |
+| Resolver secure DNS | Unbound DoT/DoH2 | closed-by-decision | Resolver-role semantics do not match the current authoritative scenario and ranking cohort; no false implementation package was created | Not applicable until a resolver scenario/cohort exists. |
+| gRPC runtimes | grpc-dotnet, Java/Netty, C++, grpc-js | controller-admitted | Exact immutable executor smoke passed all 12 .NET, 9 Node, 2 Java, and 2 C++ declared rows with TLS 1.3, ALPN `h2`, and no fallback | Controller previews are 8 and 4 runnable cells with zero invalid cells; live jobs await runner refresh. |
+| WebSocket runtimes | websocat, Node `ws`, Jetty, uWebSockets | controller-admitted | Extracted immutable Docker smoke passed 19/19 supported cells. Node, Jetty, and uWebSockets pass all five; websocat passes four and explicitly excludes binary echo. | Six packages are admitted/selectable. Controller preview is 19 runnable, 1 explicitly unsupported, 0 unavailable/invalid; live job awaits runner refresh. |
 
 ## Wave 1 - general-purpose HTTP origins
 
