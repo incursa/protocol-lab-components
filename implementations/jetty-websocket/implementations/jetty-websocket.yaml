@@ -6,7 +6,7 @@ family: jetty
 role: origin-server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-jetty-websocket:0.1.1
+image: incursa-protocol-lab-jetty-websocket:0.1.2
 dockerfile: docker/Jetty.Dockerfile
 buildContext: docker
 dockerNetworkMode: published-port
@@ -31,7 +31,7 @@ unsupportedKnownCases: [websocket.echo, http1.websocket.rfc6455.tls.upgrade, htt
 ports: [{name: websocket, protocol: tcp, default: 18084, hostPort: 18084, containerPort: 18081}]
 environment: {PLAB_TARGET_PORT: "18084"}
 startup: {port: {name: websocket, environmentVariable: PLAB_TARGET_PORT, default: 18084}, readiness: {protocol: process, timeoutSeconds: 30}}
-readinessCheck: {type: processStarted, timeoutSeconds: 30, startupDelayMilliseconds: 750}
+readinessCheck: {type: processStarted, timeoutSeconds: 30, startupDelayMilliseconds: 3000}
 capabilities: [scenario.http1.websocket.rfc6455.cleartext.upgrade, scenario.http1.websocket.rfc6455.cleartext.control-frames, scenario.http1.websocket.rfc6455.cleartext.text-echo, scenario.http1.websocket.rfc6455.cleartext.binary-echo, scenario.http1.websocket.rfc6455.cleartext.close, websocket.server, websocket.rfc6455, websocket.text-echo, websocket.binary-echo, websocket.control-frames, websocket.close]
 entrypoint: {kind: pwsh, path: run.ps1, arguments: [], workingDirectory: .}
 shutdownBehavior: process
