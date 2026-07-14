@@ -2,13 +2,13 @@
 param(
     [ValidateSet('Client', 'Server')]
     [string]$Mode = 'Client',
-    [string]$Image = 'incursa-protocol-lab-aioquic-http3:0.2.1',
+    [string]$Image = 'incursa-protocol-lab-aioquic-http3:0.3.0',
     [string]$Url = 'https://host.docker.internal:8443/status',
     [int]$ExpectedStatus = 200,
     [string]$OutputPath = 'artifacts/aioquic-http3/body.bin',
     [string]$WwwRoot = 'www',
-    [string]$CertPath = 'certs/cert.pem',
-    [string]$KeyPath = 'certs/priv.key',
+    [string]$CertPath = 'certs/leaf.pem',
+    [string]$KeyPath = 'certs/leaf-key.pem',
     [int]$Port = 4433,
     [string]$DockerNetwork = '',
     [switch]$SkipBuild,

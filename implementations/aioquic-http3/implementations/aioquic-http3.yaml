@@ -4,11 +4,11 @@ name: aioquic HTTP/3
 description: Docker-backed aioquic HTTP/3 client/server wrapper for ProtocolLab external peer characterization.
 family: aioquic
 roles:
-  - client
   - server
+implementationRole: origin-server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-aioquic-http3:0.2.1
+image: incursa-protocol-lab-aioquic-http3:0.3.0
 dockerfile: docker/aioquic.Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
@@ -18,7 +18,7 @@ protocolBaseUrls:
   h3: https://localhost:4433
 dockerProtocolBaseUrls:
   h3: https://localhost:4433
-certificateMode: aioquic-self-signed-localhost-loopback-certificate
+certificateMode: package-local-authenticated-websocket-plab-test-certificate
 protocols:
   - h3
   - websocket

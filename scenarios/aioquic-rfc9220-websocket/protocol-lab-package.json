@@ -1,9 +1,9 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
-  "packageId": "org.protocol-lab.components.scenario.aioquic-rfc9220-websocket",
+  "packageId": "org.protocol-lab.components.scenario.http3-websocket-performance",
   "packageVersion": "0.2.2",
   "kind": "scenario-pack",
-  "displayName": "aioquic RFC9220 WebSocket-over-H3 Scenario Pack",
+  "displayName": "HTTP/3 RFC9220 WebSocket Performance Scenario Pack",
   "entryManifests": [
     "scenarios/http3/websocket/rfc9220-extended-connect.yaml",
     "scenarios/http3/websocket/rfc9220-control-frames.yaml",

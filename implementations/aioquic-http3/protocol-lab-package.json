@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.aioquic-http3",
-  "packageVersion": "0.2.1",
+  "packageVersion": "0.3.0",
   "kind": "implementation",
   "displayName": "aioquic HTTP/3 Implementation Wrapper",
   "entryManifests": [

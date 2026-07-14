@@ -49,6 +49,23 @@ class FrameContractTests(unittest.TestCase):
             },
         )
 
+    def test_runner_admission_identities_are_versioned_together(self):
+        self.assertEqual(CLIENT.EXECUTOR_ID, "aioquic-rfc9220-websocket")
+        self.assertEqual(CLIENT.EXECUTOR_VERSION, "0.3.0")
+        self.assertEqual(CLIENT.LOAD_GENERATOR_ID, "aioquic-rfc9220-websocket-load")
+        self.assertEqual(CLIENT.LOAD_GENERATOR_VERSION, "0.3.0")
+        self.assertEqual(CLIENT.PARSER_ID, "protocol-lab-rfc9220-json")
+
+    def test_sha256_admission_is_fail_closed(self):
+        digest = "a" * 64
+        self.assertEqual(CLIENT.require_sha256(digest, "test"), digest)
+        with self.assertRaises(ValueError):
+            CLIENT.require_sha256("not-a-digest", "test")
+
+    def test_percentiles_use_nearest_rank(self):
+        self.assertEqual(CLIENT.percentile([1, 2, 3, 4], 0.50), 2)
+        self.assertEqual(CLIENT.percentile([1, 2, 3, 4], 0.99), 4)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -94,6 +94,7 @@ class StaticHttp3ServerProtocol(QuicConnectionProtocol):
         self._http = H3Connection(self._quic)
         self._www_root = Path(www_root).resolve()
         self._websocket_states = {}
+        self._proof_log_counts = {}
 
     def quic_event_received(self, event):
         for http_event in self._http.handle_event(event):
@@ -133,7 +134,13 @@ class StaticHttp3ServerProtocol(QuicConnectionProtocol):
         self._websocket_states[stream_id] = {"reader": WebSocketFrameReader(), "fragments": [], "fragmentSizes": []}
         self._http.send_headers(stream_id=stream_id, headers=[(b":status", b"200")], end_stream=False)
         self.transmit()
-        print(json.dumps({"eventName": "rfc9220-extended-connect-accepted", "streamId": stream_id, "protocol": "h3", "alpn": "h3", "settingsEnableConnectProtocol": 1, "authority": AUTHORITY.decode(), "path": PATH, "responseStatus": 200}), flush=True)
+        self._log_proof("rfc9220-extended-connect-accepted", {"streamId": stream_id, "protocol": "h3", "alpn": "h3", "settingsEnableConnectProtocol": 1, "authority": AUTHORITY.decode(), "path": PATH, "responseStatus": 200})
+
+    def _log_proof(self, event_name, payload):
+        count = self._proof_log_counts.get(event_name, 0)
+        self._proof_log_counts[event_name] = count + 1
+        if count < 64:
+            print(json.dumps({"eventName": event_name, **payload}), flush=True)
 
     def _handle_websocket_data(self, stream_id, data):
         state = self._websocket_states[stream_id]
@@ -153,7 +160,7 @@ class StaticHttp3ServerProtocol(QuicConnectionProtocol):
                     if state["fragmentSizes"] != FRAGMENT_BYTES or reassembled != BINARY_PAYLOAD:
                         raise RuntimeError("fragmented binary reassembly mismatch")
                     self._http.send_data(stream_id=stream_id, data=write_frame(OPCODE_BINARY, reassembled), end_stream=False)
-                    print(json.dumps({"eventName": "rfc9220-fragmented-binary-reassembled", "streamId": stream_id, "fragmentPayloadBytes": state["fragmentSizes"], "opcodes": ["binary", "continuation", "continuation"], "fin": [False, False, True], "interleavedControlFrames": False, "clientMaskObserved": True, "messageBytes": len(reassembled), "payloadSha256": hashlib.sha256(reassembled).hexdigest()}), flush=True)
+                    self._log_proof("rfc9220-fragmented-binary-reassembled", {"streamId": stream_id, "fragmentPayloadBytes": state["fragmentSizes"], "opcodes": ["binary", "continuation", "continuation"], "fin": [False, False, True], "interleavedControlFrames": False, "clientMaskObserved": True, "messageBytes": len(reassembled), "payloadSha256": hashlib.sha256(reassembled).hexdigest()})
                     state["fragments"] = []
                     state["fragmentSizes"] = []
             elif opcode == OPCODE_BINARY:
@@ -179,7 +186,7 @@ class StaticHttp3ServerProtocol(QuicConnectionProtocol):
                     raise RuntimeError("close payload mismatch")
                 self._http.send_data(stream_id=stream_id, data=write_frame(OPCODE_CLOSE, payload), end_stream=True)
                 self._websocket_states.pop(stream_id, None)
-                print(json.dumps({"eventName": "rfc9220-websocket-clean-close", "streamId": stream_id, "closeCode": 1000, "clientMaskObserved": True}), flush=True)
+                self._log_proof("rfc9220-websocket-clean-close", {"streamId": stream_id, "closeCode": 1000, "clientMaskObserved": True})
             else:
                 raise RuntimeError(f"unsupported WebSocket opcode {opcode}")
         self.transmit()
@@ -233,7 +240,7 @@ async def main_async(args):
     configuration = QuicConfiguration(is_client=False, alpn_protocols=H3_ALPN)
     configuration.load_cert_chain(args.cert, args.key)
     await serve(args.host, args.port, configuration=configuration, create_protocol=lambda *protocol_args, **protocol_kwargs: StaticHttp3ServerProtocol(*protocol_args, www_root=args.www_root, **protocol_kwargs))
-    print(json.dumps({"eventName": "ready", "implementationId": "aioquic-http3", "implementationVersion": "0.2.1", "listenAddress": f"{args.host}:{args.port}", "protocol": "h3", "tlsVersion": "TLS 1.3", "alpn": "h3", "settingsEnableConnectProtocol": 1, "path": PATH, "binaryPayloadSha256": BINARY_SHA256}), flush=True)
+    print(json.dumps({"eventName": "ready", "implementationId": "aioquic-http3", "implementationVersion": "0.3.0", "implementationRole": "origin-server", "listenAddress": f"{args.host}:{args.port}", "protocol": "h3", "quicVersion": "QUICv1", "tlsVersion": "TLS 1.3", "alpn": "h3", "settingsEnableConnectProtocol": 1, "path": PATH, "binaryPayloadSha256": BINARY_SHA256}), flush=True)
     await asyncio.Event().wait()
 
 

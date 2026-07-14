@@ -2,6 +2,7 @@ import importlib.util
 import secrets
 import struct
 import sys
+import tempfile
 import unittest
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
@@ -41,6 +42,44 @@ class ServerFrameContractTests(unittest.TestCase):
         self.assertEqual([frame["fin"] for frame in frames], [False, False, True])
         self.assertTrue(all(frame["masked"] for frame in frames))
         self.assertEqual(b"".join(frame["payload"] for frame in frames), SERVER.BINARY_PAYLOAD)
+
+
+class Http3OriginRegressionTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        root = Path(self.temporary.name)
+        (root / "status").write_bytes(b"aioquic HTTP/3 status\n")
+        self.server = object.__new__(SERVER.StaticHttp3ServerProtocol)
+        self.server._www_root = root.resolve()
+
+    def tearDown(self):
+        self.temporary.cleanup()
+
+    def test_status_identity_remains_static_origin_content(self):
+        status, body, headers = self.server._resolve_response("/status", {})
+        self.assertEqual(status, 200)
+        self.assertEqual(body, b"aioquic HTTP/3 status\n")
+        self.assertIn((b"content-type", b"application/octet-stream"), headers)
+
+    def test_one_kibibyte_payload_remains_deterministic(self):
+        status, body, headers = self.server._resolve_response("/bytes/1024", {})
+        self.assertEqual(status, 200)
+        self.assertEqual(len(body), 1024)
+        self.assertEqual(body, bytes(index % 251 for index in range(1024)))
+        self.assertIn((b"content-type", b"application/octet-stream"), headers)
+
+    def test_header_workload_remains_exact(self):
+        status, body, headers = self.server._resolve_response("/headers/response", {"count": ["50"], "size": ["32"]})
+        self.assertEqual(status, 200)
+        self.assertEqual(body, b"headers")
+        workload_headers = [(name, value) for name, value in headers if name.startswith(b"x-protocol-bench-header-")]
+        self.assertEqual(len(workload_headers), 50)
+        self.assertTrue(all(len(value) == 32 for _, value in workload_headers))
+
+    def test_unknown_path_remains_fail_closed_404(self):
+        status, body, _ = self.server._resolve_response("/missing", {})
+        self.assertEqual(status, 404)
+        self.assertEqual(body, b"not found\n")
 
 
 if __name__ == "__main__":
