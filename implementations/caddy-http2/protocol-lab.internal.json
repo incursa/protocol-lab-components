@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      }
+    ],
+    "images": [
+      {
+        "name": "caddy-http2",
+        "image": "incursa-protocol-lab-caddy-http2:0.1.0",
+        "baseImage": "caddy:2.11.2-alpine",
+        "baseImageIndexDigest": "caddy@sha256:834468128c7696cec0ceea6172f7d692daf645ae51983ca76e39da54a97c570d",
+        "baseImageLinuxAmd64Digest": "caddy@sha256:6d125e80883be8a2bef5f088c7535945b42cdbb8a0f5471bf36eaf18dc0638f1",
+        "sourceVersion": "v2.11.2",
+        "sourceCommit": "ffb6ab0644f24c5ee6542aca6bd59b7a1b0a8f91",
+        "license": "Apache-2.0",
+        "capabilityProof": "docker run --rm incursa-protocol-lab-caddy-http2:0.1.0 caddy version prints v2.11.2"
+      }
+    ]
+  },
+  "commands": {
+    "buildTemplate": "docker build --pull -f docker/Caddy.Dockerfile -t incursa-protocol-lab-caddy-http2:0.1.0 docker",
+    "versionProofTemplate": "docker run --rm incursa-protocol-lab-caddy-http2:0.1.0 caddy version",
+    "configTestTemplate": "docker run --rm incursa-protocol-lab-caddy-http2:0.1.0 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile",
+    "serverTemplate": "docker run --rm -p <port>:8080/tcp incursa-protocol-lab-caddy-http2:0.1.0 caddy run --config /etc/caddy/Caddyfile --adapter caddyfile",
+    "planOnly": "pwsh ./run.ps1 -PlanOnly",
+    "proofOnly": "pwsh ./run.ps1 -ProofOnly"
+  },
+  "knownLimitations": [
+    "This package intentionally exposes only cleartext HTTP/2 prior knowledge (h2c) on its target port.",
+    "TLS with ALPN h2 is not configured or claimed; it requires a separate certificate-bearing package and compatible executor.",
+    "The existing go-http2-executor is the compatible executor for this package and fails closed on HTTP/1 fallback."
+  ]
+}

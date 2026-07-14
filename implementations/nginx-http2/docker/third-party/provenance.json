@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "protocol-lab.external-component-provenance.v1",
+  "component": "nginx",
+  "version": "1.29.0",
+  "sourceRepository": "https://github.com/nginx/nginx.git",
+  "sourceTag": "release-1.29.0",
+  "sourceCommit": "235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f",
+  "license": "BSD-2-Clause",
+  "licenseSource": "https://github.com/nginx/nginx/blob/release-1.29.0/LICENSE",
+  "containerImage": "nginx:1.29.0-alpine",
+  "containerImageIndexDigest": "sha256:d67ea0d64d518b1bb04acde3b00f722ac3e9764b3209a9b0a98924ba35e4b779",
+  "containerImageLinuxAmd64Digest": "sha256:845b5424415de5f77dd5753cbb7c1be8bd8e44cc81f20f9705783a02f8848317",
+  "verifiedAtUtc": "2026-07-14T00:00:00Z"
+}

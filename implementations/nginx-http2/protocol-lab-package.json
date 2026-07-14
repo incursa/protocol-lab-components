@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.nginx-http2",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "nginx HTTP/2 Implementation",
+  "entryManifests": [
+    "implementations/nginx-http2.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "nginx-http2",
+      "displayName": "nginx HTTP/2",
+      "protocols": [
+        "h2"
+      ],
+      "scenarios": [
+        "http2.core.plaintext",
+        "http2.core.json"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      }
+    ]
+  }
+}

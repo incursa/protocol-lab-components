@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "protocol-lab.external-component-provenance.v1",
+  "component": "Caddy",
+  "version": "2.11.2",
+  "sourceRepository": "https://github.com/caddyserver/caddy.git",
+  "sourceTag": "v2.11.2",
+  "sourceCommit": "ffb6ab0644f24c5ee6542aca6bd59b7a1b0a8f91",
+  "license": "Apache-2.0",
+  "licenseSource": "https://github.com/caddyserver/caddy/blob/v2.11.2/LICENSE",
+  "containerImage": "caddy:2.11.2-alpine",
+  "containerImageIndexDigest": "sha256:834468128c7696cec0ceea6172f7d692daf645ae51983ca76e39da54a97c570d",
+  "containerImageLinuxAmd64Digest": "sha256:6d125e80883be8a2bef5f088c7535945b42cdbb8a0f5471bf36eaf18dc0638f1",
+  "verifiedAtUtc": "2026-07-14T00:00:00Z"
+}

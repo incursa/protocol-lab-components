@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.caddy-http2",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Caddy HTTP/2 Implementation",
+  "entryManifests": [
+    "implementations/caddy-http2.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "caddy-http2",
+      "displayName": "Caddy HTTP/2",
+      "protocols": [
+        "h2"
+      ],
+      "scenarios": [
+        "http2.core.plaintext",
+        "http2.core.json"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      }
+    ]
+  }
+}
