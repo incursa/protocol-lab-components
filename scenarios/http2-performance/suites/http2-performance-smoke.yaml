@@ -1,0 +1,25 @@
+id: http2-performance-smoke
+name: ProtocolLab HTTP/2 implementation performance smoke suite
+description: Fast package-neutral HTTP/2 implementation validation for the deterministic plaintext and JSON response scenarios.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: http2-smoke
+scenarios:
+  - http2.core.plaintext
+  - http2.core.json
+protocol: h2
+defaults:
+  durationSeconds: 5
+  warmupSeconds: 1
+  repetitions: 1
+  connections: 1
+  streamsPerConnection: 1
+counterCapture:
+  enabledByDefault: false
+  tool: ""
+notes: Package-neutral non-publishable smoke selector for implementation bring-up. Implementations and test executors enter through run plans or package v2 inventory; this suite does not pin package references.
+tags:
+  - http2
+  - implementation-diversity
+  - smoke
+  - non-publishable
