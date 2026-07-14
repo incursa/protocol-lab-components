@@ -1,6 +1,6 @@
 # Go HTTP/1 Test Executor
 
-`go-http1-executor` is a lane-scoped Protocol Lab test executor for cleartext HTTP/1.1 validation and load generation. It is not a fallback executor and it does not claim HTTP/2 or HTTP/3 coverage. Version `0.3.0` validates the deterministic workload first, then invokes the package's exact pinned `oha 1.15.0` PGO binary and emits normalized HTTP executor JSON.
+`go-http1-executor` is a lane-scoped Protocol Lab test executor for cleartext HTTP/1.1 validation and load generation. It is not a fallback executor and it does not claim HTTP/2 or HTTP/3 coverage. Version `0.3.1` validates the deterministic workload first, then invokes the package's exact pinned `oha 1.15.0` PGO binary and emits normalized HTTP executor JSON. Its effective load shape retains the configured duration while the raw oha artifact preserves the measured wall-clock duration.
 
 ## Supported
 

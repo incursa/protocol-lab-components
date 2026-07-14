@@ -22,7 +22,7 @@ import (
 
 const (
 	executorID       = "go-http1-executor"
-	executorVersion  = "0.3.0"
+	executorVersion  = "0.3.1"
 	requestedFamily  = "h1"
 	requestedVersion = "HTTP/1.1"
 )
@@ -347,7 +347,7 @@ func joinURL(baseURL, requestPath string) (string, error) {
 		return "", errors.New("target-url must include scheme and host")
 	}
 	if !strings.EqualFold(parsed.Scheme, "http") {
-		return "", errors.New("go-http1-executor 0.3.0 supports cleartext HTTP/1.1 targets only")
+		return "", errors.New("go-http1-executor 0.3.1 supports cleartext HTTP/1.1 targets only")
 	}
 	parsed.Path = requestPath
 	parsed.RawQuery = ""

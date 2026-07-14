@@ -1,7 +1,7 @@
 {
   "packageId": "org.protocol-lab.components.executor.go-http1-executor",
   "packageKind": "test-executor",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "component": {
     "name": "go-http1-executor",
     "family": "go-http",

@@ -230,7 +230,7 @@ func runOhaLoad(targetBaseURL, outputDir string, expectation scenarioExpectation
 		},
 		EffectiveLoad: normalizedLoadShape{
 			Connections: config.Connections, Concurrency: config.Connections,
-			StreamsPerConnection: 1, DurationSeconds: parsed.Summary.Total,
+			StreamsPerConnection: 1, DurationSeconds: config.Duration.Seconds(),
 			WarmupSeconds: config.Warmup.Seconds(), Repetition: config.Repetition,
 		},
 		Metrics:  normalizeOhaMetrics(parsed, expectation.ExpectedStatus),
