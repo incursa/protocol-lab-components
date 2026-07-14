@@ -10,7 +10,7 @@ The public `protocol-lab` repository remains the workload and evidence-contract 
 
 ## 2026-07-13 vertical completion record
 
-The local diagnostic implementation began with the four verticals in the table below. The consolidated checkpoint following the table records the later identity breadth. Every accepted cell materialized one implementation package, one test-executor package, and one scenario package; passed fail-closed parser/admission; preserved executor stdout/stderr and protocol-specific raw artifacts; and emitted a schema-valid, artifact-hash-valid Protocol Execution Result v2. These are same-host local smoke results, not comparison, ranking, or publishable evidence.
+The local diagnostic implementation began with the four verticals in the table below. The consolidated checkpoint following the table records the later identity breadth. Every accepted cell materialized one implementation package, one test-executor package, and one scenario package; passed fail-closed parser/admission; preserved executor stdout/stderr and protocol-specific raw artifacts; and emitted a schema-valid, artifact-hash-valid Protocol Execution Result v2. These are same-host local smoke results, not comparison, ranking, or publishable evidence. The four table rows are historical dirty-source diagnostic package selections and are not parity-eligible package evidence; later records explicitly described as clean and parity-eligible are separate rebuilds.
 
 | Lane | Exact selection | Completed / failed / timed out | Final Windows package SHA-256 values | Final evidence root |
 | --- | --- | --- | --- | --- |
@@ -21,7 +21,7 @@ The local diagnostic implementation began with the four verticals in the table b
 
 ### Consolidated executor-identity checkpoint
 
-The clean component package head is `9b37446`, with TLS evidence follow-ups through `bf8b7ec`; the runner integration head is `5bad8ff`, including the integration-only TLS record load-shape repair, exact DoQ admission, HTTP/1.1 TLS WebSocket diagnostic admission, exact mutual-TLS admission, exact TLS 1.2 admission, and exact ChaCha20 admission. The consolidated runner and CLI build with zero warnings and errors. The latest widened TLS runner gate passes `256/256`, package/manifest regressions pass `51/51`, and the preceding combined TLS, gRPC, secure-DNS, and WebSocket selection gate passed `274/274`. The component integration validates `62` public and `62` internal manifests; focused race tests and `go vet` pass for every consolidated Go executor and target.
+The current components maintenance head is `71e0d49b56a0d8aa007745cb8034ea2bf2b6ee16`, following immutable-remediation commit `fd6da99`; the runner integration head remains the historical `5bad8ff`, including the integration-only TLS record load-shape repair, exact DoQ admission, HTTP/1.1 TLS WebSocket diagnostic admission, exact mutual-TLS admission, exact TLS 1.2 admission, and exact ChaCha20 admission. This components-only maintenance pass did not change runner code or claim new runner admission. The consolidated runner and CLI build with zero warnings and errors at that historical runner checkpoint. The latest widened TLS runner gate passed `256/256`, package/manifest regressions passed `51/51`, and the preceding combined TLS, gRPC, secure-DNS, and WebSocket selection gate passed `274/274`. Current component validation covers `66` public and `66` internal manifests; all `16` scenario-package validators pass. Focused race tests and `go vet` pass for the maintained TLS and HTTP/2 WebSocket Go executors, and the Kestrel HTTP/2 WebSocket target builds with zero warnings and errors.
 
 - TLS now has exact runner-backed support for `tls.handshake.full`, `tls.handshake.resumed`, `tls.record.throughput`, and `tls.record.coverage`. The record cells completed `691 / 0 / 0` and one six-case operation with `0 / 0`; their Windows package hashes are scenario `acbdd31687d388f9e236016475fc754d7f5ad5d0b43b3d5cb92443d61bde58c1`, executor `072a193facfc56d9e6620822205ab287e820ef0bb595b757492cd38255691e91`, and target `8140204a8db076c5af68c16f80686683aa6a7cbb0b009c55efb1f9e8bfb86ec3`. Record coverage remains experimental and requires explicit operator opt-in.
 - TLS 1.2 compatibility has exact package and runner support for `tls.handshake.full.tls12`. Package hashes are scenario `2302d553231d4e5b0f134ce68113146690b0883acf899fa1db6286517852f655`, executor Windows `d7c404f489c74907294636a074ba79cd3db8458eaf97e6d4e4435c6ee3af7596` and Linux `b32108d753299104a0c249511158367d6f5492f62ad84f2ad4bf86397fe1044e`, and target Windows `c2edceccb04efc3e9710db038eb12c417def99dfd012adfb5c95309ba8249f7b` and Linux `2b452abe207617d84db0026d69939dfe9a725d04354d8725dd491741c7504a7f`. The real extracted-package runner cell `C:\shared\src\incursa\.artifacts\tls12-runner-evidence\tls12-final-v1-direct-package-cell` completed `3,067 / 0 / 0` with zero application bytes and exact TLS 1.2, ECDHE-ECDSA AES-128-GCM, X25519, ALPN, certificate, fresh-session, and no-early-data proof. The public Protocol Execution Result v2 schema passes and all `9/9` referenced artifact hashes verify.
@@ -34,9 +34,9 @@ Final Linux package SHA-256 values are: TLS executor `b9c5ad8a9e5d2eafb4be2d234c
 
 Runner admission is exact rather than family-substituting. Target manifests carry an exact `scenario.<id>` capability, and the runner requires that capability before using the package-executor role bridge. The TLS parser checks TLS version, cipher, key exchange, ALPN, certificate DER/SPKI identity, no resumption, no early data, zero application bytes, load echo, identities, outcomes, and artifacts. The gRPC parser additionally checks the committed service digest, HTTP/2/TLS proof, channel reuse, 128/131/136 byte scopes and hashes, status/media type/trailers, and all terminal counts. The DoT parser checks local-authoritative-only semantics, exact DNS question/answer/TTL, canonical 27/43-byte hashes, two-octet framing, message-ID correlation, TLS/ALPN identity, and separate malformed/retry/failure/timeout counts. The DoH2 parser independently requires TLS 1.3 with ALPN `h2`, HTTP/2 without fallback, POST `/dns-query`, exact request and response media/cache semantics, message ID zero, canonical response normalization, genuine connection-establishment timing, and the same local-authoritative-only DNS identity.
 
-Explicit runner-unsupported inventories remain fail closed. TLS: `tls.early-data.accepted`, `tls.early-data.rejected`, and `tls.key-update.diagnostic`. gRPC/H2 has no remaining unsupported committed scenario ID in the `0.4.0` package and integrated runner. DNS: `dns.classic.tcp.query.a`, `dns.classic.udp-truncated-tcp-retry`, `dns.classic.udp.query.a`, `dns.doh3.get.a`, `dns.doh3.query.a`, `dns.doh3.query.aaaa`, `dns.doh3.query.cname-chain`, `dns.doh3.query.large-dnssec-shaped`, `dns.doh3.query.nodata`, and `dns.doh3.query.nxdomain`. WebSocket runner gaps remain all six RFC 8441 IDs and `http3.websocket.rfc9220.fragmented-binary-echo`; both now have exact component packages awaiting runner slices. The five RFC 9220 core IDs retain their existing runner support but must pass regression against the corrected exact-ID `0.2.0` component packages; no generic WebSocket substitution is allowed.
+Explicit runner-unsupported inventories remain fail closed. TLS: `tls.early-data.accepted`, `tls.early-data.rejected`, and `tls.key-update.diagnostic`. gRPC/H2 has no remaining unsupported committed scenario ID in the `0.4.0` package and integrated runner. DNS: `dns.classic.tcp.query.a`, `dns.classic.udp-truncated-tcp-retry`, `dns.classic.udp.query.a`, `dns.doh3.get.a`, `dns.doh3.query.a`, `dns.doh3.query.aaaa`, `dns.doh3.query.cname-chain`, `dns.doh3.query.large-dnssec-shaped`, `dns.doh3.query.nodata`, and `dns.doh3.query.nxdomain`. WebSocket runner gaps remain all six RFC 8441 IDs and `http3.websocket.rfc9220.fragmented-binary-echo`; both now have exact component packages awaiting runner slices. The five RFC 9220 core IDs retain their existing runner support but must pass regression against scenario `0.2.2` with executor and target `0.2.1`; no generic WebSocket substitution is allowed.
 
-Verification commands included `go test -race -count=1 ./...` and `go vet ./...` for every affected Go executor and target; warning-as-error builds for the affected .NET runner and CLI projects; `Validate-ProtocolLabComponentManifests.ps1`; every affected package builder and build-attestation validator; exact extracted three-package runner smokes; public repository health validation; Protocol Execution Result v2 JSON Schema plus artifact-hash validation; and `git diff --check`. The recorded clean-source package archives have parity-eligible local attestations, but none has been published; all local smoke evidence remains diagnostic and non-publishable.
+Verification commands included `go test -race -count=1 ./...` and `go vet ./...` for every affected Go executor and target; warning-as-error builds for affected .NET projects; `Validate-ProtocolLabComponentManifests.ps1`; affected package builders and build-attestation validators; exact extracted three-package smokes; public repository health validation where public files changed; Protocol Execution Result v2 JSON Schema plus artifact-hash validation for runner evidence; and `git diff --check`. Only archives whose individual records explicitly say clean and parity-eligible carry that status. Historical dirty-source package hashes and same-host cells remain diagnostic-only. No package in this plan has been published, and all local smoke evidence remains non-publishable.
 
 The installed `workbench validate --profile core` command is not a clean repository-local gate in this workspace: it exited `1` after traversing `C:\shared\src\incursa` and reporting pre-existing broken Markdown links in unrelated repositories, vendored `node_modules`, and other worktrees. This failure was not suppressed or represented as a ProtocolLab pass; the focused runner SpecTrace JSON parse, tests, builds, package validation, and public repository-health validator are the applicable green evidence for this slice.
 
@@ -525,7 +525,8 @@ Status: the original five-ID `0.1.0` package and runner lane remains complete. C
 
 #### E8f — HTTP/3 RFC 9220 fragmented binary diagnostic
 
-Component version `0.2.1` corrects the existing aioquic RFC 9220 package family
+This `0.2.1` record is historical; the immutable `0.2.2` scenario-only routing
+correction is recorded in E8g. Component version `0.2.1` corrected the existing aioquic RFC 9220 package family
 without creating a generic WebSocket lane. The scenario package
 `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket@0.2.1`
 authority-locks all six exact public scenario files byte-for-byte to public
@@ -607,6 +608,107 @@ The remaining explicit `unsupported` identities are `websocket.echo`,
 `http2.websocket.rfc8441.binary-echo`,
 `http2.websocket.rfc8441.close`, and
 `http2.websocket.rfc8441.multi-message-text-echo`. No identity is substituted.
+
+#### E8g — 2026-07-13 immutable package and profile-routing maintenance
+
+Components commits `fd6da99` and `71e0d49b56a0d8aa007745cb8034ea2bf2b6ee16`
+form the immutable maintenance chain from consolidated base
+`aa847bf264dceb520a91dad20534fdf9d79a9ab8`. Public authority remains exactly
+`protocol-lab@8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`; no public or runner repository
+was changed by this slice.
+
+`fd6da99` corrects `org.protocol-lab.components.executor.go-tls13-executor` to
+immutable version `0.3.1` across its package manifest, legacy compatibility
+manifest, executor entry manifest, source identity, logical generator, README,
+and builder preflight. It supports exactly `tls.handshake.full`,
+`tls.handshake.resumed`, `tls.record.throughput`, and `tls.record.coverage`.
+The other six committed TLS identities remain exact `unsupported` outcomes:
+`tls.handshake.full.tls12`, `tls.handshake.full.chacha20`,
+`tls.handshake.mutual-auth`, `tls.early-data.accepted`,
+`tls.early-data.rejected`, and `tls.key-update.diagnostic`; unknown identities
+exit `2`. The internal runner still selects historical executor `0.3.0`.
+Executor `0.3.1` therefore has no runner-admission claim and requires a future
+immutable runner bridge.
+
+Clean `fd6da99` package hashes are:
+
+- TLS scenario `org.protocol-lab.components.scenario.tls13-handshake-performance@0.2.1`: `d071a42ee8911f4b79df7d4503c9d56584195b84c5b54bd9714cea318678036a`;
+- TLS executor `go-tls13-executor@0.3.1`: Windows `9020b5940c9b556f737e7be8872b46834b3037a1aececc8b61a5b4283b375eb2`, Linux `4fc4b2127895646541b58fbe310a099a410aaaf48f8700cc734a3b7dad8b0157`;
+- unchanged TLS target `go-tls13@0.2.0`: Windows `75410647d4b7419e18c47a1f19fb735d27e05f526e1976fd2d5b65981c051c07`, Linux `7302f9f6ce7445ea8cdea21978d0292e98e60516b4fc87fea238f76c67fd4ea3`;
+- scenario-only suite-metadata releases: DoT `0.1.1` `2d509c44b515fe69c96006cce1cfda54dc795efb35e23f91013f7517f77d61b3`, DoH2 `0.1.1` `ea8b62650ae26553ad85c7d64f0db3af3dcd786382fcd8b102a5cb0029047354`, and DoQ `0.1.1` `e9ba2d83402176c84a39775bf6ca1bc27ef0ccd7517ca05faf64915b670649a2`.
+
+All eleven `fd6da99` archives and matching attestations pass
+`Test-ProtocolLabPackageBuildAttestation.ps1 -RequireParityEligible`, and all
+eleven source/extracted package-v2 manifest pairs validate. The extracted
+Windows TLS four-scenario regression completed full handshake `1489 / 0 / 0`,
+resumed handshake `933 / 0 / 0`, record throughput `472 / 0 / 0` with
+`494927872` transferred bytes, and one six-case record-coverage operation with
+`0 / 0` and `2230272` transferred bytes. It also proved all six unsupported
+identities and the unknown exit. Evidence is under
+`artifacts/audit-remediation-clean-fd6da99/tls-four-scenario-win-smoke`; packages
+are under `artifacts/audit-remediation-clean-fd6da99/packages`.
+
+`71e0d49` corrects package-local WebSocket routing without altering public
+authority. `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket`
+is scenario-only `0.2.2`; executor and target remain `0.2.1`. It locks the six
+v2 scenario files plus exact `websocket-smoke` SHA-256
+`f2005bfa254815f7d4975aefc39f0b9a6da79b0d2507178775cd4b0b3032c645`
+and exact `diagnostic` SHA-256
+`0e0b798a876a7cdf309e9f0138bff089b92666d60d9a69037b7e0d1b1ef34968`.
+The five core IDs remain in `aioquic-rfc9220-websocket-proof` on
+`websocket-smoke`; only `http3.websocket.rfc9220.fragmented-binary-echo` is in
+`aioquic-rfc9220-websocket-fragmentation-diagnostic` on `diagnostic`.
+Clean hashes are scenario `af777cbe5c43ad0a11aa2158191d24d4e4dcb4769d52e7412989b97402cc6b9c`,
+executor `9ffae34e2d4e6107546b4c39833633985104e4e9ac1ba0ba16b9d770156ac409`,
+and target `9e82fdd45d9e8ef62c325ce7a8b4189334b6aaf3fccc1c9fe1482a13907b5fe1`.
+The extracted Windows and Linux wrapper proofs each completed all six cells
+with `1 / 0 / 0`; their outcome summaries record `websocket-smoke` for five
+core IDs and `diagnostic` for fragmentation. Windows checked all `19`
+unsupported identities, Linux checked the adjacent RFC 8441 boundary, and both
+rejected unknown with exit `2`. Evidence roots are
+`artifacts/audit-remediation-clean-71e0d49/rfc9220-win-smoke` and
+`artifacts/audit-remediation-clean-71e0d49/rfc9220-linux-smoke`.
+
+The HTTP/2 WebSocket scenario pack is scenario-only `0.1.1`, with clean hash
+`8621d005cf446cf003a7b2d26f85419a0ec470840338e2f3b1312bf9b8084645`.
+Its five core IDs stay on `http2-websocket-performance-smoke` with
+`websocket-smoke`; `http2.websocket.rfc8441.multi-message-text-echo` is routed
+through `http2-websocket-multi-message-diagnostic` with exact `diagnostic`.
+Its archive and attestation are clean and parity-eligible, and extracted
+package-v2 validation passes. The requested diagnostic execution is explicitly
+blocked, not substituted: immutable `go-http2-websocket-executor@0.1.0`
+fail-closes `PLAB_LOAD_PROFILE_ID=diagnostic` with
+`expected "websocket-smoke" observed "diagnostic"`. Executor and target `0.1.0`
+were not changed. A separate immutable executor release is required before the
+sixth cell can produce compatible diagnostic evidence; existing `0.1.0`
+five-cell smoke evidence remains historical.
+
+Validation commands for this maintenance record were:
+
+```powershell
+pwsh ./scripts/package/Validate-ProtocolLabComponentManifests.ps1
+Get-ChildItem ./scenarios -Directory | Where-Object { Test-Path (Join-Path $_.FullName 'validate.ps1') } | ForEach-Object { & (Join-Path $_.FullName 'validate.ps1') }
+go test -race -count=1 ./...
+go vet ./...
+dotnet build ./implementations/kestrel-http2-websocket/source/KestrelHttp2WebSocket.csproj -c Release --no-restore -warnaserror
+pwsh ./scripts/package/Test-ProtocolLabPackageBuildAttestation.ps1 -PackagePath <archive> -AttestationPath <attestation> -RequireParityEligible
+pwsh ./scripts/package/Test-Tls13RecordPackageSmoke.ps1 -PackageRoot ./artifacts/audit-remediation-clean-fd6da99/packages -ArtifactRoot ./artifacts/audit-remediation-clean-fd6da99/tls-four-scenario-win-smoke
+pwsh ./scripts/package/Test-AioquicRfc9220WebSocketThreePackageSmoke.ps1 -PackageRoot ./artifacts/audit-remediation-clean-71e0d49/packages -ArtifactRoot ./artifacts/audit-remediation-clean-71e0d49/rfc9220-win-smoke
+python C:\Users\Samuel\.codex\skills\open-source-repo-maintenance\scripts\audit_repo.py C:\shared\src\incursa\.worktrees\protocol-lab-components-audit-remediation --profile incursa --format markdown
+git diff --check
+```
+
+The Linux RFC 9220 check invoked the extracted `execute.sh` through WSL for
+each exact ID against the extracted target image. Package build roots are
+`artifacts/audit-remediation-clean-fd6da99/packages` and
+`artifacts/audit-remediation-clean-71e0d49/packages`. Every archive named above
+has a matching local attestation and remains unpublished and non-publishable.
+
+Three unattested DoH3 selected copies were deliberately not changed, moved, or
+treated as evidence. Runner selection should use the original clean attested
+DoH3 archives under
+`protocol-lab-components-dns-doh3/artifacts/dns-doh3-clean-0500afb` until a
+separately authorized immutable release replaces them.
 
 ## Verification floor
 
