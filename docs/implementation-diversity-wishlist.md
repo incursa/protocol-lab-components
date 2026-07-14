@@ -49,40 +49,51 @@ currently centered on Kestrel.
    the resulting evidence bundle are retained, and unsupported/unavailable
    cells remain explicit.
 
-## Reconciled delivery baselines
+## Delivered baselines and integration heads
 
-The implementation program uses these exact starting points so package and
-runner work does not depend on dirty or divergent worktrees:
+Implementation work is isolated on
+`codex/implementation-diversity-20260713`; runner proof work is isolated on
+`codex/implementation-diversity-runner-20260714`; public contract reconciliation
+is isolated on `codex/http2-v2-reconciliation-20260713`. Unrelated dirty
+worktrees and the concurrent QUIC benchmark stream were not used or modified.
 
-| Surface | Commit | Role | Baseline evidence |
+| Surface | Delivered commit(s) | Result |
+| --- | --- | --- |
+| Public contracts | `f8117f3967c35f91baa9a19277d52f9e2c4a0c85`, `0dbb719` | HTTP/2 and HTTP/1 comparison topology and implementation selectors reconciled |
+| Components | `0371075`, `3f03d79`, `be52071`, `066aade`, `b23483d` | Exact scenario declarations, package-backed Docker targets, nginx capacity correction, and Jetty startup gating |
+| Runner | `7968663`, `0b88c9c`, `7a9b950`, `a998147`, `4766be6`, `f391b02`, `ff05d10`, `62a9138`, `67fbe0e`, `45446dc`, `10c112d`, `dc32269` | Package path/materialization fixes, selected-target evidence binding, cumulative gRPC compatibility, normalization fixes, Docker host/container port separation, and diverse WebSocket package binding |
+
+The final deployed Linux worker bundle is
+`cda268a7f045c27fce70ed16e151aed5aa916e887028a296ff1ff5fd18e76822`.
+The deployed worker executable is `6dfe5a22...`, Lab DLL is `ae1ecb0f...`,
+and runner DLL is `7c0848df...`; the prior deployment is retained at
+`/opt/protocol-lab/apps/linux-x64/worker.backup.20260714T175420Z`.
+
+## Final immutable implementation matrix
+
+| Cohort | Immutable implementation package(s) | Status | Accepted real-lab evidence |
 | --- | --- | --- | --- |
-| Public ProtocolLab contracts | `f8117f3967c35f91baa9a19277d52f9e2c4a0c85` | Exact HTTP/2 comparison topology plus the non-publishable `http2-performance-smoke` implementation selector | Suite schema validation passed; no implementation code |
-| ProtocolLab components | `4fe33d6584354f8f31b1a3294abe49fa42b0fee1` | Consolidated scenario and executor package identities | Clean component integration head used by every implementation lane |
-| ProtocolLab internal runner | `3aea501` (including `443e8e70e62e1670728411d70242206f0c2fe075`) | Consolidated exact executor admission and Protocol Execution Result v2 paths, package-backed Docker image materialization, and execution-only package capability application | All 34 focused `LabWorkerExecutorTests` and all 43 `LabPackageTests` passed. Controller bundle `bddb13cf...` and worker bundle `0c6d0b2a...` await the controller/SUT-worker refresh. |
+| HTTP/2 origins | `caddy-http2@0.1.0#ceec76004c2d...`; `nginx-http2@0.1.1#7d53f6aa5aa7...` | live-proven | `job-a91de4823b9a424cb2a813f169b85efd`: 4/4 Caddy/nginx JSON/plaintext cells passed validation, benchmark execution succeeded, and parsed metrics were present |
+| Apache HTTP origins | `apache-http1@0.1.4#baa12f22f3e8...`; `apache-http2@0.1.3#38214ba8ad21...` | live-proven | HTTP/1 `job-f43cbc3c2b27435a83cfd4e3fd995d07` and HTTP/2 `job-da5c9d28da254812b88ba21c58a1c7ff`: 2/2 cells in each job passed/succeeded/parsed |
+| TLS endpoint tools | `openssl-s-server@0.1.1#e270dcc338b6...`; `gnutls-serv@0.1.1#5bf19a9cd713...` | live-proven | `job-a33d47958e92421e8653f46d1dc2f9fe`: 2/2 passed/succeeded/parsed with exact TLS evidence |
+| TLS wrapper candidates | rustls example; s2n-tls utility | closed-by-decision | `docs/tls-endpoint-tool-feasibility.md` records why the unmodified utilities do not expose the complete contract |
+| Authoritative secure DNS | `bind9-dot@0.1.0#de8abf6e9353...` | live-proven | `job-8120d7bbb8c342828c643eec54d5927a`: 1/1 passed/succeeded/parsed and selected-target provenance was preserved |
+| Additional authoritative DNS | Technitium DoT/DoH2/DoH3/DoQ; BIND DoH2 | closed-by-decision | Package-local decision READMEs retain exact scenario, executor, protocol-control, and redistribution gaps |
+| Resolver secure DNS | Unbound DoT/DoH2 | closed-by-decision | Resolver-role semantics remain separate from authoritative scenarios and ranking |
+| gRPC core runtimes | `grpc-dotnet@0.1.1#7d1e33b2ad6d...`; `grpc-js@0.1.1#0596246c405b...` | live-proven | `job-037f36ec1657451a9af8c6052350b019`: 8/8 unary/server-streaming/client-streaming/bidi-streaming cells passed/succeeded/parsed |
+| gRPC terminal runtimes | `grpc-java-netty@0.1.1#952e81acd132...`; `grpc-cpp@0.1.1#7ea94b31918a...` | live-proven | `job-46c2796bece64c0199b6d9aebcd3244a`: 4/4 cancellation/deadline cells passed/succeeded/parsed |
+| WebSocket runtimes | `websocat-http1-websocket@0.1.1#fa170d33eec0...`; `node-ws-websocket@0.1.1#cee6978e4a9c...`; `jetty-websocket@0.1.2#58766954c0b0...`; `uwebsockets-websocket@0.1.1#be144ae00042...` | live-proven with one explicit unsupported row | `job-281688b290964f23baaf9632642b11a5`: 19 passed/succeeded/parsed rows; websocat binary echo alone remained unsupported/skipped; zero other rows; 1,126 artifacts |
 
-Implementation work is integrated through
-`codex/implementation-diversity-20260713`. Runner proof work is isolated in
-`codex/implementation-diversity-runner-20260714`. Existing dirty worktrees and
-the concurrent QUIC benchmark stream are not inputs to this program.
+All implementation packages above were controller-admitted and selected by
+immutable version and SHA-256 alongside the exact executor and scenario
+packages. Failed corrective jobs are diagnostic history only and are not
+acceptance evidence. The final controller state had zero active jobs, and the
+SUT had no leftover `incursa.protocol-lab.target=true` containers.
 
-## Delivery ledger
-
-Status values are `planned`, `implementing`, `local-proven`, `controller-admitted`,
-`live-proven`, or `closed-by-decision`. A package is not `live-proven` until a
-compatible controller job completes with validation and exact three-package
-provenance.
-
-| Cohort | Package(s) | Status | Local package evidence | Controller/job evidence |
-| --- | --- | --- | --- | --- |
-| HTTP/2 origins | `caddy-http2`, `nginx-http2` | controller-admitted | Extracted immutable packages `ceec7600...` and `74c60b2f...` passed both exact h2c scenarios with HTTP/2.0 observed and no fallback | Job `job-9bb04a815b6549e5af491bfd18f6a520` retained 164 artifacts but classified all cells `target-unsupported`: the deployed worker did not build absent package images. Runner fix `443e8e7` and worker bundle `0c6d0b2a...` are ready for refresh/retry. |
-| HTTP origins | `apache-http1`, `apache-http2` | controller-admitted | Six-package Apache smoke passed exact HTTP/1.1 and h2c rows; current packages are HTTP/1 `0.1.2` / `57870a74...` and HTTP/2 `0.1.1` / `448ad643...` | Job `job-621e5d80db2e424f8eafc8bc78bad083` proved the HTTP/1 target healthy and both validations passed, but the stale deployed CLI omitted `PLAB_TARGET_BASE_URL`; benchmark evidence is not accepted until the refreshed-runner retry. |
-| TLS endpoint tools | `openssl-s-server`, `gnutls-serv` | controller-admitted | Self-contained Docker packages `e270dcc3...` and `5bf19a9c...` passed exact `tls.handshake.full` TLS 1.3/AES-128-GCM/X25519/ALPN/certificate/non-resumption/zero-byte proof | Job `job-a290a600ef9b4037ad279a7ec6d01e47` retained 110 artifacts but classified both cells `validation-unsupported` because the deployed runner rejected the scenario's client role before starting the server. The current runner bundle is ready for refresh/retry. |
-| TLS wrapper candidates | rustls example, s2n-tls utility | closed-by-decision | Repository-backed feasibility audit in `docs/tls-endpoint-tool-feasibility.md`; neither unmodified upstream utility exposes the complete package contract | Not applicable |
-| Authoritative secure DNS | BIND DoT | controller-admitted | `bind9-dot@0.1.0` / `de8abf6e...` passed 5,241 exact local operations with TLS 1.3, ALPN `dot`, canonical answers, and zero failures/timeouts | Controller preview is 1 runnable, 0 unsupported/unavailable/invalid; live job awaits runner refresh. |
-| Authoritative secure DNS | Technitium DoT/DoH2/DoH3/DoQ; BIND DoH2 | closed-by-decision | Exact ALPN, cipher, HTTP-header, redistribution, and current scenario/executor gaps are retained in package-local decision READMEs | Not applicable until the named gaps are closed. |
-| Resolver secure DNS | Unbound DoT/DoH2 | closed-by-decision | Resolver-role semantics do not match the current authoritative scenario and ranking cohort; no false implementation package was created | Not applicable until a resolver scenario/cohort exists. |
-| gRPC runtimes | grpc-dotnet, Java/Netty, C++, grpc-js | controller-admitted | Exact immutable executor smoke passed all 12 .NET, 9 Node, 2 Java, and 2 C++ declared rows with TLS 1.3, ALPN `h2`, and no fallback | Controller previews are 8 and 4 runnable cells with zero invalid cells; live jobs await runner refresh. |
-| WebSocket runtimes | websocat, Node `ws`, Jetty, uWebSockets | controller-admitted | Extracted immutable Docker smoke passed 19/19 supported cells. Node, Jetty, and uWebSockets pass all five; websocat passes four and explicitly excludes binary echo. | Six packages are admitted/selectable. Controller preview is 19 runnable, 1 explicitly unsupported, 0 unavailable/invalid; live job awaits runner refresh. |
+Repository verification at closeout includes 81/81 public and 81/81 internal
+component manifests, the 19-cell extracted-package WebSocket diversity smoke,
+and focused runner tests for target lifecycle, TLS, DNS, gRPC, and WebSocket
+evidence writers.
 
 ## Wave 1 - general-purpose HTTP origins
 
