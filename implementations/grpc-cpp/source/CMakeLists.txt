@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.25)
+project(protocol_lab_grpc_cpp LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+find_package(Protobuf REQUIRED)
+find_package(gRPC CONFIG REQUIRED)
+add_executable(grpc-cpp-server server.cc ../generated/echo.pb.cc ../generated/echo.grpc.pb.cc)
+target_include_directories(grpc-cpp-server PRIVATE ../generated)
+target_link_libraries(grpc-cpp-server PRIVATE gRPC::grpc++ protobuf::libprotobuf)

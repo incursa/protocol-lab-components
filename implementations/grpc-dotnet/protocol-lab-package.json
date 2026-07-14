@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.grpc-dotnet",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "grpc-dotnet gRPC over HTTP/2 Target",
+  "entryManifests": ["implementations/grpc-dotnet.yaml"],
+  "providedImplementations": [{
+    "implementationId": "grpc-dotnet",
+    "displayName": "grpc-dotnet gRPC over HTTP/2 Target",
+    "protocols": ["h2"],
+    "scenarios": ["grpc.h2.unary.echo","grpc.h2.unary.empty","grpc.h2.unary.fixed-metadata","grpc.h2.unary.gzip","grpc.h2.unary.large","grpc.h2.server-streaming.echo","grpc.h2.client-streaming.echo","grpc.h2.bidi-streaming.echo","grpc.h2.trailers-only-status","grpc.h2.deadline-exceeded","grpc.h2.client-cancellation","grpc.h2.unary.echo-new-channel"]
+  }],
+  "dependencies": {"requiredCapabilities": [{"name":"docker","value":"true"}]}
+}

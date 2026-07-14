@@ -1,0 +1,16 @@
+syntax = "proto3";
+package protocollab.performance.v1;
+option java_multiple_files = false;
+message EchoRequest { bytes payload = 1; }
+message EchoResponse { bytes payload = 1; }
+service EchoService {
+  rpc UnaryEcho(EchoRequest) returns (EchoResponse);
+  rpc ServerStreamingEcho(EchoRequest) returns (stream EchoResponse);
+  rpc ClientStreamingEcho(stream EchoRequest) returns (EchoResponse);
+  rpc BidirectionalStreamingEcho(stream EchoRequest) returns (stream EchoResponse);
+  rpc TrailersOnlyStatus(EchoRequest) returns (EchoResponse);
+  rpc DeadlineExceeded(EchoRequest) returns (EchoResponse);
+  rpc ClientCancellation(EchoRequest) returns (stream EchoResponse);
+  rpc UnaryGzip(EchoRequest) returns (EchoResponse);
+  rpc UnaryFixedMetadata(EchoRequest) returns (EchoResponse);
+}
