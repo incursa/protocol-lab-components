@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.websocat-http1-websocket",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "websocat HTTP/1.1 WebSocket Diagnostic Origin",
+  "entryManifests": ["implementations/websocat-http1-websocket.yaml"],
+  "providedImplementations": [{
+    "implementationId": "websocat-http1-websocket",
+    "displayName": "websocat HTTP/1.1 WebSocket Diagnostic Origin",
+    "protocols": ["h1"],
+    "scenarios": ["http1.websocket.rfc6455.cleartext.upgrade", "http1.websocket.rfc6455.cleartext.control-frames", "http1.websocket.rfc6455.cleartext.text-echo", "http1.websocket.rfc6455.cleartext.close"]
+  }],
+  "dependencies": {"requiredCapabilities": [{"name": "docker", "value": "true"}]}
+}

@@ -1,0 +1,4 @@
+Eclipse Jetty 12.1.9 is used under the Eclipse Public License 2.0 or Apache License 2.0.
+Upstream source: https://github.com/jetty/jetty.project/tree/jetty-12.1.9
+Upstream commit: b1fb145d4b0ea34d7636012359604367f4de7496
+License text: https://github.com/jetty/jetty.project/blob/jetty-12.1.9/LICENSE
