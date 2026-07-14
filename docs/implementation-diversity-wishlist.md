@@ -56,9 +56,9 @@ runner work does not depend on dirty or divergent worktrees:
 
 | Surface | Commit | Role | Baseline evidence |
 | --- | --- | --- | --- |
-| Public ProtocolLab contracts | `96af5ea2e7b2d076b8b1e9d09df761da7227847b` | Exact HTTP/2 comparison topology layered on the public `8c4bbe8` protocol-family contract baseline | Clean committed contract reconciliation; no implementation code |
+| Public ProtocolLab contracts | `f8117f3967c35f91baa9a19277d52f9e2c4a0c85` | Exact HTTP/2 comparison topology plus the non-publishable `http2-performance-smoke` implementation selector | Suite schema validation passed; no implementation code |
 | ProtocolLab components | `4fe33d6584354f8f31b1a3294abe49fa42b0fee1` | Consolidated scenario and executor package identities | Clean component integration head used by every implementation lane |
-| ProtocolLab internal runner | `2c17e92` | Consolidated exact executor admission and Protocol Execution Result v2 paths | `dotnet restore` passed; solution build passed with 0 errors and 40 pre-existing platform/nullability warnings; 291 focused package, load-profile, and executor tests passed |
+| ProtocolLab internal runner | `443e8e70e62e1670728411d70242206f0c2fe075` | Consolidated exact executor admission and Protocol Execution Result v2 paths, plus package-backed Docker image materialization | Baseline restore/build and 291 focused tests passed; the Docker-build fix passed all 34 `LabWorkerExecutorTests`; Linux worker bundle SHA-256 `4384fda5ffa426b63fe02996a9dc65e6c16358363cea70ed10e5c1528952cc17` awaits the SUT-worker refresh |
 
 Implementation work is integrated through
 `codex/implementation-diversity-20260713`. Runner proof work is isolated in
@@ -74,13 +74,13 @@ provenance.
 
 | Cohort | Package(s) | Status | Local package evidence | Controller/job evidence |
 | --- | --- | --- | --- | --- |
-| HTTP/2 origins | `caddy-http2`, `nginx-http2` | implementing | Pending lane integration | Pending |
+| HTTP/2 origins | `caddy-http2`, `nginx-http2` | controller-admitted | Extracted immutable packages passed both exact h2c scenarios with HTTP/2.0 observed and no fallback | Job `job-9bb04a815b6549e5af491bfd18f6a520` retained 164 artifacts but classified all cells `target-unsupported`: deployed worker did not build absent package images. Runner fix `443e8e7` and bundle `4384fda...` are ready for refresh/retry. |
 | HTTP origins | `apache-http1`, `apache-http2` | implementing | Pending lane integration | Pending |
-| TLS endpoint tools | `openssl-s-server`, `gnutls-serv` | implementing | Pending lane integration | Pending |
-| TLS wrapper candidates | rustls example, s2n-tls utility | planned | Feasibility audit pending | Not applicable until admitted |
-| Authoritative secure DNS | Technitium DoT/DoH2/DoH3/DoQ; BIND DoT/DoH2 | planned | Pending | Pending |
-| Resolver secure DNS | Unbound DoT/DoH2 | planned | Pending | Pending |
-| gRPC runtimes | grpc-dotnet, Java/Netty, C++, grpc-js | planned | Pending | Pending |
+| TLS endpoint tools | `openssl-s-server`, `gnutls-serv` | controller-admitted | Exact `tls.handshake.full` extracted-package proof passed for both; integrated package hashes are `ee5ebc70...` and `d0439be8...` | Job `job-a290a600ef9b4037ad279a7ec6d01e47` retained 110 artifacts but classified both cells `validation-unsupported` because the deployed runner rejected the scenario's client role before starting the server. Current runner's package-executor target fallback and bundle are ready for refresh/retry. |
+| TLS wrapper candidates | rustls example, s2n-tls utility | closed-by-decision | Repository-backed feasibility audit in `docs/tls-endpoint-tool-feasibility.md`; neither unmodified upstream utility exposes the complete package contract | Not applicable |
+| Authoritative secure DNS | Technitium DoT/DoH2/DoH3/DoQ; BIND DoT/DoH2 | implementing | Isolated package lane active | Pending |
+| Resolver secure DNS | Unbound DoT/DoH2 | implementing | Isolated package lane active | Pending |
+| gRPC runtimes | grpc-dotnet, Java/Netty, C++, grpc-js | implementing | Isolated package lane active | Pending |
 | WebSocket runtimes | websocat, Node `ws`, Jetty, uWebSockets | planned | Pending | Pending |
 
 ## Wave 1 - general-purpose HTTP origins
