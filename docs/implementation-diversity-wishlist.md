@@ -49,6 +49,40 @@ currently centered on Kestrel.
    the resulting evidence bundle are retained, and unsupported/unavailable
    cells remain explicit.
 
+## Reconciled delivery baselines
+
+The implementation program uses these exact starting points so package and
+runner work does not depend on dirty or divergent worktrees:
+
+| Surface | Commit | Role | Baseline evidence |
+| --- | --- | --- | --- |
+| Public ProtocolLab contracts | `96af5ea2e7b2d076b8b1e9d09df761da7227847b` | Exact HTTP/2 comparison topology layered on the public `8c4bbe8` protocol-family contract baseline | Clean committed contract reconciliation; no implementation code |
+| ProtocolLab components | `4fe33d6584354f8f31b1a3294abe49fa42b0fee1` | Consolidated scenario and executor package identities | Clean component integration head used by every implementation lane |
+| ProtocolLab internal runner | `2c17e92` | Consolidated exact executor admission and Protocol Execution Result v2 paths | `dotnet restore` passed; solution build passed with 0 errors and 40 pre-existing platform/nullability warnings; 291 focused package, load-profile, and executor tests passed |
+
+Implementation work is integrated through
+`codex/implementation-diversity-20260713`. Runner proof work is isolated in
+`codex/implementation-diversity-runner-20260714`. Existing dirty worktrees and
+the concurrent QUIC benchmark stream are not inputs to this program.
+
+## Delivery ledger
+
+Status values are `planned`, `implementing`, `local-proven`, `controller-admitted`,
+`live-proven`, or `closed-by-decision`. A package is not `live-proven` until a
+compatible controller job completes with validation and exact three-package
+provenance.
+
+| Cohort | Package(s) | Status | Local package evidence | Controller/job evidence |
+| --- | --- | --- | --- | --- |
+| HTTP/2 origins | `caddy-http2`, `nginx-http2` | implementing | Pending lane integration | Pending |
+| HTTP origins | `apache-http1`, `apache-http2` | implementing | Pending lane integration | Pending |
+| TLS endpoint tools | `openssl-s-server`, `gnutls-serv` | implementing | Pending lane integration | Pending |
+| TLS wrapper candidates | rustls example, s2n-tls utility | planned | Feasibility audit pending | Not applicable until admitted |
+| Authoritative secure DNS | Technitium DoT/DoH2/DoH3/DoQ; BIND DoT/DoH2 | planned | Pending | Pending |
+| Resolver secure DNS | Unbound DoT/DoH2 | planned | Pending | Pending |
+| gRPC runtimes | grpc-dotnet, Java/Netty, C++, grpc-js | planned | Pending | Pending |
+| WebSocket runtimes | websocat, Node `ws`, Jetty, uWebSockets | planned | Pending | Pending |
+
 ## Wave 1 - general-purpose HTTP origins
 
 The target matrix is four comparable server families across HTTP/1.1 and
