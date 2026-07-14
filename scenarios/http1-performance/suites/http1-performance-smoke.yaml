@@ -1,0 +1,25 @@
+id: http1-performance-smoke
+name: ProtocolLab HTTP/1 implementation performance smoke suite
+description: Fast package-neutral HTTP/1 implementation validation for the deterministic plaintext and JSON response scenarios.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: http1-smoke
+scenarios:
+  - http1.core.plaintext
+  - http1.core.json
+protocol: h1
+defaults:
+  durationSeconds: 5
+  warmupSeconds: 1
+  repetitions: 1
+  connections: 1
+  streamsPerConnection: 1
+counterCapture:
+  enabledByDefault: false
+  tool: ""
+notes: Package-neutral non-publishable smoke selector for implementation bring-up. Implementations and test executors enter through run plans or package v2 inventory; this suite does not pin package references.
+tags:
+  - http1
+  - implementation-diversity
+  - smoke
+  - non-publishable
