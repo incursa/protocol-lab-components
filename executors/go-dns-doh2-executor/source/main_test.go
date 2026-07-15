@@ -18,13 +18,20 @@ func TestCanonicalFixtureHashesAndLengths(t *testing.T) {
 	}
 }
 func TestKnownUnsupportedInventoryIsExact(t *testing.T) {
-	expected := []string{"dns.classic.tcp.query.a", "dns.classic.udp-truncated-tcp-retry", "dns.classic.udp.query.a", "dns.doh3.get.a", "dns.doh3.query.a", "dns.doh3.query.aaaa", "dns.doh3.query.cname-chain", "dns.doh3.query.large-dnssec-shaped", "dns.doh3.query.nodata", "dns.doh3.query.nxdomain", "dns.doq.query.a", "dns.dot.query.a"}
+	expected := []string{"dns.classic.tcp.query.a", "dns.classic.udp-truncated-tcp-retry", "dns.classic.udp.query.a", "dns.doh3.get.a", "dns.doh3.query.a", "dns.doh3.query.aaaa", "dns.doh3.query.cname-chain", "dns.doh3.query.large-dnssec-shaped", "dns.doh3.query.nodata", "dns.doh3.query.nxdomain", "dns.doh3.interoperability.query.a", "dns.doq.query.a", "dns.doq.interoperability.query.a", "dns.dot.query.a", "dns.dot.interoperability.query.a"}
 	if len(knownUnsupported) != len(expected) {
 		t.Fatalf("count=%d", len(knownUnsupported))
 	}
 	for _, id := range expected {
 		if _, ok := knownUnsupported[id]; !ok {
 			t.Fatalf("missing %s", id)
+		}
+	}
+}
+func TestStrictAndInteroperabilityScenariosAreAdmitted(t *testing.T) {
+	for _, id := range []string{strictScenario, interopScenario} {
+		if _, ok := supportedScenarios[id]; !ok {
+			t.Fatalf("missing supported scenario %s", id)
 		}
 	}
 }

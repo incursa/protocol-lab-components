@@ -1,10 +1,24 @@
 {
-  "schemaVersion":"protocol-lab-package-v2",
-  "packageId":"org.protocol-lab.components.implementation.go-dns-doq",
-  "packageVersion":"0.1.0",
-  "kind":"implementation",
-  "displayName":"Go DNS-over-QUIC Local Fixture Authority",
-  "entryManifests":["implementations/go-dns-doq.yaml"],
-  "providedImplementations":[{"implementationId":"go-dns-doq","displayName":"Go DNS-over-QUIC Local Fixture Authority","protocols":["doq"],"scenarios":["dns.doq.query.a"]}],
-  "dependencies":{}
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.go-dns-doq",
+  "packageVersion": "0.2.0",
+  "kind": "implementation",
+  "displayName": "Go DNS-over-QUIC Local Fixture Authority",
+  "entryManifests": [
+    "implementations/go-dns-doq.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "go-dns-doq",
+      "displayName": "Go DNS-over-QUIC Local Fixture Authority",
+      "protocols": [
+        "doq"
+      ],
+      "scenarios": [
+        "dns.doq.query.a",
+        "dns.doq.interoperability.query.a"
+      ]
+    }
+  ],
+  "dependencies": {}
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion":"protocol-lab-package-v2",
   "packageId":"org.protocol-lab.components.scenario.dns-dot-performance",
-  "packageVersion":"0.1.1",
+  "packageVersion":"0.2.0",
   "kind":"scenario-pack",
   "displayName":"DNS-over-TLS Performance Smoke Scenario Pack",
-  "entryManifests":["scenarios/dns/dot/query-a.yaml","suites/dns-dot-performance-smoke.yaml","load-profiles/secure-dns-smoke.yaml","fixtures/canonical-plab-test-a.json","fixtures/secure-dns-tls13-profile-v1.json"],
-  "providedScenarios":[{"scenarioId":"dns.dot.query.a","displayName":"DNS over TLS Deterministic A Query","protocols":["dot"]}],
-  "providedSuites":[{"suiteId":"dns-dot-performance-smoke","displayName":"DNS over TLS Performance Smoke","protocols":["dot"]}]
+  "entryManifests":["scenarios/dns/dot/query-a.yaml","scenarios/dns/dot/interoperability-query-a.yaml","suites/dns-dot-performance-smoke.yaml","suites/dns-dot-interoperability-smoke.yaml","load-profiles/secure-dns-smoke.yaml","fixtures/canonical-plab-test-a.json","fixtures/secure-dns-tls13-profile-v1.json","fixtures/secure-dns-interoperability-profile-v2.json"],
+  "providedScenarios":[{"scenarioId":"dns.dot.query.a","displayName":"DNS over TLS Deterministic A Query","protocols":["dot"]},{"scenarioId":"dns.dot.interoperability.query.a","displayName":"DNS over TLS Authoritative Interoperability A Query","protocols":["dot"]}],
+  "providedSuites":[{"suiteId":"dns-dot-performance-smoke","displayName":"DNS over TLS Performance Smoke","protocols":["dot"]},{"suiteId":"dns-dot-interoperability-smoke","displayName":"DNS over TLS Authoritative Interoperability Smoke","protocols":["dot"],"purpose":"diagnostic","resultKind":"diagnostic"}]
 }

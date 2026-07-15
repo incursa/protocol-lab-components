@@ -223,7 +223,7 @@ no recursive upstream dependency.
 
 ## Workstream G - WebTransport and MASQUE
 
-- [ ] Audit the existing WebTransport and MASQUE public contracts against the
+- [x] Audit the existing WebTransport and MASQUE public contracts against the
   current component executor and scenario surfaces before adding packages.
 - [ ] Package webtransport-go plus one independent WebTransport ecosystem and
   live-prove the common session/stream/datagram contract.
@@ -247,7 +247,7 @@ no recursive upstream dependency.
 - [ ] Publish accepted reports through the normal report-import pipeline and
   verify their protocol, implementation, workload, run, artifact, and
   comparison pages on `lab.incursa.com`.
-- [ ] Replace ambiguous top-level public labels with the four-state vocabulary
+- [x] Replace ambiguous top-level public labels with the four-state vocabulary
   in this document while preserving technical claim level, publishability,
   evidence class, topology, validation, and exclusion details in disclosures.
 - [ ] Show tested/admitted/cataloged denominators on every protocol hub and an

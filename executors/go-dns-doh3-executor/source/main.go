@@ -18,6 +18,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -30,9 +31,9 @@ import (
 
 const (
 	executorID           = "go-dns-doh3-executor"
-	executorVersion      = "0.1.0"
+	executorVersion      = "0.2.0"
 	loadGeneratorID      = "go-dns-doh3-load"
-	loadGeneratorVersion = "0.1.0"
+	loadGeneratorVersion = "0.2.0"
 	profileID            = "secure-dns-smoke"
 	serverName           = "dns.plab.test"
 	mediaType            = "application/dns-message"
@@ -43,29 +44,33 @@ const (
 )
 
 var knownUnsupported = map[string]struct{}{
-	"dns.classic.tcp.query.a": {}, "dns.classic.udp-truncated-tcp-retry": {}, "dns.classic.udp.query.a": {}, "dns.doh2.query.a": {}, "dns.doq.query.a": {}, "dns.dot.query.a": {},
+	"dns.classic.tcp.query.a": {}, "dns.classic.udp-truncated-tcp-retry": {}, "dns.classic.udp.query.a": {},
+	"dns.doh2.query.a": {}, "dns.doh2.interoperability.query.a": {}, "dns.doq.query.a": {}, "dns.doq.interoperability.query.a": {},
+	"dns.dot.query.a": {}, "dns.dot.interoperability.query.a": {},
 }
 
 type tlsProof struct {
-	TLSVersion                    string  `json:"tlsVersion"`
-	CipherSuite                   string  `json:"cipherSuite"`
-	KeyExchangeGroup              string  `json:"keyExchangeGroup"`
-	SignatureScheme               string  `json:"signatureScheme"`
-	ALPN                          string  `json:"alpn"`
-	ServerName                    string  `json:"serverName"`
-	HandshakeComplete             bool    `json:"handshakeComplete"`
-	DidResume                     bool    `json:"didResume"`
-	EarlyDataAttempted            bool    `json:"earlyDataAttempted"`
-	CertificateProfile            string  `json:"certificateProfile"`
-	CertificateDERSHA256          string  `json:"certificateDerSha256"`
-	CertificateSPKISHA256         string  `json:"certificateSpkiSha256"`
-	CertificateSignatureAlgorithm string  `json:"certificateSignatureAlgorithm"`
-	CertificatePublicKeyAlgorithm string  `json:"certificatePublicKeyAlgorithm"`
-	CertificateNamedCurve         string  `json:"certificateNamedCurve"`
-	VerifiedChainCount            int     `json:"verifiedChainCount"`
-	SentCertificateCount          int     `json:"sentCertificateCount"`
-	TrustAnchorSent               bool    `json:"trustAnchorSent"`
-	ConnectionLatencyMilliseconds float64 `json:"connectionLatencyMilliseconds"`
+	TLSVersion                    string            `json:"tlsVersion"`
+	CipherSuite                   string            `json:"cipherSuite"`
+	KeyExchangeGroup              string            `json:"keyExchangeGroup"`
+	SignatureScheme               string            `json:"signatureScheme"`
+	ALPN                          string            `json:"alpn"`
+	ServerName                    string            `json:"serverName"`
+	HandshakeComplete             bool              `json:"handshakeComplete"`
+	DidResume                     bool              `json:"didResume"`
+	EarlyDataAttempted            bool              `json:"earlyDataAttempted"`
+	CertificateProfile            string            `json:"certificateProfile"`
+	CertificateDERSHA256          string            `json:"certificateDerSha256"`
+	CertificateSPKISHA256         string            `json:"certificateSpkiSha256"`
+	CertificateSignatureAlgorithm string            `json:"certificateSignatureAlgorithm"`
+	CertificatePublicKeyAlgorithm string            `json:"certificatePublicKeyAlgorithm"`
+	CertificateNamedCurve         string            `json:"certificateNamedCurve"`
+	VerifiedChainCount            int               `json:"verifiedChainCount"`
+	SentCertificateCount          int               `json:"sentCertificateCount"`
+	TrustAnchorSent               bool              `json:"trustAnchorSent"`
+	ConnectionLatencyMilliseconds float64           `json:"connectionLatencyMilliseconds"`
+	PlatformProvenance            map[string]string `json:"platformProvenance"`
+	AccelerationProvenance        map[string]string `json:"accelerationProvenance"`
 }
 type quicProof struct {
 	Version           string `json:"version"`
@@ -410,7 +415,7 @@ func validateTLS(state *tls.ConnectionState, latency float64) (tlsProof, error) 
 	if state == nil {
 		return tlsProof{}, errors.New("missing TLS state")
 	}
-	p := tlsProof{TLSVersion: tlsVersionName(state.Version), CipherSuite: tls.CipherSuiteName(state.CipherSuite), KeyExchangeGroup: "X25519", SignatureScheme: "ecdsa_secp256r1_sha256", ALPN: state.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: state.HandshakeComplete, DidResume: state.DidResume, EarlyDataAttempted: false, CertificateProfile: certificateProfile, VerifiedChainCount: len(state.VerifiedChains), SentCertificateCount: len(state.PeerCertificates), TrustAnchorSent: false, ConnectionLatencyMilliseconds: latency}
+	p := tlsProof{TLSVersion: tlsVersionName(state.Version), CipherSuite: tls.CipherSuiteName(state.CipherSuite), KeyExchangeGroup: "X25519", SignatureScheme: "ecdsa_secp256r1_sha256", ALPN: state.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: state.HandshakeComplete, DidResume: state.DidResume, EarlyDataAttempted: false, CertificateProfile: certificateProfile, VerifiedChainCount: len(state.VerifiedChains), SentCertificateCount: len(state.PeerCertificates), TrustAnchorSent: false, ConnectionLatencyMilliseconds: latency, PlatformProvenance: runtimeProvenance(), AccelerationProvenance: accelerationProvenance()}
 	if len(state.PeerCertificates) > 0 {
 		c := state.PeerCertificates[0]
 		p.CertificateDERSHA256 = hashOf(c.Raw)
@@ -595,4 +600,8 @@ func writeRequired(dir, name string, value any) {
 		fatal(1, err)
 	}
 }
-func fatal(code int, err error) { fmt.Fprintln(os.Stderr, err); os.Exit(code) }
+func runtimeProvenance() map[string]string {
+	return map[string]string{"goos": runtime.GOOS, "goarch": runtime.GOARCH, "goVersion": runtime.Version()}
+}
+func accelerationProvenance() map[string]string { return map[string]string{"mode": "not-reported"} }
+func fatal(code int, err error)                 { fmt.Fprintln(os.Stderr, err); os.Exit(code) }

@@ -1,10 +1,10 @@
 {
   "schemaVersion":"protocol-lab-package-v2",
   "packageId":"org.protocol-lab.components.scenario.dns-doh2-performance",
-  "packageVersion":"0.1.1",
+  "packageVersion":"0.2.0",
   "kind":"scenario-pack",
   "displayName":"DNS-over-HTTPS HTTP/2 Performance Smoke Scenario Pack",
-  "entryManifests":["scenarios/dns/doh2/query-a.yaml","suites/dns-doh2-performance-smoke.yaml","load-profiles/secure-dns-smoke.yaml","fixtures/canonical-plab-test-a.json","fixtures/secure-dns-tls13-profile-v1.json"],
-  "providedScenarios":[{"scenarioId":"dns.doh2.query.a","displayName":"DNS over HTTPS HTTP/2 Deterministic A Query","protocols":["doh2"]}],
-  "providedSuites":[{"suiteId":"dns-doh2-performance-smoke","displayName":"DNS over HTTPS HTTP/2 Performance Smoke","protocols":["doh2"]}]
+  "entryManifests":["scenarios/dns/doh2/query-a.yaml","scenarios/dns/doh2/interoperability-query-a.yaml","suites/dns-doh2-performance-smoke.yaml","suites/dns-doh2-interoperability-smoke.yaml","load-profiles/secure-dns-smoke.yaml","fixtures/canonical-plab-test-a.json","fixtures/secure-dns-tls13-profile-v1.json","fixtures/secure-dns-interoperability-profile-v2.json"],
+  "providedScenarios":[{"scenarioId":"dns.doh2.query.a","displayName":"DNS over HTTPS HTTP/2 Deterministic A Query","protocols":["doh2"]},{"scenarioId":"dns.doh2.interoperability.query.a","displayName":"DNS over HTTPS HTTP/2 Authoritative Interoperability A Query","protocols":["doh2"]}],
+  "providedSuites":[{"suiteId":"dns-doh2-performance-smoke","displayName":"DNS over HTTPS HTTP/2 Performance Smoke","protocols":["doh2"]},{"suiteId":"dns-doh2-interoperability-smoke","displayName":"DNS over HTTPS HTTP/2 Authoritative Interoperability Smoke","protocols":["doh2"],"purpose":"diagnostic","resultKind":"diagnostic"}]
 }

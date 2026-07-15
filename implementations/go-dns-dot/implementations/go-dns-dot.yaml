@@ -16,10 +16,11 @@ protocols: [dot]
 supportedProtocols: [dot]
 supportedWorkloadFamilies: [dns.secure]
 supportedProtocolVersions: [DoT/TLS1.3]
-supportedScenarios: [dns.dot.query.a]
-supportedTestCaseIds: [dns.dot.query.a]
+supportedScenarios: [dns.dot.query.a, dns.dot.interoperability.query.a]
+supportedTestCaseIds: [dns.dot.query.a, dns.dot.interoperability.query.a]
 scenarioCoverage:
   dns.dot.query.a: {status: supported, behavior: fixed local authoritative plab.test. IN A response with 192.0.2.1 and TTL zero}
+  dns.dot.interoperability.query.a: {status: supported, behavior: the same authenticated local authoritative A response under the negotiated-parameter interoperability profile}
   dns.classic.tcp.query.a: {status: unsupported, reason: Classic DNS/TCP is a separate evidence lane.}
   dns.classic.udp-truncated-tcp-retry: {status: unsupported, reason: Classic DNS/UDP and fallback are absent.}
   dns.classic.udp.query.a: {status: unsupported, reason: Classic DNS/UDP is a separate evidence lane.}
@@ -37,7 +38,7 @@ ports: [{name: dot, protocol: tcp, default: 18530, hostPort: 18530, containerPor
 environment: {PLAB_DOT_PORT: "18530"}
 startup: {port: {name: dot, environmentVariable: PLAB_DOT_PORT, default: 18530}, readiness: {protocol: process, timeoutSeconds: 10}}
 readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 500}
-capabilities: [dns.authoritative-server, dns.dot, dns.local-fixture-only, tls13, dnsTwoOctetFraming, scenario.dns.dot.query.a]
+capabilities: [dns.authoritative-server, dns.dot, dns.local-fixture-only, tls13, dnsTwoOctetFraming, scenario.dns.dot.query.a, scenario.dns.dot.interoperability.query.a]
 entrypoint: {kind: process, path: bin/linux-x64/go-dns-dot, arguments: [], workingDirectory: .}
 shutdownBehavior: graceful-termination
 artifactExports: []

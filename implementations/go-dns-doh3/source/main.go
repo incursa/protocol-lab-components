@@ -20,7 +20,7 @@ import (
 )
 
 const implementationID = "go-dns-doh3"
-const implementationVersion = "0.1.0"
+const implementationVersion = "0.2.0"
 const mediaType = "application/dns-message"
 
 func main() {

@@ -24,7 +24,7 @@ import (
 
 const (
 	implementationID      = "go-dns-doq"
-	implementationVersion = "0.1.0"
+	implementationVersion = "0.2.0"
 	fixtureID             = "dns.plab-test-a.canonical"
 	queryHash             = "c46b9fb76019b5a644d0884b17e816cb7c3076275d9468c27d180f70488eb8ec"
 	responseHash          = "9d488461675ad5ab9f74c7b203861e1ad17521e413a407a25e6611012a595620"

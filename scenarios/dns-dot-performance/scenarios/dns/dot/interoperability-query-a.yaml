@@ -1,0 +1,44 @@
+schemaVersion: "2.0"
+version: "2.1.0"
+id: dns.dot.interoperability.query.a
+title: DNS over TLS Authoritative Interoperability A Query
+description: Query the local fixture authority over standards-based DoT while recording, rather than preselecting, conforming cryptographic parameters.
+status: draft
+kind: workload
+layer: application
+protocol: dot
+family: dns.secure
+semanticTemplateId: dns.query.a.plab-test
+protocolStack: [dns, dot, tls, tcp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc1035, https://www.rfc-editor.org/rfc/rfc7858, https://www.rfc-editor.org/rfc/rfc8310, https://www.rfc-editor.org/rfc/rfc9325, https://www.rfc-editor.org/rfc/rfc9539]
+roles: [client, authoritative-server]
+requires: {capabilities: [dns.client, dns.authoritative-server, dns.dot], protocols: [dot], roles: [client, authoritative-server]}
+trafficShape: request-response
+dns:
+  fixtureId: dns.plab-test-a.canonical
+  transport: dot
+  authorityMode: local-fixture-authoritative
+  cacheState: disabled
+  alpn: dot
+  connectionReuse: reuse
+  endpoint: {host: dns.plab.test, port: 853, serverName: dns.plab.test, addressResolution: runner-provided-local-binding}
+  tlsPolicy: {profileId: plab-secure-dns-interoperability-v2, allowedVersions: [tls1.2, tls1.3], resumptionPolicy: not-offered, earlyData: not-attempted, alpn: dot, certificateProfile: plab-secure-dns-interoperability-leaf-v2, cipherSuitePolicy: negotiated-rfc9325-compatible, keyExchangeGroupPolicy: negotiated-rfc9325-compatible, signatureSchemePolicy: negotiated-rfc9325-compatible, peerAuthentication: server-certificate-required, connectionLifecycle: pre-established-full-authenticated-connection, measuredWindow: dns-query-response, negotiatedParametersRequired: true}
+  authorityPolicy: {zone: plab.test., authoritativeAnswer: true, recursionDesired: false, recursionAvailable: false, externalUpstream: prohibited, outOfZoneResponse: REFUSED, unknownNameResponse: NXDOMAIN, existingNameUnknownTypeResponse: NOERROR-NODATA}
+  framing: {kind: two-octet-network-order-length-prefix, lengthPrefixOctets: 2, byteOrder: network, canonicalQueryMessageLength: 27, canonicalQueryPrefixHex: 001b, canonicalResponseMessageLength: 43, canonicalResponsePrefixHex: 002b}
+  concurrencyPolicy: {pipelining: allowed, messageIdScope: tls-connection, messageIdUniqueness: outstanding-queries, responseOrdering: may-differ-from-query-order, responseCorrelation: [message-id, qname, qtype, qclass], timedOutMessageIdReuse: prohibited-until-connection-close}
+  query: {name: plab.test., type: A, class: IN, wireLength: 27, normalizedWireSha256: c46b9fb76019b5a644d0884b17e816cb7c3076275d9468c27d180f70488eb8ec}
+  expectedResponse: {rcode: NOERROR, answer: 192.0.2.1, ttl: 0, wireLength: 43, normalizedWireSha256: 9d488461675ad5ab9f74c7b203861e1ad17521e413a407a25e6611012a595620}
+  runtimeIdPolicy: {messageId: unique-among-outstanding-queries, canonicalHashNormalization: set-message-id-to-zero}
+  responseNormalization: {rawResponseEqualityRequired: false, compressionMayDiffer: true, procedure: [parse-dns-message, canonical-reserialize, compare-normalized-sha256]}
+  operationPolicy: {timeoutSource: load-profile.dns.queryTimeoutMilliseconds, retries: 0, onTimeout: abandon-query-and-record}
+executionProfile: {transportSecurity: tls, protocolVariant: dot-rfc7858-interoperability, implementationRole: authoritative-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode, platformProvenanceRequired: true, accelerationProvenanceRequired: true}
+validation:
+  required: true
+  checks: [protocol:dot, tls-version:tls1.2-or-tls1.3, alpn:dot, certificate-san:dns.plab.test, negotiated-parameters-recorded, tls-policy:rfc9325-compatible, port:853, no-fallback, two-octet-length-prefix, unique-outstanding-message-ids, response-correlated-by-id-and-question, query-identity, query-flags-zero, response-question, response-aa-set, response-ra-clear, rcode:NOERROR, answer:192.0.2.1, normalized-wire-length:43, normalized-wire-sha256, zero-retries, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: dot, expectedObserved: dot, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic], primaryMetrics: [queriesPerSecond, queryLatencyP50, queryLatencyP95, queryLatencyP99, failedOperations, timedOutOperations]}
+requiredMetrics: [queriesPerSecond, queryLatencyMean, queryLatencyP50, queryLatencyP75, queryLatencyP90, queryLatencyP95, queryLatencyP99, connectionLatency, completedOperations, malformedOperations, retryCount, failedOperations, timedOutOperations, totalTransferredBytes, effectiveConcurrency]
+artifacts: {required: [validation.json, protocol-proof.json, dns-wire-summary.json, tls-negotiation.json, result.json, load.stdout.log, load.stderr.log], optional: [packet-summary.json, target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [public-recursive-resolver, external-upstream, cache-enabled]}
+networkProfile: clean
+tags: [dns, dot, tls, interoperability, authoritative, query, a, non-publishable]

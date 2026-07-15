@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestCanonicalFixtures(t *testing.T) {
-	if len(fixtures) != 7 {
+	if len(fixtures) != 8 {
 		t.Fatalf("count=%d", len(fixtures))
 	}
 	for _, f := range fixtures {
@@ -14,7 +14,7 @@ func TestCanonicalFixtures(t *testing.T) {
 }
 func TestSupportedScenarioOrder(t *testing.T) {
 	ids := sortedScenarioIDs()
-	if len(ids) != 7 || ids[0] != "dns.doh3.get.a" || ids[6] != "dns.doh3.query.nxdomain" {
+	if len(ids) != 8 || ids[0] != "dns.doh3.get.a" || ids[1] != "dns.doh3.interoperability.query.a" || ids[7] != "dns.doh3.query.nxdomain" {
 		t.Fatalf("ids=%v", ids)
 	}
 }

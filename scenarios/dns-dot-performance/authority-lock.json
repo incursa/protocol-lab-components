@@ -1,11 +1,14 @@
 {
-  "repository":"https://github.com/incursa/protocol-lab",
-  "commit":"8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574",
-  "files":{
-    "scenarios/dns/dot/query-a.yaml":"079e26fca88c3a9ca9b08886cf33659672291beac9ad3d3e576234aa89349b6c",
-    "suites/dns-dot-performance-smoke.yaml":"534e43a5311d9dcb364c005e5e195ec9e4725717018d0881aabaea30cfec03ee",
-    "load-profiles/secure-dns-smoke.yaml":"d407b6edaa5580bd7f1d9bcce1b2c2a06add2782d11d9f98dcac91f51d5ab787",
-    "fixtures/canonical-plab-test-a.json":"8c36ff782770541c9a7d31a38719f12da2a8a7a42d47792bda7e840ebaf2c008",
-    "fixtures/secure-dns-tls13-profile-v1.json":"9725dbeffacd9d1d29d1c777c7748fc74a56fcf9236f7733a0e9bab390b33068"
+  "repository": "https://github.com/incursa/protocol-lab",
+  "commit": "c0475b05cb80362760ac57e58ecfa1610a766c10",
+  "files": {
+    "scenarios/dns/dot/query-a.yaml": "079e26fca88c3a9ca9b08886cf33659672291beac9ad3d3e576234aa89349b6c",
+    "scenarios/dns/dot/interoperability-query-a.yaml": "873bd6dfb72d748796a4f5d92c55cd68e129f33b7073e6ca88621623f1c0918a",
+    "suites/dns-dot-performance-smoke.yaml": "534e43a5311d9dcb364c005e5e195ec9e4725717018d0881aabaea30cfec03ee",
+    "suites/dns-dot-interoperability-smoke.yaml": "328827e0438da181dae15d958f2944c37622eabdfce2d1ae47e11864855ee861",
+    "load-profiles/secure-dns-smoke.yaml": "d407b6edaa5580bd7f1d9bcce1b2c2a06add2782d11d9f98dcac91f51d5ab787",
+    "fixtures/canonical-plab-test-a.json": "8c36ff782770541c9a7d31a38719f12da2a8a7a42d47792bda7e840ebaf2c008",
+    "fixtures/secure-dns-tls13-profile-v1.json": "9725dbeffacd9d1d29d1c777c7748fc74a56fcf9236f7733a0e9bab390b33068",
+    "fixtures/secure-dns-interoperability-profile-v2.json": "2d0dbd40908b8c7dba4beddcdfe1ff31af445996add0f9368e761a6e18b740ab"
   }
 }

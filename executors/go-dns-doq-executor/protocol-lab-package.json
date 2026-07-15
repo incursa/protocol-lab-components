@@ -1,10 +1,28 @@
 {
-  "schemaVersion":"protocol-lab-package-v2",
-  "packageId":"org.protocol-lab.components.executor.go-dns-doq-executor",
-  "packageVersion":"0.1.0",
-  "kind":"test-executor",
-  "displayName":"Go DNS-over-QUIC Test Executor",
-  "entryManifests":["test-executors/go-dns-doq-executor.yaml"],
-  "providedTestExecutors":[{"testExecutorId":"go-dns-doq-executor","displayName":"Go DNS-over-QUIC Test Executor","protocols":["doq"],"scenarios":["dns.doq.query.a"],"tests":["dns.doq.query.a"]}],
-  "dependencies":{}
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.go-dns-doq-executor",
+  "packageVersion": "0.2.0",
+  "kind": "test-executor",
+  "displayName": "Go DNS-over-QUIC Test Executor",
+  "entryManifests": [
+    "test-executors/go-dns-doq-executor.yaml"
+  ],
+  "providedTestExecutors": [
+    {
+      "testExecutorId": "go-dns-doq-executor",
+      "displayName": "Go DNS-over-QUIC Test Executor",
+      "protocols": [
+        "doq"
+      ],
+      "scenarios": [
+        "dns.doq.query.a",
+        "dns.doq.interoperability.query.a"
+      ],
+      "tests": [
+        "dns.doq.query.a",
+        "dns.doq.interoperability.query.a"
+      ]
+    }
+  ],
+  "dependencies": {}
 }

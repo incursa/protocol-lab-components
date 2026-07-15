@@ -18,6 +18,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -26,10 +27,11 @@ import (
 
 const (
 	executorID           = "go-dns-dot-executor"
-	executorVersion      = "0.1.0"
+	executorVersion      = "0.2.0"
 	loadGeneratorID      = "go-dns-dot-load"
-	loadGeneratorVersion = "0.1.0"
-	supportedScenario    = "dns.dot.query.a"
+	loadGeneratorVersion = "0.2.0"
+	strictScenario       = "dns.dot.query.a"
+	interopScenario      = "dns.dot.interoperability.query.a"
 	supportedProfile     = "secure-dns-smoke"
 	serverName           = "dns.plab.test"
 	alpn                 = "dot"
@@ -50,6 +52,7 @@ var (
 		"dns.classic.udp-truncated-tcp-retry": {},
 		"dns.classic.udp.query.a":             {},
 		"dns.doh2.query.a":                    {},
+		"dns.doh2.interoperability.query.a":   {},
 		"dns.doh3.get.a":                      {},
 		"dns.doh3.query.a":                    {},
 		"dns.doh3.query.aaaa":                 {},
@@ -57,30 +60,35 @@ var (
 		"dns.doh3.query.large-dnssec-shaped":  {},
 		"dns.doh3.query.nodata":               {},
 		"dns.doh3.query.nxdomain":             {},
+		"dns.doh3.interoperability.query.a":   {},
 		"dns.doq.query.a":                     {},
+		"dns.doq.interoperability.query.a":    {},
 	}
+	supportedScenarios = map[string]struct{}{strictScenario: {}, interopScenario: {}}
 )
 
 type tlsProof struct {
-	TLSVersion                    string  `json:"tlsVersion"`
-	CipherSuite                   string  `json:"cipherSuite"`
-	KeyExchangeGroup              string  `json:"keyExchangeGroup"`
-	SignatureScheme               string  `json:"signatureScheme"`
-	ALPN                          string  `json:"alpn"`
-	ServerName                    string  `json:"serverName"`
-	HandshakeComplete             bool    `json:"handshakeComplete"`
-	DidResume                     bool    `json:"didResume"`
-	EarlyDataAttempted            bool    `json:"earlyDataAttempted"`
-	CertificateProfile            string  `json:"certificateProfile"`
-	CertificateDERSHA256          string  `json:"certificateDerSha256"`
-	CertificateSPKISHA256         string  `json:"certificateSpkiSha256"`
-	CertificateSignatureAlgorithm string  `json:"certificateSignatureAlgorithm"`
-	CertificatePublicKeyAlgorithm string  `json:"certificatePublicKeyAlgorithm"`
-	CertificateNamedCurve         string  `json:"certificateNamedCurve"`
-	VerifiedChainCount            int     `json:"verifiedChainCount"`
-	SentCertificateCount          int     `json:"sentCertificateCount"`
-	TrustAnchorSent               bool    `json:"trustAnchorSent"`
-	ConnectionLatencyMilliseconds float64 `json:"connectionLatencyMilliseconds"`
+	TLSVersion                    string            `json:"tlsVersion"`
+	CipherSuite                   string            `json:"cipherSuite"`
+	KeyExchangeGroup              string            `json:"keyExchangeGroup"`
+	SignatureScheme               string            `json:"signatureScheme"`
+	ALPN                          string            `json:"alpn"`
+	ServerName                    string            `json:"serverName"`
+	HandshakeComplete             bool              `json:"handshakeComplete"`
+	DidResume                     bool              `json:"didResume"`
+	EarlyDataAttempted            bool              `json:"earlyDataAttempted"`
+	CertificateProfile            string            `json:"certificateProfile"`
+	CertificateDERSHA256          string            `json:"certificateDerSha256"`
+	CertificateSPKISHA256         string            `json:"certificateSpkiSha256"`
+	CertificateSignatureAlgorithm string            `json:"certificateSignatureAlgorithm"`
+	CertificatePublicKeyAlgorithm string            `json:"certificatePublicKeyAlgorithm"`
+	CertificateNamedCurve         string            `json:"certificateNamedCurve"`
+	VerifiedChainCount            int               `json:"verifiedChainCount"`
+	SentCertificateCount          int               `json:"sentCertificateCount"`
+	TrustAnchorSent               bool              `json:"trustAnchorSent"`
+	ConnectionLatencyMilliseconds float64           `json:"connectionLatencyMilliseconds"`
+	PlatformProvenance            map[string]string `json:"platformProvenance"`
+	AccelerationProvenance        map[string]string `json:"accelerationProvenance"`
 }
 
 type dnsProof struct {
@@ -205,7 +213,7 @@ func main() {
 	}
 	writeRequired(*output, "tls-negotiation.json", preflight.TLSProof)
 	writeRequired(*output, "protocol-proof.json", map[string]any{"requestedProtocol": "dot", "observedProtocol": "dot", "protocolVariant": "dot-tls1.3-tcp", "fallbackDetected": false, "tls": preflight.TLSProof, "dns": preflight.LastDNSProof})
-	writeRequired(*output, "executor-identity.json", map[string]any{"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedScenarios": []string{supportedScenario}})
+	writeRequired(*output, "executor-identity.json", map[string]any{"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedScenarios": []string{strictScenario, interopScenario}})
 	if err != nil {
 		fatal(1, fmt.Errorf("DoT validity gate failed: %w", err))
 	}
@@ -244,7 +252,10 @@ func checkIdentityOrExit(output string) {
 	verifySubstitution("PLAB_PROTOCOL", "dot", "protocol")
 	verifySubstitution("PLAB_PROTOCOL_VARIANT", "dot-tls1.3-tcp", "protocol variant")
 	scenario := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
-	if scenario == "" || scenario == supportedScenario {
+	if scenario == "" {
+		scenario = strictScenario
+	}
+	if _, ok := supportedScenarios[scenario]; ok {
 		return
 	}
 	if _, ok := knownUnsupported[scenario]; ok {
@@ -259,7 +270,7 @@ func checkIdentityOrExit(output string) {
 }
 
 func loadConfig() (map[string]any, error) {
-	if strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID")) != supportedScenario {
+	if _, ok := supportedScenarios[selectedScenario()]; !ok {
 		return nil, errors.New("exact supported scenario identity is required")
 	}
 	if strings.TrimSpace(os.Getenv("PLAB_LOAD_PROFILE_ID")) != supportedProfile {
@@ -341,7 +352,7 @@ func connect(ctx context.Context, address string, roots *x509.CertPool) (*tls.Co
 }
 
 func validateTLS(state tls.ConnectionState) (tlsProof, error) {
-	proof := tlsProof{TLSVersion: tlsVersionName(state.Version), CipherSuite: tls.CipherSuiteName(state.CipherSuite), ALPN: state.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: state.HandshakeComplete, DidResume: state.DidResume, EarlyDataAttempted: false, CertificateProfile: certificateProfile, VerifiedChainCount: len(state.VerifiedChains)}
+	proof := tlsProof{TLSVersion: tlsVersionName(state.Version), CipherSuite: tls.CipherSuiteName(state.CipherSuite), ALPN: state.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: state.HandshakeComplete, DidResume: state.DidResume, EarlyDataAttempted: false, CertificateProfile: certificateProfile, VerifiedChainCount: len(state.VerifiedChains), PlatformProvenance: runtimeProvenance(), AccelerationProvenance: accelerationProvenance()}
 	proof.KeyExchangeGroup = "X25519"
 	proof.SignatureScheme = "ecdsa_secp256r1_sha256"
 	proof.SentCertificateCount = len(state.PeerCertificates)
@@ -433,11 +444,11 @@ func exchange(conn net.Conn, id uint16) (dnsProof, int64, error) {
 
 func normalizeResult(summary phaseSummary, requested map[string]any) result {
 	m := metrics{QueriesPerSecond: float64(summary.CompletedOperations) / summary.DurationSeconds, QueryLatencyMean: mean(summary.QueryLatencyMilliseconds), QueryLatencyP50: percentile(summary.QueryLatencyMilliseconds, .50), QueryLatencyP75: percentile(summary.QueryLatencyMilliseconds, .75), QueryLatencyP90: percentile(summary.QueryLatencyMilliseconds, .90), QueryLatencyP95: percentile(summary.QueryLatencyMilliseconds, .95), QueryLatencyP99: percentile(summary.QueryLatencyMilliseconds, .99), ConnectionLatency: summary.TLSProof.ConnectionLatencyMilliseconds, CompletedOperations: summary.CompletedOperations, MalformedOperations: summary.MalformedOperations, RetryCount: summary.RetryCount, FailedOperations: summary.FailedOperations, TimedOutOperations: summary.TimedOutOperations, TotalTransferredBytes: summary.TotalTransferredBytes, EffectiveConcurrency: summary.EffectiveConcurrency}
-	return result{SchemaVersion: "protocol-lab.dns-dot-executor-result.v1", ScenarioID: supportedScenario, LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "dot", "observedProtocol": "dot", "protocolVariant": "dot-tls1.3-tcp", "fallbackDetected": false, "tls": summary.TLSProof, "dns": summary.LastDNSProof}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": 1, "concurrency": 1, "outstandingQueries": 1}, Metrics: m, Warnings: []string{"Local package-backed DoT smoke is diagnostic and non-publishable. All other secure DNS bindings and semantic fixtures are unsupported by this executor."}}
+	return result{SchemaVersion: "protocol-lab.dns-dot-executor-result.v1", ScenarioID: selectedScenario(), LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "dot", "observedProtocol": "dot", "protocolVariant": "dot-tls1.3-tcp", "fallbackDetected": false, "tls": summary.TLSProof, "dns": summary.LastDNSProof}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": 1, "concurrency": 1, "outstandingQueries": 1}, Metrics: m, Warnings: []string{"Local package-backed DoT smoke is diagnostic and non-publishable. All other secure DNS bindings and semantic fixtures are unsupported by this executor."}}
 }
 
 func validationDocument(summary phaseSummary, err error) map[string]any {
-	return map[string]any{"scenarioId": supportedScenario, "fixtureId": fixtureID, "passed": err == nil, "requestedProtocol": "dot", "observedProtocol": func() string {
+	return map[string]any{"scenarioId": selectedScenario(), "fixtureId": fixtureID, "passed": err == nil, "requestedProtocol": "dot", "observedProtocol": func() string {
 		if summary.TLSProof.ALPN == alpn {
 			return "dot"
 		}
@@ -562,4 +573,15 @@ func writeRequired(dir, name string, value any) {
 		fatal(1, err)
 	}
 }
-func fatal(code int, err error) { fmt.Fprintln(os.Stderr, err); os.Exit(code) }
+func selectedScenario() string {
+	id := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
+	if id == "" {
+		return strictScenario
+	}
+	return id
+}
+func runtimeProvenance() map[string]string {
+	return map[string]string{"goos": runtime.GOOS, "goarch": runtime.GOARCH, "goVersion": runtime.Version()}
+}
+func accelerationProvenance() map[string]string { return map[string]string{"mode": "not-reported"} }
+func fatal(code int, err error)                 { fmt.Fprintln(os.Stderr, err); os.Exit(code) }

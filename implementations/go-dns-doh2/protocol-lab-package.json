@@ -1,10 +1,24 @@
 {
-  "schemaVersion":"protocol-lab-package-v2",
-  "packageId":"org.protocol-lab.components.implementation.go-dns-doh2",
-  "packageVersion":"0.1.0",
-  "kind":"implementation",
-  "displayName":"Go DNS-over-HTTPS HTTP/2 Local Fixture Authority",
-  "entryManifests":["implementations/go-dns-doh2.yaml"],
-  "providedImplementations":[{"implementationId":"go-dns-doh2","displayName":"Go DNS-over-HTTPS HTTP/2 Local Fixture Authority","protocols":["doh2"],"scenarios":["dns.doh2.query.a"]}],
-  "dependencies":{}
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.go-dns-doh2",
+  "packageVersion": "0.2.0",
+  "kind": "implementation",
+  "displayName": "Go DNS-over-HTTPS HTTP/2 Local Fixture Authority",
+  "entryManifests": [
+    "implementations/go-dns-doh2.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "go-dns-doh2",
+      "displayName": "Go DNS-over-HTTPS HTTP/2 Local Fixture Authority",
+      "protocols": [
+        "doh2"
+      ],
+      "scenarios": [
+        "dns.doh2.query.a",
+        "dns.doh2.interoperability.query.a"
+      ]
+    }
+  ],
+  "dependencies": {}
 }

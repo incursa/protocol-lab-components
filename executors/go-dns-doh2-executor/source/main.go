@@ -21,6 +21,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -29,10 +30,11 @@ import (
 
 const (
 	executorID           = "go-dns-doh2-executor"
-	executorVersion      = "0.1.0"
+	executorVersion      = "0.2.0"
 	loadGeneratorID      = "go-dns-doh2-load"
-	loadGeneratorVersion = "0.1.0"
-	supportedScenario    = "dns.doh2.query.a"
+	loadGeneratorVersion = "0.2.0"
+	strictScenario       = "dns.doh2.query.a"
+	interopScenario      = "dns.doh2.interoperability.query.a"
 	supportedProfile     = "secure-dns-smoke"
 	serverName           = "dns.plab.test"
 	fixtureID            = "dns.plab-test-a.canonical"
@@ -52,30 +54,34 @@ var (
 		"dns.classic.tcp.query.a": {}, "dns.classic.udp-truncated-tcp-retry": {}, "dns.classic.udp.query.a": {},
 		"dns.doh3.get.a": {}, "dns.doh3.query.a": {}, "dns.doh3.query.aaaa": {}, "dns.doh3.query.cname-chain": {},
 		"dns.doh3.query.large-dnssec-shaped": {}, "dns.doh3.query.nodata": {}, "dns.doh3.query.nxdomain": {},
-		"dns.doq.query.a": {}, "dns.dot.query.a": {},
+		"dns.doh3.interoperability.query.a": {}, "dns.doq.query.a": {}, "dns.doq.interoperability.query.a": {},
+		"dns.dot.query.a": {}, "dns.dot.interoperability.query.a": {},
 	}
+	supportedScenarios = map[string]struct{}{strictScenario: {}, interopScenario: {}}
 )
 
 type tlsProof struct {
-	TLSVersion                    string  `json:"tlsVersion"`
-	CipherSuite                   string  `json:"cipherSuite"`
-	KeyExchangeGroup              string  `json:"keyExchangeGroup"`
-	SignatureScheme               string  `json:"signatureScheme"`
-	ALPN                          string  `json:"alpn"`
-	ServerName                    string  `json:"serverName"`
-	HandshakeComplete             bool    `json:"handshakeComplete"`
-	DidResume                     bool    `json:"didResume"`
-	EarlyDataAttempted            bool    `json:"earlyDataAttempted"`
-	CertificateProfile            string  `json:"certificateProfile"`
-	CertificateDERSHA256          string  `json:"certificateDerSha256"`
-	CertificateSPKISHA256         string  `json:"certificateSpkiSha256"`
-	CertificateSignatureAlgorithm string  `json:"certificateSignatureAlgorithm"`
-	CertificatePublicKeyAlgorithm string  `json:"certificatePublicKeyAlgorithm"`
-	CertificateNamedCurve         string  `json:"certificateNamedCurve"`
-	VerifiedChainCount            int     `json:"verifiedChainCount"`
-	SentCertificateCount          int     `json:"sentCertificateCount"`
-	TrustAnchorSent               bool    `json:"trustAnchorSent"`
-	ConnectionLatencyMilliseconds float64 `json:"connectionLatencyMilliseconds"`
+	TLSVersion                    string            `json:"tlsVersion"`
+	CipherSuite                   string            `json:"cipherSuite"`
+	KeyExchangeGroup              string            `json:"keyExchangeGroup"`
+	SignatureScheme               string            `json:"signatureScheme"`
+	ALPN                          string            `json:"alpn"`
+	ServerName                    string            `json:"serverName"`
+	HandshakeComplete             bool              `json:"handshakeComplete"`
+	DidResume                     bool              `json:"didResume"`
+	EarlyDataAttempted            bool              `json:"earlyDataAttempted"`
+	CertificateProfile            string            `json:"certificateProfile"`
+	CertificateDERSHA256          string            `json:"certificateDerSha256"`
+	CertificateSPKISHA256         string            `json:"certificateSpkiSha256"`
+	CertificateSignatureAlgorithm string            `json:"certificateSignatureAlgorithm"`
+	CertificatePublicKeyAlgorithm string            `json:"certificatePublicKeyAlgorithm"`
+	CertificateNamedCurve         string            `json:"certificateNamedCurve"`
+	VerifiedChainCount            int               `json:"verifiedChainCount"`
+	SentCertificateCount          int               `json:"sentCertificateCount"`
+	TrustAnchorSent               bool              `json:"trustAnchorSent"`
+	ConnectionLatencyMilliseconds float64           `json:"connectionLatencyMilliseconds"`
+	PlatformProvenance            map[string]string `json:"platformProvenance"`
+	AccelerationProvenance        map[string]string `json:"accelerationProvenance"`
 }
 
 type dnsProof struct {
@@ -223,7 +229,7 @@ func main() {
 
 	preflight, err := runPhase(endpoint, roots, 0, true)
 	writeEvidence(*output, preflight, err)
-	writeRequired(*output, "executor-identity.json", map[string]any{"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedScenarios": []string{supportedScenario}})
+	writeRequired(*output, "executor-identity.json", map[string]any{"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedScenarios": []string{strictScenario, interopScenario}})
 	if err != nil {
 		fatal(1, fmt.Errorf("DoH2 validity gate failed: %w", err))
 	}
@@ -262,7 +268,10 @@ func checkIdentityOrExit(output string) {
 	verifySubstitution("PLAB_PROTOCOL", "doh2", "protocol")
 	verifySubstitution("PLAB_PROTOCOL_VARIANT", "doh-h2-tls-alpn", "protocol variant")
 	scenario := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
-	if scenario == "" || scenario == supportedScenario {
+	if scenario == "" {
+		scenario = strictScenario
+	}
+	if _, ok := supportedScenarios[scenario]; ok {
 		return
 	}
 	if _, ok := knownUnsupported[scenario]; ok {
@@ -277,7 +286,7 @@ func checkIdentityOrExit(output string) {
 }
 
 func loadConfig() (map[string]any, error) {
-	if strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID")) != supportedScenario {
+	if _, ok := supportedScenarios[selectedScenario()]; !ok {
 		return nil, errors.New("exact supported scenario identity is required")
 	}
 	if strings.TrimSpace(os.Getenv("PLAB_LOAD_PROFILE_ID")) != supportedProfile {
@@ -368,8 +377,11 @@ func exchange(client *http.Client, endpoint string, reused bool) (exchangeProof,
 	if response.ProtoMajor != 2 || response.Proto != "HTTP/2.0" {
 		return exchangeProof{}, malformedResponseError{"HTTP/2 protocol proof mismatch or fallback"}
 	}
-	if response.StatusCode != http.StatusOK || httpValue.ResponseContentType != mediaType || httpValue.ResponseCacheControl != "no-store" {
+	if response.StatusCode != http.StatusOK || httpValue.ResponseContentType != mediaType {
 		return exchangeProof{}, malformedResponseError{"DoH2 response status/header mismatch"}
+	}
+	if selectedScenario() == strictScenario && httpValue.ResponseCacheControl != "no-store" {
+		return exchangeProof{}, malformedResponseError{"strict DoH2 response requires Cache-Control: no-store"}
 	}
 	dnsValue, err := validateDNS(body)
 	if err != nil {
@@ -382,7 +394,7 @@ func validateTLS(state *tls.ConnectionState) (tlsProof, error) {
 	if state == nil {
 		return tlsProof{}, errors.New("missing TLS state")
 	}
-	proof := tlsProof{TLSVersion: tlsVersionName(state.Version), CipherSuite: tls.CipherSuiteName(state.CipherSuite), KeyExchangeGroup: "X25519", SignatureScheme: "ecdsa_secp256r1_sha256", ALPN: state.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: state.HandshakeComplete, DidResume: state.DidResume, EarlyDataAttempted: false, CertificateProfile: certificateProfile, VerifiedChainCount: len(state.VerifiedChains), SentCertificateCount: len(state.PeerCertificates), TrustAnchorSent: false}
+	proof := tlsProof{TLSVersion: tlsVersionName(state.Version), CipherSuite: tls.CipherSuiteName(state.CipherSuite), KeyExchangeGroup: "X25519", SignatureScheme: "ecdsa_secp256r1_sha256", ALPN: state.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: state.HandshakeComplete, DidResume: state.DidResume, EarlyDataAttempted: false, CertificateProfile: certificateProfile, VerifiedChainCount: len(state.VerifiedChains), SentCertificateCount: len(state.PeerCertificates), TrustAnchorSent: false, PlatformProvenance: runtimeProvenance(), AccelerationProvenance: accelerationProvenance()}
 	if len(state.PeerCertificates) > 0 {
 		cert := state.PeerCertificates[0]
 		proof.CertificateDERSHA256 = hash(cert.Raw)
@@ -532,10 +544,10 @@ func normalizeResult(s phaseSummary, requested map[string]any) result {
 	proof := s.LastProof
 	proof.TLS.ConnectionLatencyMilliseconds = s.ConnectionLatencyMilliseconds
 	artifacts := []string{"validation.json", "protocol-proof.json", "dns-wire-summary.json", "http-summary.json", "tls-negotiation.json", "dns-doh2-executor-result.json", "dns-load-summary.json", "dns-warmup-summary.json", "executor-identity.json", "load-generator-identity.json"}
-	return result{SchemaVersion: "protocol-lab.dns-doh2-executor-result.v1", ScenarioID: supportedScenario, LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "doh2", "observedProtocol": "doh2", "protocolVariant": "doh-h2-tls-alpn", "fallbackDetected": false, "tls": proof.TLS, "http": proof.HTTP, "dns": proof.DNS}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true, "localAuthoritativeOnly": true, "externalUpstreamUsed": false, "cacheEnabled": false}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": s.ActiveConnections, "concurrency": 1, "outstandingQueries": 1, "streamsPerConnection": 1, "activeStreams": s.EffectiveStreams}, Metrics: m, Warnings: []string{"Local package-backed DoH2 smoke is diagnostic and non-publishable. Every other DNS binding or semantic fixture is unsupported by this executor."}, Artifacts: artifacts}
+	return result{SchemaVersion: "protocol-lab.dns-doh2-executor-result.v1", ScenarioID: selectedScenario(), LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "doh2", "observedProtocol": "doh2", "protocolVariant": "doh-h2-tls-alpn", "fallbackDetected": false, "tls": proof.TLS, "http": proof.HTTP, "dns": proof.DNS}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true, "localAuthoritativeOnly": true, "externalUpstreamUsed": false, "cacheEnabled": false}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": s.ActiveConnections, "concurrency": 1, "outstandingQueries": 1, "streamsPerConnection": 1, "activeStreams": s.EffectiveStreams}, Metrics: m, Warnings: []string{"Local package-backed DoH2 smoke is diagnostic and non-publishable. Every other DNS binding or semantic fixture is unsupported by this executor."}, Artifacts: artifacts}
 }
 func validationDocument(s phaseSummary, err error) map[string]any {
-	return map[string]any{"scenarioId": supportedScenario, "fixtureId": fixtureID, "passed": err == nil, "requestedProtocol": "doh2", "observedProtocol": observedProtocol(s), "protocolVariant": "doh-h2-tls-alpn", "fallbackDetected": observedProtocol(s) != "doh2", "completedOperations": s.CompletedOperations, "malformedOperations": s.MalformedOperations, "retryCount": s.RetryCount, "failedOperations": s.FailedOperations, "timedOutOperations": s.TimedOutOperations, "externalUpstreamUsed": false, "cacheEnabled": false, "error": errorString(err)}
+	return map[string]any{"scenarioId": selectedScenario(), "fixtureId": fixtureID, "passed": err == nil, "requestedProtocol": "doh2", "observedProtocol": observedProtocol(s), "protocolVariant": "doh-h2-tls-alpn", "fallbackDetected": observedProtocol(s) != "doh2", "completedOperations": s.CompletedOperations, "malformedOperations": s.MalformedOperations, "retryCount": s.RetryCount, "failedOperations": s.FailedOperations, "timedOutOperations": s.TimedOutOperations, "externalUpstreamUsed": false, "cacheEnabled": false, "error": errorString(err)}
 }
 func observedProtocol(s phaseSummary) string {
 	if s.LastProof != nil && s.LastProof.HTTP.Version == "HTTP/2.0" && s.LastProof.TLS.ALPN == "h2" {
@@ -662,4 +674,15 @@ func writeRequired(dir, name string, value any) {
 		fatal(1, err)
 	}
 }
-func fatal(code int, err error) { fmt.Fprintln(os.Stderr, err); os.Exit(code) }
+func selectedScenario() string {
+	id := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
+	if id == "" {
+		return strictScenario
+	}
+	return id
+}
+func runtimeProvenance() map[string]string {
+	return map[string]string{"goos": runtime.GOOS, "goarch": runtime.GOARCH, "goVersion": runtime.Version()}
+}
+func accelerationProvenance() map[string]string { return map[string]string{"mode": "not-reported"} }
+func fatal(code int, err error)                 { fmt.Fprintln(os.Stderr, err); os.Exit(code) }

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.bind9-doh2",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "BIND 9 DoH2 Authority",
+  "entryManifests": ["implementations/bind9-doh2.yaml"],
+  "providedImplementations": [{
+    "implementationId": "bind9-doh2",
+    "displayName": "BIND 9 DoH2 Authority",
+    "protocols": ["doh2"],
+    "scenarios": ["dns.doh2.interoperability.query.a"]
+  }],
+  "dependencies": {"requiredCapabilities": [{"name": "docker", "value": "true"}]}
+}

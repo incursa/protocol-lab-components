@@ -1,4 +1,4 @@
 {
   "executor":{"language":"go","version":"1.26.1","module":"org.protocol-lab.components.executor.go-dns-doq-executor","buildFlags":["-buildvcs=false","-trimpath"]},
-  "loadGenerator":{"id":"go-quic-dns-load","version":"0.1.0","engineModule":"github.com/quic-go/quic-go","engineModuleVersion":"v0.60.0","license":"MIT","source":"https://github.com/quic-go/quic-go"}
+  "loadGenerator":{"id":"go-quic-dns-load","version":"0.2.0","engineModule":"github.com/quic-go/quic-go","engineModuleVersion":"v0.60.0","license":"MIT","source":"https://github.com/quic-go/quic-go"}
 }

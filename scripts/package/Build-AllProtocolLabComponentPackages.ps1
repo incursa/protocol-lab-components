@@ -315,6 +315,8 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'implementations/uwebsockets-websocket'; script = 'Build-UWebSocketsWebSocketPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/go-dns-doq'; script = 'Build-GoDnsDoqPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-dns-doq'; script = 'Build-GoDnsDoqPackage.ps1'; arguments = @('linux-x64') },
+    [pscustomobject]@{ componentPath = 'implementations/bind9-dot'; script = 'Build-Bind9DotPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/bind9-doh2'; script = 'Build-Bind9Doh2Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/go-dns-classic-authority'; script = 'Build-GoDnsClassicAuthorityPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-dns-classic-authority'; script = 'Build-GoDnsClassicAuthorityPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'implementations/kestrel-http3'; script = 'Build-KestrelHttp3Package.ps1'; arguments = @() },

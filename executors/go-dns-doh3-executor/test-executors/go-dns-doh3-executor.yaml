@@ -1,7 +1,8 @@
-executorIdentity: {id: go-dns-doh3-executor, name: Go DNS-over-HTTPS HTTP/3 Test Executor, version: 0.1.0, vendor: Incursa}
-versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.1.0}
+executorIdentity: {id: go-dns-doh3-executor, name: Go DNS-over-HTTPS HTTP/3 Test Executor, version: 0.2.0, vendor: Incursa}
+versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.2.0}
 claimedCapabilities:
   - {id: dns.doh3.query.a, status: supported}
+  - {id: dns.doh3.interoperability.query.a, status: supported}
   - {id: dns.doh3.get.a, status: supported}
   - {id: dns.doh3.query.aaaa, status: supported}
   - {id: dns.doh3.query.cname-chain, status: supported}
@@ -14,8 +15,11 @@ claimedCapabilities:
   - {id: dns.classic.udp-truncated-tcp-retry, status: unsupported}
   - {id: dns.classic.udp.query.a, status: unsupported}
   - {id: dns.doh2.query.a, status: unsupported}
+  - {id: dns.doh2.interoperability.query.a, status: unsupported}
   - {id: dns.doq.query.a, status: unsupported}
+  - {id: dns.doq.interoperability.query.a, status: unsupported}
   - {id: dns.dot.query.a, status: unsupported}
+  - {id: dns.dot.interoperability.query.a, status: unsupported}
 supportedTestSelectors: [{selectorType: test-id, expression: dns.doh3.*}]
 supportedScenarioSelectors: [{selectorType: scenario-id, expression: dns.doh3.*}]
 supportedProtocolFamilies: [doh3]

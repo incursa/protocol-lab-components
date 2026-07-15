@@ -1,10 +1,73 @@
 {
-  "packageId":"org.protocol-lab.components.executor.go-dns-dot-executor",
-  "packageKind":"test-executor",
-  "version":"0.1.0",
-  "component":{"name":"go-dns-dot-executor","family":"go-secure-dns","role":"test-executor","protocols":["dot"]},
-  "entrypoints":{"execute":{"type":"command","command":"./go-dns-dot-executor","workingDirectory":"."}},
-  "capabilities":{"supported":["dns.dot.query.a","dot.exact-binding-proof","tls13.exact-version-proof","dns.canonical-wire-validation"],"supportedProtocols":["dot"],"supportedProtocolVersions":["DoT/TLS1.3"],"supportedTestCaseIds":["dns.dot.query.a"],"supportedScenarios":["dns.dot.query.a"],"unsupportedKnownCases":["dns.classic.tcp.query.a","dns.classic.udp-truncated-tcp-retry","dns.classic.udp.query.a","dns.doh2.query.a","dns.doh3.get.a","dns.doh3.query.a","dns.doh3.query.aaaa","dns.doh3.query.cname-chain","dns.doh3.query.large-dnssec-shaped","dns.doh3.query.nodata","dns.doh3.query.nxdomain","dns.doq.query.a"]},
-  "requirements":{"os":["linux","windows"],"runtimes":[],"ports":[],"externalTools":[]},
-  "provenance":{"sourcePath":"executors/go-dns-dot-executor","owners":["protocol-lab-components"],"licenseNotes":"Built from the Go standard library and packages only the public ProtocolLab test root certificate."}
+  "packageId": "org.protocol-lab.components.executor.go-dns-dot-executor",
+  "packageKind": "test-executor",
+  "version": "0.2.0",
+  "component": {
+    "name": "go-dns-dot-executor",
+    "family": "go-secure-dns",
+    "role": "test-executor",
+    "protocols": [
+      "dot"
+    ]
+  },
+  "entrypoints": {
+    "execute": {
+      "type": "command",
+      "command": "./go-dns-dot-executor",
+      "workingDirectory": "."
+    }
+  },
+  "capabilities": {
+    "supported": [
+      "dns.dot.query.a",
+      "dns.dot.interoperability.query.a",
+      "dot.exact-binding-proof",
+      "tls13.exact-version-proof",
+      "dns.canonical-wire-validation"
+    ],
+    "supportedProtocols": [
+      "dot"
+    ],
+    "supportedProtocolVersions": [
+      "DoT/TLS1.3"
+    ],
+    "supportedTestCaseIds": [
+      "dns.dot.query.a",
+      "dns.dot.interoperability.query.a"
+    ],
+    "supportedScenarios": [
+      "dns.dot.query.a",
+      "dns.dot.interoperability.query.a"
+    ],
+    "unsupportedKnownCases": [
+      "dns.classic.tcp.query.a",
+      "dns.classic.udp-truncated-tcp-retry",
+      "dns.classic.udp.query.a",
+      "dns.doh2.query.a",
+      "dns.doh3.get.a",
+      "dns.doh3.query.a",
+      "dns.doh3.query.aaaa",
+      "dns.doh3.query.cname-chain",
+      "dns.doh3.query.large-dnssec-shaped",
+      "dns.doh3.query.nodata",
+      "dns.doh3.query.nxdomain",
+      "dns.doq.query.a"
+    ]
+  },
+  "requirements": {
+    "os": [
+      "linux",
+      "windows"
+    ],
+    "runtimes": [],
+    "ports": [],
+    "externalTools": []
+  },
+  "provenance": {
+    "sourcePath": "executors/go-dns-dot-executor",
+    "owners": [
+      "protocol-lab-components"
+    ],
+    "licenseNotes": "Built from the Go standard library and packages only the public ProtocolLab test root certificate."
+  }
 }

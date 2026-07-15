@@ -15,6 +15,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -25,10 +26,11 @@ import (
 
 const (
 	executorID           = "go-dns-doq-executor"
-	executorVersion      = "0.1.0"
+	executorVersion      = "0.2.0"
 	loadGeneratorID      = "go-quic-dns-load"
-	loadGeneratorVersion = "0.1.0"
-	supportedScenario    = "dns.doq.query.a"
+	loadGeneratorVersion = "0.2.0"
+	strictScenario       = "dns.doq.query.a"
+	interopScenario      = "dns.doq.interoperability.query.a"
 	supportedProfile     = "secure-dns-smoke"
 	serverName           = "dns.plab.test"
 	certificateProfile   = "plab-secure-dns-single-leaf-p256-v1"
@@ -40,31 +42,34 @@ const (
 
 var knownUnsupported = map[string]struct{}{
 	"dns.classic.tcp.query.a": {}, "dns.classic.udp-truncated-tcp-retry": {}, "dns.classic.udp.query.a": {},
-	"dns.doh2.query.a": {}, "dns.doh3.get.a": {}, "dns.doh3.query.a": {}, "dns.doh3.query.aaaa": {},
+	"dns.doh2.query.a": {}, "dns.doh2.interoperability.query.a": {}, "dns.doh3.get.a": {}, "dns.doh3.query.a": {}, "dns.doh3.interoperability.query.a": {}, "dns.doh3.query.aaaa": {},
 	"dns.doh3.query.cname-chain": {}, "dns.doh3.query.large-dnssec-shaped": {}, "dns.doh3.query.nodata": {},
-	"dns.doh3.query.nxdomain": {}, "dns.dot.query.a": {},
+	"dns.doh3.query.nxdomain": {}, "dns.dot.query.a": {}, "dns.dot.interoperability.query.a": {},
 }
+var supportedScenarios = map[string]struct{}{strictScenario: {}, interopScenario: {}}
 
 type tlsProof struct {
-	TLSVersion                    string  `json:"tlsVersion"`
-	CipherSuite                   string  `json:"cipherSuite"`
-	KeyExchangeGroup              string  `json:"keyExchangeGroup"`
-	SignatureScheme               string  `json:"signatureScheme"`
-	ALPN                          string  `json:"alpn"`
-	ServerName                    string  `json:"serverName"`
-	HandshakeComplete             bool    `json:"handshakeComplete"`
-	DidResume                     bool    `json:"didResume"`
-	EarlyDataAttempted            bool    `json:"earlyDataAttempted"`
-	CertificateProfile            string  `json:"certificateProfile"`
-	CertificateDERSHA256          string  `json:"certificateDerSha256"`
-	CertificateSPKISHA256         string  `json:"certificateSpkiSha256"`
-	CertificateSignatureAlgorithm string  `json:"certificateSignatureAlgorithm"`
-	CertificatePublicKeyAlgorithm string  `json:"certificatePublicKeyAlgorithm"`
-	CertificateNamedCurve         string  `json:"certificateNamedCurve"`
-	VerifiedChainCount            int     `json:"verifiedChainCount"`
-	SentCertificateCount          int     `json:"sentCertificateCount"`
-	TrustAnchorSent               bool    `json:"trustAnchorSent"`
-	ConnectionLatencyMilliseconds float64 `json:"connectionLatencyMilliseconds"`
+	TLSVersion                    string            `json:"tlsVersion"`
+	CipherSuite                   string            `json:"cipherSuite"`
+	KeyExchangeGroup              string            `json:"keyExchangeGroup"`
+	SignatureScheme               string            `json:"signatureScheme"`
+	ALPN                          string            `json:"alpn"`
+	ServerName                    string            `json:"serverName"`
+	HandshakeComplete             bool              `json:"handshakeComplete"`
+	DidResume                     bool              `json:"didResume"`
+	EarlyDataAttempted            bool              `json:"earlyDataAttempted"`
+	CertificateProfile            string            `json:"certificateProfile"`
+	CertificateDERSHA256          string            `json:"certificateDerSha256"`
+	CertificateSPKISHA256         string            `json:"certificateSpkiSha256"`
+	CertificateSignatureAlgorithm string            `json:"certificateSignatureAlgorithm"`
+	CertificatePublicKeyAlgorithm string            `json:"certificatePublicKeyAlgorithm"`
+	CertificateNamedCurve         string            `json:"certificateNamedCurve"`
+	VerifiedChainCount            int               `json:"verifiedChainCount"`
+	SentCertificateCount          int               `json:"sentCertificateCount"`
+	TrustAnchorSent               bool              `json:"trustAnchorSent"`
+	ConnectionLatencyMilliseconds float64           `json:"connectionLatencyMilliseconds"`
+	PlatformProvenance            map[string]string `json:"platformProvenance"`
+	AccelerationProvenance        map[string]string `json:"accelerationProvenance"`
 }
 
 type quicProof struct {
@@ -186,7 +191,7 @@ func main() {
 
 	preflight, err := runPhase(address, roots, 0, true)
 	writeEvidence(*output, preflight, err)
-	writeRequired(*output, "executor-identity.json", map[string]any{"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedScenarios": []string{supportedScenario}})
+	writeRequired(*output, "executor-identity.json", map[string]any{"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedScenarios": []string{strictScenario, interopScenario}})
 	if err != nil {
 		fatal(1, fmt.Errorf("DoQ validity gate failed: %w", err))
 	}
@@ -225,7 +230,7 @@ func checkIdentityOrExit(output string) {
 	requireIdentity("PLAB_PROTOCOL", "doq", "protocol")
 	requireIdentity("PLAB_PROTOCOL_VARIANT", "dns-over-quic-v1", "protocol variant")
 	scenario := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
-	if scenario == supportedScenario {
+	if _, ok := supportedScenarios[scenario]; ok {
 		return
 	}
 	if _, ok := knownUnsupported[scenario]; ok {
@@ -357,7 +362,7 @@ func exchange(connection *quic.Conn, reused bool, connectionLatency float64) (ex
 func validateConnection(connection *quic.Conn, connectionLatency float64, reused bool) (tlsProof, quicProof, error) {
 	state := connection.ConnectionState()
 	tlsState := &state.TLS
-	tlsValue := tlsProof{TLSVersion: tlsVersionName(tlsState.Version), CipherSuite: tls.CipherSuiteName(tlsState.CipherSuite), KeyExchangeGroup: "X25519", SignatureScheme: "ecdsa_secp256r1_sha256", ALPN: tlsState.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: tlsState.HandshakeComplete, DidResume: tlsState.DidResume, EarlyDataAttempted: state.Used0RTT, CertificateProfile: certificateProfile, VerifiedChainCount: len(tlsState.VerifiedChains), SentCertificateCount: len(tlsState.PeerCertificates), TrustAnchorSent: false, ConnectionLatencyMilliseconds: connectionLatency}
+	tlsValue := tlsProof{TLSVersion: tlsVersionName(tlsState.Version), CipherSuite: tls.CipherSuiteName(tlsState.CipherSuite), KeyExchangeGroup: "X25519", SignatureScheme: "ecdsa_secp256r1_sha256", ALPN: tlsState.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: tlsState.HandshakeComplete, DidResume: tlsState.DidResume, EarlyDataAttempted: state.Used0RTT, CertificateProfile: certificateProfile, VerifiedChainCount: len(tlsState.VerifiedChains), SentCertificateCount: len(tlsState.PeerCertificates), TrustAnchorSent: false, ConnectionLatencyMilliseconds: connectionLatency, PlatformProvenance: runtimeProvenance(), AccelerationProvenance: accelerationProvenance()}
 	if len(tlsState.PeerCertificates) > 0 {
 		certificate := tlsState.PeerCertificates[0]
 		tlsValue.CertificateDERSHA256 = hash(certificate.Raw)
@@ -409,11 +414,11 @@ func normalizeResult(summary phaseSummary, requested map[string]any) result {
 	value := metrics{QueriesPerSecond: float64(summary.CompletedOperations) / summary.DurationSeconds, QueryLatencyMean: mean(summary.QueryLatencies), QueryLatencyP50: percentile(summary.QueryLatencies, .50), QueryLatencyP75: percentile(summary.QueryLatencies, .75), QueryLatencyP90: percentile(summary.QueryLatencies, .90), QueryLatencyP95: percentile(summary.QueryLatencies, .95), QueryLatencyP99: percentile(summary.QueryLatencies, .99), TimeToFirstByte: mean(summary.TimeToFirstByte), ConnectionLatency: summary.ConnectionLatencyMilliseconds, CompletedOperations: summary.CompletedOperations, MalformedOperations: summary.MalformedOperations, RetryCount: summary.RetryCount, FailedOperations: summary.FailedOperations, TimedOutOperations: summary.TimedOutOperations, TotalTransferredBytes: summary.TotalTransferredBytes, EffectiveConcurrency: summary.EffectiveConcurrency, EffectiveStreams: summary.EffectiveStreams}
 	proof := summary.LastProof
 	artifacts := []string{"validation.json", "protocol-proof.json", "dns-wire-summary.json", "quic-summary.json", "tls-negotiation.json", "dns-doq-executor-result.json", "dns-load-summary.json", "dns-warmup-summary.json", "executor-identity.json", "load-generator-identity.json"}
-	return result{SchemaVersion: "protocol-lab.dns-doq-executor-result.v1", ScenarioID: supportedScenario, LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "doq", "observedProtocol": "doq", "protocolVariant": "dns-over-quic-v1", "fallbackDetected": false, "tls": proof.TLS, "quic": proof.QUIC, "stream": proof.Stream, "dns": proof.DNS}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true, "localAuthoritativeOnly": true, "externalUpstreamUsed": false, "cacheEnabled": false, "oneQueryPerStream": true, "clientAndServerFin": true}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": summary.ActiveConnections, "concurrency": 1, "outstandingQueries": 1, "streamsPerConnection": 1, "activeStreams": summary.EffectiveStreams}, Metrics: value, Warnings: []string{"Local package-backed DoQ smoke is diagnostic and non-publishable. Every other DNS binding or semantic fixture is unsupported by this executor."}, Artifacts: artifacts}
+	return result{SchemaVersion: "protocol-lab.dns-doq-executor-result.v1", ScenarioID: selectedScenario(), LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "doq", "observedProtocol": "doq", "protocolVariant": "dns-over-quic-v1", "fallbackDetected": false, "tls": proof.TLS, "quic": proof.QUIC, "stream": proof.Stream, "dns": proof.DNS}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true, "localAuthoritativeOnly": true, "externalUpstreamUsed": false, "cacheEnabled": false, "oneQueryPerStream": true, "clientAndServerFin": true}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": summary.ActiveConnections, "concurrency": 1, "outstandingQueries": 1, "streamsPerConnection": 1, "activeStreams": summary.EffectiveStreams}, Metrics: value, Warnings: []string{"Local package-backed DoQ smoke is diagnostic and non-publishable. Every other DNS binding or semantic fixture is unsupported by this executor."}, Artifacts: artifacts}
 }
 
 func validationDocument(summary phaseSummary, err error) map[string]any {
-	return map[string]any{"scenarioId": supportedScenario, "fixtureId": fixtureID, "passed": err == nil, "requestedProtocol": "doq", "observedProtocol": observedProtocol(summary), "protocolVariant": "dns-over-quic-v1", "fallbackDetected": observedProtocol(summary) != "doq", "completedOperations": summary.CompletedOperations, "malformedOperations": summary.MalformedOperations, "retryCount": summary.RetryCount, "failedOperations": summary.FailedOperations, "timedOutOperations": summary.TimedOutOperations, "externalUpstreamUsed": false, "cacheEnabled": false, "error": errorString(err)}
+	return map[string]any{"scenarioId": selectedScenario(), "fixtureId": fixtureID, "passed": err == nil, "requestedProtocol": "doq", "observedProtocol": observedProtocol(summary), "protocolVariant": "dns-over-quic-v1", "fallbackDetected": observedProtocol(summary) != "doq", "completedOperations": summary.CompletedOperations, "malformedOperations": summary.MalformedOperations, "retryCount": summary.RetryCount, "failedOperations": summary.FailedOperations, "timedOutOperations": summary.TimedOutOperations, "externalUpstreamUsed": false, "cacheEnabled": false, "error": errorString(err)}
 }
 func observedProtocol(summary phaseSummary) string {
 	if summary.LastProof != nil && summary.LastProof.QUIC.Version == "v1" && summary.LastProof.TLS.ALPN == doqALPN && summary.LastProof.DNS.Transport == "doq" {
@@ -534,4 +539,15 @@ func writeRequired(directory, name string, value any) {
 		fatal(1, err)
 	}
 }
-func fatal(code int, err error) { fmt.Fprintln(os.Stderr, err); os.Exit(code) }
+func selectedScenario() string {
+	id := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
+	if id == "" {
+		return strictScenario
+	}
+	return id
+}
+func runtimeProvenance() map[string]string {
+	return map[string]string{"goos": runtime.GOOS, "goarch": runtime.GOARCH, "goVersion": runtime.Version()}
+}
+func accelerationProvenance() map[string]string { return map[string]string{"mode": "not-reported"} }
+func fatal(code int, err error)                 { fmt.Fprintln(os.Stderr, err); os.Exit(code) }

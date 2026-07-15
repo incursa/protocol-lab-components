@@ -1,0 +1,10 @@
+id: dns-doh2-interoperability-smoke
+name: DNS over HTTPS HTTP/2 authoritative interoperability smoke suite
+description: Standards-based exact-HTTP/2 DoH baseline with negotiated modern TLS parameters.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: secure-dns-smoke
+scenarios: [dns.doh2.interoperability.query.a]
+protocol: doh2
+notes: HTTP/2, h2 ALPN, authenticated endpoint identity, and RFC 8484 POST behavior remain mandatory.
+tags: [dns, doh, h2, interoperability, authoritative, smoke, non-publishable]

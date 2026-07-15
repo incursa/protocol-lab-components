@@ -1,0 +1,10 @@
+id: dns-dot-interoperability-smoke
+name: DNS over TLS authoritative interoperability smoke suite
+description: Standards-based DoT baseline that records negotiated cryptography without requiring the strict diagnostic certificate and algorithm shape.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: secure-dns-smoke
+scenarios: [dns.dot.interoperability.query.a]
+protocol: dot
+notes: Results prove the RFC binding and authenticated endpoint identity; they are not comparable with strict-profile or resolver-role results.
+tags: [dns, dot, interoperability, authoritative, smoke, non-publishable]

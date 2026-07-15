@@ -1,5 +1,5 @@
 # Go DNS-over-HTTPS HTTP/2 fixture authority
 
-This independent target implements only `dns.doh2.query.a`. It accepts the canonical 27-byte zero-ID DNS query through exact `POST /dns-query` over HTTP/2, TLS 1.3, and ALPN `h2`, then returns the canonical 43-byte authoritative response with `application/dns-message` and `Cache-Control: no-store`.
+Package version `0.2.0` supports strict `dns.doh2.query.a` and authoritative `dns.doh2.interoperability.query.a`. It accepts the canonical query through exact HTTP/2 `POST /dns-query`, TLS 1.3, and ALPN `h2`, then returns the canonical authoritative response with `application/dns-message` and `Cache-Control: no-store`.
 
-It packages no recursive resolver, cache, external upstream, HTTP/1.1 route, or alternate DNS binding. The shared ProtocolLab test certificate is implementation material and is never benchmark evidence.
+No recursive resolver, cache, external upstream, HTTP/1.1 route, or alternate DNS binding exists. The shared test certificate is implementation material and is never evidence.

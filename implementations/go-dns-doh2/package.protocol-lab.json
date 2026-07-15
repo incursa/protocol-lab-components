@@ -1,10 +1,81 @@
 {
-  "packageId":"org.protocol-lab.components.implementation.go-dns-doh2",
-  "packageKind":"implementation",
-  "version":"0.1.0",
-  "component":{"name":"go-dns-doh2","family":"go-secure-dns","role":"authoritative-server","protocols":["doh2"]},
-  "entrypoints":{"launch":{"type":"command","command":"./run.ps1","workingDirectory":"."}},
-  "capabilities":{"supported":["dns.authoritative-server","dns.doh2","dns.doh2.query.a","dns.local-fixture-only","http2","tls13"],"supportedProtocols":["doh2"],"supportedProtocolVersions":["DoH/HTTP2/TLS1.3"],"supportedTestCaseIds":["dns.doh2.query.a"],"supportedScenarios":["dns.doh2.query.a"],"unsupportedKnownCases":["dns.classic.tcp.query.a","dns.classic.udp-truncated-tcp-retry","dns.classic.udp.query.a","dns.doh3.get.a","dns.doh3.query.a","dns.doh3.query.aaaa","dns.doh3.query.cname-chain","dns.doh3.query.large-dnssec-shaped","dns.doh3.query.nodata","dns.doh3.query.nxdomain","dns.doq.query.a","dns.dot.query.a"]},
-  "requirements":{"os":["linux","windows"],"runtimes":[],"ports":[{"name":"doh2","protocol":"tcp","default":18531}],"externalTools":[]},
-  "provenance":{"sourcePath":"implementations/go-dns-doh2","owners":["protocol-lab-components"],"licenseNotes":"Uses Go standard library HTTP/2 and shared ProtocolLab test-only certificate material. No resolver, cache, or upstream is packaged."}
+  "packageId": "org.protocol-lab.components.implementation.go-dns-doh2",
+  "packageKind": "implementation",
+  "version": "0.2.0",
+  "component": {
+    "name": "go-dns-doh2",
+    "family": "go-secure-dns",
+    "role": "authoritative-server",
+    "protocols": [
+      "doh2"
+    ]
+  },
+  "entrypoints": {
+    "launch": {
+      "type": "command",
+      "command": "./run.ps1",
+      "workingDirectory": "."
+    }
+  },
+  "capabilities": {
+    "supported": [
+      "dns.authoritative-server",
+      "dns.doh2",
+      "dns.doh2.query.a",
+      "dns.doh2.interoperability.query.a",
+      "dns.local-fixture-only",
+      "http2",
+      "tls13"
+    ],
+    "supportedProtocols": [
+      "doh2"
+    ],
+    "supportedProtocolVersions": [
+      "DoH/HTTP2/TLS1.3"
+    ],
+    "supportedTestCaseIds": [
+      "dns.doh2.query.a",
+      "dns.doh2.interoperability.query.a"
+    ],
+    "supportedScenarios": [
+      "dns.doh2.query.a",
+      "dns.doh2.interoperability.query.a"
+    ],
+    "unsupportedKnownCases": [
+      "dns.classic.tcp.query.a",
+      "dns.classic.udp-truncated-tcp-retry",
+      "dns.classic.udp.query.a",
+      "dns.doh3.get.a",
+      "dns.doh3.query.a",
+      "dns.doh3.query.aaaa",
+      "dns.doh3.query.cname-chain",
+      "dns.doh3.query.large-dnssec-shaped",
+      "dns.doh3.query.nodata",
+      "dns.doh3.query.nxdomain",
+      "dns.doq.query.a",
+      "dns.dot.query.a"
+    ]
+  },
+  "requirements": {
+    "os": [
+      "linux",
+      "windows"
+    ],
+    "runtimes": [],
+    "ports": [
+      {
+        "name": "doh2",
+        "protocol": "tcp",
+        "default": 18531
+      }
+    ],
+    "externalTools": []
+  },
+  "provenance": {
+    "sourcePath": "implementations/go-dns-doh2",
+    "owners": [
+      "protocol-lab-components"
+    ],
+    "licenseNotes": "Uses Go standard library HTTP/2 and shared ProtocolLab test-only certificate material. No resolver, cache, or upstream is packaged."
+  }
 }

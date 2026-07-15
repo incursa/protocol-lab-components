@@ -1,11 +1,10 @@
 # DNS-over-QUIC performance scenario package
 
-Package version `0.1.1` declares the bundled `dns-doq-performance-smoke` suite without changing public authority bytes.
+Package version `0.2.0` adds the authoritative `dns.doq.interoperability.query.a` scenario and `dns-doq-interoperability-smoke` suite while preserving the strict v1 scenario and suite.
 
-This package authority-locks `dns.doq.query.a`,
-`dns-doq-performance-smoke`, `secure-dns-smoke`, the canonical A-query wire
-fixture, and the secure-DNS TLS profile to public ProtocolLab commit
-`8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`.
+All authority material, including both TLS profiles, is byte-for-byte hash
+locked to public ProtocolLab commit
+`c0475b05cb80362760ac57e58ecfa1610a766c10`.
 
 It contains declarative authority only. It does not imply executor or target
 support outside the separate package identities.

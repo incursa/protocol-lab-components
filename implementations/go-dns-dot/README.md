@@ -1,7 +1,5 @@
 # Go DNS-over-TLS local fixture authority
 
-This target is deliberately narrow. It serves only the exact `dns.plab-test-a.canonical` request over two-octet length-prefixed DNS on TLS 1.3 with ALPN `dot`. A valid request for `plab.test. IN A` receives the authoritative `192.0.2.1` answer with TTL zero. The runtime message ID is copied into the response and cannot be reused on a connection.
+Package version `0.2.0` supports strict `dns.dot.query.a` and authoritative `dns.dot.interoperability.query.a` with the same local canonical fixture. It serves two-octet length-prefixed DNS over TLS 1.3 with ALPN `dot`; a valid `plab.test. IN A` request receives authoritative `192.0.2.1` with TTL zero.
 
-No recursive resolver, external upstream, cache, UDP socket, classic DNS/TCP listener, HTTP endpoint, QUIC endpoint, or fallback code exists. Every other committed DNS scenario is explicitly unsupported.
-
-The packaged ECDSA P-256 key and certificate are test-only implementation material for `dns.plab.test`. The private key must never be copied into evidence.
+No recursive resolver, external upstream, cache, alternate DNS transport, or fallback exists. The packaged test certificate and private key are implementation material and must never be copied into evidence.

@@ -1,0 +1,10 @@
+id: dns-doh3-interoperability-smoke
+name: DNS over HTTPS HTTP/3 authoritative interoperability smoke suite
+description: Standards-based exact-HTTP/3 DoH baseline with negotiated TLS 1.3 parameters.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: secure-dns-smoke
+scenarios: [dns.doh3.interoperability.query.a]
+protocol: doh3
+notes: HTTP/3, h3 ALPN, TLS 1.3, authenticated endpoint identity, and RFC 8484 POST behavior remain mandatory.
+tags: [dns, doh, h3, quic, interoperability, authoritative, smoke, non-publishable]

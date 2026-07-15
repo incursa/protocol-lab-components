@@ -1,10 +1,5 @@
 # Go DNS-over-QUIC local fixture authority
 
-This implementation package exposes only `dns.doq.query.a`. It serves the
-deterministic `dns.plab-test-a.canonical` answer over QUIC v1 with TLS 1.3,
-`doq` ALPN, a two-octet network-order message length, and one transaction per
-client-initiated bidirectional stream. It has no recursive resolver, cache,
-external upstream, classic DNS, DoT, DoH, or generic raw-QUIC echo path.
+Package version `0.2.0` supports strict `dns.doq.query.a` and authoritative `dns.doq.interoperability.query.a`. It serves the canonical local answer over QUIC v1 with TLS 1.3, `doq` ALPN, two-octet network-order message length, and one transaction per client-initiated bidirectional stream.
 
-The embedded certificate material is test-only. Local smoke evidence is
-diagnostic and non-publishable.
+No recursive resolver, cache, external upstream, alternate DNS transport, or generic raw-QUIC echo path exists. Certificate material is test-only; local smoke evidence is diagnostic and non-publishable.

@@ -1,10 +1,10 @@
 {
   "schemaVersion":"protocol-lab-package-v2",
   "packageId":"org.protocol-lab.components.scenario.dns-doq-performance",
-  "packageVersion":"0.1.1",
+  "packageVersion":"0.2.0",
   "kind":"scenario-pack",
   "displayName":"DNS-over-QUIC Performance Smoke Scenario Pack",
-  "entryManifests":["scenarios/dns/doq/query-a.yaml","suites/dns-doq-performance-smoke.yaml","load-profiles/secure-dns-smoke.yaml","fixtures/canonical-plab-test-a.json","fixtures/secure-dns-tls13-profile-v1.json"],
-  "providedScenarios":[{"scenarioId":"dns.doq.query.a","displayName":"DNS over QUIC Deterministic A Query","protocols":["doq"]}],
-  "providedSuites":[{"suiteId":"dns-doq-performance-smoke","displayName":"DNS over QUIC Performance Smoke","protocols":["doq"]}]
+  "entryManifests":["scenarios/dns/doq/query-a.yaml","scenarios/dns/doq/interoperability-query-a.yaml","suites/dns-doq-performance-smoke.yaml","suites/dns-doq-interoperability-smoke.yaml","load-profiles/secure-dns-smoke.yaml","fixtures/canonical-plab-test-a.json","fixtures/secure-dns-tls13-profile-v1.json","fixtures/secure-dns-interoperability-profile-v2.json"],
+  "providedScenarios":[{"scenarioId":"dns.doq.query.a","displayName":"DNS over QUIC Deterministic A Query","protocols":["doq"]},{"scenarioId":"dns.doq.interoperability.query.a","displayName":"DNS over QUIC Authoritative Interoperability A Query","protocols":["doq"]}],
+  "providedSuites":[{"suiteId":"dns-doq-performance-smoke","displayName":"DNS over QUIC Performance Smoke","protocols":["doq"]},{"suiteId":"dns-doq-interoperability-smoke","displayName":"DNS over QUIC Authoritative Interoperability Smoke","protocols":["doq"],"purpose":"diagnostic","resultKind":"diagnostic"}]
 }

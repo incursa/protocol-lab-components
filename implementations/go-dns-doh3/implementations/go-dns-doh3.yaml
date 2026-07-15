@@ -15,10 +15,11 @@ roles: [authoritative-server]
 protocols: [doh3]
 supportedProtocols: [doh3]
 supportedProtocolVersions: [HTTP/3, QUICv1, TLS1.3]
-supportedScenarios: [dns.doh3.query.a, dns.doh3.get.a, dns.doh3.query.aaaa, dns.doh3.query.cname-chain, dns.doh3.query.large-dnssec-shaped, dns.doh3.query.nodata, dns.doh3.query.nxdomain]
-supportedTestCaseIds: [dns.doh3.query.a, dns.doh3.get.a, dns.doh3.query.aaaa, dns.doh3.query.cname-chain, dns.doh3.query.large-dnssec-shaped, dns.doh3.query.nodata, dns.doh3.query.nxdomain]
+supportedScenarios: [dns.doh3.query.a, dns.doh3.interoperability.query.a, dns.doh3.get.a, dns.doh3.query.aaaa, dns.doh3.query.cname-chain, dns.doh3.query.large-dnssec-shaped, dns.doh3.query.nodata, dns.doh3.query.nxdomain]
+supportedTestCaseIds: [dns.doh3.query.a, dns.doh3.interoperability.query.a, dns.doh3.get.a, dns.doh3.query.aaaa, dns.doh3.query.cname-chain, dns.doh3.query.large-dnssec-shaped, dns.doh3.query.nodata, dns.doh3.query.nxdomain]
 scenarioCoverage:
   dns.doh3.query.a: {status: supported, behavior: exact POST A fixture}
+  dns.doh3.interoperability.query.a: {status: supported, behavior: exact POST A fixture under the negotiated-parameter interoperability profile}
   dns.doh3.get.a: {status: supported, behavior: exact unpadded-base64url GET A fixture}
   dns.doh3.query.aaaa: {status: supported, behavior: exact POST AAAA fixture}
   dns.doh3.query.cname-chain: {status: supported, behavior: exact POST CNAME-chain fixture}

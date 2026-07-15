@@ -1,7 +1,8 @@
-executorIdentity: {id: go-dns-dot-executor, name: Go DNS-over-TLS Test Executor, version: 0.1.0, vendor: Incursa}
-versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.1.0}
+executorIdentity: {id: go-dns-dot-executor, name: Go DNS-over-TLS Test Executor, version: 0.2.0, vendor: Incursa}
+versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.2.0}
 claimedCapabilities:
   - {id: dns.dot.query.a, status: supported}
+  - {id: dns.dot.interoperability.query.a, status: supported}
   - {id: secure-dns-smoke, status: supported}
   - {id: exact-dot-tls1.3-proof, status: supported}
   - {id: canonical-dns-wire-proof, status: supported}
@@ -9,6 +10,7 @@ claimedCapabilities:
   - {id: dns.classic.udp-truncated-tcp-retry, status: unsupported}
   - {id: dns.classic.udp.query.a, status: unsupported}
   - {id: dns.doh2.query.a, status: unsupported}
+  - {id: dns.doh2.interoperability.query.a, status: unsupported}
   - {id: dns.doh3.get.a, status: unsupported}
   - {id: dns.doh3.query.a, status: unsupported}
   - {id: dns.doh3.query.aaaa, status: unsupported}
@@ -16,9 +18,11 @@ claimedCapabilities:
   - {id: dns.doh3.query.large-dnssec-shaped, status: unsupported}
   - {id: dns.doh3.query.nodata, status: unsupported}
   - {id: dns.doh3.query.nxdomain, status: unsupported}
+  - {id: dns.doh3.interoperability.query.a, status: unsupported}
   - {id: dns.doq.query.a, status: unsupported}
-supportedTestSelectors: [{selectorType: test-id, expression: dns.dot.query.a}]
-supportedScenarioSelectors: [{selectorType: scenario-id, expression: dns.dot.query.a}]
+  - {id: dns.doq.interoperability.query.a, status: unsupported}
+supportedTestSelectors: [{selectorType: test-id, expression: dns.dot.query.a}, {selectorType: test-id, expression: dns.dot.interoperability.query.a}]
+supportedScenarioSelectors: [{selectorType: scenario-id, expression: dns.dot.query.a}, {selectorType: scenario-id, expression: dns.dot.interoperability.query.a}]
 supportedProtocolFamilies: [dot]
 supportedExecutionModes: [single-cell, process]
 requiredTargetEndpointBindings: [{bindingId: primary, purpose: test-endpoint, endpointType: tls, protocols: [dot]}]

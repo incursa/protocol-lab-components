@@ -1,0 +1,40 @@
+schemaVersion: "1.0"
+id: bind9-doh2
+name: BIND 9 DoH2 Authority
+description: Docker-backed unmodified BIND 9 authoritative DoH2 target with immutable upstream image identity and no HTTP fallback.
+family: bind9
+role: authoritative-server
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-bind9-doh2:0.1.0
+dockerfile: docker/Dockerfile
+buildContext: docker
+dockerNetworkMode: published-port
+baseUrl: https://127.0.0.1:20443/dns-query
+dockerBaseUrl: https://127.0.0.1:20443/dns-query
+protocolBaseUrls: {doh2: https://127.0.0.1:20443/dns-query}
+dockerProtocolBaseUrls: {doh2: https://127.0.0.1:20443/dns-query}
+certificateMode: plab-secure-dns-single-leaf-p256-v1
+roles: [authoritative-server]
+protocols: [doh2]
+supportedProtocols: [doh2]
+supportedWorkloadFamilies: [dns.secure]
+supportedProtocolVersions: [DoH/HTTP2/TLS1.3]
+supportedScenarios: [dns.doh2.interoperability.query.a]
+supportedTestCaseIds: [dns.doh2.interoperability.query.a]
+scenarioCoverage:
+  dns.doh2.interoperability.query.a: {status: supported, executorId: go-dns-doh2-executor, behavior: unmodified BIND exact HTTP/2 POST /dns-query with deterministic local plab.test. IN A answer 192.0.2.1 and TTL zero}
+  dns.doh2.query.a: {status: unsupported, reason: Strict v1 requires response Cache-Control no-store which unmodified BIND does not emit.}
+unsupportedKnownCases: [dns.doh2.query.a, dns.dot.query.a, dns.doq.query.a, dns.doh3.query.a, dns.doh3.get.a, dns.doh3.query.aaaa, dns.doh3.query.cname-chain, dns.doh3.query.large-dnssec-shaped, dns.doh3.query.nodata, dns.doh3.query.nxdomain, dns.classic.tcp.query.a, dns.classic.udp.query.a, dns.classic.udp-truncated-tcp-retry]
+ports: [{name: doh2, protocol: tcp, default: 20443, hostPort: 20443, containerPort: 443}]
+environment: {PLAB_DOH2_PORT: "20443"}
+startup: {port: {name: doh2, environmentVariable: PLAB_DOH2_PORT, default: 20443}, readiness: {protocol: process, timeoutSeconds: 30}}
+readinessCheck: {type: processStarted, timeoutSeconds: 30, startupDelayMilliseconds: 1500}
+capabilities: [dns.authoritative-server, dns.doh2, http2, tls13, no-http-fallback, scenario.dns.doh2.interoperability.query.a]
+entrypoint: {kind: pwsh, path: run.ps1, arguments: [], workingDirectory: .}
+shutdownBehavior: process
+artifactExports: [command.txt, version.txt, stdout.txt, stderr.txt, result.json]
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata: {manifest: protocol-lab.internal.json}
+notes: Local authoritative fixture only; recursion, cache, external upstreams, HTTP/1, and proxy composition are absent.

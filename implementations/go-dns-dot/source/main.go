@@ -22,7 +22,7 @@ import (
 
 const (
 	implementationID      = "go-dns-dot"
-	implementationVersion = "0.1.0"
+	implementationVersion = "0.2.0"
 	alpn                  = "dot"
 	requiredQueryHash     = "c46b9fb76019b5a644d0884b17e816cb7c3076275d9468c27d180f70488eb8ec"
 )

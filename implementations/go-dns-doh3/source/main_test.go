@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestCanonicalFixtures(t *testing.T) {
-	if len(fixtures) != 7 {
+	if len(fixtures) != 8 {
 		t.Fatalf("fixture count=%d", len(fixtures))
 	}
 	for _, f := range fixtures {

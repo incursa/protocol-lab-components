@@ -1,0 +1,10 @@
+id: dns-doq-interoperability-smoke
+name: DNS over QUIC authoritative interoperability smoke suite
+description: Standards-based RFC 9250 DoQ baseline with negotiated TLS 1.3 parameters.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: secure-dns-smoke
+scenarios: [dns.doq.interoperability.query.a]
+protocol: doq
+notes: The doq ALPN, port, message ID, length framing, one-query-per-stream, and FIN requirements remain mandatory.
+tags: [dns, doq, quic, interoperability, authoritative, smoke, non-publishable]

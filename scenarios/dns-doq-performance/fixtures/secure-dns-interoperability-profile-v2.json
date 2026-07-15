@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "protocol-lab.secure-dns-tls-profile.v2",
+  "profileId": "plab-secure-dns-interoperability-v2",
+  "purpose": "interoperability-baseline",
+  "serverName": "dns.plab.test",
+  "transportPolicies": {
+    "dot": {
+      "allowedTlsVersions": ["tls1.2", "tls1.3"],
+      "alpn": "dot",
+      "cipherSuitePolicy": "negotiated-rfc9325-compatible",
+      "keyExchangeGroupPolicy": "negotiated-rfc9325-compatible",
+      "signatureSchemePolicy": "negotiated-rfc9325-compatible",
+      "peerAuthentication": "server-certificate-required",
+      "resumptionPolicy": "not-offered",
+      "earlyData": "not-attempted"
+    },
+    "doh2": {
+      "allowedTlsVersions": ["tls1.2", "tls1.3"],
+      "alpn": "h2",
+      "cipherSuitePolicy": "negotiated-rfc9325-compatible",
+      "keyExchangeGroupPolicy": "negotiated-rfc9325-compatible",
+      "signatureSchemePolicy": "negotiated-rfc9325-compatible",
+      "peerAuthentication": "server-certificate-required",
+      "resumptionPolicy": "not-offered",
+      "earlyData": "not-attempted"
+    },
+    "doh3": {
+      "allowedTlsVersions": ["tls1.3"],
+      "alpn": "h3",
+      "cipherSuitePolicy": "negotiated-rfc9325-compatible",
+      "keyExchangeGroupPolicy": "negotiated-rfc9325-compatible",
+      "signatureSchemePolicy": "negotiated-rfc9325-compatible",
+      "peerAuthentication": "server-certificate-required",
+      "resumptionPolicy": "not-offered",
+      "earlyData": "not-attempted"
+    },
+    "doq": {
+      "allowedTlsVersions": ["tls1.3"],
+      "alpn": "doq",
+      "cipherSuitePolicy": "negotiated-rfc9325-compatible",
+      "keyExchangeGroupPolicy": "negotiated-rfc9325-compatible",
+      "signatureSchemePolicy": "negotiated-rfc9325-compatible",
+      "peerAuthentication": "server-certificate-required",
+      "resumptionPolicy": "not-offered",
+      "earlyData": "not-attempted"
+    }
+  },
+  "certificate": {
+    "profileId": "plab-secure-dns-interoperability-leaf-v2",
+    "dnsSubjectAlternativeName": "dns.plab.test",
+    "allowedLeafKeyAlgorithms": ["rsa", "ecdsa", "ed25519"],
+    "trustModel": "configured-test-trust-anchor",
+    "mustBeValidAtExecution": true,
+    "provisioningMeasured": false,
+    "exactDerHashRequiredForComparison": false,
+    "privateKeyPublication": "forbidden"
+  },
+  "evidence": {
+    "negotiatedTlsVersionRequired": true,
+    "negotiatedAlpnRequired": true,
+    "negotiatedCipherSuiteRequired": true,
+    "negotiatedKeyExchangeGroupRequired": true,
+    "negotiatedSignatureSchemeRequired": true,
+    "leafCertificateAlgorithmRequired": true,
+    "leafCertificateDerSha256Required": true,
+    "platformProvenanceRequired": true,
+    "accelerationProvenanceRequired": true
+  }
+}
