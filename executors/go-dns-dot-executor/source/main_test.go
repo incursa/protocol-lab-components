@@ -108,6 +108,9 @@ func TestProtocolVariantFollowsSelectedScenario(t *testing.T) {
 	if got := protocolVariant(); got != "dot-rfc7858-interoperability" {
 		t.Fatalf("interop variant=%q", got)
 	}
+	if tlsProfileID() != interopTLSProfile || selectedCertificateProfile() != interopCertProfile {
+		t.Fatal("interoperability TLS profiles were not selected")
+	}
 }
 
 func TestNormalizeTargetRejectsFallbackSchemes(t *testing.T) {

@@ -26,14 +26,17 @@ import (
 
 const (
 	executorID           = "go-dns-doq-executor"
-	executorVersion      = "0.2.1"
+	executorVersion      = "0.2.2"
 	loadGeneratorID      = "go-quic-dns-load"
-	loadGeneratorVersion = "0.2.1"
+	loadGeneratorVersion = "0.2.2"
 	strictScenario       = "dns.doq.query.a"
 	interopScenario      = "dns.doq.interoperability.query.a"
 	supportedProfile     = "secure-dns-smoke"
 	serverName           = "dns.plab.test"
 	certificateProfile   = "plab-secure-dns-single-leaf-p256-v1"
+	strictTLSProfile     = "plab-secure-dns-tls13-v1"
+	interopTLSProfile    = "plab-secure-dns-interoperability-v2"
+	interopCertProfile   = "plab-secure-dns-interoperability-leaf-v2"
 	requiredCipher       = "TLS_AES_128_GCM_SHA256"
 	leafDERHash          = "b57bdd3eb90b36455900c17de9ff9a02c623e1f6b27626ad7821a40e35e8251c"
 	leafSPKIHash         = "cfa6d5d08ee2071e28fd96205b088156fa71b460262470e5b994624b0537cf25"
@@ -49,6 +52,7 @@ var knownUnsupported = map[string]struct{}{
 var supportedScenarios = map[string]struct{}{strictScenario: {}, interopScenario: {}}
 
 type tlsProof struct {
+	TLSProfileID                  string            `json:"tlsProfileId"`
 	TLSVersion                    string            `json:"tlsVersion"`
 	CipherSuite                   string            `json:"cipherSuite"`
 	KeyExchangeGroup              string            `json:"keyExchangeGroup"`
@@ -362,7 +366,7 @@ func exchange(connection *quic.Conn, reused bool, connectionLatency float64) (ex
 func validateConnection(connection *quic.Conn, connectionLatency float64, reused bool) (tlsProof, quicProof, error) {
 	state := connection.ConnectionState()
 	tlsState := &state.TLS
-	tlsValue := tlsProof{TLSVersion: tlsVersionName(tlsState.Version), CipherSuite: tls.CipherSuiteName(tlsState.CipherSuite), KeyExchangeGroup: "X25519", SignatureScheme: "ecdsa_secp256r1_sha256", ALPN: tlsState.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: tlsState.HandshakeComplete, DidResume: tlsState.DidResume, EarlyDataAttempted: state.Used0RTT, CertificateProfile: certificateProfile, VerifiedChainCount: len(tlsState.VerifiedChains), SentCertificateCount: len(tlsState.PeerCertificates), TrustAnchorSent: false, ConnectionLatencyMilliseconds: connectionLatency, PlatformProvenance: runtimeProvenance(), AccelerationProvenance: accelerationProvenance()}
+	tlsValue := tlsProof{TLSProfileID: tlsProfileID(), TLSVersion: tlsVersionName(tlsState.Version), CipherSuite: tls.CipherSuiteName(tlsState.CipherSuite), KeyExchangeGroup: "X25519", SignatureScheme: "ecdsa_secp256r1_sha256", ALPN: tlsState.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: tlsState.HandshakeComplete, DidResume: tlsState.DidResume, EarlyDataAttempted: state.Used0RTT, CertificateProfile: selectedCertificateProfile(), VerifiedChainCount: len(tlsState.VerifiedChains), SentCertificateCount: len(tlsState.PeerCertificates), TrustAnchorSent: false, ConnectionLatencyMilliseconds: connectionLatency, PlatformProvenance: runtimeProvenance(), AccelerationProvenance: accelerationProvenance()}
 	if len(tlsState.PeerCertificates) > 0 {
 		certificate := tlsState.PeerCertificates[0]
 		tlsValue.CertificateDERSHA256 = hash(certificate.Raw)
@@ -551,6 +555,18 @@ func protocolVariant() string {
 		return "doq-rfc9250-interoperability"
 	}
 	return "dns-over-quic-v1"
+}
+func tlsProfileID() string {
+	if selectedScenario() == interopScenario {
+		return interopTLSProfile
+	}
+	return strictTLSProfile
+}
+func selectedCertificateProfile() string {
+	if selectedScenario() == interopScenario {
+		return interopCertProfile
+	}
+	return certificateProfile
 }
 func runtimeProvenance() map[string]string {
 	return map[string]string{"goos": runtime.GOOS, "goarch": runtime.GOARCH, "goVersion": runtime.Version()}

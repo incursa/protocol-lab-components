@@ -30,9 +30,9 @@ import (
 
 const (
 	executorID           = "go-dns-doh2-executor"
-	executorVersion      = "0.2.1"
+	executorVersion      = "0.2.2"
 	loadGeneratorID      = "go-dns-doh2-load"
-	loadGeneratorVersion = "0.2.1"
+	loadGeneratorVersion = "0.2.2"
 	strictScenario       = "dns.doh2.query.a"
 	interopScenario      = "dns.doh2.interoperability.query.a"
 	supportedProfile     = "secure-dns-smoke"
@@ -40,6 +40,9 @@ const (
 	fixtureID            = "dns.plab-test-a.canonical"
 	mediaType            = "application/dns-message"
 	certificateProfile   = "plab-secure-dns-single-leaf-p256-v1"
+	strictTLSProfile     = "plab-secure-dns-tls13-v1"
+	interopTLSProfile    = "plab-secure-dns-interoperability-v2"
+	interopCertProfile   = "plab-secure-dns-interoperability-leaf-v2"
 	requiredCipher       = "TLS_AES_128_GCM_SHA256"
 	queryHash            = "c46b9fb76019b5a644d0884b17e816cb7c3076275d9468c27d180f70488eb8ec"
 	responseHash         = "9d488461675ad5ab9f74c7b203861e1ad17521e413a407a25e6611012a595620"
@@ -61,6 +64,7 @@ var (
 )
 
 type tlsProof struct {
+	TLSProfileID                  string            `json:"tlsProfileId"`
 	TLSVersion                    string            `json:"tlsVersion"`
 	CipherSuite                   string            `json:"cipherSuite"`
 	KeyExchangeGroup              string            `json:"keyExchangeGroup"`
@@ -394,7 +398,7 @@ func validateTLS(state *tls.ConnectionState) (tlsProof, error) {
 	if state == nil {
 		return tlsProof{}, errors.New("missing TLS state")
 	}
-	proof := tlsProof{TLSVersion: tlsVersionName(state.Version), CipherSuite: tls.CipherSuiteName(state.CipherSuite), KeyExchangeGroup: "X25519", SignatureScheme: "ecdsa_secp256r1_sha256", ALPN: state.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: state.HandshakeComplete, DidResume: state.DidResume, EarlyDataAttempted: false, CertificateProfile: certificateProfile, VerifiedChainCount: len(state.VerifiedChains), SentCertificateCount: len(state.PeerCertificates), TrustAnchorSent: false, PlatformProvenance: runtimeProvenance(), AccelerationProvenance: accelerationProvenance()}
+	proof := tlsProof{TLSProfileID: tlsProfileID(), TLSVersion: tlsVersionName(state.Version), CipherSuite: tls.CipherSuiteName(state.CipherSuite), KeyExchangeGroup: "X25519", SignatureScheme: "ecdsa_secp256r1_sha256", ALPN: state.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: state.HandshakeComplete, DidResume: state.DidResume, EarlyDataAttempted: false, CertificateProfile: selectedCertificateProfile(), VerifiedChainCount: len(state.VerifiedChains), SentCertificateCount: len(state.PeerCertificates), TrustAnchorSent: false, PlatformProvenance: runtimeProvenance(), AccelerationProvenance: accelerationProvenance()}
 	if len(state.PeerCertificates) > 0 {
 		cert := state.PeerCertificates[0]
 		proof.CertificateDERSHA256 = hash(cert.Raw)
@@ -686,6 +690,18 @@ func protocolVariant() string {
 		return "doh-h2-rfc8484-interoperability"
 	}
 	return "doh-h2-tls-alpn"
+}
+func tlsProfileID() string {
+	if selectedScenario() == interopScenario {
+		return interopTLSProfile
+	}
+	return strictTLSProfile
+}
+func selectedCertificateProfile() string {
+	if selectedScenario() == interopScenario {
+		return interopCertProfile
+	}
+	return certificateProfile
 }
 func runtimeProvenance() map[string]string {
 	return map[string]string{"goos": runtime.GOOS, "goarch": runtime.GOARCH, "goVersion": runtime.Version()}

@@ -1,5 +1,5 @@
-executorIdentity: {id: go-dns-doh2-executor, name: Go DNS-over-HTTPS HTTP/2 Test Executor, version: 0.2.1, vendor: Incursa}
-versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.2.1}
+executorIdentity: {id: go-dns-doh2-executor, name: Go DNS-over-HTTPS HTTP/2 Test Executor, version: 0.2.2, vendor: Incursa}
+versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.2.2}
 claimedCapabilities:
   - {id: dns.doh2.query.a, status: supported}
   - {id: dns.doh2.interoperability.query.a, status: supported}

@@ -1,7 +1,7 @@
 {
   "packageId": "org.protocol-lab.components.executor.go-dns-doh2-executor",
   "packageKind": "test-executor",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "component": {
     "name": "go-dns-doh2-executor",
     "family": "go-secure-dns",

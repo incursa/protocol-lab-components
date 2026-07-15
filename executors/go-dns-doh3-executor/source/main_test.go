@@ -32,4 +32,7 @@ func TestProtocolVariantFollowsSelectedScenario(t *testing.T) {
 	if got := protocolVariant("dns.doh3.interoperability.query.a"); got != "doh-h3-rfc8484-interoperability" {
 		t.Fatalf("interop variant=%q", got)
 	}
+	if tlsProfileID(interopScenario) != interopTLSProfile || selectedCertificateProfile(interopScenario) != interopCertProfile {
+		t.Fatal("interoperability TLS profiles were not selected")
+	}
 }

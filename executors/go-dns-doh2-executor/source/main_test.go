@@ -44,6 +44,9 @@ func TestProtocolVariantFollowsSelectedScenario(t *testing.T) {
 	if got := protocolVariant(); got != "doh-h2-rfc8484-interoperability" {
 		t.Fatalf("interop variant=%q", got)
 	}
+	if tlsProfileID() != interopTLSProfile || selectedCertificateProfile() != interopCertProfile {
+		t.Fatal("interoperability TLS profiles were not selected")
+	}
 }
 func TestNormalizeTargetRejectsFallbackAndWrongPath(t *testing.T) {
 	got, err := normalizeTarget("https://127.0.0.1:18531")

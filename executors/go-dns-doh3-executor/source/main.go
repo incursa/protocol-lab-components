@@ -31,13 +31,17 @@ import (
 
 const (
 	executorID           = "go-dns-doh3-executor"
-	executorVersion      = "0.2.1"
+	executorVersion      = "0.2.2"
 	loadGeneratorID      = "go-dns-doh3-load"
-	loadGeneratorVersion = "0.2.1"
+	loadGeneratorVersion = "0.2.2"
+	interopScenario      = "dns.doh3.interoperability.query.a"
 	profileID            = "secure-dns-smoke"
 	serverName           = "dns.plab.test"
 	mediaType            = "application/dns-message"
 	certificateProfile   = "plab-secure-dns-single-leaf-p256-v1"
+	strictTLSProfile     = "plab-secure-dns-tls13-v1"
+	interopTLSProfile    = "plab-secure-dns-interoperability-v2"
+	interopCertProfile   = "plab-secure-dns-interoperability-leaf-v2"
 	requiredCipher       = "TLS_AES_128_GCM_SHA256"
 	leafDERHash          = "b57bdd3eb90b36455900c17de9ff9a02c623e1f6b27626ad7821a40e35e8251c"
 	leafSPKIHash         = "cfa6d5d08ee2071e28fd96205b088156fa71b460262470e5b994624b0537cf25"
@@ -50,6 +54,7 @@ var knownUnsupported = map[string]struct{}{
 }
 
 type tlsProof struct {
+	TLSProfileID                  string            `json:"tlsProfileId"`
 	TLSVersion                    string            `json:"tlsVersion"`
 	CipherSuite                   string            `json:"cipherSuite"`
 	KeyExchangeGroup              string            `json:"keyExchangeGroup"`
@@ -384,7 +389,7 @@ func exchange(p *phaseClient, endpoint string, f fixture, expectReused bool) (ex
 	if reused != expectReused {
 		return exchangeProof{}, malformedResponseError{fmt.Sprintf("HTTP/3 connection reuse mismatch expected=%t observed=%t", expectReused, reused)}
 	}
-	tlsValue, err := validateTLS(resp.TLS, p.connectionLatency)
+	tlsValue, err := validateTLS(resp.TLS, p.connectionLatency, f.ScenarioID)
 	if err != nil {
 		return exchangeProof{}, err
 	}
@@ -411,11 +416,11 @@ func exchange(p *phaseClient, endpoint string, f fixture, expectReused bool) (ex
 	return exchangeProof{DNS: dnsValue, HTTP: httpValue, TLS: tlsValue, QUIC: quicValue, QueryLatencyMilliseconds: durationMS(time.Since(started)), TimeToFirstByteMilliseconds: ttfb, TransferredBytes: int64(len(bytesOf(f.QueryHex)) + len(raw))}, nil
 }
 
-func validateTLS(state *tls.ConnectionState, latency float64) (tlsProof, error) {
+func validateTLS(state *tls.ConnectionState, latency float64, scenarioID string) (tlsProof, error) {
 	if state == nil {
 		return tlsProof{}, errors.New("missing TLS state")
 	}
-	p := tlsProof{TLSVersion: tlsVersionName(state.Version), CipherSuite: tls.CipherSuiteName(state.CipherSuite), KeyExchangeGroup: "X25519", SignatureScheme: "ecdsa_secp256r1_sha256", ALPN: state.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: state.HandshakeComplete, DidResume: state.DidResume, EarlyDataAttempted: false, CertificateProfile: certificateProfile, VerifiedChainCount: len(state.VerifiedChains), SentCertificateCount: len(state.PeerCertificates), TrustAnchorSent: false, ConnectionLatencyMilliseconds: latency, PlatformProvenance: runtimeProvenance(), AccelerationProvenance: accelerationProvenance()}
+	p := tlsProof{TLSProfileID: tlsProfileID(scenarioID), TLSVersion: tlsVersionName(state.Version), CipherSuite: tls.CipherSuiteName(state.CipherSuite), KeyExchangeGroup: "X25519", SignatureScheme: "ecdsa_secp256r1_sha256", ALPN: state.NegotiatedProtocol, ServerName: serverName, HandshakeComplete: state.HandshakeComplete, DidResume: state.DidResume, EarlyDataAttempted: false, CertificateProfile: selectedCertificateProfile(scenarioID), VerifiedChainCount: len(state.VerifiedChains), SentCertificateCount: len(state.PeerCertificates), TrustAnchorSent: false, ConnectionLatencyMilliseconds: latency, PlatformProvenance: runtimeProvenance(), AccelerationProvenance: accelerationProvenance()}
 	if len(state.PeerCertificates) > 0 {
 		c := state.PeerCertificates[0]
 		p.CertificateDERSHA256 = hashOf(c.Raw)
@@ -605,9 +610,21 @@ func runtimeProvenance() map[string]string {
 }
 func accelerationProvenance() map[string]string { return map[string]string{"mode": "not-reported"} }
 func protocolVariant(scenarioID string) string {
-	if scenarioID == "dns.doh3.interoperability.query.a" {
+	if scenarioID == interopScenario {
 		return "doh-h3-rfc8484-interoperability"
 	}
 	return "doh-h3-quic-v1"
+}
+func tlsProfileID(scenarioID string) string {
+	if scenarioID == interopScenario {
+		return interopTLSProfile
+	}
+	return strictTLSProfile
+}
+func selectedCertificateProfile(scenarioID string) string {
+	if scenarioID == interopScenario {
+		return interopCertProfile
+	}
+	return certificateProfile
 }
 func fatal(code int, err error) { fmt.Fprintln(os.Stderr, err); os.Exit(code) }
