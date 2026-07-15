@@ -13,6 +13,16 @@ This documentation supports the component package repository.
 - [Implementation diversity wishlist](implementation-diversity-wishlist.md)
   defines the staged wrapper and thin-adapter backlog for HTTP, TLS, secure DNS,
   gRPC, and WebSocket implementations, including real-lab proof requirements.
+- [Implementation coverage backfill wishlist](implementation-coverage-backfill-wishlist.md)
+  defines the next cross-protocol program: QUIC and HTTP/3 catalog backfill,
+  secure-DNS transport breadth, additional HTTP/TLS/gRPC/WebSocket ecosystems,
+  WebTransport and MASQUE coverage, decision-ready evidence, and the public
+  explanation required to make that evidence understandable.
+- [Implementation coverage baseline](implementation-coverage-baseline.json)
+  reconciles every local implementation package and decision directory with
+  the QUIC/HTTP3 inventory, cited live-evidence state, and the sibling site's
+  authored public implementation catalog. Validate it with
+  `pwsh ./scripts/package/Test-ImplementationCoverageBaseline.ps1`.
 - [TLS endpoint/tool feasibility](tls-endpoint-tool-feasibility.md) records the
   exact OpenSSL and GnuTLS wrapper boundary plus the repository-backed rustls
   and s2n-tls no-package decisions.

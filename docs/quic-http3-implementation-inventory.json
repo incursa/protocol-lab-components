@@ -16,9 +16,9 @@
     "blocked": "Known licensing, protocol, role, or build-practicality issue blocks an immediate package."
   },
   "summary": {
-    "implementationCount": 20,
-    "packageableNowCount": 17,
-    "blockedOrDesignFirstCount": 4,
+    "implementationCount": 19,
+    "packageableNowCount": 16,
+    "blockedOrDesignFirstCount": 3,
     "topNextPackageSlices": [
       "Broader raw QUIC ecosystem targets after quic-go raw stream-throughput, multiplex, and duplex package proof remains stable.",
       "Caddy and nginx large-body/header-heavy fixture expansion after current package proofs remain stable.",
