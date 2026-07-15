@@ -31,7 +31,7 @@ scenarioCoverage:
   dns.dot.query.a: {status: unsupported, reason: DoT is a separate evidence lane.}
 unsupportedKnownCases: [dns.classic.tcp.query.a, dns.classic.udp-truncated-tcp-retry, dns.classic.udp.query.a, dns.doh2.query.a, dns.doq.query.a, dns.dot.query.a]
 ports: [{name: doh3, protocol: udp, default: 18533, hostPort: 18533, containerPort: 18533}]
-environment: {PLAB_DOH3_LISTEN: "127.0.0.1:18533"}
+environment: {PLAB_DOH3_LISTEN: "0.0.0.0:18533"}
 startup: {port: {name: doh3, environmentVariable: PLAB_DOH3_PORT, default: 18533}, readiness: {protocol: process, timeoutSeconds: 10}}
 readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 500}
 capabilities: [dns.authoritative-server, dns.doh3, dns.local-fixture-only, quic-v1, tls13, http3]

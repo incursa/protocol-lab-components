@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.go-dns-doq",
-  "packageVersion": "0.2.0",
+  "packageVersion": "0.2.1",
   "kind": "implementation",
   "displayName": "Go DNS-over-QUIC Local Fixture Authority",
   "entryManifests": [

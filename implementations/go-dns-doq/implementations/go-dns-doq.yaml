@@ -35,7 +35,7 @@ scenarioCoverage:
   dns.dot.query.a: {status: unsupported, reason: DoT is a separate evidence lane.}
 unsupportedKnownCases: [dns.classic.tcp.query.a, dns.classic.udp-truncated-tcp-retry, dns.classic.udp.query.a, dns.doh2.query.a, dns.doh3.get.a, dns.doh3.query.a, dns.doh3.query.aaaa, dns.doh3.query.cname-chain, dns.doh3.query.large-dnssec-shaped, dns.doh3.query.nodata, dns.doh3.query.nxdomain, dns.dot.query.a]
 ports: [{name: doq, protocol: udp, default: 18532, hostPort: 18532, containerPort: 18532}]
-environment: {PLAB_DOQ_PORT: "18532"}
+environment: {PLAB_DOQ_LISTEN: "0.0.0.0:18532", PLAB_DOQ_PORT: "18532"}
 startup: {port: {name: doq, environmentVariable: PLAB_DOQ_PORT, default: 18532}, readiness: {protocol: process, timeoutSeconds: 10}}
 readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 500}
 capabilities: [dns.authoritative-server, dns.doq, dns.local-fixture-only, quic-v1, tls13, scenario.dns.doq.query.a, scenario.dns.doq.interoperability.query.a]
