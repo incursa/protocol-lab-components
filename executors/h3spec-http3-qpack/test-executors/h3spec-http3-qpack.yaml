@@ -1,13 +1,13 @@
 executorIdentity:
   id: h3spec-http3-qpack
   name: h3spec HTTP/3 and QPACK Test Executor
-  version: 0.1.5
+  version: 0.1.6
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.5
+  executorVersion: 0.1.6
 claimedCapabilities:
   - id: h3spec.http3
     status: supported

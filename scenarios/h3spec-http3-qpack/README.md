@@ -7,7 +7,7 @@ The pack is declarative. It does not provide a target implementation or the h3sp
 ## Package
 
 - Package ID: `org.protocol-lab.components.scenario.h3spec-http3-qpack`
-- Package version: `0.1.0`
+- Package version: `0.1.2`
 - Suite ID: `h3spec-http3-qpack-focused`
 - Scenarios: `http3.core.status`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`
 - Test executor: `h3spec-http3-qpack`

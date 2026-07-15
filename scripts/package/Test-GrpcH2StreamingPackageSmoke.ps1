@@ -11,8 +11,8 @@ $Root = [IO.Path]::GetFullPath($Root)
 $PackageDirectory = [IO.Path]::GetFullPath($PackageDirectory)
 $OutputRoot = [IO.Path]::GetFullPath($OutputRoot)
 $packages = [ordered]@{
-    scenario = Join-Path $PackageDirectory 'org.protocol-lab.components.scenario.grpc-h2-performance.0.4.0.plabpkg'
-    executor = Join-Path $PackageDirectory 'org.protocol-lab.components.executor.go-grpc-h2-executor.0.4.0.win-x64.plabpkg'
+    scenario = Join-Path $PackageDirectory 'org.protocol-lab.components.scenario.grpc-h2-performance.0.4.1.plabpkg'
+    executor = Join-Path $PackageDirectory 'org.protocol-lab.components.executor.go-grpc-h2-executor.0.4.1.win-x64.plabpkg'
     target = Join-Path $PackageDirectory 'org.protocol-lab.components.implementation.go-grpc-h2.0.4.0.win-x64.plabpkg'
 }
 foreach ($entry in $packages.GetEnumerator()) {
@@ -42,9 +42,9 @@ try {
     )
     foreach ($scenario in $scenarios) {
         $env:PLAB_EXECUTOR_ID = 'go-grpc-h2-executor'
-        $env:PLAB_EXECUTOR_VERSION = '0.4.0'
+        $env:PLAB_EXECUTOR_VERSION = '0.4.1'
         $env:PLAB_LOAD_GENERATOR_ID = 'go-x-net-http2-grpc-load'
-        $env:PLAB_LOAD_GENERATOR_VERSION = '0.4.0'
+        $env:PLAB_LOAD_GENERATOR_VERSION = '0.4.1'
         $env:PLAB_SCENARIO_ID = $scenario.id
         $env:PLAB_LOAD_PROFILE_ID = 'grpc-h2-smoke'
         $env:PLAB_PROTOCOL = 'h2'

@@ -1,12 +1,12 @@
 executorIdentity:
   id: go-grpc-h2-executor
   name: Go gRPC over HTTP/2 Executor
-  version: 0.4.0
+  version: 0.4.1
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions: [test-executor-v1]
-  executorVersion: 0.4.0
+  executorVersion: 0.4.1
 claimedCapabilities:
   - {id: grpc.h2.unary.echo, status: supported}
   - {id: grpc.h2.unary.empty, status: supported}
