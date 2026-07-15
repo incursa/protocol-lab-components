@@ -99,6 +99,17 @@ func TestStrictAndInteroperabilityScenariosAreAdmitted(t *testing.T) {
 	}
 }
 
+func TestProtocolVariantFollowsSelectedScenario(t *testing.T) {
+	t.Setenv("PLAB_SCENARIO_ID", strictScenario)
+	if got := protocolVariant(); got != "dot-tls1.3-tcp" {
+		t.Fatalf("strict variant=%q", got)
+	}
+	t.Setenv("PLAB_SCENARIO_ID", interopScenario)
+	if got := protocolVariant(); got != "dot-rfc7858-interoperability" {
+		t.Fatalf("interop variant=%q", got)
+	}
+}
+
 func TestNormalizeTargetRejectsFallbackSchemes(t *testing.T) {
 	if got, err := normalizeTarget("tls://127.0.0.1:853"); err != nil || got != "127.0.0.1:853" {
 		t.Fatalf("got=%s err=%v", got, err)

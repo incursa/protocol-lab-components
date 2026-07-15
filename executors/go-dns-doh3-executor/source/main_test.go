@@ -24,3 +24,12 @@ func TestTargetNormalization(t *testing.T) {
 		t.Fatalf("got=%q err=%v", got, err)
 	}
 }
+
+func TestProtocolVariantFollowsSelectedScenario(t *testing.T) {
+	if got := protocolVariant("dns.doh3.query.a"); got != "doh-h3-quic-v1" {
+		t.Fatalf("strict variant=%q", got)
+	}
+	if got := protocolVariant("dns.doh3.interoperability.query.a"); got != "doh-h3-rfc8484-interoperability" {
+		t.Fatalf("interop variant=%q", got)
+	}
+}

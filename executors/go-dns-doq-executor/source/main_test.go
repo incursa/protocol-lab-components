@@ -38,6 +38,17 @@ func TestStrictAndInteroperabilityScenariosAreAdmitted(t *testing.T) {
 	}
 }
 
+func TestProtocolVariantFollowsSelectedScenario(t *testing.T) {
+	t.Setenv("PLAB_SCENARIO_ID", strictScenario)
+	if got := protocolVariant(); got != "dns-over-quic-v1" {
+		t.Fatalf("strict variant=%q", got)
+	}
+	t.Setenv("PLAB_SCENARIO_ID", interopScenario)
+	if got := protocolVariant(); got != "doq-rfc9250-interoperability" {
+		t.Fatalf("interop variant=%q", got)
+	}
+}
+
 func TestNormalizeTargetRequiresDistinctDoQLane(t *testing.T) {
 	got, err := normalizeTarget("doq://127.0.0.1:18532")
 	if err != nil || got != "127.0.0.1:18532" {

@@ -1,5 +1,5 @@
-executorIdentity: {id: go-dns-doq-executor, name: Go DNS-over-QUIC Test Executor, version: 0.2.0, vendor: Incursa}
-versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.2.0}
+executorIdentity: {id: go-dns-doq-executor, name: Go DNS-over-QUIC Test Executor, version: 0.2.1, vendor: Incursa}
+versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.2.1}
 claimedCapabilities:
   - {id: dns.doq.query.a, status: supported}
   - {id: dns.doq.interoperability.query.a, status: supported}

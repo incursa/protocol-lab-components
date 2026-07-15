@@ -26,9 +26,9 @@ import (
 
 const (
 	executorID           = "go-dns-doq-executor"
-	executorVersion      = "0.2.0"
+	executorVersion      = "0.2.1"
 	loadGeneratorID      = "go-quic-dns-load"
-	loadGeneratorVersion = "0.2.0"
+	loadGeneratorVersion = "0.2.1"
 	strictScenario       = "dns.doq.query.a"
 	interopScenario      = "dns.doq.interoperability.query.a"
 	supportedProfile     = "secure-dns-smoke"
@@ -228,7 +228,7 @@ func checkIdentityOrExit(output string) {
 	requireIdentity("PLAB_LOAD_GENERATOR_ID", loadGeneratorID, "load generator")
 	requireIdentity("PLAB_LOAD_GENERATOR_VERSION", loadGeneratorVersion, "load generator version")
 	requireIdentity("PLAB_PROTOCOL", "doq", "protocol")
-	requireIdentity("PLAB_PROTOCOL_VARIANT", "dns-over-quic-v1", "protocol variant")
+	requireIdentity("PLAB_PROTOCOL_VARIANT", protocolVariant(), "protocol variant")
 	scenario := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
 	if _, ok := supportedScenarios[scenario]; ok {
 		return
@@ -407,18 +407,18 @@ func writeEvidence(output string, summary phaseSummary, err error) {
 		writeRequired(output, "quic-summary.json", map[string]any{"quic": quicValue, "stream": streamValue})
 		writeRequired(output, "tls-negotiation.json", tlsValue)
 	}
-	writeRequired(output, "protocol-proof.json", map[string]any{"requestedProtocol": "doq", "observedProtocol": observedProtocol(summary), "protocolVariant": "dns-over-quic-v1", "fallbackDetected": observedProtocol(summary) != "doq", "tls": tlsValue, "quic": quicValue, "stream": streamValue, "dns": dnsValue})
+	writeRequired(output, "protocol-proof.json", map[string]any{"requestedProtocol": "doq", "observedProtocol": observedProtocol(summary), "protocolVariant": protocolVariant(), "fallbackDetected": observedProtocol(summary) != "doq", "tls": tlsValue, "quic": quicValue, "stream": streamValue, "dns": dnsValue})
 }
 
 func normalizeResult(summary phaseSummary, requested map[string]any) result {
 	value := metrics{QueriesPerSecond: float64(summary.CompletedOperations) / summary.DurationSeconds, QueryLatencyMean: mean(summary.QueryLatencies), QueryLatencyP50: percentile(summary.QueryLatencies, .50), QueryLatencyP75: percentile(summary.QueryLatencies, .75), QueryLatencyP90: percentile(summary.QueryLatencies, .90), QueryLatencyP95: percentile(summary.QueryLatencies, .95), QueryLatencyP99: percentile(summary.QueryLatencies, .99), TimeToFirstByte: mean(summary.TimeToFirstByte), ConnectionLatency: summary.ConnectionLatencyMilliseconds, CompletedOperations: summary.CompletedOperations, MalformedOperations: summary.MalformedOperations, RetryCount: summary.RetryCount, FailedOperations: summary.FailedOperations, TimedOutOperations: summary.TimedOutOperations, TotalTransferredBytes: summary.TotalTransferredBytes, EffectiveConcurrency: summary.EffectiveConcurrency, EffectiveStreams: summary.EffectiveStreams}
 	proof := summary.LastProof
 	artifacts := []string{"validation.json", "protocol-proof.json", "dns-wire-summary.json", "quic-summary.json", "tls-negotiation.json", "dns-doq-executor-result.json", "dns-load-summary.json", "dns-warmup-summary.json", "executor-identity.json", "load-generator-identity.json"}
-	return result{SchemaVersion: "protocol-lab.dns-doq-executor-result.v1", ScenarioID: selectedScenario(), LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "doq", "observedProtocol": "doq", "protocolVariant": "dns-over-quic-v1", "fallbackDetected": false, "tls": proof.TLS, "quic": proof.QUIC, "stream": proof.Stream, "dns": proof.DNS}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true, "localAuthoritativeOnly": true, "externalUpstreamUsed": false, "cacheEnabled": false, "oneQueryPerStream": true, "clientAndServerFin": true}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": summary.ActiveConnections, "concurrency": 1, "outstandingQueries": 1, "streamsPerConnection": 1, "activeStreams": summary.EffectiveStreams}, Metrics: value, Warnings: []string{"Local package-backed DoQ smoke is diagnostic and non-publishable. Every other DNS binding or semantic fixture is unsupported by this executor."}, Artifacts: artifacts}
+	return result{SchemaVersion: "protocol-lab.dns-doq-executor-result.v1", ScenarioID: selectedScenario(), LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "doq", "observedProtocol": "doq", "protocolVariant": protocolVariant(), "fallbackDetected": false, "tls": proof.TLS, "quic": proof.QUIC, "stream": proof.Stream, "dns": proof.DNS}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true, "localAuthoritativeOnly": true, "externalUpstreamUsed": false, "cacheEnabled": false, "oneQueryPerStream": true, "clientAndServerFin": true}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": summary.ActiveConnections, "concurrency": 1, "outstandingQueries": 1, "streamsPerConnection": 1, "activeStreams": summary.EffectiveStreams}, Metrics: value, Warnings: []string{"Local package-backed DoQ smoke is diagnostic and non-publishable. Every other DNS binding or semantic fixture is unsupported by this executor."}, Artifacts: artifacts}
 }
 
 func validationDocument(summary phaseSummary, err error) map[string]any {
-	return map[string]any{"scenarioId": selectedScenario(), "fixtureId": fixtureID, "passed": err == nil, "requestedProtocol": "doq", "observedProtocol": observedProtocol(summary), "protocolVariant": "dns-over-quic-v1", "fallbackDetected": observedProtocol(summary) != "doq", "completedOperations": summary.CompletedOperations, "malformedOperations": summary.MalformedOperations, "retryCount": summary.RetryCount, "failedOperations": summary.FailedOperations, "timedOutOperations": summary.TimedOutOperations, "externalUpstreamUsed": false, "cacheEnabled": false, "error": errorString(err)}
+	return map[string]any{"scenarioId": selectedScenario(), "fixtureId": fixtureID, "passed": err == nil, "requestedProtocol": "doq", "observedProtocol": observedProtocol(summary), "protocolVariant": protocolVariant(), "fallbackDetected": observedProtocol(summary) != "doq", "completedOperations": summary.CompletedOperations, "malformedOperations": summary.MalformedOperations, "retryCount": summary.RetryCount, "failedOperations": summary.FailedOperations, "timedOutOperations": summary.TimedOutOperations, "externalUpstreamUsed": false, "cacheEnabled": false, "error": errorString(err)}
 }
 func observedProtocol(summary phaseSummary) string {
 	if summary.LastProof != nil && summary.LastProof.QUIC.Version == "v1" && summary.LastProof.TLS.ALPN == doqALPN && summary.LastProof.DNS.Transport == "doq" {
@@ -545,6 +545,12 @@ func selectedScenario() string {
 		return strictScenario
 	}
 	return id
+}
+func protocolVariant() string {
+	if selectedScenario() == interopScenario {
+		return "doq-rfc9250-interoperability"
+	}
+	return "dns-over-quic-v1"
 }
 func runtimeProvenance() map[string]string {
 	return map[string]string{"goos": runtime.GOOS, "goarch": runtime.GOARCH, "goVersion": runtime.Version()}

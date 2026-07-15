@@ -30,9 +30,9 @@ import (
 
 const (
 	executorID           = "go-dns-doh2-executor"
-	executorVersion      = "0.2.0"
+	executorVersion      = "0.2.1"
 	loadGeneratorID      = "go-dns-doh2-load"
-	loadGeneratorVersion = "0.2.0"
+	loadGeneratorVersion = "0.2.1"
 	strictScenario       = "dns.doh2.query.a"
 	interopScenario      = "dns.doh2.interoperability.query.a"
 	supportedProfile     = "secure-dns-smoke"
@@ -266,7 +266,7 @@ func checkIdentityOrExit(output string) {
 	verifySubstitution("PLAB_LOAD_GENERATOR_ID", loadGeneratorID, "load generator")
 	verifySubstitution("PLAB_LOAD_GENERATOR_VERSION", loadGeneratorVersion, "load generator version")
 	verifySubstitution("PLAB_PROTOCOL", "doh2", "protocol")
-	verifySubstitution("PLAB_PROTOCOL_VARIANT", "doh-h2-tls-alpn", "protocol variant")
+	verifySubstitution("PLAB_PROTOCOL_VARIANT", protocolVariant(), "protocol variant")
 	scenario := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
 	if scenario == "" {
 		scenario = strictScenario
@@ -537,17 +537,17 @@ func writeEvidence(output string, summary phaseSummary, err error) {
 		writeRequired(output, "http-summary.json", httpValue)
 		writeRequired(output, "tls-negotiation.json", tlsValue)
 	}
-	writeRequired(output, "protocol-proof.json", map[string]any{"requestedProtocol": "doh2", "observedProtocol": observedProtocol(summary), "protocolVariant": "doh-h2-tls-alpn", "fallbackDetected": observedProtocol(summary) != "doh2", "tls": tlsValue, "http": httpValue, "dns": dns})
+	writeRequired(output, "protocol-proof.json", map[string]any{"requestedProtocol": "doh2", "observedProtocol": observedProtocol(summary), "protocolVariant": protocolVariant(), "fallbackDetected": observedProtocol(summary) != "doh2", "tls": tlsValue, "http": httpValue, "dns": dns})
 }
 func normalizeResult(s phaseSummary, requested map[string]any) result {
 	m := metrics{QueriesPerSecond: float64(s.CompletedOperations) / s.DurationSeconds, QueryLatencyMean: mean(s.QueryLatencies), QueryLatencyP50: percentile(s.QueryLatencies, .50), QueryLatencyP75: percentile(s.QueryLatencies, .75), QueryLatencyP90: percentile(s.QueryLatencies, .90), QueryLatencyP95: percentile(s.QueryLatencies, .95), QueryLatencyP99: percentile(s.QueryLatencies, .99), TimeToFirstByte: mean(s.TimeToFirstByte), ConnectionLatency: s.ConnectionLatencyMilliseconds, CompletedOperations: s.CompletedOperations, MalformedOperations: s.MalformedOperations, RetryCount: s.RetryCount, FailedOperations: s.FailedOperations, TimedOutOperations: s.TimedOutOperations, TotalTransferredBytes: s.TotalTransferredBytes, EffectiveConcurrency: s.EffectiveConcurrency, EffectiveStreams: s.EffectiveStreams}
 	proof := s.LastProof
 	proof.TLS.ConnectionLatencyMilliseconds = s.ConnectionLatencyMilliseconds
 	artifacts := []string{"validation.json", "protocol-proof.json", "dns-wire-summary.json", "http-summary.json", "tls-negotiation.json", "dns-doh2-executor-result.json", "dns-load-summary.json", "dns-warmup-summary.json", "executor-identity.json", "load-generator-identity.json"}
-	return result{SchemaVersion: "protocol-lab.dns-doh2-executor-result.v1", ScenarioID: selectedScenario(), LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "doh2", "observedProtocol": "doh2", "protocolVariant": "doh-h2-tls-alpn", "fallbackDetected": false, "tls": proof.TLS, "http": proof.HTTP, "dns": proof.DNS}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true, "localAuthoritativeOnly": true, "externalUpstreamUsed": false, "cacheEnabled": false}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": s.ActiveConnections, "concurrency": 1, "outstandingQueries": 1, "streamsPerConnection": 1, "activeStreams": s.EffectiveStreams}, Metrics: m, Warnings: []string{"Local package-backed DoH2 smoke is diagnostic and non-publishable. Every other DNS binding or semantic fixture is unsupported by this executor."}, Artifacts: artifacts}
+	return result{SchemaVersion: "protocol-lab.dns-doh2-executor-result.v1", ScenarioID: selectedScenario(), LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "doh2", "observedProtocol": "doh2", "protocolVariant": protocolVariant(), "fallbackDetected": false, "tls": proof.TLS, "http": proof.HTTP, "dns": proof.DNS}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true, "localAuthoritativeOnly": true, "externalUpstreamUsed": false, "cacheEnabled": false}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": s.ActiveConnections, "concurrency": 1, "outstandingQueries": 1, "streamsPerConnection": 1, "activeStreams": s.EffectiveStreams}, Metrics: m, Warnings: []string{"Local package-backed DoH2 smoke is diagnostic and non-publishable. Every other DNS binding or semantic fixture is unsupported by this executor."}, Artifacts: artifacts}
 }
 func validationDocument(s phaseSummary, err error) map[string]any {
-	return map[string]any{"scenarioId": selectedScenario(), "fixtureId": fixtureID, "passed": err == nil, "requestedProtocol": "doh2", "observedProtocol": observedProtocol(s), "protocolVariant": "doh-h2-tls-alpn", "fallbackDetected": observedProtocol(s) != "doh2", "completedOperations": s.CompletedOperations, "malformedOperations": s.MalformedOperations, "retryCount": s.RetryCount, "failedOperations": s.FailedOperations, "timedOutOperations": s.TimedOutOperations, "externalUpstreamUsed": false, "cacheEnabled": false, "error": errorString(err)}
+	return map[string]any{"scenarioId": selectedScenario(), "fixtureId": fixtureID, "passed": err == nil, "requestedProtocol": "doh2", "observedProtocol": observedProtocol(s), "protocolVariant": protocolVariant(), "fallbackDetected": observedProtocol(s) != "doh2", "completedOperations": s.CompletedOperations, "malformedOperations": s.MalformedOperations, "retryCount": s.RetryCount, "failedOperations": s.FailedOperations, "timedOutOperations": s.TimedOutOperations, "externalUpstreamUsed": false, "cacheEnabled": false, "error": errorString(err)}
 }
 func observedProtocol(s phaseSummary) string {
 	if s.LastProof != nil && s.LastProof.HTTP.Version == "HTTP/2.0" && s.LastProof.TLS.ALPN == "h2" {
@@ -680,6 +680,12 @@ func selectedScenario() string {
 		return strictScenario
 	}
 	return id
+}
+func protocolVariant() string {
+	if selectedScenario() == interopScenario {
+		return "doh-h2-rfc8484-interoperability"
+	}
+	return "doh-h2-tls-alpn"
 }
 func runtimeProvenance() map[string]string {
 	return map[string]string{"goos": runtime.GOOS, "goarch": runtime.GOARCH, "goVersion": runtime.Version()}

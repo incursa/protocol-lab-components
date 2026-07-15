@@ -1,4 +1,4 @@
 {
   "executor":{"language":"go","module":"org.protocol-lab.components.executor.go-dns-dot-executor","buildFlags":["-buildvcs=false","-trimpath"]},
-  "loadGenerator":{"id":"go-dns-dot-load","version":"0.2.0","engineModule":"crypto/tls + net","engineModuleVersion":"Go standard library","license":"BSD-3-Clause","source":"https://pkg.go.dev/crypto/tls"}
+  "loadGenerator":{"id":"go-dns-dot-load","version":"0.2.1","engineModule":"crypto/tls + net","engineModuleVersion":"Go standard library","license":"BSD-3-Clause","source":"https://pkg.go.dev/crypto/tls"}
 }

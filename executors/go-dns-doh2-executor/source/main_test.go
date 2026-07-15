@@ -35,6 +35,16 @@ func TestStrictAndInteroperabilityScenariosAreAdmitted(t *testing.T) {
 		}
 	}
 }
+func TestProtocolVariantFollowsSelectedScenario(t *testing.T) {
+	t.Setenv("PLAB_SCENARIO_ID", strictScenario)
+	if got := protocolVariant(); got != "doh-h2-tls-alpn" {
+		t.Fatalf("strict variant=%q", got)
+	}
+	t.Setenv("PLAB_SCENARIO_ID", interopScenario)
+	if got := protocolVariant(); got != "doh-h2-rfc8484-interoperability" {
+		t.Fatalf("interop variant=%q", got)
+	}
+}
 func TestNormalizeTargetRejectsFallbackAndWrongPath(t *testing.T) {
 	got, err := normalizeTarget("https://127.0.0.1:18531")
 	if err != nil || got != "https://127.0.0.1:18531/dns-query" {

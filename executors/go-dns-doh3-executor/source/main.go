@@ -31,9 +31,9 @@ import (
 
 const (
 	executorID           = "go-dns-doh3-executor"
-	executorVersion      = "0.2.0"
+	executorVersion      = "0.2.1"
 	loadGeneratorID      = "go-dns-doh3-load"
-	loadGeneratorVersion = "0.2.0"
+	loadGeneratorVersion = "0.2.1"
 	profileID            = "secure-dns-smoke"
 	serverName           = "dns.plab.test"
 	mediaType            = "application/dns-message"
@@ -268,7 +268,7 @@ func checkIdentityOrExit(output string) fixture {
 	requireIdentity("PLAB_LOAD_GENERATOR_ID", loadGeneratorID, "load generator")
 	requireIdentity("PLAB_LOAD_GENERATOR_VERSION", loadGeneratorVersion, "load generator version")
 	requireIdentity("PLAB_PROTOCOL", "doh3", "protocol")
-	requireIdentity("PLAB_PROTOCOL_VARIANT", "doh-h3-quic-v1", "protocol variant")
+	requireIdentity("PLAB_PROTOCOL_VARIANT", protocolVariant(strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))), "protocol variant")
 	id := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
 	if f, ok := fixtures[id]; ok {
 		return f
@@ -472,15 +472,15 @@ func writeEvidence(output string, f fixture, s phaseSummary, err error) {
 		writeRequired(output, "quic-summary.json", quicValue)
 		writeRequired(output, "tls-negotiation.json", tlsValue)
 	}
-	writeRequired(output, "protocol-proof.json", map[string]any{"requestedProtocol": "doh3", "observedProtocol": observedProtocol(s), "protocolVariant": "doh-h3-quic-v1", "fallbackDetected": observedProtocol(s) != "doh3", "dns": dnsValue, "http": httpValue, "tls": tlsValue, "quic": quicValue})
+	writeRequired(output, "protocol-proof.json", map[string]any{"requestedProtocol": "doh3", "observedProtocol": observedProtocol(s), "protocolVariant": protocolVariant(f.ScenarioID), "fallbackDetected": observedProtocol(s) != "doh3", "dns": dnsValue, "http": httpValue, "tls": tlsValue, "quic": quicValue})
 }
 func normalizeResult(f fixture, s phaseSummary, requested map[string]any) result {
 	m := metrics{QueriesPerSecond: float64(s.CompletedOperations) / s.DurationSeconds, QueryLatencyMean: mean(s.QueryLatencies), QueryLatencyP50: percentile(s.QueryLatencies, .50), QueryLatencyP75: percentile(s.QueryLatencies, .75), QueryLatencyP90: percentile(s.QueryLatencies, .90), QueryLatencyP95: percentile(s.QueryLatencies, .95), QueryLatencyP99: percentile(s.QueryLatencies, .99), TimeToFirstByte: mean(s.TimeToFirstByte), ConnectionLatency: s.ConnectionLatencyMilliseconds, CompletedOperations: s.CompletedOperations, MalformedOperations: s.MalformedOperations, RetryCount: s.RetryCount, FailedOperations: s.FailedOperations, TimedOutOperations: s.TimedOutOperations, TotalTransferredBytes: s.TotalTransferredBytes, EffectiveConcurrency: s.EffectiveConcurrency, EffectiveStreams: s.EffectiveStreams}
 	p := s.LastProof
-	return result{SchemaVersion: "protocol-lab.dns-doh3-executor-result.v1", ScenarioID: f.ScenarioID, LoadProfileID: profileID, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "doh3", "observedProtocol": "doh3", "protocolVariant": "doh-h3-quic-v1", "fallbackDetected": false, "dns": p.DNS, "http": p.HTTP, "tls": p.TLS, "quic": p.QUIC}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true, "localAuthoritativeOnly": true, "externalUpstreamUsed": false, "cacheEnabled": false}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": s.ActiveConnections, "concurrency": 1, "outstandingQueries": 1, "streamsPerConnection": 1, "activeStreams": s.EffectiveStreams}, Metrics: m, Warnings: []string{"Local package-backed DoH3 smoke is diagnostic and non-publishable. DNSSEC-shaped material is structural; cryptographic signature validity is not claimed."}, Artifacts: []string{"validation.json", "protocol-proof.json", "dns-wire-summary.json", "http-summary.json", "quic-summary.json", "tls-negotiation.json", "dns-doh3-executor-result.json", "dns-load-summary.json", "dns-warmup-summary.json", "executor-identity.json", "load-generator-identity.json"}}
+	return result{SchemaVersion: "protocol-lab.dns-doh3-executor-result.v1", ScenarioID: f.ScenarioID, LoadProfileID: profileID, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "doh3", "observedProtocol": "doh3", "protocolVariant": protocolVariant(f.ScenarioID), "fallbackDetected": false, "dns": p.DNS, "http": p.HTTP, "tls": p.TLS, "quic": p.QUIC}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true, "localAuthoritativeOnly": true, "externalUpstreamUsed": false, "cacheEnabled": false}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": s.ActiveConnections, "concurrency": 1, "outstandingQueries": 1, "streamsPerConnection": 1, "activeStreams": s.EffectiveStreams}, Metrics: m, Warnings: []string{"Local package-backed DoH3 smoke is diagnostic and non-publishable. DNSSEC-shaped material is structural; cryptographic signature validity is not claimed."}, Artifacts: []string{"validation.json", "protocol-proof.json", "dns-wire-summary.json", "http-summary.json", "quic-summary.json", "tls-negotiation.json", "dns-doh3-executor-result.json", "dns-load-summary.json", "dns-warmup-summary.json", "executor-identity.json", "load-generator-identity.json"}}
 }
 func validationDocument(f fixture, s phaseSummary, err error) map[string]any {
-	return map[string]any{"scenarioId": f.ScenarioID, "fixtureId": f.FixtureID, "passed": err == nil, "requestedProtocol": "doh3", "observedProtocol": observedProtocol(s), "protocolVariant": "doh-h3-quic-v1", "fallbackDetected": observedProtocol(s) != "doh3", "completedOperations": s.CompletedOperations, "malformedOperations": s.MalformedOperations, "retryCount": s.RetryCount, "failedOperations": s.FailedOperations, "timedOutOperations": s.TimedOutOperations, "externalUpstreamUsed": false, "cacheEnabled": false, "error": errorString(err)}
+	return map[string]any{"scenarioId": f.ScenarioID, "fixtureId": f.FixtureID, "passed": err == nil, "requestedProtocol": "doh3", "observedProtocol": observedProtocol(s), "protocolVariant": protocolVariant(f.ScenarioID), "fallbackDetected": observedProtocol(s) != "doh3", "completedOperations": s.CompletedOperations, "malformedOperations": s.MalformedOperations, "retryCount": s.RetryCount, "failedOperations": s.FailedOperations, "timedOutOperations": s.TimedOutOperations, "externalUpstreamUsed": false, "cacheEnabled": false, "error": errorString(err)}
 }
 func observedProtocol(s phaseSummary) string {
 	if s.LastProof != nil && s.LastProof.HTTP.Version == "HTTP/3.0" && s.LastProof.TLS.ALPN == "h3" && s.LastProof.QUIC.Version == "v1" {
@@ -604,4 +604,10 @@ func runtimeProvenance() map[string]string {
 	return map[string]string{"goos": runtime.GOOS, "goarch": runtime.GOARCH, "goVersion": runtime.Version()}
 }
 func accelerationProvenance() map[string]string { return map[string]string{"mode": "not-reported"} }
-func fatal(code int, err error)                 { fmt.Fprintln(os.Stderr, err); os.Exit(code) }
+func protocolVariant(scenarioID string) string {
+	if scenarioID == "dns.doh3.interoperability.query.a" {
+		return "doh-h3-rfc8484-interoperability"
+	}
+	return "doh-h3-quic-v1"
+}
+func fatal(code int, err error) { fmt.Fprintln(os.Stderr, err); os.Exit(code) }

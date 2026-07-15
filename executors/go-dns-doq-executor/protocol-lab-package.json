@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.go-dns-doq-executor",
-  "packageVersion": "0.2.0",
+  "packageVersion": "0.2.1",
   "kind": "test-executor",
   "displayName": "Go DNS-over-QUIC Test Executor",
   "entryManifests": [

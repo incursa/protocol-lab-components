@@ -27,9 +27,9 @@ import (
 
 const (
 	executorID           = "go-dns-dot-executor"
-	executorVersion      = "0.2.0"
+	executorVersion      = "0.2.1"
 	loadGeneratorID      = "go-dns-dot-load"
-	loadGeneratorVersion = "0.2.0"
+	loadGeneratorVersion = "0.2.1"
 	strictScenario       = "dns.dot.query.a"
 	interopScenario      = "dns.dot.interoperability.query.a"
 	supportedProfile     = "secure-dns-smoke"
@@ -212,7 +212,7 @@ func main() {
 		writeRequired(*output, "dns-wire-summary.json", preflight.LastDNSProof)
 	}
 	writeRequired(*output, "tls-negotiation.json", preflight.TLSProof)
-	writeRequired(*output, "protocol-proof.json", map[string]any{"requestedProtocol": "dot", "observedProtocol": "dot", "protocolVariant": "dot-tls1.3-tcp", "fallbackDetected": false, "tls": preflight.TLSProof, "dns": preflight.LastDNSProof})
+	writeRequired(*output, "protocol-proof.json", map[string]any{"requestedProtocol": "dot", "observedProtocol": "dot", "protocolVariant": protocolVariant(), "fallbackDetected": false, "tls": preflight.TLSProof, "dns": preflight.LastDNSProof})
 	writeRequired(*output, "executor-identity.json", map[string]any{"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedScenarios": []string{strictScenario, interopScenario}})
 	if err != nil {
 		fatal(1, fmt.Errorf("DoT validity gate failed: %w", err))
@@ -250,7 +250,7 @@ func checkIdentityOrExit(output string) {
 	verifySubstitution("PLAB_LOAD_GENERATOR_ID", loadGeneratorID, "load generator")
 	verifySubstitution("PLAB_LOAD_GENERATOR_VERSION", loadGeneratorVersion, "load generator version")
 	verifySubstitution("PLAB_PROTOCOL", "dot", "protocol")
-	verifySubstitution("PLAB_PROTOCOL_VARIANT", "dot-tls1.3-tcp", "protocol variant")
+	verifySubstitution("PLAB_PROTOCOL_VARIANT", protocolVariant(), "protocol variant")
 	scenario := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
 	if scenario == "" {
 		scenario = strictScenario
@@ -444,7 +444,7 @@ func exchange(conn net.Conn, id uint16) (dnsProof, int64, error) {
 
 func normalizeResult(summary phaseSummary, requested map[string]any) result {
 	m := metrics{QueriesPerSecond: float64(summary.CompletedOperations) / summary.DurationSeconds, QueryLatencyMean: mean(summary.QueryLatencyMilliseconds), QueryLatencyP50: percentile(summary.QueryLatencyMilliseconds, .50), QueryLatencyP75: percentile(summary.QueryLatencyMilliseconds, .75), QueryLatencyP90: percentile(summary.QueryLatencyMilliseconds, .90), QueryLatencyP95: percentile(summary.QueryLatencyMilliseconds, .95), QueryLatencyP99: percentile(summary.QueryLatencyMilliseconds, .99), ConnectionLatency: summary.TLSProof.ConnectionLatencyMilliseconds, CompletedOperations: summary.CompletedOperations, MalformedOperations: summary.MalformedOperations, RetryCount: summary.RetryCount, FailedOperations: summary.FailedOperations, TimedOutOperations: summary.TimedOutOperations, TotalTransferredBytes: summary.TotalTransferredBytes, EffectiveConcurrency: summary.EffectiveConcurrency}
-	return result{SchemaVersion: "protocol-lab.dns-dot-executor-result.v1", ScenarioID: selectedScenario(), LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "dot", "observedProtocol": "dot", "protocolVariant": "dot-tls1.3-tcp", "fallbackDetected": false, "tls": summary.TLSProof, "dns": summary.LastDNSProof}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": 1, "concurrency": 1, "outstandingQueries": 1}, Metrics: m, Warnings: []string{"Local package-backed DoT smoke is diagnostic and non-publishable. All other secure DNS bindings and semantic fixtures are unsupported by this executor."}}
+	return result{SchemaVersion: "protocol-lab.dns-dot-executor-result.v1", ScenarioID: selectedScenario(), LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "dot", "observedProtocol": "dot", "protocolVariant": protocolVariant(), "fallbackDetected": false, "tls": summary.TLSProof, "dns": summary.LastDNSProof}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": 1, "concurrency": 1, "outstandingQueries": 1}, Metrics: m, Warnings: []string{"Local package-backed DoT smoke is diagnostic and non-publishable. All other secure DNS bindings and semantic fixtures are unsupported by this executor."}}
 }
 
 func validationDocument(summary phaseSummary, err error) map[string]any {
@@ -579,6 +579,12 @@ func selectedScenario() string {
 		return strictScenario
 	}
 	return id
+}
+func protocolVariant() string {
+	if selectedScenario() == interopScenario {
+		return "dot-rfc7858-interoperability"
+	}
+	return "dot-tls1.3-tcp"
 }
 func runtimeProvenance() map[string]string {
 	return map[string]string{"goos": runtime.GOOS, "goarch": runtime.GOARCH, "goVersion": runtime.Version()}
