@@ -170,6 +170,18 @@ decision-ready gates below.
 - [ ] Exercise h3spec/QPACK against every compatible HTTP/3 target and retain
   exact unsupported or failed requirements.
 
+### Current retained HTTP/3 evidence
+
+| Implementation | Immutable package version | Proven rows | Completed controller job |
+| --- | --- | --- | --- |
+| aioquic | 0.3.2 | canonical JSON status and 1 KiB payload; validation and measurement passed | `job-0d08b2ace1704d609ec9803e6e7119c7` |
+
+The aioquic run used the package-backed managed HTTP/3 executor and retained
+the executor package identity, requested/effective load shapes, raw output,
+target-container telemetry, normalized metrics, and immutable target package
+provenance. It closes current-head proof for those two rows only; 64 KiB,
+h3spec/QPACK, repeated comparison, publication, and decision-ready gates remain.
+
 ### New catalog packages
 
 - [ ] Package and live-prove XQUIC, LSQUIC, and neqo from reproducibly pinned
