@@ -2,6 +2,8 @@
 
 `kestrel-http3` is a lane-scoped Protocol Lab implementation package for HTTP/3 over Kestrel. It is intentionally separate from `kestrel-http1` and `kestrel-http2` so inventory can select exactly the protocol lane under test.
 
+- Package version: `0.1.2`
+
 ## Supported
 
 - Protocol family: `h3`

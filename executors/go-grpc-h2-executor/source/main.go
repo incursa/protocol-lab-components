@@ -32,9 +32,9 @@ import (
 
 const (
 	executorID                  = "go-grpc-h2-executor"
-	executorVersion             = "0.4.0"
+	executorVersion             = "0.4.1"
 	loadGeneratorID             = "go-x-net-http2-grpc-load"
-	loadGeneratorVersion        = "0.4.0"
+	loadGeneratorVersion        = "0.4.1"
 	loadProfileSmoke            = "grpc-h2-smoke"
 	loadProfileDiagnostic       = "grpc-h2-diagnostic"
 	loadProfileChannelChurn     = "grpc-h2-channel-churn"

@@ -27,7 +27,8 @@
 - Builder image: `golang:1.25-bookworm`
 - Builder image digest: `golang@sha256:bbb255b0e131db500cf0520adc97441d2260cf629c7fa7e39e025ddf53995a24`
 - Runtime image: `scratch`
-- Component image tag: `incursa-protocol-lab-quic-go-http3:0.1.4`
+- Package version: `0.1.5`
+- Component image tag: `incursa-protocol-lab-quic-go-http3:0.1.5`
 - Component image ID: `sha256:68ad1269e2b02439bf796f95fe4d0009a1d7eb4e7dbbd0d173cdc83f58843edd`
 - Component repo digest: `incursa-protocol-lab-quic-go-http3@sha256:68ad1269e2b02439bf796f95fe4d0009a1d7eb4e7dbbd0d173cdc83f58843edd`
 - Certificate mode: generated self-signed loopback certificate
@@ -46,7 +47,7 @@ Build the wrapper image:
 docker build --pull `
   --build-arg QUIC_GO_VERSION=v0.60.0 `
   -f ./implementations/quic-go-http3/docker/quic-go-http3.Dockerfile `
-  -t incursa-protocol-lab-quic-go-http3:0.1.4 `
+  -t incursa-protocol-lab-quic-go-http3:0.1.5 `
   ./implementations/quic-go-http3
 ```
 

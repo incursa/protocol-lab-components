@@ -12,7 +12,7 @@ commandArguments:
   - runtimes/linux-x64/run-quic-go-http3-server.sh
   - --listen
   - :5446
-image: incursa-protocol-lab-quic-go-http3:0.1.4
+image: incursa-protocol-lab-quic-go-http3:0.1.5
 dockerfile: docker/quic-go-http3.Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
