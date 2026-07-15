@@ -4,5 +4,3 @@ $TTL 0
 @ IN NS dns.plab.test.
 dns IN A 192.0.2.53
 @ IN A 192.0.2.1
-
-
