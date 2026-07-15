@@ -1,6 +1,6 @@
 # ProtocolLab Implementation Coverage Backfill Wishlist
 
-Updated: 2026-07-14
+Updated: 2026-07-15
 
 This is the delivery backlog for the program after the initial implementation-
 diversity milestone. That milestone proved that fifteen new implementation
@@ -91,12 +91,12 @@ no recursive upstream dependency.
 
 ### Authoritative targets
 
-- [ ] Keep BIND 9 DoT current and add BIND 9 DoH2 using the existing exact
+- [x] Keep BIND 9 DoT current and add BIND 9 DoH2 using the existing exact
   authoritative DNS fixture and no HTTP fallback.
 - [ ] Add Technitium authoritative packages for DoT, DoH2, DoH3, and DoQ using
   externally acquired or source/config-only packaging if redistribution is not
   approved.
-- [ ] Promote the existing Go fixture targets for DoT, DoH2, DoH3, and DoQ to
+- [x] Promote the existing Go fixture targets for DoT, DoH2, DoH3, and DoQ to
   live evidence baselines, but label them as fixture implementations rather
   than production server products.
 - [ ] Add classic UDP and TCP evidence for BIND 9 and Technitium so encrypted
@@ -120,6 +120,23 @@ no recursive upstream dependency.
 - [ ] Produce decision-ready DoT and DoH2 comparisons separately for
   authoritative and resolver roles; retain DoH3 and DoQ as comparable
   observations until topology and QUIC saturation gates are proven.
+
+### Current retained secure-DNS evidence
+
+| Role | Transport | Implementation | Immutable package version | Completed controller job |
+| --- | --- | --- | --- | --- |
+| Authoritative fixture | DoT | Go DNS DoT | 0.2.1 | `job-78dca1a735ed428c954e9b607ebb3c64` |
+| Authoritative product | DoT | BIND 9 | 0.1.0 | `job-4568f06d29494058995f2a3bf7dab774` |
+| Authoritative fixture | DoH2 | Go DNS DoH2 | 0.2.1 | `job-4bee9b68e59f4067bb5f292226a59b97` |
+| Authoritative product | DoH2 | BIND 9 | 0.1.0 | `job-3e256dd1cb8a4f668464e2cd5e0eac7e` |
+| Authoritative fixture | DoH3 | Go DNS DoH3 | 0.2.1 | `job-2f444bf1b8f34846806ed9eee34922c1` |
+| Authoritative fixture | DoQ | Go DNS DoQ | 0.2.1 | `job-1c91832835d14fa8b049aa02ed8ccffd` |
+
+These are real isolated-pair controller runs with retained raw and normalized
+artifacts. They establish current package proof and the two-implementation DoT
+and DoH2 breadth counts. They do not yet satisfy the repeated-run,
+variance/saturation, publication, resolver-role, DoH3/DoQ second-ecosystem, or
+decision-ready gates below.
 
 ## Workstream B - raw QUIC transport backfill
 
