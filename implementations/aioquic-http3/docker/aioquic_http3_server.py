@@ -3,7 +3,9 @@ import asyncio
 import hashlib
 import json
 import mimetypes
+import os
 import struct
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
@@ -192,6 +194,15 @@ class StaticHttp3ServerProtocol(QuicConnectionProtocol):
         self.transmit()
 
     def _resolve_response(self, path, query):
+        if path == "/status":
+            body = json.dumps({
+                "protocol": "h3",
+                "server": "aioquic",
+                "implementation": "aioquic-http3",
+                "utc": datetime.now(timezone.utc).isoformat(),
+                "processId": os.getpid(),
+            }).encode("utf-8")
+            return 200, body, [(b"content-type", b"application/json")]
         if path == "/headers/response":
             count = self._parse_positive_int(query.get("count", ["50"])[0], default=50, maximum=128)
             size = self._parse_positive_int(query.get("size", ["32"])[0], default=32, maximum=256)
@@ -240,7 +251,7 @@ async def main_async(args):
     configuration = QuicConfiguration(is_client=False, alpn_protocols=H3_ALPN)
     configuration.load_cert_chain(args.cert, args.key)
     await serve(args.host, args.port, configuration=configuration, create_protocol=lambda *protocol_args, **protocol_kwargs: StaticHttp3ServerProtocol(*protocol_args, www_root=args.www_root, **protocol_kwargs))
-    print(json.dumps({"eventName": "ready", "implementationId": "aioquic-http3", "implementationVersion": "0.3.1", "implementationRole": "origin-server", "listenAddress": f"{args.host}:{args.port}", "protocol": "h3", "quicVersion": "QUICv1", "tlsVersion": "TLS 1.3", "alpn": "h3", "settingsEnableConnectProtocol": 1, "path": PATH, "binaryPayloadSha256": BINARY_SHA256}), flush=True)
+    print(json.dumps({"eventName": "ready", "implementationId": "aioquic-http3", "implementationVersion": "0.3.2", "implementationRole": "origin-server", "listenAddress": f"{args.host}:{args.port}", "protocol": "h3", "quicVersion": "QUICv1", "tlsVersion": "TLS 1.3", "alpn": "h3", "settingsEnableConnectProtocol": 1, "path": PATH, "binaryPayloadSha256": BINARY_SHA256}), flush=True)
     await asyncio.Event().wait()
 
 

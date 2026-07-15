@@ -1,6 +1,6 @@
 # aioquic HTTP/3 Implementation Wrapper
 
-`aioquic-http3` packages an aioquic HTTP/3 origin-server target. Version `0.3.1` preserves the existing HTTP/3 origin endpoints and authenticated, sustained RFC 9220 package proof while providing a new immutable package identity for the current source tree.
+`aioquic-http3` packages an aioquic HTTP/3 origin-server target. Version `0.3.2` preserves the existing HTTP/3 origin endpoints and authenticated, sustained RFC 9220 package proof while serving the canonical JSON identity document at `/status`.
 
 ## Supported
 
@@ -20,14 +20,14 @@
 
 - Base image: `python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203`
 - Python package: `aioquic==1.3.0`
-- Component image tag: `incursa-protocol-lab-aioquic-http3:0.3.1`
+- Component image tag: `incursa-protocol-lab-aioquic-http3:0.3.2`
 - aioquic license text: `third-party/aioquic-LICENSE.txt`
 - Fixed package-local certificate: P-256 self-signed `websocket.plab.test`, authenticated by the executor through its package-local trust copy
 - Image identity is recorded from each extracted-package build and must be an immutable `sha256:` ID.
 
 ## Historical Scenario Evidence
 
-The rows below predate `0.3.1`; they remain provenance for the unchanged HTTP/3 core behavior, not proof of the current package identity.
+The rows below predate `0.3.2`; they remain provenance for the unchanged HTTP/3 core behavior, not proof of the current package identity.
 
 | External row | Scenarios | Status | Evidence |
 | --- | --- | --- | --- |
@@ -48,7 +48,7 @@ Build the wrapper image:
 ```powershell
 docker build --build-arg AIOQUIC_VERSION=1.3.0 `
   -f ./implementations/aioquic-http3/docker/aioquic.Dockerfile `
-  -t incursa-protocol-lab-aioquic-http3:0.3.1 `
+  -t incursa-protocol-lab-aioquic-http3:0.3.2 `
   ./implementations/aioquic-http3
 ```
 

@@ -27,7 +27,7 @@ function Expand-One([string]$archive, [string]$destination) {
 
 $scenarioArchive = Resolve-One 'org.protocol-lab.components.scenario.http3-websocket-performance.0.2.2.plabpkg'
 $executorArchive = Resolve-One 'org.protocol-lab.components.executor.aioquic-rfc9220-websocket.0.3.0.plabpkg'
-$targetArchive = Resolve-One 'org.protocol-lab.components.implementation.aioquic-http3.0.3.1.plabpkg'
+$targetArchive = Resolve-One 'org.protocol-lab.components.implementation.aioquic-http3.0.3.2.plabpkg'
 $scenarioRoot = Join-Path $ArtifactRoot 'scenario'
 $executorRoot = Join-Path $ArtifactRoot 'executor'
 $targetRoot = Join-Path $ArtifactRoot 'target'
@@ -52,7 +52,7 @@ foreach ($root in @($executorRoot, $targetRoot)) { if (-not (Test-Path (Join-Pat
 if ($LASTEXITCODE -ne 0) { throw 'Extracted six-scenario authority parity failed.' }
 
 $executorImage = 'incursa-protocol-lab-aioquic-rfc9220-websocket:0.3.0-extracted-smoke'
-$targetImage = 'incursa-protocol-lab-aioquic-http3:0.3.1-extracted-smoke'
+$targetImage = 'incursa-protocol-lab-aioquic-http3:0.3.2-extracted-smoke'
 & docker build --build-arg AIOQUIC_VERSION=1.3.0 -f (Join-Path $executorRoot 'docker/aioquic-rfc9220-websocket.Dockerfile') -t $executorImage $executorRoot | Out-Host
 if ($LASTEXITCODE -ne 0) { throw 'Extracted executor image build failed.' }
 & docker build --build-arg AIOQUIC_VERSION=1.3.0 -f (Join-Path $targetRoot 'docker/aioquic.Dockerfile') -t $targetImage $targetRoot | Out-Host

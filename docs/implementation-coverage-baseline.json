@@ -32,12 +32,12 @@
     "quicHttp3InventoryCount": 19,
     "publicAuthoredCatalogCount": 19,
     "currentVersionLiveProvenCount": 22,
-    "historicalVersionLiveProofOnlyCount": 3,
-    "attemptedNoCompletedEvidenceCount": 2,
+    "historicalVersionLiveProofOnlyCount": 2,
+    "attemptedNoCompletedEvidenceCount": 3,
     "noLiveProofInReviewedSourcesCount": 17
   },
   "localImplementationPackages": [
-    { "path": "implementations/aioquic-http3/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.aioquic-http3", "version": "0.3.1", "implementationIds": ["aioquic-http3"], "protocols": ["h3"], "evidenceStatus": "historical-version-live-proof-only", "evidenceVersion": "0.1.6", "evidenceJobIds": ["scenario-declarations-aioquic-1kb-final-h3-local-v1"], "blocker": "Current 0.3.1 needs clean admission and a real-controller rerun against exact current scenario and executor hashes." },
+    { "path": "implementations/aioquic-http3/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.aioquic-http3", "version": "0.3.2", "implementationIds": ["aioquic-http3"], "protocols": ["h3"], "evidenceStatus": "attempted-no-completed-evidence", "evidenceJobIds": ["job-7dbcd76c41b8488e87315ff77c7bcadf"], "blocker": "Version 0.3.1 proved the 1 KiB endpoint but failed the canonical /status content type; 0.3.2 corrects that endpoint and needs a real-controller rerun." },
     { "path": "implementations/apache-http1/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.apache-http1", "version": "0.1.4", "implementationIds": ["apache-http1"], "protocols": ["h1"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-f43cbc3c2b27435a83cfd4e3fd995d07"] },
     { "path": "implementations/apache-http2/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.apache-http2", "version": "0.1.3", "implementationIds": ["apache-http2"], "protocols": ["h2"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-da5c9d28da254812b88ba21c58a1c7ff"] },
     { "path": "implementations/bind9-doh2/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.bind9-doh2", "version": "0.1.0", "implementationIds": ["bind9-doh2"], "protocols": ["doh2"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-3e256dd1cb8a4f668464e2cd5e0eac7e"] },
