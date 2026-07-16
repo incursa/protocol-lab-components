@@ -316,6 +316,7 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'implementations/go-dns-doq'; script = 'Build-GoDnsDoqPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-dns-doq'; script = 'Build-GoDnsDoqPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'implementations/bind9-dot'; script = 'Build-Bind9DotPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/bind9-dot-resolver'; script = 'Build-Bind9DotResolverPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/bind9-doh2'; script = 'Build-Bind9Doh2Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/bind9-classic-authority'; script = 'Build-Bind9ClassicAuthorityPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/technitium-classic-authority'; script = 'Build-TechnitiumClassicAuthorityPackage.ps1'; arguments = @() },
