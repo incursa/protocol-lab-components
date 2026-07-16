@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.quic-go-raw-load",
-  "packageVersion": "0.1.6",
+  "packageVersion": "0.1.7",
   "kind": "test-executor",
   "displayName": "quic-go Raw QUIC Load Executor",
   "entryManifests": [
@@ -19,6 +19,7 @@
         "quic.transport.latency.echo-1kb",
         "quic.transport.multiplex.100x64kb",
         "quic.transport.stream-limits.100x64kb",
+        "quic.transport.flow-control.slow-reader-16x64kb",
         "quic.transport.payload.large-1mb",
         "quic.transport.handshake-cold",
         "quic.transport.connection-churn",
@@ -30,6 +31,7 @@
         "quic.transport.latency.echo-1kb",
         "quic.transport.multiplex.100x64kb",
         "quic.transport.stream-limits.100x64kb",
+        "quic.transport.flow-control.slow-reader-16x64kb",
         "quic.transport.payload.large-1mb",
         "quic.transport.handshake-cold",
         "quic.transport.connection-churn",

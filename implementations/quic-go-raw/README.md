@@ -18,6 +18,7 @@ Supported scenarios:
 - `quic.transport.latency.echo-1kb`
 - `quic.transport.multiplex.100x64kb`
 - `quic.transport.stream-limits.100x64kb`
+- `quic.transport.flow-control.slow-reader-16x64kb`
 - `quic.transport.connection-churn`
 - `quic.transport.stream-churn`
 - `quic.transport.duplex-streams`

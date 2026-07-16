@@ -51,6 +51,7 @@ func TestWriteMetadataIncludesSupportedScenarios(t *testing.T) {
 		"quic.transport.latency.echo-1kb",
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.stream-limits.100x64kb",
+		"quic.transport.flow-control.slow-reader-16x64kb",
 		"quic.transport.connection-churn",
 		"quic.transport.stream-churn",
 		"quic.transport.duplex-streams",
@@ -220,8 +221,8 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
 		t.Fatalf("unmarshal package manifest: %v", err)
 	}
-	if packageManifest.PackageVersion != "0.1.11" {
-		t.Fatalf("packageVersion = %q, want 0.1.11", packageManifest.PackageVersion)
+	if packageManifest.PackageVersion != "0.1.12" {
+		t.Fatalf("packageVersion = %q, want 0.1.12", packageManifest.PackageVersion)
 	}
 	if len(packageManifest.ProvidedImplementations) != 1 {
 		t.Fatalf("providedImplementations length = %d, want 1", len(packageManifest.ProvidedImplementations))
@@ -231,6 +232,7 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 		"quic.transport.latency.echo-1kb",
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.stream-limits.100x64kb",
+		"quic.transport.flow-control.slow-reader-16x64kb",
 		"quic.transport.connection-churn",
 		"quic.transport.stream-churn",
 		"quic.transport.duplex-streams",
@@ -333,6 +335,9 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	}
 	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.stream-limits.100x64kb")) {
 		t.Fatal("implementation YAML does not advertise quic.transport.stream-limits.100x64kb")
+	}
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.flow-control.slow-reader-16x64kb")) {
+		t.Fatal("implementation YAML does not advertise quic.transport.flow-control.slow-reader-16x64kb")
 	}
 	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.resumption-rejected")) {
 		t.Fatal("implementation YAML does not mark quic.transport.resumption-rejected unsupported")

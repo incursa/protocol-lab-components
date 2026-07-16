@@ -37,7 +37,7 @@ pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1 -RuntimeIdentifier linux-x
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.executor.quic-go-raw-load.0.1.6.<rid>.plabpkg
+org.protocol-lab.components.executor.quic-go-raw-load.0.1.7.<rid>.plabpkg
 ```
 
 ## Local Wrapper
@@ -54,6 +54,7 @@ pwsh ./executors/quic-go-raw-load/execute.ps1 --sni localhost --alpn plab-raw-qu
 - `quic.transport.latency.echo-1kb`
 - `quic.transport.multiplex.100x64kb`
 - `quic.transport.stream-limits.100x64kb`
+- `quic.transport.flow-control.slow-reader-16x64kb`
 - `quic.transport.payload.large-1mb`
 - `quic.transport.handshake-cold`
 - `quic.transport.connection-churn`
@@ -62,6 +63,6 @@ pwsh ./executors/quic-go-raw-load/execute.ps1 --sni localhost --alpn plab-raw-qu
 
 `quic.transport.cancellation.reset-stream` is declared by the scenario pack as pending. The current load executor does not yet drive reset/cancellation classification.
 
-Version `0.1.6` validates the canonical `latency-echo`, `large-payload`, and
-`stream-limit-pressure` behavior names and maps them to the existing sequential
-or concurrent stream execution modes.
+Version `0.1.7` adds the canonical `flow-control-slow-reader-100ms` behavior.
+It delays response reads by exactly 100 milliseconds after completing each
+request write, while preserving exact echoed-byte and completion validation.

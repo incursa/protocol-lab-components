@@ -60,6 +60,14 @@ func TestValidateOptionsRejectsUnsupportedBehaviorOpenPatternCombos(t *testing.T
 			},
 		},
 		{
+			name: "flow control slow reader accepts concurrent",
+			options: options{
+				behavior:             "flow-control-slow-reader-100ms",
+				openPattern:          "concurrent",
+				streamsPerConnection: 16,
+			},
+		},
+		{
 			name: "multiplex-streams rejects sequential",
 			options: options{
 				behavior:             "multiplex-streams",
@@ -132,6 +140,17 @@ func TestValidateOptionsRejectsUnsupportedBehaviorOpenPatternCombos(t *testing.T
 				t.Fatalf("validateOptions error = %q, want substring %q", err.Error(), tt.wantErr)
 			}
 		})
+	}
+}
+
+func TestResponseReadDelayIsExactAndBehaviorScoped(t *testing.T) {
+	t.Parallel()
+
+	if got := responseReadDelay("flow-control-slow-reader-100ms"); got != 100*time.Millisecond {
+		t.Fatalf("responseReadDelay(slow reader) = %s, want 100ms", got)
+	}
+	if got := responseReadDelay("multiplex-streams"); got != 0 {
+		t.Fatalf("responseReadDelay(multiplex) = %s, want 0", got)
 	}
 }
 

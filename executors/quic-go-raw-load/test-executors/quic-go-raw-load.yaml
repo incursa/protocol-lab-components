@@ -1,13 +1,13 @@
 executorIdentity:
   id: quic-go-raw-load
   name: quic-go Raw QUIC Load Executor
-  version: 0.1.4
+  version: 0.1.7
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.4
+  executorVersion: 0.1.7
 claimedCapabilities:
   - id: quic.transport.stream-throughput.1mb
     status: supported
@@ -16,6 +16,8 @@ claimedCapabilities:
   - id: quic.transport.multiplex.100x64kb
     status: supported
   - id: quic.transport.stream-limits.100x64kb
+    status: supported
+  - id: quic.transport.flow-control.slow-reader-16x64kb
     status: supported
   - id: quic.transport.payload.large-1mb
     status: supported
@@ -40,6 +42,8 @@ supportedTestSelectors:
   - selectorType: test-id
     expression: quic.transport.stream-limits.100x64kb
   - selectorType: test-id
+    expression: quic.transport.flow-control.slow-reader-16x64kb
+  - selectorType: test-id
     expression: quic.transport.payload.large-1mb
   - selectorType: test-id
     expression: quic.transport.handshake-cold
@@ -59,6 +63,8 @@ supportedScenarioSelectors:
   - selectorType: scenario-id
     expression: quic.transport.stream-limits.100x64kb
   - selectorType: scenario-id
+    expression: quic.transport.flow-control.slow-reader-16x64kb
+  - selectorType: scenario-id
     expression: quic.transport.payload.large-1mb
   - selectorType: scenario-id
     expression: quic.transport.handshake-cold
@@ -76,6 +82,8 @@ scenarioCoverage:
   quic.transport.multiplex.100x64kb:
     status: supported
   quic.transport.stream-limits.100x64kb:
+    status: supported
+  quic.transport.flow-control.slow-reader-16x64kb:
     status: supported
   quic.transport.payload.large-1mb:
     status: supported

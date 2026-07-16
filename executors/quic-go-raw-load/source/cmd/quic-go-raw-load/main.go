@@ -24,6 +24,7 @@ import (
 
 const toolName = "quic-go-raw-load"
 const outputSchemaVersion = "protocol-lab.raw-quic-executor-result.v1"
+const slowReaderResponseDelay = 100 * time.Millisecond
 
 type options struct {
 	sni                  string
@@ -288,7 +289,7 @@ func validateOptions(opts options) error {
 		if opts.streamsPerConnection < 1 {
 			return errors.New("streams-per-connection must be greater than zero")
 		}
-	case "multiplex-streams", "duplex-streams", "stream-limit-pressure":
+	case "multiplex-streams", "duplex-streams", "stream-limit-pressure", "flow-control-slow-reader-100ms":
 		if openPattern != "concurrent" {
 			return fmt.Errorf("behavior %q requires open-pattern %q", opts.behavior, "concurrent")
 		}
@@ -328,7 +329,7 @@ func runLoadWithQUICConfig(ctx context.Context, opts options, duration time.Dura
 	switch strings.ToLower(opts.behavior) {
 	case "stream-throughput", "latency-echo", "large-payload":
 		return runStreamLoad(ctx, opts, duration, discard, streamOpenSequential, quicConfig)
-	case "multiplex-streams", "duplex-streams", "stream-limit-pressure":
+	case "multiplex-streams", "duplex-streams", "stream-limit-pressure", "flow-control-slow-reader-100ms":
 		return runStreamLoad(ctx, opts, duration, discard, streamOpenConcurrent, quicConfig)
 	case "handshake-cold":
 		return runHandshakeColdLoad(ctx, opts, duration, discard, quicConfig)
@@ -523,6 +524,16 @@ func runRequestResponseStream(ctx context.Context, conn *quic.Conn, payload []by
 	}
 	closeStream = false
 
+	if delay := responseReadDelay(opts.behavior); delay > 0 {
+		timer := time.NewTimer(delay)
+		defer timer.Stop()
+		select {
+		case <-streamCtx.Done():
+			return 0, int64(written), 0, fmt.Errorf("wait before reading response: %w", streamCtx.Err())
+		case <-timer.C:
+		}
+	}
+
 	var received int64
 	buffer := make([]byte, 64*1024)
 	for {
@@ -548,6 +559,13 @@ func runRequestResponseStream(ctx context.Context, conn *quic.Conn, payload []by
 	}
 
 	return float64(time.Since(start).Microseconds()) / 1000.0, int64(written), received, nil
+}
+
+func responseReadDelay(behavior string) time.Duration {
+	if strings.EqualFold(behavior, "flow-control-slow-reader-100ms") {
+		return slowReaderResponseDelay
+	}
+	return 0
 }
 
 func runDuplexStream(ctx context.Context, conn *quic.Conn, payload []byte, opts options) (float64, int64, int64, error) {
