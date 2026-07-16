@@ -75,3 +75,28 @@ func TestBuildMetricsComputesRawQuicFields(t *testing.T) {
 		t.Fatalf("LatencyP95Ms = %f, want 29", metrics.LatencyP95Ms)
 	}
 }
+
+func TestPackageExecutionMetadataComesFromRunnerEnvironment(t *testing.T) {
+	t.Setenv("PLAB_EXECUTOR_ID", "quic-go-raw-load")
+	t.Setenv("PLAB_EXECUTOR_VERSION", "0.1.3")
+	t.Setenv("PLAB_CONCURRENCY", "8")
+	t.Setenv("PLAB_REPETITION", "3")
+
+	identity := executorFromEnvironment()
+	load := loadShapeFromEnvironment(options{
+		connections:          2,
+		streamsPerConnection: 4,
+		duration:             5 * time.Second,
+		warmup:               time.Second,
+	})
+
+	if identity.ID != "quic-go-raw-load" || identity.Version != "0.1.3" {
+		t.Fatalf("identity = %+v", identity)
+	}
+	if load.Connections != 2 || load.Concurrency != 8 || load.StreamsPerConnection != 4 {
+		t.Fatalf("load = %+v", load)
+	}
+	if load.DurationSeconds != 5 || load.WarmupSeconds != 1 || load.Repetitions != 3 {
+		t.Fatalf("load timing = %+v", load)
+	}
+}

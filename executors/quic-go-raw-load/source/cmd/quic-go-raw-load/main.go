@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -72,12 +73,29 @@ type metricsOutput struct {
 }
 
 type outputDocument struct {
-	Tool     string        `json:"tool"`
-	Target   string        `json:"target"`
-	Behavior string        `json:"behavior"`
-	Metrics  metricsOutput `json:"metrics"`
-	Warnings []string      `json:"warnings,omitempty"`
-	Errors   []string      `json:"errors,omitempty"`
+	Tool          string           `json:"tool"`
+	Target        string           `json:"target"`
+	Behavior      string           `json:"behavior"`
+	Executor      executorIdentity `json:"executor"`
+	RequestedLoad loadShapeOutput  `json:"requestedLoad"`
+	EffectiveLoad loadShapeOutput  `json:"effectiveLoad"`
+	Metrics       metricsOutput    `json:"metrics"`
+	Warnings      []string         `json:"warnings,omitempty"`
+	Errors        []string         `json:"errors,omitempty"`
+}
+
+type executorIdentity struct {
+	ID      string `json:"id"`
+	Version string `json:"version"`
+}
+
+type loadShapeOutput struct {
+	Connections          int `json:"connections"`
+	Concurrency          int `json:"concurrency"`
+	StreamsPerConnection int `json:"streamsPerConnection"`
+	DurationSeconds      int `json:"durationSeconds"`
+	WarmupSeconds        int `json:"warmupSeconds"`
+	Repetitions          int `json:"repetitions"`
 }
 
 func main() {
@@ -102,11 +120,14 @@ func main() {
 	}
 
 	document := outputDocument{
-		Tool:     toolName,
-		Target:   opts.target,
-		Behavior: opts.behavior,
-		Metrics:  buildMetrics(stats, elapsed),
-		Warnings: warnings,
+		Tool:          toolName,
+		Target:        opts.target,
+		Behavior:      opts.behavior,
+		Executor:      executorFromEnvironment(),
+		RequestedLoad: loadShapeFromEnvironment(opts),
+		EffectiveLoad: loadShapeFromEnvironment(opts),
+		Metrics:       buildMetrics(stats, elapsed),
+		Warnings:      warnings,
 	}
 	if len(stats.errors) > 0 {
 		document.Errors = stats.errors
@@ -124,6 +145,37 @@ func main() {
 
 	if stats.successfulRequests == 0 || (opts.failOnErrors && (err != nil || stats.failedRequests > 0 || stats.timeoutRequests > 0)) {
 		os.Exit(1)
+	}
+}
+
+func executorFromEnvironment() executorIdentity {
+	id := os.Getenv("PLAB_EXECUTOR_ID")
+	if id == "" {
+		id = toolName
+	}
+	version := os.Getenv("PLAB_EXECUTOR_VERSION")
+	if version == "" {
+		version = "source"
+	}
+	return executorIdentity{ID: id, Version: version}
+}
+
+func loadShapeFromEnvironment(opts options) loadShapeOutput {
+	concurrency := opts.connections * opts.streamsPerConnection
+	if value, err := strconv.Atoi(os.Getenv("PLAB_CONCURRENCY")); err == nil && value >= 0 {
+		concurrency = value
+	}
+	repetitions := 1
+	if value, err := strconv.Atoi(os.Getenv("PLAB_REPETITION")); err == nil && value > 0 {
+		repetitions = value
+	}
+	return loadShapeOutput{
+		Connections:          opts.connections,
+		Concurrency:          concurrency,
+		StreamsPerConnection: opts.streamsPerConnection,
+		DurationSeconds:      int(opts.duration.Seconds()),
+		WarmupSeconds:        int(opts.warmup.Seconds()),
+		Repetitions:          repetitions,
 	}
 }
 

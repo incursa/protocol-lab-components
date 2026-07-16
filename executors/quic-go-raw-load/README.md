@@ -2,7 +2,10 @@
 
 This component packages the reusable `quic-go-raw-load` ProtocolLab test executor for raw QUIC transport scenarios. It is a client/load-generator package, not an implementation package.
 
-The executor emits `raw-quic-json` metrics to stdout and expects a `quic://host:port/` target discovered from a ProtocolLab adapter-backed implementation.
+The executor emits `raw-quic-json` metrics, its package-selected executor
+identity, and the requested/effective load-shape echo to stdout. It expects a
+`quic://host:port/` target discovered from a ProtocolLab adapter-backed
+implementation.
 
 ## Build
 
@@ -33,7 +36,7 @@ pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1 -RuntimeIdentifier linux-x
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.executor.quic-go-raw-load.0.1.2.<rid>.plabpkg
+org.protocol-lab.components.executor.quic-go-raw-load.0.1.3.<rid>.plabpkg
 ```
 
 ## Local Wrapper
