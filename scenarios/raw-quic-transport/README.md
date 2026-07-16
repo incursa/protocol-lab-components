@@ -25,7 +25,7 @@ pwsh ./scenarios/raw-quic-transport/validate.ps1
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.scenario.raw-quic-transport.0.1.17.plabpkg
+org.protocol-lab.components.scenario.raw-quic-transport.0.1.18.plabpkg
 ```
 
 ## Packaged Scenarios
@@ -64,6 +64,7 @@ runs as a stable-connection executor lane. Resumption-rejected,
 resumed-handshake, zero-rtt-accepted, and zero-rtt-rejected are packaged here
 without claiming executor support yet.
 
+Version `0.1.18` aligns the duplex peer matrix with its exact 16-stream contract and extends its comparison ladder through c64 and c128.
 Version `0.1.17` adds an exact 4,096x1KiB server-to-client download on one stable bidirectional stream.
 Version `0.1.16` adds exact mixed-size multiplexing across multiple stable connections.
 Version `0.1.15` adds the canonical public raw QUIC comparison suite to the

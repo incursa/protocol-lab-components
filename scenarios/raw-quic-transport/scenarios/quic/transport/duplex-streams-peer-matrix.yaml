@@ -16,7 +16,7 @@ trafficShape: bidirectional-stream
 id: quic.transport.duplex-streams-peer-matrix
 name: QUIC Duplex Streams Peer Matrix
 family: quic.transport
-description: Validate and benchmark matched raw QUIC peer coverage across implementations with c1, c4, c16, and c32 at five repetitions.
+description: Validate and benchmark matched raw QUIC peer coverage across implementations with c1, c4, c16, c32, c64, and c128 at five repetitions.
 protocol: quic
 implementationRole: server
 requiredCapabilities:
@@ -45,8 +45,10 @@ benchmark:
     - 4
     - 16
     - 32
+    - 64
+    - 128
   streamsPerConnection:
-    - 4
+    - 16
 benchmarkCompat:
   compatibleLoadShapes:
     - fixed-path-request-response
