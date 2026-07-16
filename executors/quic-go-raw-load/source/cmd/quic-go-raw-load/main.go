@@ -30,6 +30,7 @@ const downloadRequestMagic = "PLAB-DL1"
 const downloadRequestLength = len(downloadRequestMagic) + 8
 const maximumDownloadPayloadLength = 64 * 1024 * 1024
 const sustainedStreamChunkSize = 64 * 1024
+const smallApplicationWriteSize = 1024
 
 type options struct {
 	sni                  string
@@ -307,7 +308,7 @@ func validateOptions(opts options) error {
 	}
 
 	switch behavior {
-	case "stream-throughput", "latency-echo", "large-payload", "sustained-stream-256x64kb", "sustained-download-256x64kb", "sustained-download-4096x1kb":
+	case "stream-throughput", "latency-echo", "large-payload", "sustained-stream-256x64kb", "sustained-stream-16384x1kb", "sustained-download-256x64kb", "sustained-download-4096x1kb", "sustained-download-16384x1kb":
 		if openPattern != "sequential" {
 			return fmt.Errorf("behavior %q requires open-pattern %q", opts.behavior, "sequential")
 		}
@@ -352,6 +353,39 @@ func validateOptions(opts options) error {
 		return fmt.Errorf("unsupported behavior %q", opts.behavior)
 	}
 
+	return validateSustainedBehaviorShape(opts)
+}
+
+func validateSustainedBehaviorShape(opts options) error {
+	var expectedPayloadSize int
+	var expectedDirection string
+	switch strings.ToLower(opts.behavior) {
+	case "sustained-stream-256x64kb", "sustained-stream-16384x1kb":
+		expectedPayloadSize = 16 * 1024 * 1024
+		expectedDirection = "client-to-server"
+	case "sustained-download-256x64kb", "sustained-download-16384x1kb":
+		expectedPayloadSize = 16 * 1024 * 1024
+		expectedDirection = "server-to-client"
+	case "sustained-download-4096x1kb":
+		expectedPayloadSize = 4 * 1024 * 1024
+		expectedDirection = "server-to-client"
+	default:
+		return nil
+	}
+
+	if !strings.EqualFold(opts.streamType, "bidirectional") {
+		return fmt.Errorf("behavior %q requires stream-type %q", opts.behavior, "bidirectional")
+	}
+	if opts.streamsPerConnection != 1 {
+		return fmt.Errorf("behavior %q requires streams-per-connection 1", opts.behavior)
+	}
+	if opts.payloadSizeBytes != expectedPayloadSize {
+		return fmt.Errorf("behavior %q requires payload-size-bytes %d", opts.behavior, expectedPayloadSize)
+	}
+	if !strings.EqualFold(opts.payloadDirection, expectedDirection) {
+		return fmt.Errorf("behavior %q requires payload-direction %q", opts.behavior, expectedDirection)
+	}
+
 	return nil
 }
 
@@ -387,7 +421,7 @@ func runLoadWithQUICConfig(ctx context.Context, opts options, duration time.Dura
 	}
 
 	switch strings.ToLower(opts.behavior) {
-	case "stream-throughput", "latency-echo", "large-payload", "sustained-stream-256x64kb", "sustained-download-256x64kb", "sustained-download-4096x1kb":
+	case "stream-throughput", "latency-echo", "large-payload", "sustained-stream-256x64kb", "sustained-stream-16384x1kb", "sustained-download-256x64kb", "sustained-download-4096x1kb", "sustained-download-16384x1kb":
 		return runStreamLoad(ctx, opts, duration, discard, streamOpenSequential, quicConfig)
 	case "multiplex-streams", "multiplex-streams-mixed-size", "duplex-streams", "stream-limit-pressure", "flow-control-slow-reader-100ms":
 		return runStreamLoad(ctx, opts, duration, discard, streamOpenConcurrent, quicConfig)
@@ -602,8 +636,8 @@ func runRequestResponseStream(ctx context.Context, conn *quic.Conn, payload []by
 	}
 
 	var written int
-	if strings.EqualFold(opts.behavior, "sustained-stream-256x64kb") {
-		written, err = writePayloadInChunks(stream, requestPayload, sustainedStreamChunkSize)
+	if chunkSize := uploadApplicationWriteSize(opts.behavior); chunkSize > 0 {
+		written, err = writePayloadInChunks(stream, requestPayload, chunkSize)
 	} else {
 		written, err = stream.Write(requestPayload)
 	}
@@ -658,6 +692,17 @@ func runRequestResponseStream(ctx context.Context, conn *quic.Conn, payload []by
 	}
 
 	return float64(time.Since(start).Microseconds()) / 1000.0, accountedBytesSent, received, nil
+}
+
+func uploadApplicationWriteSize(behavior string) int {
+	switch {
+	case strings.EqualFold(behavior, "sustained-stream-256x64kb"):
+		return sustainedStreamChunkSize
+	case strings.EqualFold(behavior, "sustained-stream-16384x1kb"):
+		return smallApplicationWriteSize
+	default:
+		return 0
+	}
 }
 
 func writePayloadInChunks(writer io.Writer, payload []byte, chunkSize int) (int, error) {

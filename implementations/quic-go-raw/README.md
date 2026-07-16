@@ -19,7 +19,9 @@ Supported scenarios:
 - `quic.transport.stream-download.1mb`
 - `quic.transport.stream-throughput.16mb`
 - `quic.transport.sustained-stream.256x64kb`
+- `quic.transport.sustained-stream.16384x1kb`
 - `quic.transport.sustained-download.256x64kb`
+- `quic.transport.sustained-download.16384x1kb`
 - `quic.transport.sustained-download.4096x1kb`
 - `quic.transport.latency.echo-1kb`
 - `quic.transport.multiplex.100x1kb`
@@ -44,6 +46,7 @@ The package covers cold handshake, connection churn, stream churn, stream echo,
 exact deterministic server-to-client download, and one-connection stream-limit
 pressure lanes, including exact mixed-size echoes up to 1 MiB.
 
+Version `0.1.19` adds exact 16MiB fixed-total download support using 16,384 sequential 1KiB target writes and advertises the paired upload lane.
 Version `0.1.18` adds scenario-selected 1KiB target writes for the exact
 4,096x1KiB sustained download while existing downloads retain 64KiB writes.
 

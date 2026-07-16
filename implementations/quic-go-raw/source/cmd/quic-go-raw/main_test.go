@@ -53,7 +53,9 @@ func TestWriteMetadataIncludesSupportedScenarios(t *testing.T) {
 		"quic.transport.stream-download.1mb",
 		"quic.transport.stream-throughput.16mb",
 		"quic.transport.sustained-stream.256x64kb",
+		"quic.transport.sustained-stream.16384x1kb",
 		"quic.transport.sustained-download.256x64kb",
+		"quic.transport.sustained-download.16384x1kb",
 		"quic.transport.sustained-download.4096x1kb",
 		"quic.transport.latency.echo-1kb",
 		"quic.transport.multiplex.100x1kb",
@@ -262,6 +264,7 @@ func TestScenarioIdentitySelectsDownloadChunkSize(t *testing.T) {
 		{scenarioID: "quic.transport.stream-download.1mb", want: defaultDownloadChunkSize},
 		{scenarioID: "quic.transport.sustained-download.256x64kb", want: defaultDownloadChunkSize},
 		{scenarioID: "quic.transport.sustained-download.4096x1kb", want: smallDownloadChunkSize},
+		{scenarioID: "quic.transport.sustained-download.16384x1kb", want: smallDownloadChunkSize},
 	}
 
 	for _, testCase := range testCases {
@@ -273,6 +276,26 @@ func TestScenarioIdentitySelectsDownloadChunkSize(t *testing.T) {
 			}
 			if opts.downloadChunkSize != testCase.want {
 				t.Fatalf("downloadChunkSize = %d, want %d", opts.downloadChunkSize, testCase.want)
+			}
+		})
+	}
+}
+
+func TestScenarioIdentitySelectsExactDownloadPayloadLength(t *testing.T) {
+	testCases := []struct {
+		scenarioID string
+		want       int
+	}{
+		{scenarioID: "quic.transport.stream-download.1mb", want: 1024 * 1024},
+		{scenarioID: "quic.transport.sustained-download.4096x1kb", want: 4 * 1024 * 1024},
+		{scenarioID: "quic.transport.sustained-download.256x64kb", want: 16 * 1024 * 1024},
+		{scenarioID: "quic.transport.sustained-download.16384x1kb", want: 16 * 1024 * 1024},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.scenarioID, func(t *testing.T) {
+			if got := downloadPayloadLengthForScenario(testCase.scenarioID); got != testCase.want {
+				t.Fatalf("download payload length = %d, want %d", got, testCase.want)
 			}
 		})
 	}
@@ -335,6 +358,54 @@ func TestServerWrites4096ExactDeterministicOneKiBChunks(t *testing.T) {
 	}
 }
 
+func TestServerWrites16384ExactDeterministicOneKiBChunks(t *testing.T) {
+	const payloadLength = 16384 * smallDownloadChunkSize
+	request := make([]byte, downloadRequestLength)
+	copy(request, downloadRequestMagic)
+	binary.BigEndian.PutUint64(request[len(downloadRequestMagic):], payloadLength)
+	stream := &fakeStream{reader: bytes.NewReader(request)}
+
+	handleStream(stream, options{
+		echoMaxBytes:          defaultEchoMaxSize,
+		downloadChunkSize:     smallDownloadChunkSize,
+		downloadPayloadLength: payloadLength,
+	})
+
+	if len(stream.writeSizes) != 16384 {
+		t.Fatalf("download writes = %d, want 16384", len(stream.writeSizes))
+	}
+	for index, size := range stream.writeSizes {
+		if size != smallDownloadChunkSize {
+			t.Fatalf("download write %d size = %d, want %d", index, size, smallDownloadChunkSize)
+		}
+	}
+	if stream.write.Len() != payloadLength {
+		t.Fatalf("download payload length = %d, want %d", stream.write.Len(), payloadLength)
+	}
+	for index, actual := range stream.write.Bytes() {
+		if want := byte(index % 251); actual != want {
+			t.Fatalf("download byte at offset %d = %d, want %d", index, actual, want)
+		}
+	}
+}
+
+func TestServerRejectsDownloadLengthThatDoesNotMatchScenario(t *testing.T) {
+	request := make([]byte, downloadRequestLength)
+	copy(request, downloadRequestMagic)
+	binary.BigEndian.PutUint64(request[len(downloadRequestMagic):], 1024)
+	stream := &fakeStream{reader: bytes.NewReader(request)}
+
+	handleStream(stream, options{
+		echoMaxBytes:          defaultEchoMaxSize,
+		downloadChunkSize:     smallDownloadChunkSize,
+		downloadPayloadLength: 16 * 1024 * 1024,
+	})
+
+	if stream.write.Len() != 0 {
+		t.Fatalf("mismatched download request wrote %d bytes", stream.write.Len())
+	}
+}
+
 func TestParseDownloadRequestRejectsMalformedAndOversizedRequests(t *testing.T) {
 	if _, ok := parseDownloadRequest([]byte("PLAB-DL1"), maxReadBytes); ok {
 		t.Fatal("short download request was accepted")
@@ -367,8 +438,8 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
 		t.Fatalf("unmarshal package manifest: %v", err)
 	}
-	if packageManifest.PackageVersion != "0.1.18" {
-		t.Fatalf("packageVersion = %q, want 0.1.18", packageManifest.PackageVersion)
+	if packageManifest.PackageVersion != "0.1.19" {
+		t.Fatalf("packageVersion = %q, want 0.1.19", packageManifest.PackageVersion)
 	}
 	if len(packageManifest.ProvidedImplementations) != 1 {
 		t.Fatalf("providedImplementations length = %d, want 1", len(packageManifest.ProvidedImplementations))
@@ -379,7 +450,9 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 		"quic.transport.stream-download.1mb",
 		"quic.transport.stream-throughput.16mb",
 		"quic.transport.sustained-stream.256x64kb",
+		"quic.transport.sustained-stream.16384x1kb",
 		"quic.transport.sustained-download.256x64kb",
+		"quic.transport.sustained-download.16384x1kb",
 		"quic.transport.sustained-download.4096x1kb",
 		"quic.transport.latency.echo-1kb",
 		"quic.transport.multiplex.100x1kb",

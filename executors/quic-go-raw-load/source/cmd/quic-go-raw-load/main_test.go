@@ -56,6 +56,20 @@ func TestValidateOptionsRejectsUnsupportedBehaviorOpenPatternCombos(t *testing.T
 			name: "sustained stream accepts sequential",
 			options: options{
 				behavior:             "sustained-stream-256x64kb",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     16 * 1024 * 1024,
+				payloadDirection:     "client-to-server",
+				openPattern:          "sequential",
+				streamsPerConnection: 1,
+			},
+		},
+		{
+			name: "fixed total small write sustained stream accepts sequential",
+			options: options{
+				behavior:             "sustained-stream-16384x1kb",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     16 * 1024 * 1024,
+				payloadDirection:     "client-to-server",
 				openPattern:          "sequential",
 				streamsPerConnection: 1,
 			},
@@ -64,6 +78,8 @@ func TestValidateOptionsRejectsUnsupportedBehaviorOpenPatternCombos(t *testing.T
 			name: "sustained download accepts sequential",
 			options: options{
 				behavior:             "sustained-download-256x64kb",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     16 * 1024 * 1024,
 				payloadDirection:     "server-to-client",
 				openPattern:          "sequential",
 				streamsPerConnection: 1,
@@ -73,6 +89,19 @@ func TestValidateOptionsRejectsUnsupportedBehaviorOpenPatternCombos(t *testing.T
 			name: "small chunk sustained download accepts sequential",
 			options: options{
 				behavior:             "sustained-download-4096x1kb",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     4 * 1024 * 1024,
+				payloadDirection:     "server-to-client",
+				openPattern:          "sequential",
+				streamsPerConnection: 1,
+			},
+		},
+		{
+			name: "fixed total small chunk sustained download accepts sequential",
+			options: options{
+				behavior:             "sustained-download-16384x1kb",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     16 * 1024 * 1024,
 				payloadDirection:     "server-to-client",
 				openPattern:          "sequential",
 				streamsPerConnection: 1,
@@ -218,6 +247,42 @@ func TestValidateOptionsRejectsUnsupportedBehaviorOpenPatternCombos(t *testing.T
 	}
 }
 
+func TestValidateOptionsRejectsInvalidFixedTotalApplicationWriteShapes(t *testing.T) {
+	t.Parallel()
+
+	valid := options{
+		behavior:             "sustained-stream-16384x1kb",
+		streamType:           "bidirectional",
+		payloadSizeBytes:     16 * 1024 * 1024,
+		payloadDirection:     "client-to-server",
+		openPattern:          "sequential",
+		streamsPerConnection: 1,
+	}
+	tests := []struct {
+		name    string
+		mutate  func(*options)
+		wantErr string
+	}{
+		{name: "payload size", mutate: func(opts *options) { opts.payloadSizeBytes-- }, wantErr: "requires payload-size-bytes"},
+		{name: "direction", mutate: func(opts *options) { opts.payloadDirection = "server-to-client" }, wantErr: "requires payload-direction"},
+		{name: "stream count", mutate: func(opts *options) { opts.streamsPerConnection = 2 }, wantErr: "requires streams-per-connection 1"},
+		{name: "stream type", mutate: func(opts *options) { opts.streamType = "unidirectional" }, wantErr: "requires stream-type"},
+		{name: "open pattern", mutate: func(opts *options) { opts.openPattern = "concurrent" }, wantErr: "requires open-pattern"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			opts := valid
+			tc.mutate(&opts)
+			err := validateOptions(opts)
+			if err == nil || !strings.Contains(err.Error(), tc.wantErr) {
+				t.Fatalf("validateOptions error = %v, want substring %q", err, tc.wantErr)
+			}
+		})
+	}
+}
+
 func TestParsePayloadSizesAndRoundRobinSelection(t *testing.T) {
 	t.Parallel()
 
@@ -262,32 +327,43 @@ func TestResponseReadDelayIsExactAndBehaviorScoped(t *testing.T) {
 	}
 }
 
-func TestWritePayloadInChunksPreservesPayloadAndBoundaries(t *testing.T) {
+func TestWritePayloadInChunksPreservesFixedTotalPayloadAndApplicationWriteBoundaries(t *testing.T) {
 	t.Parallel()
 
-	payload := make([]byte, 256*64*1024)
-	for index := range payload {
-		payload[index] = byte(index % 251)
-	}
-	writer := &recordingWriter{}
+	for _, tc := range []struct {
+		name       string
+		chunkSize  int
+		writeCount int
+	}{
+		{name: "256x64KiB", chunkSize: 64 * 1024, writeCount: 256},
+		{name: "16384x1KiB", chunkSize: 1024, writeCount: 16384},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			payload := make([]byte, 16*1024*1024)
+			for index := range payload {
+				payload[index] = byte(index % 251)
+			}
+			writer := &recordingWriter{}
 
-	written, err := writePayloadInChunks(writer, payload, 64*1024)
-	if err != nil {
-		t.Fatalf("writePayloadInChunks returned error: %v", err)
-	}
-	if written != len(payload) {
-		t.Fatalf("written = %d, want %d", written, len(payload))
-	}
-	if len(writer.writeSizes) != 256 {
-		t.Fatalf("write calls = %d, want 256", len(writer.writeSizes))
-	}
-	for index, size := range writer.writeSizes {
-		if size != 64*1024 {
-			t.Fatalf("write %d size = %d, want 65536", index, size)
-		}
-	}
-	if !bytes.Equal(writer.bytes, payload) {
-		t.Fatal("written payload did not preserve the source bytes")
+			written, err := writePayloadInChunks(writer, payload, tc.chunkSize)
+			if err != nil {
+				t.Fatalf("writePayloadInChunks returned error: %v", err)
+			}
+			if written != len(payload) {
+				t.Fatalf("written = %d, want %d", written, len(payload))
+			}
+			if len(writer.writeSizes) != tc.writeCount {
+				t.Fatalf("write calls = %d, want %d", len(writer.writeSizes), tc.writeCount)
+			}
+			for index, size := range writer.writeSizes {
+				if size != tc.chunkSize {
+					t.Fatalf("write %d size = %d, want %d", index, size, tc.chunkSize)
+				}
+			}
+			if !bytes.Equal(writer.bytes, payload) {
+				t.Fatal("written payload did not preserve the source bytes")
+			}
+		})
 	}
 }
 
@@ -427,7 +503,7 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 				alpn:                 "plab-raw-quic",
 				behavior:             "sustained-download-256x64kb",
 				streamType:           "bidirectional",
-				payloadSizeBytes:     32,
+				payloadSizeBytes:     16 * 1024 * 1024,
 				payloadDirection:     "server-to-client",
 				openPattern:          "sequential",
 				connections:          1,
@@ -444,7 +520,42 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 				alpn:                 "plab-raw-quic",
 				behavior:             "sustained-download-4096x1kb",
 				streamType:           "bidirectional",
-				payloadSizeBytes:     32,
+				payloadSizeBytes:     4 * 1024 * 1024,
+				payloadDirection:     "server-to-client",
+				openPattern:          "sequential",
+				connections:          1,
+				streamsPerConnection: 1,
+				duration:             25 * time.Millisecond,
+				target:               "",
+			},
+			wantBytesReceived: true,
+		},
+		{
+			name: "fixed total small write upload sequential",
+			opts: options{
+				sni:                  "localhost",
+				alpn:                 "plab-raw-quic",
+				behavior:             "sustained-stream-16384x1kb",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     16 * 1024 * 1024,
+				payloadDirection:     "client-to-server",
+				openPattern:          "sequential",
+				connections:          1,
+				streamsPerConnection: 1,
+				duration:             25 * time.Millisecond,
+				target:               "",
+			},
+			echo:          false,
+			wantBytesSent: true,
+		},
+		{
+			name: "fixed total small write download sequential",
+			opts: options{
+				sni:                  "localhost",
+				alpn:                 "plab-raw-quic",
+				behavior:             "sustained-download-16384x1kb",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     16 * 1024 * 1024,
 				payloadDirection:     "server-to-client",
 				openPattern:          "sequential",
 				connections:          1,

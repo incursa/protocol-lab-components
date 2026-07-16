@@ -1,9 +1,9 @@
 schemaVersion: "1.0"
-id: quic.transport.sustained-stream.256x64kb
-title: QUIC Sustained Stream 256x64KB
-name: QUIC Sustained Stream 256x64KB
+id: quic.transport.sustained-download.16384x1kb
+title: QUIC Sustained Download 16384x1KB
+name: QUIC Sustained Download 16384x1KB
 family: quic.transport
-description: Validate a long-lived QUIC stream carrying exactly 256 sequential 64KB application writes without stream or connection churn.
+description: Validate one QUIC stream carrying exactly 16,384 sequential 1KiB server writes per 16MiB operation.
 status: stable
 kind: protocolValidation
 layer: transport
@@ -17,22 +17,22 @@ requires:
     - quic
   roles:
     - server
-trafficShape: streaming-upload
+trafficShape: streaming-download
 implementationRole: server
 requiredCapabilities:
   - quicTransport
   - quicStreams
 parameters:
-  applicationWriteCount: "256"
-  applicationWriteSizeBytes: "65536"
+  applicationWriteCount: "16384"
+  applicationWriteSizeBytes: "1024"
   totalPayloadBytes: "16777216"
 quicTransport:
-  behavior: sustained-stream-256x64kb
+  behavior: sustained-download-16384x1kb
   connectionCount: 1
   streamType: bidirectional
   streamCount: 1
   payloadSizeBytes: 16777216
-  payloadDirection: client-to-server
+  payloadDirection: server-to-client
   openPattern: sequential
   expectedBytes: 16777216
 validation:
@@ -40,9 +40,12 @@ validation:
   checks:
     - quic-transport-metrics
     - payload-bytes-delivered
+    - payload-content-validated
     - completed-streams-match-expected
     - zero-timeouts-and-errors
-    - server-confirms-stream-consumption
+    - client-confirms-stream-consumption
+    - application-write-count:16384
+    - application-write-size:1024
     - protocol:quic
 benchmark:
   warmupSeconds: 5
@@ -83,6 +86,7 @@ artifactRequirements:
   - protocol-diagnostic-unavailable-note
 tags:
   - quic
-  - sustained-stream
-  - chunk-64kb
+  - sustained-download
+  - chunk-1kb
   - payload-16mb
+  - fixed-total-write-granularity

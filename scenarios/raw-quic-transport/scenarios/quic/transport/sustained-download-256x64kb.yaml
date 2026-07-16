@@ -22,6 +22,10 @@ implementationRole: server
 requiredCapabilities:
   - quicTransport
   - quicStreams
+parameters:
+  applicationWriteCount: "256"
+  applicationWriteSizeBytes: "65536"
+  totalPayloadBytes: "16777216"
 quicTransport:
   behavior: sustained-download-256x64kb
   connectionCount: 1
@@ -51,6 +55,7 @@ benchmark:
     - 16
     - 32
     - 64
+    - 128
   streamsPerConnection:
     - 1
 benchmarkCompat:

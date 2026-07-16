@@ -1,13 +1,13 @@
 executorIdentity:
   id: quic-go-raw-load
   name: quic-go Raw QUIC Load Executor
-  version: 0.1.15
+  version: 0.1.16
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.15
+  executorVersion: 0.1.16
 claimedCapabilities:
   - id: quic.transport.stream-throughput.64kb
     status: supported
@@ -19,7 +19,11 @@ claimedCapabilities:
     status: supported
   - id: quic.transport.sustained-stream.256x64kb
     status: supported
+  - id: quic.transport.sustained-stream.16384x1kb
+    status: supported
   - id: quic.transport.sustained-download.256x64kb
+    status: supported
+  - id: quic.transport.sustained-download.16384x1kb
     status: supported
   - id: quic.transport.sustained-download.4096x1kb
     status: supported
@@ -66,7 +70,11 @@ supportedTestSelectors:
   - selectorType: test-id
     expression: quic.transport.sustained-stream.256x64kb
   - selectorType: test-id
+    expression: quic.transport.sustained-stream.16384x1kb
+  - selectorType: test-id
     expression: quic.transport.sustained-download.256x64kb
+  - selectorType: test-id
+    expression: quic.transport.sustained-download.16384x1kb
   - selectorType: test-id
     expression: quic.transport.sustained-download.4096x1kb
   - selectorType: test-id
@@ -109,7 +117,11 @@ supportedScenarioSelectors:
   - selectorType: scenario-id
     expression: quic.transport.sustained-stream.256x64kb
   - selectorType: scenario-id
+    expression: quic.transport.sustained-stream.16384x1kb
+  - selectorType: scenario-id
     expression: quic.transport.sustained-download.256x64kb
+  - selectorType: scenario-id
+    expression: quic.transport.sustained-download.16384x1kb
   - selectorType: scenario-id
     expression: quic.transport.sustained-download.4096x1kb
   - selectorType: scenario-id
@@ -147,18 +159,30 @@ scenarioCoverage:
     status: supported
   quic.transport.stream-download.1mb:
     status: supported
-    behavior: exact deterministic 1MiB server-to-client payload validation
+    metadata:
+      behavior: exact deterministic 1MiB server-to-client payload validation
   quic.transport.stream-throughput.16mb:
     status: supported
   quic.transport.sustained-stream.256x64kb:
     status: supported
-    behavior: exactly 256 sequential 64KiB writes on one long-lived stream
+    metadata:
+      behavior: exactly 256 sequential 64KiB application writes per 16MiB operation
+  quic.transport.sustained-stream.16384x1kb:
+    status: supported
+    metadata:
+      behavior: exactly 16,384 sequential 1KiB application writes per 16MiB operation
   quic.transport.sustained-download.256x64kb:
     status: supported
-    behavior: exact deterministic 16MiB server-to-client payload delivered as 256 sequential 64KiB writes
+    metadata:
+      behavior: exact deterministic 16MiB server-to-client payload delivered as 256 sequential 64KiB writes
+  quic.transport.sustained-download.16384x1kb:
+    status: supported
+    metadata:
+      behavior: exact deterministic 16MiB server-to-client payload delivered as 16,384 sequential 1KiB writes
   quic.transport.sustained-download.4096x1kb:
     status: supported
-    behavior: exact deterministic 4MiB server-to-client payload delivered as 4,096 sequential 1KiB writes on one stable bidirectional stream
+    metadata:
+      behavior: exact deterministic 4MiB server-to-client payload delivered as 4,096 sequential 1KiB writes per operation
   quic.transport.latency.echo-1kb:
     status: supported
   quic.transport.multiplex.100x1kb:
@@ -169,7 +193,8 @@ scenarioCoverage:
     status: supported
   quic.transport.multiplex.mixed-4x16:
     status: supported
-    behavior: exact round-robin 1KiB, 16KiB, 64KiB, and 1MiB bidirectional stream payloads per connection
+    metadata:
+      behavior: exact round-robin 1KiB, 16KiB, 64KiB, and 1MiB bidirectional stream payloads per connection
   quic.transport.stream-limits.100x64kb:
     status: supported
   quic.transport.flow-control.slow-reader-16x64kb:

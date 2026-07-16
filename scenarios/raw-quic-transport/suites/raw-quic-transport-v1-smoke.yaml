@@ -8,7 +8,9 @@ scenarios:
   - quic.transport.stream-throughput.1mb
   - quic.transport.stream-download.1mb
   - quic.transport.sustained-stream.256x64kb
+  - quic.transport.sustained-stream.16384x1kb
   - quic.transport.sustained-download.256x64kb
+  - quic.transport.sustained-download.16384x1kb
   - quic.transport.sustained-download.4096x1kb
   - quic.transport.latency.echo-1kb
   - quic.transport.multiplex.100x64kb

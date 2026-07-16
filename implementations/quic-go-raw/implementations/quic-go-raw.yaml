@@ -28,7 +28,9 @@ supportedScenarios:
   - quic.transport.stream-download.1mb
   - quic.transport.stream-throughput.16mb
   - quic.transport.sustained-stream.256x64kb
+  - quic.transport.sustained-stream.16384x1kb
   - quic.transport.sustained-download.256x64kb
+  - quic.transport.sustained-download.16384x1kb
   - quic.transport.sustained-download.4096x1kb
   - quic.transport.latency.echo-1kb
   - quic.transport.multiplex.100x1kb
@@ -49,7 +51,9 @@ supportedTestCaseIds:
   - quic.transport.stream-download.1mb
   - quic.transport.stream-throughput.16mb
   - quic.transport.sustained-stream.256x64kb
+  - quic.transport.sustained-stream.16384x1kb
   - quic.transport.sustained-download.256x64kb
+  - quic.transport.sustained-download.16384x1kb
   - quic.transport.sustained-download.4096x1kb
   - quic.transport.latency.echo-1kb
   - quic.transport.multiplex.100x1kb
@@ -67,64 +71,92 @@ supportedTestCaseIds:
 scenarioCoverage:
   quic.transport.stream-throughput.64kb:
     status: supported
-    behavior: client-to-server payload receipt
+    metadata:
+      behavior: client-to-server payload receipt
   quic.transport.stream-throughput.1mb:
     status: supported
-    behavior: client-to-server payload receipt
+    metadata:
+      behavior: client-to-server payload receipt
   quic.transport.stream-download.1mb:
     status: supported
-    behavior: exact deterministic 1MiB server-to-client payload after PLAB-DL1 request prelude
+    metadata:
+      behavior: exact deterministic 1MiB server-to-client payload after PLAB-DL1 request prelude
   quic.transport.stream-throughput.16mb:
     status: supported
-    behavior: client-to-server payload receipt
+    metadata:
+      behavior: client-to-server payload receipt
   quic.transport.sustained-stream.256x64kb:
     status: supported
-    behavior: consumes exactly 16MiB on one stream before confirming EOF
+    metadata:
+      behavior: consumes exactly 16MiB per operation before confirming EOF
+  quic.transport.sustained-stream.16384x1kb:
+    status: supported
+    metadata:
+      behavior: consumes an exact 16MiB payload sent as 16,384 sequential 1KiB client application writes per operation
   quic.transport.sustained-download.256x64kb:
     status: supported
-    behavior: sends an exact deterministic 16MiB payload as 256 sequential 64KiB writes after a PLAB-DL1 request prelude
+    metadata:
+      behavior: sends an exact deterministic 16MiB payload as 256 sequential 64KiB writes after a PLAB-DL1 request prelude
+  quic.transport.sustained-download.16384x1kb:
+    status: supported
+    metadata:
+      behavior: sends an exact deterministic 16MiB payload as 16,384 sequential 1KiB writes after a PLAB-DL1 request prelude
   quic.transport.sustained-download.4096x1kb:
     status: supported
-    behavior: sends an exact deterministic 4MiB payload as 4,096 sequential 1KiB writes on one stable bidirectional stream after a PLAB-DL1 request prelude
+    metadata:
+      behavior: sends an exact deterministic 4MiB payload as 4,096 sequential 1KiB writes per operation after a PLAB-DL1 request prelude
   quic.transport.latency.echo-1kb:
     status: supported
-    behavior: bidirectional 1KiB stream echo
+    metadata:
+      behavior: bidirectional 1KiB stream echo
   quic.transport.multiplex.100x1kb:
     status: supported
-    behavior: 100 concurrent 1KiB bidirectional stream echoes
+    metadata:
+      behavior: 100 concurrent 1KiB bidirectional stream echoes
   quic.transport.multiplex.100x64kb:
     status: supported
-    behavior: bidirectional stream echo
+    metadata:
+      behavior: bidirectional stream echo
   quic.transport.multiplex.16x1mb:
     status: supported
-    behavior: 16 concurrent 1MiB bidirectional stream echoes
+    metadata:
+      behavior: 16 concurrent 1MiB bidirectional stream echoes
   quic.transport.multiplex.mixed-4x16:
     status: supported
-    behavior: exact round-robin 1KiB, 16KiB, 64KiB, and 1MiB bidirectional stream echoes per stable connection
+    metadata:
+      behavior: exact round-robin 1KiB, 16KiB, 64KiB, and 1MiB bidirectional stream echoes per stable connection
   quic.transport.stream-limits.100x64kb:
     status: supported
-    behavior: 100 concurrent bidirectional streams on one connection
+    metadata:
+      behavior: 100 concurrent bidirectional streams on one connection
   quic.transport.flow-control.slow-reader-16x64kb:
     status: supported
-    behavior: 16 concurrent 64KiB bidirectional echoes with client response reads delayed by exactly 100ms
+    metadata:
+      behavior: 16 concurrent 64KiB bidirectional echoes with client response reads delayed by exactly 100ms
   quic.transport.connection-churn:
     status: supported
-    behavior: fresh connection establishment with bidirectional stream echo
+    metadata:
+      behavior: fresh connection establishment with bidirectional stream echo
   quic.transport.stream-churn:
     status: supported
-    behavior: sequential stream open-and-close churn with bidirectional echo
+    metadata:
+      behavior: sequential stream open-and-close churn with bidirectional echo
   quic.transport.duplex-streams:
     status: supported
-    behavior: bidirectional 64KiB stream echo
+    metadata:
+      behavior: bidirectional 64KiB stream echo
   quic.transport.duplex-streams.16x1mb:
     status: supported
-    behavior: 16 simultaneous 1MiB bidirectional stream echoes
+    metadata:
+      behavior: 16 simultaneous 1MiB bidirectional stream echoes
   quic.transport.duplex-streams-peer-matrix:
     status: supported
-    behavior: bidirectional 64KiB stream echo with comparison load shapes
+    metadata:
+      behavior: bidirectional 64KiB stream echo with comparison load shapes
   quic.transport.handshake-cold:
     status: supported
-    behavior: fresh QUIC connection with no application stream requirement
+    metadata:
+      behavior: fresh QUIC connection with no application stream requirement
   quic.transport.resumption-rejected:
     status: unsupported
     reason: quic-go raw target package does not currently expose a resumption rejection proof path.

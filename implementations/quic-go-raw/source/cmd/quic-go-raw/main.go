@@ -47,7 +47,9 @@ var supportedScenarios = []string{
 	"quic.transport.stream-download.1mb",
 	"quic.transport.stream-throughput.16mb",
 	"quic.transport.sustained-stream.256x64kb",
+	"quic.transport.sustained-stream.16384x1kb",
 	"quic.transport.sustained-download.256x64kb",
+	"quic.transport.sustained-download.16384x1kb",
 	"quic.transport.sustained-download.4096x1kb",
 	"quic.transport.latency.echo-1kb",
 	"quic.transport.multiplex.100x1kb",
@@ -65,11 +67,12 @@ var supportedScenarios = []string{
 }
 
 type options struct {
-	listen            string
-	advertiseHost     string
-	alpn              string
-	echoMaxBytes      int64
-	downloadChunkSize int
+	listen                string
+	advertiseHost         string
+	alpn                  string
+	echoMaxBytes          int64
+	downloadChunkSize     int
+	downloadPayloadLength int
 }
 
 type metadata struct {
@@ -109,11 +112,12 @@ func main() {
 func parseOptions(args []string) (options, error) {
 	scenarioID := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
 	opts := options{
-		listen:            defaultListenAddress(),
-		advertiseHost:     strings.TrimSpace(os.Getenv("PROTOCOL_LAB_TARGET_ADVERTISE_HOST")),
-		alpn:              defaultALPN,
-		echoMaxBytes:      defaultEchoMaxSizeForScenario(scenarioID),
-		downloadChunkSize: downloadChunkSizeForScenario(scenarioID),
+		listen:                defaultListenAddress(),
+		advertiseHost:         strings.TrimSpace(os.Getenv("PROTOCOL_LAB_TARGET_ADVERTISE_HOST")),
+		alpn:                  defaultALPN,
+		echoMaxBytes:          defaultEchoMaxSizeForScenario(scenarioID),
+		downloadChunkSize:     downloadChunkSizeForScenario(scenarioID),
+		downloadPayloadLength: downloadPayloadLengthForScenario(scenarioID),
 	}
 
 	fs := flag.NewFlagSet("quic-go-raw", flag.ContinueOnError)
@@ -149,8 +153,10 @@ func defaultEchoMaxSizeForScenario(scenarioID string) int64 {
 		"quic.transport.stream-throughput.1mb",
 		"quic.transport.stream-throughput.16mb",
 		"quic.transport.sustained-stream.256x64kb",
+		"quic.transport.sustained-stream.16384x1kb",
 		"quic.transport.stream-download.1mb",
 		"quic.transport.sustained-download.256x64kb",
+		"quic.transport.sustained-download.16384x1kb",
 		"quic.transport.sustained-download.4096x1kb",
 		"quic.transport.handshake-cold":
 		return 0
@@ -167,10 +173,24 @@ func defaultEchoMaxSizeForScenario(scenarioID string) int64 {
 }
 
 func downloadChunkSizeForScenario(scenarioID string) int {
-	if scenarioID == "quic.transport.sustained-download.4096x1kb" {
+	if scenarioID == "quic.transport.sustained-download.4096x1kb" ||
+		scenarioID == "quic.transport.sustained-download.16384x1kb" {
 		return smallDownloadChunkSize
 	}
 	return defaultDownloadChunkSize
+}
+
+func downloadPayloadLengthForScenario(scenarioID string) int {
+	switch scenarioID {
+	case "quic.transport.stream-download.1mb":
+		return 1024 * 1024
+	case "quic.transport.sustained-download.4096x1kb":
+		return 4 * 1024 * 1024
+	case "quic.transport.sustained-download.256x64kb", "quic.transport.sustained-download.16384x1kb":
+		return 16 * 1024 * 1024
+	default:
+		return 0
+	}
 }
 
 func defaultListenAddress() string {
@@ -255,6 +275,10 @@ func handleStream(stream streamReadWriteCloser, opts options) {
 		return
 	}
 	if payloadLength, ok := parseDownloadRequest(payload, maxReadBytes); ok {
+		if opts.downloadPayloadLength > 0 && payloadLength != opts.downloadPayloadLength {
+			log.Printf("download payload length %d does not match scenario length %d", payloadLength, opts.downloadPayloadLength)
+			return
+		}
 		if err := writeDeterministicPayload(stream, payloadLength, opts.downloadChunkSize); err != nil {
 			log.Printf("write stream download failed: %v", err)
 		}

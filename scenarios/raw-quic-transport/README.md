@@ -25,7 +25,7 @@ pwsh ./scenarios/raw-quic-transport/validate.ps1
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.scenario.raw-quic-transport.0.1.18.plabpkg
+org.protocol-lab.components.scenario.raw-quic-transport.0.1.19.plabpkg
 ```
 
 ## Packaged Scenarios
@@ -35,7 +35,9 @@ org.protocol-lab.components.scenario.raw-quic-transport.0.1.18.plabpkg
 - `quic.transport.stream-download.1mb`
 - `quic.transport.stream-throughput.16mb`
 - `quic.transport.sustained-stream.256x64kb`
+- `quic.transport.sustained-stream.16384x1kb`
 - `quic.transport.sustained-download.256x64kb`
+- `quic.transport.sustained-download.16384x1kb`
 - `quic.transport.sustained-download.4096x1kb`
 - `quic.transport.latency.echo-1kb`
 - `quic.transport.multiplex.100x1kb`
@@ -64,6 +66,7 @@ runs as a stable-connection executor lane. Resumption-rejected,
 resumed-handshake, zero-rtt-accepted, and zero-rtt-rejected are packaged here
 without claiming executor support yet.
 
+Version `0.1.19` adds fixed-total 16MiB upload and download lanes using exactly 16,384 sequential 1KiB application writes, paired with the existing 256x64KiB controls through c128.
 Version `0.1.18` aligns the duplex peer matrix with its exact 16-stream contract and extends its comparison ladder through c64 and c128.
 Version `0.1.17` adds an exact 4,096x1KiB server-to-client download on one stable bidirectional stream.
 Version `0.1.16` adds exact mixed-size multiplexing across multiple stable connections.
