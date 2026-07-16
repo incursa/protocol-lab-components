@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.bind9-dot-resolver",
-  "packageVersion": "0.1.1",
+  "packageVersion": "0.1.2",
   "kind": "implementation",
   "displayName": "BIND 9 DoT Recursive Resolver",
   "entryManifests": ["implementations/bind9-dot-resolver.yaml"],

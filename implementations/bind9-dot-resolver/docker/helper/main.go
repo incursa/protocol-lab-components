@@ -11,7 +11,7 @@ import (
 
 func main() {
 	listen := flag.String("listen", "0.0.0.0:854", "control HTTP address")
-	config := flag.String("rndc-config", "/etc/bind/plab/rndc.conf", "rndc configuration")
+	config := flag.String("rndc-config", "/opt/protocol-lab/bind-resolver/rndc.conf", "rndc configuration")
 	flag.Parse()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(http.StatusNoContent) })

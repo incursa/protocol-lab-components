@@ -6,7 +6,7 @@ family: unbound
 role: recursive-resolver
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-unbound-doh2-resolver:0.1.1
+image: incursa-protocol-lab-unbound-doh2-resolver:0.1.2
 dockerfile: docker/Dockerfile
 buildContext: docker
 dockerNetworkMode: published-port

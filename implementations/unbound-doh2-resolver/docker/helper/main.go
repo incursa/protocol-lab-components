@@ -16,7 +16,7 @@ var canonicalQuestion = []byte{4, 'p', 'l', 'a', 'b', 4, 't', 'e', 's', 't', 0, 
 func main() {
 	authority := flag.String("authority", "127.0.0.1:5353", "fixture authority UDP address")
 	listen := flag.String("listen", "0.0.0.0:444", "cache-control HTTP address")
-	config := flag.String("unbound-config", "/opt/unbound/etc/unbound/plab/unbound.conf", "Unbound configuration")
+	config := flag.String("unbound-config", "/opt/protocol-lab/unbound-resolver/unbound.conf", "Unbound configuration")
 	flag.Parse()
 	go serveAuthority(*authority)
 	mux := http.NewServeMux()

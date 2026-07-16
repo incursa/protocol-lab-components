@@ -6,7 +6,7 @@ family: bind9
 role: recursive-resolver
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-bind9-dot-resolver:0.1.1
+image: incursa-protocol-lab-bind9-dot-resolver:0.1.2
 dockerfile: docker/Dockerfile
 buildContext: docker
 dockerNetworkMode: published-port

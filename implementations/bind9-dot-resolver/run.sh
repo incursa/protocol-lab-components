@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-image="${PLAB_SECURE_DNS_IMAGE:-incursa-protocol-lab-bind9-dot-resolver:0.1.1}"
+image="${PLAB_SECURE_DNS_IMAGE:-incursa-protocol-lab-bind9-dot-resolver:0.1.2}"
 port="${PLAB_SECURE_DNS_PORT:-20562}"
 control_port="${PLAB_RESOLVER_CONTROL_PORT:-$((port + 1))}"
 cd "$(dirname "${BASH_SOURCE[0]}")"
