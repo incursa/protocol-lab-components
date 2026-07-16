@@ -28,14 +28,16 @@ import (
 )
 
 const (
-	implementationID      = "quic-go-raw"
-	packageID             = "org.protocol-lab.components.implementation.quic-go-raw"
-	defaultALPN           = "plab-raw-quic"
-	defaultPort           = "5447"
-	defaultEchoMaxSize    = 64 * 1024
-	maxReadBytes          = 64 * 1024 * 1024
-	downloadRequestMagic  = "PLAB-DL1"
-	downloadRequestLength = len(downloadRequestMagic) + 8
+	implementationID         = "quic-go-raw"
+	packageID                = "org.protocol-lab.components.implementation.quic-go-raw"
+	defaultALPN              = "plab-raw-quic"
+	defaultPort              = "5447"
+	defaultEchoMaxSize       = 64 * 1024
+	maxReadBytes             = 64 * 1024 * 1024
+	downloadRequestMagic     = "PLAB-DL1"
+	downloadRequestLength    = len(downloadRequestMagic) + 8
+	defaultDownloadChunkSize = 64 * 1024
+	smallDownloadChunkSize   = 1024
 )
 
 var quicGoVersion = "v0.60.0"
@@ -46,6 +48,7 @@ var supportedScenarios = []string{
 	"quic.transport.stream-throughput.16mb",
 	"quic.transport.sustained-stream.256x64kb",
 	"quic.transport.sustained-download.256x64kb",
+	"quic.transport.sustained-download.4096x1kb",
 	"quic.transport.latency.echo-1kb",
 	"quic.transport.multiplex.100x1kb",
 	"quic.transport.multiplex.100x64kb",
@@ -62,10 +65,11 @@ var supportedScenarios = []string{
 }
 
 type options struct {
-	listen        string
-	advertiseHost string
-	alpn          string
-	echoMaxBytes  int64
+	listen            string
+	advertiseHost     string
+	alpn              string
+	echoMaxBytes      int64
+	downloadChunkSize int
 }
 
 type metadata struct {
@@ -103,11 +107,13 @@ func main() {
 }
 
 func parseOptions(args []string) (options, error) {
+	scenarioID := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
 	opts := options{
-		listen:        defaultListenAddress(),
-		advertiseHost: strings.TrimSpace(os.Getenv("PROTOCOL_LAB_TARGET_ADVERTISE_HOST")),
-		alpn:          defaultALPN,
-		echoMaxBytes:  defaultEchoMaxSizeForScenario(strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))),
+		listen:            defaultListenAddress(),
+		advertiseHost:     strings.TrimSpace(os.Getenv("PROTOCOL_LAB_TARGET_ADVERTISE_HOST")),
+		alpn:              defaultALPN,
+		echoMaxBytes:      defaultEchoMaxSizeForScenario(scenarioID),
+		downloadChunkSize: downloadChunkSizeForScenario(scenarioID),
 	}
 
 	fs := flag.NewFlagSet("quic-go-raw", flag.ContinueOnError)
@@ -127,6 +133,9 @@ func parseOptions(args []string) (options, error) {
 	if opts.alpn == "" {
 		return opts, errors.New("alpn cannot be empty")
 	}
+	if opts.downloadChunkSize <= 0 {
+		return opts, errors.New("download chunk size must be greater than zero")
+	}
 	if _, err := net.ResolveUDPAddr("udp", opts.listen); err != nil {
 		return opts, fmt.Errorf("invalid listen address %q: %w", opts.listen, err)
 	}
@@ -142,6 +151,7 @@ func defaultEchoMaxSizeForScenario(scenarioID string) int64 {
 		"quic.transport.sustained-stream.256x64kb",
 		"quic.transport.stream-download.1mb",
 		"quic.transport.sustained-download.256x64kb",
+		"quic.transport.sustained-download.4096x1kb",
 		"quic.transport.handshake-cold":
 		return 0
 	case "quic.transport.latency.echo-1kb",
@@ -154,6 +164,13 @@ func defaultEchoMaxSizeForScenario(scenarioID string) int64 {
 	default:
 		return defaultEchoMaxSize
 	}
+}
+
+func downloadChunkSizeForScenario(scenarioID string) int {
+	if scenarioID == "quic.transport.sustained-download.4096x1kb" {
+		return smallDownloadChunkSize
+	}
+	return defaultDownloadChunkSize
 }
 
 func defaultListenAddress() string {
@@ -238,7 +255,7 @@ func handleStream(stream streamReadWriteCloser, opts options) {
 		return
 	}
 	if payloadLength, ok := parseDownloadRequest(payload, maxReadBytes); ok {
-		if err := writeDeterministicPayload(stream, payloadLength); err != nil {
+		if err := writeDeterministicPayload(stream, payloadLength, opts.downloadChunkSize); err != nil {
 			log.Printf("write stream download failed: %v", err)
 		}
 		return
@@ -268,8 +285,12 @@ func parseDownloadRequest(request []byte, maximumPayloadLength int) (int, bool) 
 	return int(payloadLength), true
 }
 
-func writeDeterministicPayload(writer io.Writer, payloadLength int) error {
-	buffer := make([]byte, min(payloadLength, 64*1024))
+func writeDeterministicPayload(writer io.Writer, payloadLength, chunkSize int) error {
+	if chunkSize <= 0 {
+		return errors.New("download chunk size must be greater than zero")
+	}
+
+	buffer := make([]byte, min(payloadLength, chunkSize))
 	for offset := 0; offset < payloadLength; {
 		chunkLength := min(len(buffer), payloadLength-offset)
 		for index := 0; index < chunkLength; index++ {

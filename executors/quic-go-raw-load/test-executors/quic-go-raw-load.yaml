@@ -1,13 +1,13 @@
 executorIdentity:
   id: quic-go-raw-load
   name: quic-go Raw QUIC Load Executor
-  version: 0.1.13
+  version: 0.1.15
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.13
+  executorVersion: 0.1.15
 claimedCapabilities:
   - id: quic.transport.stream-throughput.64kb
     status: supported
@@ -20,6 +20,8 @@ claimedCapabilities:
   - id: quic.transport.sustained-stream.256x64kb
     status: supported
   - id: quic.transport.sustained-download.256x64kb
+    status: supported
+  - id: quic.transport.sustained-download.4096x1kb
     status: supported
   - id: quic.transport.latency.echo-1kb
     status: supported
@@ -66,6 +68,8 @@ supportedTestSelectors:
   - selectorType: test-id
     expression: quic.transport.sustained-download.256x64kb
   - selectorType: test-id
+    expression: quic.transport.sustained-download.4096x1kb
+  - selectorType: test-id
     expression: quic.transport.latency.echo-1kb
   - selectorType: test-id
     expression: quic.transport.multiplex.100x1kb
@@ -106,6 +110,8 @@ supportedScenarioSelectors:
     expression: quic.transport.sustained-stream.256x64kb
   - selectorType: scenario-id
     expression: quic.transport.sustained-download.256x64kb
+  - selectorType: scenario-id
+    expression: quic.transport.sustained-download.4096x1kb
   - selectorType: scenario-id
     expression: quic.transport.latency.echo-1kb
   - selectorType: scenario-id
@@ -150,6 +156,9 @@ scenarioCoverage:
   quic.transport.sustained-download.256x64kb:
     status: supported
     behavior: exact deterministic 16MiB server-to-client payload delivered as 256 sequential 64KiB writes
+  quic.transport.sustained-download.4096x1kb:
+    status: supported
+    behavior: exact deterministic 4MiB server-to-client payload delivered as 4,096 sequential 1KiB writes on one stable bidirectional stream
   quic.transport.latency.echo-1kb:
     status: supported
   quic.transport.multiplex.100x1kb:

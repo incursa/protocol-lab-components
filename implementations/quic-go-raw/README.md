@@ -20,6 +20,7 @@ Supported scenarios:
 - `quic.transport.stream-throughput.16mb`
 - `quic.transport.sustained-stream.256x64kb`
 - `quic.transport.sustained-download.256x64kb`
+- `quic.transport.sustained-download.4096x1kb`
 - `quic.transport.latency.echo-1kb`
 - `quic.transport.multiplex.100x1kb`
 - `quic.transport.multiplex.100x64kb`
@@ -42,6 +43,9 @@ Unsupported until proven:
 The package covers cold handshake, connection churn, stream churn, stream echo,
 exact deterministic server-to-client download, and one-connection stream-limit
 pressure lanes, including exact mixed-size echoes up to 1 MiB.
+
+Version `0.1.18` adds scenario-selected 1KiB target writes for the exact
+4,096x1KiB sustained download while existing downloads retain 64KiB writes.
 
 The target listens on `quic://127.0.0.1:5447/` by default, uses ALPN
 `plab-raw-quic`, and honors `PROTOCOL_LAB_TARGET_BIND_ADDRESS`,
