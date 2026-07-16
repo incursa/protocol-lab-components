@@ -111,6 +111,23 @@ func TestValidateOptionsRejectsUnsupportedBehaviorOpenPatternCombos(t *testing.T
 			wantErr: "requires open-pattern",
 		},
 		{
+			name: "stream-churn accepts churn",
+			options: options{
+				behavior:             "stream-churn",
+				openPattern:          "churn",
+				streamsPerConnection: 1000,
+			},
+		},
+		{
+			name: "stream-churn rejects concurrent",
+			options: options{
+				behavior:             "stream-churn",
+				openPattern:          "concurrent",
+				streamsPerConnection: 1000,
+			},
+			wantErr: "requires open-pattern",
+		},
+		{
 			name: "unknown behavior rejects",
 			options: options{
 				behavior:             "made-up",
@@ -328,6 +345,25 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 			},
 			echo:        true,
 			wantConnect: true,
+			wantBytes:   true,
+		},
+		{
+			name: "stream-churn",
+			opts: options{
+				sni:                  "localhost",
+				alpn:                 "plab-raw-quic",
+				behavior:             "stream-churn",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     16,
+				payloadDirection:     "bidirectional",
+				openPattern:          "churn",
+				connections:          1,
+				streamsPerConnection: 8,
+				duration:             25 * time.Millisecond,
+				target:               "",
+			},
+			echo:        true,
+			wantConnect: false,
 			wantBytes:   true,
 		},
 	}

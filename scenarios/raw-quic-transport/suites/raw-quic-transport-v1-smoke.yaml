@@ -1,9 +1,9 @@
 id: raw-quic-transport-v1-smoke
 name: ProtocolLab raw QUIC transport package smoke suite
-description: Package-backed raw QUIC smoke coverage for reusable throughput, latency, multiplexing, stream limit pressure, slow-reader flow control, large payload, and duplex lanes.
+description: Package-backed raw QUIC smoke coverage for reusable throughput, latency, multiplexing, stream limit pressure, slow-reader flow control, large payload, stream churn, and duplex lanes.
 purpose: smoke
 resultKind: validation
-loadProfileId: smoke
+loadProfileId: raw-quic-peer-confidence
 scenarios:
   - quic.transport.stream-throughput.1mb
   - quic.transport.latency.echo-1kb
@@ -11,6 +11,7 @@ scenarios:
   - quic.transport.stream-limits.100x64kb
   - quic.transport.flow-control.slow-reader-16x64kb
   - quic.transport.payload.large-1mb
+  - quic.transport.stream-churn
   - quic.transport.duplex-streams
   - quic.transport.duplex-streams-peer-matrix
 protocol: quic
@@ -18,8 +19,6 @@ defaults:
   durationSeconds: 10
   warmupSeconds: 2
   repetitions: 1
-  connections: 1
-  streamsPerConnection: 1
 testExecutors:
   - quic-go-raw-load
-notes: The cancellation scenario is packaged but intentionally excluded from this suite until the raw executor supports reset and cancellation classification. Cold handshake and connection churn are executable through the raw peer comparison suite but remain outside this stream-oriented smoke suite because they require distinct load shapes. Stream churn remains outside smoke because it requires stable-connection churn behavior distinct from connection churn. Resumption-rejected, resumed-handshake, zero-rtt-accepted, and zero-rtt-rejected also remain outside smoke until executable proof exists.
+notes: The cancellation scenario is packaged but intentionally excluded from this suite until the raw executor supports reset and cancellation classification. Cold handshake and connection churn are executable through the raw peer comparison suite but remain outside this stream-oriented smoke suite because they require distinct lifecycle shapes. Stream churn is included with its scenario-owned one-connection, 1,000-stream shape. Resumption-rejected, resumed-handshake, zero-rtt-accepted, and zero-rtt-rejected also remain outside smoke until executable proof exists.

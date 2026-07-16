@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.quic-go-raw-load",
-  "packageVersion": "0.1.7",
+  "packageVersion": "0.1.8",
   "kind": "test-executor",
   "displayName": "quic-go Raw QUIC Load Executor",
   "entryManifests": [
@@ -23,6 +23,7 @@
         "quic.transport.payload.large-1mb",
         "quic.transport.handshake-cold",
         "quic.transport.connection-churn",
+        "quic.transport.stream-churn",
         "quic.transport.duplex-streams",
         "quic.transport.duplex-streams-peer-matrix"
       ],
@@ -35,6 +36,7 @@
         "quic.transport.payload.large-1mb",
         "quic.transport.handshake-cold",
         "quic.transport.connection-churn",
+        "quic.transport.stream-churn",
         "quic.transport.duplex-streams",
         "quic.transport.duplex-streams-peer-matrix"
       ],

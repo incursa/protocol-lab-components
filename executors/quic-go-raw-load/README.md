@@ -37,7 +37,7 @@ pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1 -RuntimeIdentifier linux-x
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.executor.quic-go-raw-load.0.1.7.<rid>.plabpkg
+org.protocol-lab.components.executor.quic-go-raw-load.0.1.8.<rid>.plabpkg
 ```
 
 ## Local Wrapper
@@ -58,11 +58,13 @@ pwsh ./executors/quic-go-raw-load/execute.ps1 --sni localhost --alpn plab-raw-qu
 - `quic.transport.payload.large-1mb`
 - `quic.transport.handshake-cold`
 - `quic.transport.connection-churn`
+- `quic.transport.stream-churn`
 - `quic.transport.duplex-streams`
 - `quic.transport.duplex-streams-peer-matrix`
 
 `quic.transport.cancellation.reset-stream` is declared by the scenario pack as pending. The current load executor does not yet drive reset/cancellation classification.
 
-Version `0.1.7` adds the canonical `flow-control-slow-reader-100ms` behavior.
-It delays response reads by exactly 100 milliseconds after completing each
-request write, while preserving exact echoed-byte and completion validation.
+Version `0.1.8` adds the canonical `stream-churn` behavior. It keeps each
+configured connection open while sequentially opening, echoing, and closing
+the scenario-defined number of streams. This remains distinct from
+`connection-churn`, which establishes a fresh connection per operation.

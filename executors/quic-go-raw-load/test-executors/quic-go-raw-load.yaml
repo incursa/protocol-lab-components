@@ -1,13 +1,13 @@
 executorIdentity:
   id: quic-go-raw-load
   name: quic-go Raw QUIC Load Executor
-  version: 0.1.7
+  version: 0.1.8
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.7
+  executorVersion: 0.1.8
 claimedCapabilities:
   - id: quic.transport.stream-throughput.1mb
     status: supported
@@ -24,6 +24,8 @@ claimedCapabilities:
   - id: quic.transport.handshake-cold
     status: supported
   - id: quic.transport.connection-churn
+    status: supported
+  - id: quic.transport.stream-churn
     status: supported
   - id: quic.transport.duplex-streams
     status: supported
@@ -50,6 +52,8 @@ supportedTestSelectors:
   - selectorType: test-id
     expression: quic.transport.connection-churn
   - selectorType: test-id
+    expression: quic.transport.stream-churn
+  - selectorType: test-id
     expression: quic.transport.duplex-streams
   - selectorType: test-id
     expression: quic.transport.duplex-streams-peer-matrix
@@ -71,6 +75,8 @@ supportedScenarioSelectors:
   - selectorType: scenario-id
     expression: quic.transport.connection-churn
   - selectorType: scenario-id
+    expression: quic.transport.stream-churn
+  - selectorType: scenario-id
     expression: quic.transport.duplex-streams
   - selectorType: scenario-id
     expression: quic.transport.duplex-streams-peer-matrix
@@ -90,6 +96,8 @@ scenarioCoverage:
   quic.transport.handshake-cold:
     status: supported
   quic.transport.connection-churn:
+    status: supported
+  quic.transport.stream-churn:
     status: supported
   quic.transport.duplex-streams:
     status: supported

@@ -303,12 +303,12 @@ func validateOptions(opts options) error {
 		if opts.streamsPerConnection != 0 {
 			return errors.New("handshake-cold requires streams-per-connection to be zero")
 		}
-	case "connection-churn":
+	case "connection-churn", "stream-churn":
 		if openPattern != "churn" {
 			return fmt.Errorf("behavior %q requires open-pattern %q", opts.behavior, "churn")
 		}
 		if opts.streamsPerConnection < 1 {
-			return errors.New("connection-churn requires streams-per-connection to be greater than zero")
+			return fmt.Errorf("%s requires streams-per-connection to be greater than zero", behavior)
 		}
 	default:
 		return fmt.Errorf("unsupported behavior %q", opts.behavior)
@@ -335,6 +335,8 @@ func runLoadWithQUICConfig(ctx context.Context, opts options, duration time.Dura
 		return runHandshakeColdLoad(ctx, opts, duration, discard, quicConfig)
 	case "connection-churn":
 		return runConnectionChurnLoad(ctx, opts, duration, discard, quicConfig)
+	case "stream-churn":
+		return runStreamLoad(ctx, opts, duration, discard, streamOpenSequential, quicConfig)
 	default:
 		return runStats{}, fmt.Errorf("unsupported behavior %q", opts.behavior)
 	}
