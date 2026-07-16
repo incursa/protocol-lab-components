@@ -27,7 +27,7 @@
 - Builder image: `golang:1.25-bookworm`
 - Builder image digest: `golang@sha256:bbb255b0e131db500cf0520adc97441d2260cf629c7fa7e39e025ddf53995a24`
 - Runtime image: `scratch`
-- Package version: `0.1.7`
+- Package version: `0.1.8`
 - Component image tag: `incursa-protocol-lab-quic-go-http3:0.1.7`
 - Host requirements: Docker and an HTTP/3-capable lab worker. The Go 1.25.x
   toolchain and quic-go v0.60.0 identity are pinned and retained inside the

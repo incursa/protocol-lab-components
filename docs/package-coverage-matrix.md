@@ -26,15 +26,15 @@ This matrix tracks reusable component package coverage for implementations and e
 
 | Visible implementation or executor | Before package state | After package state |
 | --- | --- | --- |
-| `kestrel-http3` | source package present | self-contained Linux x64 target package; `0.1.7` adds the deterministic header/QPACK contract and awaits live proof; `0.1.6` retains historical status, 1KB, and 64KB proof |
-| `caddy-http3` | visible on public site and present in internal consumer manifests, but not packaged in this repo | current source `0.1.8` adds deterministic header/QPACK fixtures; `0.1.7` remains the latest live-proven immutable package |
-| `nginx-http3` | present in internal consumer manifests, but not packaged in this repo | current source `0.1.8` adds deterministic header/QPACK fixtures; `0.1.7` retains historical H3 status, 1KB, and 64KB proof |
+| `kestrel-http3` | source package present | self-contained Linux x64 target package; `0.1.8` adds the deterministic header/QPACK contract with exact runner capability keys and awaits live proof; `0.1.6` retains historical payload proof |
+| `caddy-http3` | visible on public site and present in internal consumer manifests, but not packaged in this repo | current source `0.1.9` adds deterministic header/QPACK fixtures and exact runner capability keys; `0.1.7` remains the latest live-proven immutable package |
+| `nginx-http3` | present in internal consumer manifests, but not packaged in this repo | current source `0.1.9` adds deterministic header/QPACK fixtures and exact runner capability keys; `0.1.7` retains historical payload proof |
 | `incursa-http3` / `quic-dotnet-dev` | live/package-owned outside this repo | unchanged; not duplicated in component repo |
 | `msquic-dotnet` / `quic-dotnet-raw-dev` | live/package-owned outside this repo | unchanged; raw QUIC scenario and quic-go executor remain reusable component packages |
 | `aioquic-http3` | source package present | current `0.3.3` package has live h3spec status, response-header, and QPACK proof; `0.3.2` retains historical canonical status and 1KB proof |
 | `quiche-http3` | source package present | source package present with explicit scenario coverage metadata |
 | `ngtcp2-http3` | source package present | source package present with explicit scenario coverage metadata |
-| `quic-go-http3` | protocol-lab-internal placeholder and raw QUIC executor only | current source `0.1.7` adds deterministic header/QPACK fixtures; `0.1.6` retains historical status, 1KB, and 64KB proof |
+| `quic-go-http3` | protocol-lab-internal placeholder and raw QUIC executor only | current source `0.1.8` adds deterministic header/QPACK fixtures and exact runner capability keys; `0.1.6` retains historical payload proof |
 | `quic-go-raw` | no raw QUIC implementation package | added `org.protocol-lab.components.implementation.quic-go-raw` for `quic.transport.stream-throughput.1mb` and `quic.transport.multiplex.100x64kb` only |
 | `quic-go-raw-load` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
 | `h3spec-http3-qpack` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |

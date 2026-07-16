@@ -154,6 +154,8 @@ capabilities:
   - httpHeaders
   - h3.server
   - quic.server
+  - h3Protocol
+  - h3Qpack
 entrypoint:
   kind: pwsh
   path: run.ps1

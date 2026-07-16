@@ -5,7 +5,7 @@
 ## Package
 
 - Package ID: `org.protocol-lab.components.implementation.nginx-http3`
-- Package version: `0.1.8`
+- Package version: `0.1.9`
 - Implementation ID: `nginx-http3`
 - Public scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`
 - Package-local not-found fixture: `/not-found` returns 404 for external peer smoke.
