@@ -28,6 +28,12 @@ version=$(printf '%s' "$login" | sed -n 's/.*"version":"\([^"]*\)".*/\1/p')
 [[ -n "$token" ]]
 [[ "$version" == 15.4* ]]
 
+settings=$(curl -fsS -G http://127.0.0.1:5380/api/settings/set \
+  -H "Authorization: Bearer $token" \
+  --data-urlencode qpmPrefixLimitsIPv4=false \
+  --data-urlencode qpmPrefixLimitsIPv6=false)
+printf '%s' "$settings" | grep -q '"status":"ok"'
+
 zone=$(curl -fsS -G http://127.0.0.1:5380/api/zones/create \
   -H "Authorization: Bearer $token" \
   --data-urlencode zone=plab.test \
@@ -44,5 +50,5 @@ record=$(curl -fsS -G http://127.0.0.1:5380/api/zones/records/add \
   --data-urlencode overwrite=true)
 printf '%s' "$record" | grep -q '"status":"ok"'
 
-echo "Technitium DNS Server $version ready for classic authoritative DNS over UDP"
+echo "Technitium DNS Server $version ready for classic authoritative DNS over UDP and TCP"
 wait "$pid"

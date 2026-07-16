@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-  [string]$Image = 'incursa-protocol-lab-technitium-classic-authority:0.1.0',
+  [string]$Image = 'incursa-protocol-lab-technitium-classic-authority:0.1.1',
   [int]$Port = 15355,
   [switch]$SkipBuild,
   [switch]$PlanOnly,
@@ -12,10 +12,10 @@ $out = if ([IO.Path]::IsPathRooted($OutputRoot)) { $OutputRoot } else { Join-Pat
 New-Item -ItemType Directory -Force $out | Out-Null
 $build = @('build', '--pull', '-t', $Image, 'docker')
 $proof = @('run', '--rm', '-e', 'PLAB_PLAN_ONLY=true', $Image)
-$run = @('run', '--rm', '-p', "${Port}:53/udp", $Image)
+$run = @('run', '--rm', '-p', "${Port}:53/udp", '-p', "${Port}:53/tcp", $Image)
 @('docker ' + ($build -join ' '), 'docker ' + ($proof -join ' '), 'docker ' + ($run -join ' ')) | Set-Content (Join-Path $out 'command.txt')
 if ($PlanOnly) {
-  @{ status = 'planned'; image = $Image; protocols = @('dns-udp') } | ConvertTo-Json | Set-Content (Join-Path $out 'result.json')
+  @{ status = 'planned'; image = $Image; protocols = @('dns-udp', 'dns-tcp') } | ConvertTo-Json | Set-Content (Join-Path $out 'result.json')
   return
 }
 Push-Location $PSScriptRoot
@@ -28,7 +28,7 @@ try {
   $version | Set-Content (Join-Path $out 'version.txt')
   if ($LASTEXITCODE -ne 0 -or $version -notmatch [regex]::Escape('Technitium DNS Server 15.4')) { throw "Version proof failed: $version" }
   if ($ProofOnly) {
-    @{ status = 'proved'; version = $version; protocols = @('dns-udp') } | ConvertTo-Json | Set-Content (Join-Path $out 'result.json')
+    @{ status = 'proved'; version = $version; protocols = @('dns-udp', 'dns-tcp') } | ConvertTo-Json | Set-Content (Join-Path $out 'result.json')
     return
   }
   & docker @run

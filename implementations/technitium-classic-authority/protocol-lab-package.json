@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.technitium-classic-authority",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "implementation",
   "displayName": "Technitium Classic DNS Authority",
   "entryManifests": [
@@ -12,10 +12,12 @@
       "implementationId": "technitium-classic-authority",
       "displayName": "Technitium Classic DNS Authority",
       "protocols": [
-        "dns-udp"
+        "dns-udp",
+        "dns-tcp"
       ],
       "scenarios": [
-        "dns.classic.udp.query.a"
+        "dns.classic.udp.query.a",
+        "dns.classic.tcp.query.a"
       ]
     }
   ],

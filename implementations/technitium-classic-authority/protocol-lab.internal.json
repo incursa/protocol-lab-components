@@ -42,14 +42,14 @@
         "sourceVersion": "15.4",
         "sourceCommit": "d0484b6c1e7439cdc53d67d81e9c876cda2ad756",
         "license": "GPL-3.0-only",
-        "capabilityProof": "The startup bootstrap reads the live API version, denies recursion, creates the deterministic plab.test primary zone, and installs the TTL-zero A record before serving classic DNS over UDP"
+        "capabilityProof": "The startup bootstrap reads the live API version, denies recursion, removes production QPM limits for the isolated fixture, creates the deterministic plab.test primary zone, and installs the TTL-zero A record before serving classic DNS over UDP and TCP"
       }
     ]
   },
   "knownLimitations": [
     "This source/config-only wrapper does not redistribute the Technitium image or binaries; Docker acquires the immutable upstream image by digest.",
-    "Only deterministic plab.test A over classic DNS UDP is claimed.",
-    "The TCP endpoint passes a one-query validity check but closes the diagnostic workload's reused connection after roughly 2100 measured queries; the resulting EOF violates the zero-failure and connection-reuse contract, so TCP is unsupported.",
+    "Only deterministic plab.test A over classic DNS UDP and TCP is claimed.",
+    "Technitium's default per-client QPM limits are disabled inside this isolated calibration target; production-default rate-limit behavior is outside this package's claim.",
     "The synthetic exact 630-byte truncation fixture and encrypted transports remain explicit unsupported lanes."
   ]
 }

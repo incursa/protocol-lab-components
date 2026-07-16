@@ -1,44 +1,44 @@
 schemaVersion: "1.0"
 id: technitium-classic-authority
 name: Technitium Classic DNS Authority
-description: Source/config-only Technitium authoritative target for deterministic classic DNS UDP A queries.
+description: Source/config-only Technitium authoritative target for deterministic classic DNS UDP and TCP A queries.
 family: technitium
 role: authoritative-server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-technitium-classic-authority:0.1.0
+image: incursa-protocol-lab-technitium-classic-authority:0.1.1
 dockerfile: docker/Dockerfile
 buildContext: docker
 dockerNetworkMode: published-port
 baseUrl: udp://127.0.0.1:15355
 dockerBaseUrl: udp://127.0.0.1:15355
-protocolBaseUrls: {dns-udp: udp://127.0.0.1:15355}
-dockerProtocolBaseUrls: {dns-udp: udp://127.0.0.1:15355}
+protocolBaseUrls: {dns-udp: udp://127.0.0.1:15355, dns-tcp: tcp://127.0.0.1:15355}
+dockerProtocolBaseUrls: {dns-udp: udp://127.0.0.1:15355, dns-tcp: tcp://127.0.0.1:15355}
 roles: [authoritative-server]
-protocols: [dns-udp]
-supportedProtocols: [dns-udp]
+protocols: [dns-udp, dns-tcp]
+supportedProtocols: [dns-udp, dns-tcp]
 supportedWorkloadFamilies: [dns.classic]
-supportedProtocolVersions: [DNS/UDP]
-supportedScenarios: [dns.classic.udp.query.a]
-supportedTestCaseIds: [dns.classic.udp.query.a]
+supportedProtocolVersions: [DNS/UDP, DNS/TCP]
+supportedScenarios: [dns.classic.udp.query.a, dns.classic.tcp.query.a]
+supportedTestCaseIds: [dns.classic.udp.query.a, dns.classic.tcp.query.a]
 scenarioCoverage:
   dns.classic.udp.query.a: {status: supported, executorId: go-dns-udp-executor, behavior: bare UDP datagram with runtime message ID and deterministic authoritative plab.test. A response}
-  dns.classic.tcp.query.a: {status: unsupported, reason: The one-query validity check passes, but Technitium closes the diagnostic workload's reused TCP connection after roughly 2100 measured queries and the executor records EOF.}
+  dns.classic.tcp.query.a: {status: supported, executorId: go-dns-tcp-executor, behavior: two-octet length-prefixed DNS over a reused TCP connection with deterministic authoritative plab.test. A response and fixture-local QPM limits disabled}
   dns.classic.udp-truncated-tcp-retry: {status: unsupported, reason: Technitium does not emit the contract's synthetic byte-exact invalid DNSSEC-shaped fixture; ordinary standards-compliant truncation is not substituted.}
   dns.dot.query.a: {status: unsupported, reason: The current Technitium DoT candidate cannot satisfy the exact ALPN and cipher contract.}
   dns.doh2.query.a: {status: unsupported, reason: The current Technitium DoH2 candidate cannot satisfy the exact response-header contract.}
   dns.doh3.query.a: {status: unsupported, reason: The current Technitium DoH3 candidate cannot satisfy the exact response-header and QUIC cipher contract.}
   dns.doq.query.a: {status: unsupported, reason: The current Technitium DoQ candidate cannot satisfy the exact QUIC cipher contract.}
 unsupportedKnownCases: [dns.classic.udp-truncated-tcp-retry, dns.dot.query.a, dns.doh2.query.a, dns.doh3.get.a, dns.doh3.query.a, dns.doh3.query.aaaa, dns.doh3.query.cname-chain, dns.doh3.query.large-dnssec-shaped, dns.doh3.query.nodata, dns.doh3.query.nxdomain, dns.doq.query.a]
-ports: [{name: dns-classic, protocol: udp, default: 15355, hostPort: 15355, containerPort: 53}]
+ports: [{name: dns-classic, protocol: udp+tcp, default: 15355, hostPort: 15355, containerPort: 53}]
 environment: {PLAB_DNS_CLASSIC_PORT: "15355"}
 startup: {port: {name: dns-classic, environmentVariable: PLAB_DNS_CLASSIC_PORT, default: 15355}, readiness: {protocol: process, timeoutSeconds: 45}}
 readinessCheck: {type: processStarted, timeoutSeconds: 45, startupDelayMilliseconds: 8000}
-capabilities: [dns.authoritative-server, dns.udp, dns.local-fixture-only, scenario.dns.classic.udp.query.a]
+capabilities: [dns.authoritative-server, dns.udp, dns.tcp, dns.local-fixture-only, scenario.dns.classic.udp.query.a, scenario.dns.classic.tcp.query.a]
 entrypoint: {kind: pwsh, path: run.ps1, arguments: [], workingDirectory: .}
 shutdownBehavior: process
 artifactExports: [command.txt, version.txt, stdout.txt, stderr.txt, result.json]
 qlogSupport: false
 sslKeyLogSupport: false
 executionMetadata: {manifest: protocol-lab.internal.json}
-notes: Local authoritative UDP target only; recursion is denied, the authoritative TTL is zero, and no external upstream is configured. TCP remains unsupported by the exact reused-connection diagnostic workload.
+notes: Local authoritative target only; recursion is denied, the authoritative TTL is zero, no external upstream is configured, and production QPM prefix limits are disabled for the isolated calibration fixture.

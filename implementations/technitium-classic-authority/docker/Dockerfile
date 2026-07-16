@@ -11,5 +11,5 @@ ENV DNS_SERVER_DOMAIN=dns.plab.test \
     DNS_SERVER_RECURSION=Deny \
     DNS_SERVER_ENABLE_BLOCKING=false
 
-EXPOSE 53/udp
+EXPOSE 53/udp 53/tcp
 ENTRYPOINT ["/opt/plab/bootstrap.sh"]
