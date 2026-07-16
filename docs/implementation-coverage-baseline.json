@@ -33,19 +33,20 @@
     "closed-by-decision": "The directory intentionally contains a repository-backed feasibility decision rather than a package manifest."
   },
   "summary": {
-    "localPackageCount": 44,
+    "localPackageCount": 45,
     "localDecisionDirectoryCount": 6,
     "quicHttp3InventoryCount": 19,
     "publicAuthoredCatalogCount": 19,
     "currentVersionLiveProvenCount": 25,
     "historicalVersionLiveProofOnlyCount": 1,
     "attemptedNoCompletedEvidenceCount": 2,
-    "noLiveProofInReviewedSourcesCount": 16
+    "noLiveProofInReviewedSourcesCount": 17
   },
   "localImplementationPackages": [
     { "path": "implementations/aioquic-http3/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.aioquic-http3", "version": "0.3.3", "implementationIds": ["aioquic-http3"], "protocols": ["h3"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-a3c8b35637e14c49b86332a928c5b15d"], "blocker": "Current 0.3.3 h3spec status, response-header, and QPACK rows are live-proven; canonical status and 1 KiB payload proof remains retained on historical package 0.3.2, and 64 KiB remains unproven." },
     { "path": "implementations/apache-http1/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.apache-http1", "version": "0.1.4", "implementationIds": ["apache-http1"], "protocols": ["h1"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-f43cbc3c2b27435a83cfd4e3fd995d07"] },
     { "path": "implementations/apache-http2/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.apache-http2", "version": "0.1.3", "implementationIds": ["apache-http2"], "protocols": ["h2"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-da5c9d28da254812b88ba21c58a1c7ff"] },
+    { "path": "implementations/bind9-classic-authority/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.bind9-classic-authority", "version": "0.1.0", "implementationIds": ["bind9-classic-authority"], "protocols": ["dns-tcp", "dns-udp"], "evidenceStatus": "no-live-proof-in-reviewed-sources", "evidenceJobIds": [], "blocker": "Exact UDP and TCP executor smoke passed locally; a real-controller job is still required." },
     { "path": "implementations/bind9-doh2/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.bind9-doh2", "version": "0.1.0", "implementationIds": ["bind9-doh2"], "protocols": ["doh2"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-3e256dd1cb8a4f668464e2cd5e0eac7e"] },
     { "path": "implementations/bind9-dot/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.bind9-dot", "version": "0.1.0", "implementationIds": ["bind9-dot"], "protocols": ["dot"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-8120d7bbb8c342828c643eec54d5927a", "job-4568f06d29494058995f2a3bf7dab774"] },
     { "path": "implementations/caddy-http1/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.caddy-http1", "version": "0.1.0", "implementationIds": ["caddy-http1"], "protocols": ["h1"], "evidenceStatus": "no-live-proof-in-reviewed-sources", "evidenceJobIds": [], "blocker": "No completed job is cited for this package in the reviewed sources." },

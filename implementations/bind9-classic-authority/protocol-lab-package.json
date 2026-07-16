@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.bind9-classic-authority",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "BIND 9 Classic DNS Authority",
+  "entryManifests": [
+    "implementations/bind9-classic-authority.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "bind9-classic-authority",
+      "displayName": "BIND 9 Classic DNS Authority",
+      "protocols": [
+        "dns-udp",
+        "dns-tcp"
+      ],
+      "scenarios": [
+        "dns.classic.udp.query.a",
+        "dns.classic.tcp.query.a"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      }
+    ]
+  }
+}

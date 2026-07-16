@@ -1,0 +1,44 @@
+schemaVersion: "1.0"
+id: bind9-classic-authority
+name: BIND 9 Classic DNS Authority
+description: Docker-backed unmodified BIND 9 authoritative target for deterministic classic DNS UDP and TCP A queries.
+family: bind9
+role: authoritative-server
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-bind9-classic-authority:0.1.0
+dockerfile: docker/Dockerfile
+buildContext: docker
+dockerNetworkMode: published-port
+baseUrl: udp://127.0.0.1:15354
+dockerBaseUrl: udp://127.0.0.1:15354
+protocolBaseUrls: {dns-udp: udp://127.0.0.1:15354, dns-tcp: tcp://127.0.0.1:15354}
+dockerProtocolBaseUrls: {dns-udp: udp://127.0.0.1:15354, dns-tcp: tcp://127.0.0.1:15354}
+roles: [authoritative-server]
+protocols: [dns-udp, dns-tcp]
+supportedProtocols: [dns-udp, dns-tcp]
+supportedWorkloadFamilies: [dns.classic]
+supportedProtocolVersions: [DNS/UDP, DNS/TCP]
+supportedScenarios: [dns.classic.udp.query.a, dns.classic.tcp.query.a]
+supportedTestCaseIds: [dns.classic.udp.query.a, dns.classic.tcp.query.a]
+scenarioCoverage:
+  dns.classic.udp.query.a: {status: supported, executorId: go-dns-udp-executor, behavior: bare UDP datagram with runtime message ID and deterministic authoritative plab.test. A response}
+  dns.classic.tcp.query.a: {status: supported, executorId: go-dns-tcp-executor, behavior: two-octet length-prefixed DNS over a reused TCP connection with deterministic authoritative plab.test. A response}
+  dns.classic.udp-truncated-tcp-retry: {status: unsupported, reason: BIND does not emit the contract's synthetic byte-exact invalid DNSSEC-shaped fixture; ordinary standards-compliant truncation is not substituted.}
+  dns.dot.query.a: {status: unsupported, reason: Separate exact encrypted-transport package required.}
+  dns.doh2.query.a: {status: unsupported, reason: Separate exact encrypted-transport package required.}
+  dns.doh3.query.a: {status: unsupported, reason: Separate exact encrypted-transport package required.}
+  dns.doq.query.a: {status: unsupported, reason: Separate exact encrypted-transport package required.}
+unsupportedKnownCases: [dns.classic.udp-truncated-tcp-retry, dns.dot.query.a, dns.doh2.query.a, dns.doh3.get.a, dns.doh3.query.a, dns.doh3.query.aaaa, dns.doh3.query.cname-chain, dns.doh3.query.large-dnssec-shaped, dns.doh3.query.nodata, dns.doh3.query.nxdomain, dns.doq.query.a]
+ports: [{name: dns-classic, protocol: udp+tcp, default: 15354, hostPort: 15354, containerPort: 53}]
+environment: {PLAB_DNS_CLASSIC_PORT: "15354"}
+startup: {port: {name: dns-classic, environmentVariable: PLAB_DNS_CLASSIC_PORT, default: 15354}, readiness: {protocol: process, timeoutSeconds: 30}}
+readinessCheck: {type: processStarted, timeoutSeconds: 30, startupDelayMilliseconds: 1500}
+capabilities: [dns.authoritative-server, dns.udp, dns.tcp, dns.local-fixture-only, scenario.dns.classic.udp.query.a, scenario.dns.classic.tcp.query.a]
+entrypoint: {kind: pwsh, path: run.ps1, arguments: [], workingDirectory: .}
+shutdownBehavior: process
+artifactExports: [command.txt, version.txt, stdout.txt, stderr.txt, result.json]
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata: {manifest: protocol-lab.internal.json}
+notes: Local authoritative target only; recursion, cache, encrypted transports, and external upstreams are absent.

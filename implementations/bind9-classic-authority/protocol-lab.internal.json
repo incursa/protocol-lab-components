@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      }
+    ],
+    "images": [
+      {
+        "name": "bind9-classic-authority",
+        "baseImage": "internetsystemsconsortium/bind9@sha256:4e2ce9999405e69bfbd1557bfa0208df88f22c444a136a0ec81fb7748be97782",
+        "baseImageLinuxAmd64Digest": "internetsystemsconsortium/bind9@sha256:4e2ce9999405e69bfbd1557bfa0208df88f22c444a136a0ec81fb7748be97782",
+        "sourceVersion": "9.20.24",
+        "sourceCommit": "e5d43f1764259da929f6c0200a9db2081141998a",
+        "license": "MPL-2.0",
+        "capabilityProof": "named -V proves BIND 9.20.24; the target publishes the same container port over UDP and TCP"
+      }
+    ]
+  },
+  "knownLimitations": [
+    "Only deterministic plab.test A over classic DNS UDP and TCP is claimed.",
+    "The synthetic exact 630-byte truncation fixture and encrypted transports remain explicit unsupported lanes."
+  ]
+}
