@@ -6,7 +6,7 @@ family: dotnet-tls
 role: library-backed-target
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-dotnet-sslstream-tls13:0.1.0
+image: incursa-protocol-lab-dotnet-sslstream-tls13:0.1.1
 dockerfile: Dockerfile
 buildContext: .
 dockerNetworkMode: published-port

@@ -10,6 +10,6 @@
     "requiresPwsh": true,
     "requiresBash": true,
     "requiresGo": false,
-    "requiredCapabilities": [{"name": "docker-linux", "value": "true"}]
+    "requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "linux-containers", "value": "true"}]
   }
 }
