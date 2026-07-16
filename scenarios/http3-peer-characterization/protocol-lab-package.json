@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.http3-peer-characterization",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "scenario-pack",
   "displayName": "HTTP/3 Peer Characterization Scenario Pack",
   "entryManifests": [
@@ -27,7 +27,8 @@
         "h3"
       ],
       "testExecutors": [
-        "curl-http3-client"
+        "curl-http3-client",
+        "xquic-http3-client"
       ]
     }
   ]

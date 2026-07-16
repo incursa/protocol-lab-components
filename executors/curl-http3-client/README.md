@@ -47,6 +47,10 @@ Linux/macOS plan-only smoke:
 PLAB_PLAN_ONLY=1 ./executors/curl-http3-client/execute.sh
 ```
 
+Version `0.1.5` invokes the `curl` executable explicitly. The pinned peer
+image currently defaults to `/bin/sh`, so passing curl flags directly as the
+container command fails before any network request is attempted.
+
 ## Build Package
 
 ```powershell

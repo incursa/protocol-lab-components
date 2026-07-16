@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "xquic",
+        "value": "http3"
+      }
+    ],
+    "images": [
+      {
+        "name": "xquic-http3",
+        "image": "incursa-protocol-lab-xquic-http3:0.1.0",
+        "baseImage": "ghcr.io/alibaba/xquic/xquic-interop@sha256:875df1e9935c6a07e26d7b5ae14df9edd06703061ce35920234a97d6991c58e0",
+        "sourceRepoDigest": "ghcr.io/alibaba/xquic/xquic-interop@sha256:875df1e9935c6a07e26d7b5ae14df9edd06703061ce35920234a97d6991c58e0"
+      }
+    ]
+  },
+  "commands": {
+    "buildTemplate": "docker build -f docker/xquic-http3.Dockerfile -t incursa-protocol-lab-xquic-http3:0.1.0 .",
+    "serverTemplate": "generate a self-signed certificate and diagnostic root, then run demo_server in HTTP/3 interop mode on UDP 4433"
+  },
+  "knownLimitations": [
+    "This package declares only diagnostic peer characterization.",
+    "The generic curl HTTP/3 peer sees status 200 and then a completion error; the paired XQUIC client executor retains and discloses the server's no-response-FIN behavior.",
+    "The XQUIC interop server is not a ProtocolLab raw QUIC application."
+  ]
+}

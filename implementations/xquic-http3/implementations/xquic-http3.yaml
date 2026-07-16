@@ -1,0 +1,118 @@
+schemaVersion: "1.0"
+id: xquic-http3
+name: XQUIC HTTP/3
+description: Digest-pinned XQUIC HTTP/3 interop server for diagnostic external-peer characterization.
+family: xquic
+roles:
+  - server
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-xquic-http3:0.1.0
+dockerfile: docker/xquic-http3.Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+baseUrl: https://localhost:4433
+dockerBaseUrl: https://localhost:4433
+protocolBaseUrls:
+  h3: https://localhost:4433
+dockerProtocolBaseUrls:
+  h3: https://localhost:4433
+certificateMode: generated-self-signed-loopback-certificate
+protocols:
+  - h3
+supportedProtocols:
+  - h3
+supportedWorkloadFamilies:
+  - http.application
+supportedProtocolVersions:
+  - http/3
+supportedScenarios:
+  - http3.external.peer-characterization
+supportedTestCaseIds:
+  - http3.external.peer-characterization
+scenarioCoverage:
+  http3.external.peer-characterization:
+    status: supported
+    endpoint: /
+    reason: The paired digest-pinned XQUIC client observes HTTP/3 status 200; response completion warnings remain retained diagnostic evidence.
+  http3.core.status:
+    status: unsupported
+    reason: The upstream interop sample does not implement ProtocolLab's canonical JSON fixture contract.
+  http3.payload.bytes.1kb:
+    status: unsupported
+    reason: No official payload row is claimed because the interop sample does not deliver a response FIN to the tested clients.
+  raw-quic:
+    status: unsupported
+    reason: demo_server exposes interop file-server behavior and no arbitrary raw application callback.
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+ports:
+  - name: h3
+    protocol: udp
+    default: 4433
+    hostPort: 4433
+    containerPort: 4433
+dockerCommandArguments:
+  - bash
+  - -lc
+  - >-
+    set -euo pipefail;
+    cd /xquic_bin;
+    mkdir -p /tmp/www /tmp/certs /logs;
+    printf 'xquic-http3-peer\n' > /tmp/www/index.html;
+    openssl req -x509 -newkey rsa:2048 -nodes -subj /CN=localhost -days 3650 -keyout /tmp/certs/priv.key -out /tmp/certs/cert.pem >/logs/openssl.stdout 2>/logs/openssl.stderr;
+    cp /tmp/certs/priv.key server.key;
+    cp /tmp/certs/cert.pem server.crt;
+    exec ./demo_server -l d -L /logs/server.log -p 4433 -D /tmp/www -i -M
+startup:
+  port:
+    name: h3
+    default: 4433
+readinessCheck:
+  type: processStarted
+  url: /
+  timeoutSeconds: 30
+capabilities:
+  - http.server
+  - httpStatus
+unsupportedKnownCases:
+  - h1
+  - h2
+  - h2c
+  - raw-quic
+  - websocket
+artifactExports:
+  - command.txt
+  - stdout.txt
+  - stderr.txt
+  - result.json
+  - server.log
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata:
+  upstreamImage: ghcr.io/alibaba/xquic/xquic-interop@sha256:875df1e9935c6a07e26d7b5ae14df9edd06703061ce35920234a97d6991c58e0
+  upstreamRoles:
+    - client
+    - server
+  upstreamInteropTestcases:
+    - versionnegotiation
+    - handshake
+    - longrtt
+    - transfer
+    - zerortt
+    - multiconnect
+    - chacha20
+    - resumption
+    - http3
+    - retry
+    - keyupdate
+    - mphandshake
+    - mptransfer
+    - mppathabandon
+    - mppathstatus
+  packageRole: server
+  evidenceClass: diagnostic
+  manifest: protocol-lab.internal.json

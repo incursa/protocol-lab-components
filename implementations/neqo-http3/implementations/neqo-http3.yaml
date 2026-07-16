@@ -1,0 +1,105 @@
+schemaVersion: "1.0"
+id: neqo-http3
+name: Mozilla neqo HTTP/3
+description: Digest-pinned neqo HTTP/3 test server for diagnostic external-peer characterization.
+family: neqo
+roles:
+  - server
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-neqo-http3:0.1.0
+dockerfile: docker/neqo-http3.Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+baseUrl: https://localhost:4433
+dockerBaseUrl: https://localhost:4433
+protocolBaseUrls:
+  h3: https://localhost:4433
+dockerProtocolBaseUrls:
+  h3: https://localhost:4433
+certificateMode: generated-self-signed-loopback-certificate
+protocols:
+  - h3
+supportedProtocols:
+  - h3
+supportedWorkloadFamilies:
+  - http.application
+supportedProtocolVersions:
+  - http/3
+supportedScenarios:
+  - http3.external.peer-characterization
+supportedTestCaseIds:
+  - http3.external.peer-characterization
+scenarioCoverage:
+  http3.external.peer-characterization:
+    status: supported
+    endpoint: /
+    reason: Digest-pinned neqo-server completes an HTTP/3 request with status 200; this diagnostic row makes no canonical payload claim.
+  http3.core.status:
+    status: unsupported
+    reason: The upstream test server does not implement ProtocolLab's canonical JSON status fixture.
+  http3.payload.bytes.1kb:
+    status: unsupported
+    reason: neqo's path-length response behavior is not substituted for the canonical payload and content-type contract.
+  raw-quic:
+    status: unsupported
+    reason: neqo-server explicitly remains an HTTP/3 application regardless of an overridden ALPN label.
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+ports:
+  - name: h3
+    protocol: udp
+    default: 4433
+    hostPort: 4433
+    containerPort: 4433
+dockerCommandArguments:
+  - bash
+  - -lc
+  - >-
+    set -euo pipefail;
+    export PATH=/neqo/bin:$PATH;
+    export LD_LIBRARY_PATH=/neqo/lib:${LD_LIBRARY_PATH:-};
+    db=/tmp/neqo-db;
+    mkdir -p "$db" /tmp/certs /logs;
+    /neqo/bin/certutil -N -d "sql:$db" --empty-password;
+    openssl req -x509 -newkey rsa:2048 -nodes -subj /CN=localhost -days 3650 -keyout /tmp/certs/priv.key -out /tmp/certs/cert.pem >/logs/openssl.stdout 2>/logs/openssl.stderr;
+    p12=$(mktemp);
+    openssl pkcs12 -export -in /tmp/certs/cert.pem -inkey /tmp/certs/priv.key -name cert -passout pass: -out "$p12";
+    /neqo/bin/pk12util -d "sql:$db" -i "$p12" -W '';
+    exec /neqo/bin/neqo-server -d "$db" -k cert 0.0.0.0:4433
+startup:
+  port:
+    name: h3
+    default: 4433
+readinessCheck:
+  type: processStarted
+  url: /
+  timeoutSeconds: 30
+capabilities:
+  - http.server
+  - httpStatus
+unsupportedKnownCases:
+  - h1
+  - h2
+  - h2c
+  - raw-quic
+  - websocket
+artifactExports:
+  - command.txt
+  - stdout.txt
+  - stderr.txt
+  - result.json
+qlogSupport: true
+sslKeyLogSupport: false
+executionMetadata:
+  upstreamImage: ghcr.io/mozilla/neqo-qns@sha256:0d97da7602b40315768d0780de549b8b15d2d9cfd0e26ac948b0d6809c7f1571
+  upstreamRoles:
+    - client
+    - server
+  upstreamInteropTestcaseInterface: neqo-client and neqo-server accept the QNS testcase name through --qns-test; this package declares only the ProtocolLab peer-characterization scenario.
+  packageRole: server
+  evidenceClass: diagnostic
+  manifest: protocol-lab.internal.json

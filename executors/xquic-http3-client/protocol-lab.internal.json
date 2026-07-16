@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "execute.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "execute.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      }
+    ],
+    "images": [
+      {
+        "name": "xquic-http3-client",
+        "image": "ghcr.io/alibaba/xquic/xquic-interop@sha256:875df1e9935c6a07e26d7b5ae14df9edd06703061ce35920234a97d6991c58e0",
+        "sourceRepoDigest": "ghcr.io/alibaba/xquic/xquic-interop@sha256:875df1e9935c6a07e26d7b5ae14df9edd06703061ce35920234a97d6991c58e0"
+      }
+    ]
+  },
+  "knownLimitations": [
+    "The executor validates ALPN h3 and status 200 for the diagnostic peer row.",
+    "The current upstream client records missing response FIN as err 260; the full client log is retained and no payload or benchmark claim is emitted."
+  ]
+}

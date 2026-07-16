@@ -1,0 +1,118 @@
+schemaVersion: "1.0"
+id: lsquic-http3
+name: LSQUIC HTTP/3
+description: Digest-pinned LSQUIC HTTP/3 server for diagnostic external-peer characterization.
+family: lsquic
+roles:
+  - server
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-lsquic-http3:0.1.0
+dockerfile: docker/lsquic-http3.Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+baseUrl: https://localhost:4433
+dockerBaseUrl: https://localhost:4433
+protocolBaseUrls:
+  h3: https://localhost:4433
+dockerProtocolBaseUrls:
+  h3: https://localhost:4433
+certificateMode: generated-self-signed-loopback-certificate
+protocols:
+  - h3
+supportedProtocols:
+  - h3
+supportedWorkloadFamilies:
+  - http.application
+supportedProtocolVersions:
+  - http/3
+supportedScenarios:
+  - http3.external.peer-characterization
+supportedTestCaseIds:
+  - http3.external.peer-characterization
+scenarioCoverage:
+  http3.external.peer-characterization:
+    status: supported
+    endpoint: /
+    reason: Digest-pinned LSQUIC http_server completes an HTTP/3 request with status 200; this diagnostic row makes no canonical payload claim.
+  http3.core.status:
+    status: unsupported
+    reason: The upstream sample server is retained as an external peer and does not implement ProtocolLab's canonical JSON fixture contract.
+  http3.payload.bytes.1kb:
+    status: unsupported
+    reason: Static-file behavior is not substituted for the canonical payload and content-type contract.
+  raw-quic:
+    status: unsupported
+    reason: The upstream binary exposes HTTP/3 and HQ file-server semantics, not ProtocolLab's raw byte-stream application.
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+ports:
+  - name: h3
+    protocol: udp
+    default: 4433
+    hostPort: 4433
+    containerPort: 4433
+dockerCommandArguments:
+  - bash
+  - -lc
+  - >-
+    set -euo pipefail;
+    mkdir -p /tmp/www /tmp/certs /logs;
+    printf 'lsquic-http3-peer\n' > /tmp/www/index.html;
+    openssl req -x509 -newkey rsa:2048 -nodes -subj /CN=localhost -days 3650 -keyout /tmp/certs/priv.key -out /tmp/certs/cert.pem >/logs/openssl.stdout 2>/logs/openssl.stderr;
+    exec /usr/bin/http_server -o version=h3
+    -c localhost,/tmp/certs/cert.pem,/tmp/certs/priv.key
+    -c host.docker.internal,/tmp/certs/cert.pem,/tmp/certs/priv.key
+    -c plab-worker-sut-01,/tmp/certs/cert.pem,/tmp/certs/priv.key
+    -c plab-worker-load-01,/tmp/certs/cert.pem,/tmp/certs/priv.key
+    -c 10.50.0.11,/tmp/certs/cert.pem,/tmp/certs/priv.key
+    -c 10.50.0.12,/tmp/certs/cert.pem,/tmp/certs/priv.key
+    -s 0.0.0.0:4433 -r /tmp/www -L info
+startup:
+  port:
+    name: h3
+    default: 4433
+readinessCheck:
+  type: processStarted
+  url: /
+  timeoutSeconds: 30
+capabilities:
+  - http.server
+  - httpStatus
+unsupportedKnownCases:
+  - h1
+  - h2
+  - h2c
+  - raw-quic
+  - websocket
+artifactExports:
+  - command.txt
+  - stdout.txt
+  - stderr.txt
+  - result.json
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata:
+  upstreamImage: litespeedtech/lsquic-qir@sha256:7819190d3b19ac4f1a9b85d994fdc3a6de900973376d1c7dad345641c3fb28c8
+  upstreamRoles:
+    - client
+    - server
+  upstreamInteropTestcases:
+    - handshake
+    - transfer
+    - longrtt
+    - resumption
+    - blackhole
+    - multiconnect
+    - chacha20
+    - zerortt
+    - connectionmigration
+    - retry
+    - ecn
+    - http3
+  packageRole: server
+  evidenceClass: diagnostic
+  manifest: protocol-lab.internal.json

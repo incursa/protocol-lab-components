@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.xquic-http3-client",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "XQUIC HTTP/3 Client Test Executor",
+  "entryManifests": [
+    "test-executors/xquic-http3-client.yaml"
+  ],
+  "providedTestExecutors": [
+    {
+      "testExecutorId": "xquic-http3-client",
+      "displayName": "XQUIC HTTP/3 Client Test Executor",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http3.external.peer-characterization"
+      ],
+      "tests": [
+        "http3.external.peer-characterization"
+      ],
+      "requiredCapabilities": [
+        {
+          "name": "docker",
+          "value": "true"
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "http3-runtime",
+        "value": "true"
+      }
+    ]
+  }
+}

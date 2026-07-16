@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "run.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "run.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "neqo",
+        "value": "http3"
+      }
+    ],
+    "images": [
+      {
+        "name": "neqo-http3",
+        "image": "incursa-protocol-lab-neqo-http3:0.1.0",
+        "baseImage": "ghcr.io/mozilla/neqo-qns@sha256:0d97da7602b40315768d0780de549b8b15d2d9cfd0e26ac948b0d6809c7f1571",
+        "sourceRepoDigest": "ghcr.io/mozilla/neqo-qns@sha256:0d97da7602b40315768d0780de549b8b15d2d9cfd0e26ac948b0d6809c7f1571"
+      }
+    ]
+  },
+  "commands": {
+    "buildTemplate": "docker build -f docker/neqo-http3.Dockerfile -t incursa-protocol-lab-neqo-http3:0.1.0 .",
+    "serverTemplate": "import a generated certificate into an ephemeral NSS database, then run neqo-server in HTTP/3 mode on UDP 4433"
+  },
+  "knownLimitations": [
+    "This package exposes neqo's test HTTP/3 server and declares only diagnostic peer characterization.",
+    "The server's arbitrary ALPN option does not change its HTTP/3 application semantics and is not raw QUIC evidence."
+  ]
+}

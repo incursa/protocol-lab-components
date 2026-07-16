@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.neqo-http3",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Mozilla neqo HTTP/3 Peer",
+  "entryManifests": [
+    "implementations/neqo-http3.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "neqo-http3",
+      "displayName": "Mozilla neqo HTTP/3",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http3.external.peer-characterization"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      },
+      {
+        "name": "http3-runtime",
+        "value": "true"
+      }
+    ]
+  }
+}

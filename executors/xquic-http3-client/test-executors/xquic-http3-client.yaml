@@ -1,0 +1,81 @@
+executorIdentity:
+  id: xquic-http3-client
+  name: XQUIC HTTP/3 Client Test Executor
+  version: 0.1.0
+  vendor: Alibaba XQUIC via Incursa wrapper
+versionCompatibility:
+  contractVersion: test-executor-v1
+  compatibleContractVersions:
+    - test-executor-v1
+  executorVersion: 0.1.0
+claimedCapabilities:
+  - id: http3.external.peer-characterization
+    status: supported
+  - id: canonical-payload
+    status: unsupported
+  - id: server-role
+    status: unsupported
+scenarioCoverage:
+  http3.external.peer-characterization:
+    scenarioId: http3.external.peer-characterization
+    status: supported
+    reason: Validates negotiated h3 and response status 200 while retaining the upstream response-completion warning.
+supportedTestSelectors:
+  - selectorType: test-id
+    expression: http3.external.peer-characterization
+supportedScenarioSelectors:
+  - selectorType: scenario-id
+    expression: http3.external.peer-characterization
+supportedProtocolFamilies:
+  - h3
+supportedExecutionModes:
+  - single-cell
+  - docker
+requiredTargetEndpointBindings:
+  - bindingId: primary
+    purpose: test-endpoint
+    endpointType: http
+    protocols:
+      - h3
+supportedArtifactTypes:
+  - type: command.txt
+    producedByStates:
+      - stopped
+      - failed
+  - type: result.json
+    producedByStates:
+      - stopped
+      - failed
+  - type: stdout.txt
+    producedByStates:
+      - stopped
+      - failed
+  - type: stderr.txt
+    producedByStates:
+      - stopped
+      - failed
+  - type: client.log
+    producedByStates:
+      - stopped
+      - failed
+metricsAvailability:
+  available: true
+  availableKinds:
+    - session
+    - validation
+telemetry:
+  supported: true
+  supported_contract_versions:
+    - telemetry-bundle-v1
+  supported_scopes:
+    - test-executor
+  supported_artifact_kinds:
+    - summary
+    - stdout
+    - stderr
+    - raw
+  export_modes:
+    - artifact-bundle
+executionMetadata:
+  upstreamImage: ghcr.io/alibaba/xquic/xquic-interop@sha256:875df1e9935c6a07e26d7b5ae14df9edd06703061ce35920234a97d6991c58e0
+  manifest: protocol-lab.internal.json

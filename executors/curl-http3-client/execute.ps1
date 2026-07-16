@@ -23,6 +23,7 @@ $dockerArguments = @(
     'run', '--rm',
     '-v', "${resolvedOutputRoot}:/out",
     $Image,
+    'curl',
     '--http3-only',
     '--max-time', ([string]$TimeoutSeconds),
     '--insecure',
