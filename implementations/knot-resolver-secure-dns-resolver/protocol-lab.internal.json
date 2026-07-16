@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {"os": "windows", "arch": "x64", "entrypoint": {"kind": "pwsh", "path": "run.ps1", "arguments": [], "workingDirectory": "."}},
+    {"os": "linux", "arch": "x64", "entrypoint": {"kind": "bash", "path": "run.sh", "arguments": [], "workingDirectory": "."}}
+  ],
+  "dependencies": {"requiresDotNet": false, "requiresDocker": true, "requiresPwsh": false, "requiresBash": false, "requiresGo": false, "requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "linux-containers", "value": "true"}], "runtimeImages": [{"name": "cznic/knot-resolver", "version": "6.4.0", "reference": "docker.io/cznic/knot-resolver@sha256:45368279d00a072858e9994557fd761b5bdd9140a31f214608eec5773c1d4fa0"}]}
+}

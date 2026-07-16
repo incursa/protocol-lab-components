@@ -1,0 +1,47 @@
+schemaVersion: "1.0"
+id: knot-resolver-secure-dns-resolver
+name: Knot Resolver Secure DNS Recursive Resolver
+description: Digest-pinned native Knot Resolver 6.4.0 DoT and HTTP/2 DoH recursive resolver with explicit cache control and a loopback-only fixture authority.
+family: knot-resolver
+role: recursive-resolver
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-knot-resolver-secure-dns-resolver:0.1.0
+dockerfile: docker/Dockerfile
+buildContext: docker
+dockerNetworkMode: published-port
+baseUrl: tls://127.0.0.1:20566
+dockerBaseUrl: tls://127.0.0.1:20566
+protocolBaseUrls: {dot: tls://127.0.0.1:20566, doh2: https://127.0.0.1:20567}
+dockerProtocolBaseUrls: {dot: tls://127.0.0.1:20566, doh2: https://127.0.0.1:20567}
+certificateMode: plab-secure-dns-interoperability-leaf-v2
+roles: [recursive-resolver]
+protocols: [dot, doh2]
+supportedProtocols: [dot, doh2]
+supportedWorkloadFamilies: [dns.secure]
+supportedProtocolVersions: [DoT/TLS1.3, DoH/HTTP2/TLS1.3]
+supportedScenarios: [dns.dot.resolver.interoperability.query.a, dns.doh2.resolver.interoperability.query.a]
+supportedTestCaseIds: [dns.dot.resolver.interoperability.query.a, dns.doh2.resolver.interoperability.query.a]
+scenarioCoverage:
+  dns.dot.resolver.interoperability.query.a: {status: supported, executorId: go-dns-dot-executor, behavior: Native Knot Resolver DoT recursive resolver with per-operation cache flush and loopback-only plab.test authority}
+  dns.doh2.resolver.interoperability.query.a: {status: supported, executorId: go-dns-doh2-executor, behavior: Native Knot Resolver HTTP/2 DoH recursive resolver with per-operation cache flush and loopback-only plab.test authority}
+  dns.dot.query.a: {status: unsupported, reason: Authoritative-server role required; this package selects Knot Resolver's recursive-resolver configuration.}
+  dns.dot.interoperability.query.a: {status: unsupported, reason: Authoritative-server role required; this package selects Knot Resolver's recursive-resolver configuration.}
+  dns.doh2.query.a: {status: unsupported, reason: Authoritative-server role required; this package selects Knot Resolver's recursive-resolver configuration.}
+  dns.doh2.interoperability.query.a: {status: unsupported, reason: Authoritative-server role required; this package selects Knot Resolver's recursive-resolver configuration.}
+unsupportedKnownCases: [dns.dot.query.a, dns.dot.interoperability.query.a, dns.doh2.query.a, dns.doh2.interoperability.query.a]
+ports:
+  - {name: dot, protocol: tcp, default: 20566, hostPort: 20566, containerPort: 853}
+  - {name: doh2, protocol: tcp, default: 20567, hostPort: 20567, containerPort: 443}
+  - {name: resolver-control, protocol: tcp, default: 20568, hostPort: 20568, containerPort: 444}
+environment: {PLAB_SECURE_DNS_PORT: "20566", PLAB_DOH2_PORT: "20567", PLAB_RESOLVER_CONTROL_PORT: "20568"}
+startup: {port: {name: dot, environmentVariable: PLAB_SECURE_DNS_PORT, default: 20566}, readiness: {protocol: process, timeoutSeconds: 45}}
+readinessCheck: {type: processStarted, timeoutSeconds: 45, startupDelayMilliseconds: 3000}
+capabilities: [dns.recursive-resolver, dns.authoritative-server.fixture, dns.dot, dns.doh2, resolver.cache-flush, resolver.local-only-upstream, dnssec.fixture-zone-insecure, scenario.dns.dot.resolver.interoperability.query.a, scenario.dns.doh2.resolver.interoperability.query.a]
+entrypoint: {kind: bash, path: run.sh, arguments: [], workingDirectory: .}
+shutdownBehavior: process
+artifactExports: [command.txt, version.txt, stdout.txt, stderr.txt, result.json]
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata: {manifest: protocol-lab.internal.json}
+notes: The loopback UDP authority is a deterministic fixture, not a measured implementation. DNSSEC validation remains enabled generally and is explicitly disabled only for the isolated plab.test fixture zone.

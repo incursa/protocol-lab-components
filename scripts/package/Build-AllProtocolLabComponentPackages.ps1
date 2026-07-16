@@ -319,6 +319,7 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'implementations/bind9-dot-resolver'; script = 'Build-Bind9DotResolverPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/bind9-doh2'; script = 'Build-Bind9Doh2Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/unbound-doh2-resolver'; script = 'Build-UnboundDoh2ResolverPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/knot-resolver-secure-dns-resolver'; script = 'Build-KnotResolverSecureDnsResolverPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/bind9-classic-authority'; script = 'Build-Bind9ClassicAuthorityPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/technitium-classic-authority'; script = 'Build-TechnitiumClassicAuthorityPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/go-dns-classic-authority'; script = 'Build-GoDnsClassicAuthorityPackage.ps1'; arguments = @('win-x64') },

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.knot-resolver-secure-dns-resolver",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Knot Resolver Secure DNS Recursive Resolver",
+  "entryManifests": ["implementations/knot-resolver-secure-dns-resolver.yaml"],
+  "providedImplementations": [{"implementationId": "knot-resolver-secure-dns-resolver", "displayName": "Knot Resolver Secure DNS Recursive Resolver", "protocols": ["dot", "doh2"], "scenarios": ["dns.dot.resolver.interoperability.query.a", "dns.doh2.resolver.interoperability.query.a"]}],
+  "dependencies": {"requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "linux-containers", "value": "true"}]}
+}

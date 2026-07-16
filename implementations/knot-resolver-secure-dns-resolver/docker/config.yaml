@@ -1,0 +1,25 @@
+workers: 1
+logging:
+  level: info
+network:
+  listen:
+    - interface: 0.0.0.0@853
+      kind: dot
+    - interface: 0.0.0.0@443
+      kind: doh2
+  tls:
+    cert-file: /opt/protocol-lab/knot-resolver/leaf.pem
+    key-file: /opt/protocol-lab/knot-resolver/leaf-key.pem
+    padding: false
+cache:
+  storage: /var/cache/knot-resolver
+  size-max: 10M
+  ttl-min: 0s
+  ttl-max: 1s
+dnssec:
+  negative-trust-anchors: [plab.test.]
+forward:
+  - subtree: plab.test.
+    servers: [127.0.0.1@5353]
+    options:
+      dnssec: false
