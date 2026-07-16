@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.quic-go-raw-load",
-  "packageVersion": "0.1.8",
+  "packageVersion": "0.1.9",
   "kind": "test-executor",
   "displayName": "quic-go Raw QUIC Load Executor",
   "entryManifests": [
@@ -15,9 +15,13 @@
         "quic"
       ],
       "scenarios": [
+        "quic.transport.stream-throughput.64kb",
         "quic.transport.stream-throughput.1mb",
+        "quic.transport.stream-throughput.16mb",
         "quic.transport.latency.echo-1kb",
+        "quic.transport.multiplex.100x1kb",
         "quic.transport.multiplex.100x64kb",
+        "quic.transport.multiplex.16x1mb",
         "quic.transport.stream-limits.100x64kb",
         "quic.transport.flow-control.slow-reader-16x64kb",
         "quic.transport.payload.large-1mb",
@@ -25,12 +29,17 @@
         "quic.transport.connection-churn",
         "quic.transport.stream-churn",
         "quic.transport.duplex-streams",
+        "quic.transport.duplex-streams.16x1mb",
         "quic.transport.duplex-streams-peer-matrix"
       ],
       "tests": [
+        "quic.transport.stream-throughput.64kb",
         "quic.transport.stream-throughput.1mb",
+        "quic.transport.stream-throughput.16mb",
         "quic.transport.latency.echo-1kb",
+        "quic.transport.multiplex.100x1kb",
         "quic.transport.multiplex.100x64kb",
+        "quic.transport.multiplex.16x1mb",
         "quic.transport.stream-limits.100x64kb",
         "quic.transport.flow-control.slow-reader-16x64kb",
         "quic.transport.payload.large-1mb",
@@ -38,6 +47,7 @@
         "quic.transport.connection-churn",
         "quic.transport.stream-churn",
         "quic.transport.duplex-streams",
+        "quic.transport.duplex-streams.16x1mb",
         "quic.transport.duplex-streams-peer-matrix"
       ],
       "requiredCapabilities": [

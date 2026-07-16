@@ -1,17 +1,22 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.raw-quic-transport",
-  "packageVersion": "0.1.10",
+  "packageVersion": "0.1.11",
   "kind": "scenario-pack",
   "displayName": "Raw QUIC Transport Scenario Pack",
   "entryManifests": [
     "scenarios/quic/transport/stream-throughput.yaml",
+    "scenarios/quic/transport/stream-throughput-64kb.yaml",
+    "scenarios/quic/transport/stream-throughput-16mb.yaml",
     "scenarios/quic/transport/latency-echo-1kb.yaml",
     "scenarios/quic/transport/multiplex-100-streams.yaml",
+    "scenarios/quic/transport/multiplex-100x1kb.yaml",
+    "scenarios/quic/transport/multiplex-16x1mb.yaml",
     "scenarios/quic/transport/stream-limits-100-streams.yaml",
     "scenarios/quic/transport/flow-control-slow-reader-16x64kb.yaml",
     "scenarios/quic/transport/payload-large-1mb.yaml",
     "scenarios/quic/transport/duplex-streams.yaml",
+    "scenarios/quic/transport/duplex-streams-16x1mb.yaml",
     "scenarios/quic/transport/duplex-streams-peer-matrix.yaml",
     "scenarios/quic/transport/cancellation-reset-stream.yaml",
     "scenarios/quic/transport/handshake-cold.yaml",
@@ -31,11 +36,21 @@
   ],
   "providedScenarios": [
     {
+      "scenarioId": "quic.transport.stream-throughput.64kb",
+      "displayName": "QUIC Stream Throughput 64KB",
+      "protocols": ["quic"]
+    },
+    {
       "scenarioId": "quic.transport.stream-throughput.1mb",
       "displayName": "QUIC Stream Throughput 1MB",
       "protocols": [
         "quic"
       ]
+    },
+    {
+      "scenarioId": "quic.transport.stream-throughput.16mb",
+      "displayName": "QUIC Stream Throughput 16MB",
+      "protocols": ["quic"]
     },
     {
       "scenarioId": "quic.transport.latency.echo-1kb",
@@ -50,6 +65,16 @@
       "protocols": [
         "quic"
       ]
+    },
+    {
+      "scenarioId": "quic.transport.multiplex.100x1kb",
+      "displayName": "QUIC Multiplex 100x1KB",
+      "protocols": ["quic"]
+    },
+    {
+      "scenarioId": "quic.transport.multiplex.16x1mb",
+      "displayName": "QUIC Multiplex 16x1MB",
+      "protocols": ["quic"]
     },
     {
       "scenarioId": "quic.transport.stream-limits.100x64kb",
@@ -78,6 +103,11 @@
       "protocols": [
         "quic"
       ]
+    },
+    {
+      "scenarioId": "quic.transport.duplex-streams.16x1mb",
+      "displayName": "QUIC Duplex Streams 16x1MB",
+      "protocols": ["quic"]
     },
     {
       "scenarioId": "quic.transport.duplex-streams-peer-matrix",

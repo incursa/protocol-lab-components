@@ -37,7 +37,7 @@ pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1 -RuntimeIdentifier linux-x
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.executor.quic-go-raw-load.0.1.8.<rid>.plabpkg
+org.protocol-lab.components.executor.quic-go-raw-load.0.1.9.<rid>.plabpkg
 ```
 
 ## Local Wrapper
@@ -50,9 +50,13 @@ pwsh ./executors/quic-go-raw-load/execute.ps1 --sni localhost --alpn plab-raw-qu
 
 ## Supported Raw QUIC Scenarios
 
+- `quic.transport.stream-throughput.64kb`
 - `quic.transport.stream-throughput.1mb`
+- `quic.transport.stream-throughput.16mb`
 - `quic.transport.latency.echo-1kb`
+- `quic.transport.multiplex.100x1kb`
 - `quic.transport.multiplex.100x64kb`
+- `quic.transport.multiplex.16x1mb`
 - `quic.transport.stream-limits.100x64kb`
 - `quic.transport.flow-control.slow-reader-16x64kb`
 - `quic.transport.payload.large-1mb`
@@ -60,11 +64,10 @@ pwsh ./executors/quic-go-raw-load/execute.ps1 --sni localhost --alpn plab-raw-qu
 - `quic.transport.connection-churn`
 - `quic.transport.stream-churn`
 - `quic.transport.duplex-streams`
+- `quic.transport.duplex-streams.16x1mb`
 - `quic.transport.duplex-streams-peer-matrix`
 
 `quic.transport.cancellation.reset-stream` is declared by the scenario pack as pending. The current load executor does not yet drive reset/cancellation classification.
 
-Version `0.1.8` adds the canonical `stream-churn` behavior. It keeps each
-configured connection open while sequentially opening, echoing, and closing
-the scenario-defined number of streams. This remains distinct from
-`connection-churn`, which establishes a fresh connection per operation.
+Version `0.1.9` advertises the payload-size and stream-count variants that use
+the existing parameterized throughput, multiplexing, and duplex behaviors.
