@@ -5,9 +5,9 @@
       "os": "windows",
       "arch": "x64",
       "entrypoint": {
-        "kind": "pwsh",
-        "path": "run.ps1",
-        "arguments": [],
+        "kind": "process",
+        "path": "dotnet",
+        "arguments": ["run", "--project", "src/KestrelHttp3.csproj", "--no-launch-profile"],
         "workingDirectory": "."
       }
     },
@@ -15,9 +15,9 @@
       "os": "linux",
       "arch": "x64",
       "entrypoint": {
-        "kind": "bash",
-        "path": "run.sh",
-        "arguments": [],
+        "kind": "process",
+        "path": "dotnet",
+        "arguments": ["run", "--project", "src/KestrelHttp3.csproj", "--no-launch-profile"],
         "workingDirectory": "."
       }
     }

@@ -6,14 +6,19 @@ family: kestrel
 role: server
 targetKind: process
 targetContract: process
-executable: run.ps1
+executable: dotnet
+commandArguments:
+  - run
+  - --project
+  - src/KestrelHttp3.csproj
+  - --no-launch-profile
 project: src/KestrelHttp3.csproj
 workingDirectory: .
 dockerNetworkMode: published-port
 baseUrl: https://127.0.0.1:8443
 protocolBaseUrls:
   h3: https://127.0.0.1:8443
-certificateMode: dev-cert
+certificateMode: generated-self-signed-loopback-certificate
 roles:
   - server
 protocols:
@@ -25,9 +30,13 @@ supportedWorkloadFamilies:
 protocolVersions:
   - http/3
 entrypoint:
-  kind: pwsh
-  path: run.ps1
-  arguments: []
+  kind: process
+  path: dotnet
+  arguments:
+    - run
+    - --project
+    - src/KestrelHttp3.csproj
+    - --no-launch-profile
   workingDirectory: .
 ports:
   - name: h3
