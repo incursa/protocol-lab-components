@@ -16,6 +16,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | Live controller final aioquic h3spec/QPACK proof | `job-a3c8b35637e14c49b86332a928c5b15d`; current `0.3.3` h3spec status, response-header, and QPACK diagnostics passed with exact executor identity and requested/effective load shapes retained |
 | Live controller final Caddy/nginx/quic-go h3spec/QPACK proof | `job-e05ec641965748f3830b5a006b3d8425`; current Caddy `0.1.9`, nginx `0.1.9`, and quic-go `0.1.8` completed all nine status, exact response-header, and QPACK cells with 527 retained artifacts; published report is live |
 | Live controller final Kestrel h3spec/QPACK proof | `job-6c8c02669dbf423fbcc7a12a5d364741`; current `0.1.8` completed all three status, exact response-header, and QPACK cells with 182 retained artifacts; published report is live |
+| Live controller final BIND classic DNS proof | UDP `job-88d1dbab8b6a40b7b43992995a02b219` and TCP `job-799e5c5f78f44fb4805a23a2ff6a8744`; immutable `bind9-classic-authority@0.1.0#6682fdf29e51...` passed exact-transport validation, retained accepted measurements, and was published on the public site |
 | Live controller final quic-go proof | `job-610e9f2d38364cfc95b238ea6e012446`; current `0.1.6` H3 status, 1KB, and 64KB validation passed, benchmarks succeeded, package-backed provenance recorded |
 | Live controller final Kestrel proof | `job-fb08e6a527b94ee1a922055a9401feee`; current `0.1.6` H3 status, 1KB, and 64KB validation passed, benchmarks succeeded, package-backed provenance recorded |
 | Live controller final quic-go raw proof | `job-43983c8c7a35400fa54767ba0be66045`; raw stream throughput and multiplex validation passed, benchmark succeeded, package-backed provenance recorded |
@@ -70,6 +71,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | `go-dns-doq-executor` | missing | local diagnostic package `org.protocol-lab.components.executor.go-dns-doq-executor@0.1.0`; exact RFC 9250 DoQ binding, one query per client-initiated bidirectional stream, and no DNS-transport fallback |
 | `dns-doq-performance` scenario pack | missing | authority-locked `org.protocol-lab.components.scenario.dns-doq-performance@0.1.0` for `dns.doq.query.a`, `dns-doq-performance-smoke`, and `secure-dns-smoke` at public commit `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574` |
 | DoH3 three-package lane | missing | local diagnostic `org.protocol-lab.components.scenario.dns-doh3-performance`, `org.protocol-lab.components.executor.go-dns-doh3-executor`, and independent `org.protocol-lab.components.implementation.go-dns-doh3` packages at `0.1.0`; all seven exact committed DoH3 identities pass extracted-package smoke with QUIC v1, TLS 1.3, `h3`, HTTP/3, DNS semantic, canonical hash, and no-fallback proof |
+| BIND 9 classic authoritative DNS | missing | immutable Docker-backed `org.protocol-lab.components.implementation.bind9-classic-authority@0.1.0`; exact UDP and TCP rows are live-proven and published from package SHA-256 `6682fdf29e51c3412f82ecb592f97873d17c35f84bc86d901a90abec15421ca6` |
 
 ## Scenario Support
 

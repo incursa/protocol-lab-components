@@ -163,7 +163,7 @@ foreach ($siteFile in $siteFiles) {
         $protocols = @($protocolJson | ConvertFrom-Json)
         Assert-ExactSet -Label "Catalog '$($entry.slug)' protocols" -Expected @($entry.protocols) -Actual $protocols
     }
-    if ($entry.inventoryId -notin $inventoryIds) {
+    if (-not [string]::IsNullOrWhiteSpace($entry.inventoryId) -and $entry.inventoryId -notin $inventoryIds) {
         Add-ValidationError "Catalog '$($entry.slug)' references unknown inventory ID '$($entry.inventoryId)'."
     }
     foreach ($packageId in $entry.localPackageIds) {

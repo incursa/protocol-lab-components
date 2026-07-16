@@ -93,14 +93,18 @@ no recursive upstream dependency.
 
 - [x] Keep BIND 9 DoT current and add BIND 9 DoH2 using the existing exact
   authoritative DNS fixture and no HTTP fallback.
-- [ ] Add Technitium authoritative packages for DoT, DoH2, DoH3, and DoQ using
-  externally acquired or source/config-only packaging if redistribution is not
-  approved.
+- [x] Evaluate source/config-only Technitium authoritative wrappers for DoT,
+  DoH2, DoH3, and DoQ. Package-local decision records close all four encrypted
+  lanes against the current exact contracts: DoT lacks required ALPN and cipher
+  control, DoH2 lacks `Cache-Control: no-store`, DoH3 has that header mismatch
+  plus uncontrollable QUIC cipher selection, and DoQ lacks exact cipher control.
 - [x] Promote the existing Go fixture targets for DoT, DoH2, DoH3, and DoQ to
   live evidence baselines, but label them as fixture implementations rather
   than production server products.
-- [ ] Add classic UDP and TCP evidence for BIND 9 and Technitium so encrypted
-  transport overhead can be studied without conflating roles.
+- [x] Add classic UDP and TCP evidence for BIND 9 so encrypted transport
+  overhead can be studied without conflating roles.
+- [ ] Add classic UDP and TCP evidence for Technitium under the same exact
+  authoritative role and deterministic zone contract.
 
 ### Resolver targets
 
@@ -131,12 +135,16 @@ no recursive upstream dependency.
 | Authoritative product | DoH2 | BIND 9 | 0.1.0 | `job-3e256dd1cb8a4f668464e2cd5e0eac7e` |
 | Authoritative fixture | DoH3 | Go DNS DoH3 | 0.2.1 | `job-2f444bf1b8f34846806ed9eee34922c1` |
 | Authoritative fixture | DoQ | Go DNS DoQ | 0.2.1 | `job-1c91832835d14fa8b049aa02ed8ccffd` |
+| Authoritative product | Classic DNS/UDP | BIND 9 | 0.1.0 | `job-88d1dbab8b6a40b7b43992995a02b219` |
+| Authoritative product | Classic DNS/TCP | BIND 9 | 0.1.0 | `job-799e5c5f78f44fb4805a23a2ff6a8744` |
 
 These are real isolated-pair controller runs with retained raw and normalized
 artifacts. They establish current package proof and the two-implementation DoT
-and DoH2 breadth counts. They do not yet satisfy the repeated-run,
-variance/saturation, publication, resolver-role, DoH3/DoQ second-ecosystem, or
-decision-ready gates below.
+and DoH2 breadth counts. The BIND classic rows are published diagnostic
+observations with accepted validation and measurements; they are not ranked or
+decision-ready. The secure-DNS set does not yet satisfy the repeated-run,
+variance/saturation, resolver-role, DoH3/DoQ second-ecosystem, or decision-ready
+gates below.
 
 ## Workstream B - raw QUIC transport backfill
 
