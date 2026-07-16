@@ -180,7 +180,7 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
   - [x] picoquic
   - [x] Quinn
   - [x] s2n-quic
-- [ ] Add compatibility-first raw packages for aioquic, quiche, ngtcp2, XQUIC,
+- [x] Add compatibility-first raw packages for aioquic, quiche, ngtcp2, XQUIC,
   LSQUIC, neqo, and mvfst where the upstream interop image exposes an exact
   scenario mapping.
   - [x] aioquic
@@ -188,10 +188,16 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
   - [x] ngtcp2 interop-image evaluation; no exact raw mapping, with the dated
     blocker and re-entry condition in
     `docs/raw-quic-interop-image-feasibility-2026-07-16.md`
-  - [ ] XQUIC
-  - [ ] LSQUIC
-  - [ ] neqo
-  - [ ] mvfst
+  - [x] XQUIC interop-image evaluation; no exact raw mapping
+  - [x] LSQUIC interop-image evaluation; configurable ALPN still exposes HQ
+    file-server semantics, not the raw echo contract
+  - [x] neqo interop-image evaluation; configurable ALPN still exposes HTTP/3
+    semantics, not the raw echo contract
+  - [x] mvfst/Proxygen interop-image evaluation; the HQ session rejects the
+    raw application protocol
+  - Dated digests, command surfaces, canonical executor probes, and re-entry
+    conditions for all four decisions are retained in
+    `docs/raw-quic-interop-image-feasibility-2026-07-16.md`.
 - [ ] Record client/server role and supported QUIC interop testcases for every
   package; do not treat an HTTP/3 origin as a raw QUIC target.
 - [ ] Live-run all supported raw packages and meet the raw QUIC coverage floor
