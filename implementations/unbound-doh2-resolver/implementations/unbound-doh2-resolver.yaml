@@ -1,0 +1,43 @@
+schemaVersion: "1.0"
+id: unbound-doh2-resolver
+name: Unbound DoH2 Recursive Resolver
+description: Digest-pinned native Unbound 1.22.0 DoH2 recursive resolver with explicit cache control and a loopback-only fixture authority.
+family: unbound
+role: recursive-resolver
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-unbound-doh2-resolver:0.1.0
+dockerfile: docker/Dockerfile
+buildContext: docker
+dockerNetworkMode: published-port
+baseUrl: https://127.0.0.1:20564
+dockerBaseUrl: https://127.0.0.1:20564
+protocolBaseUrls: {doh2: https://127.0.0.1:20564}
+dockerProtocolBaseUrls: {doh2: https://127.0.0.1:20564}
+certificateMode: plab-secure-dns-interoperability-leaf-v2
+roles: [recursive-resolver]
+protocols: [doh2]
+supportedProtocols: [doh2]
+supportedWorkloadFamilies: [dns.secure]
+supportedProtocolVersions: [DoH/HTTP2/TLS1.3]
+supportedScenarios: [dns.doh2.resolver.interoperability.query.a]
+supportedTestCaseIds: [dns.doh2.resolver.interoperability.query.a]
+scenarioCoverage:
+  dns.doh2.resolver.interoperability.query.a: {status: supported, executorId: go-dns-doh2-executor, behavior: Native Unbound DoH2 recursive resolver with per-operation cache flush and loopback-only plab.test authority}
+  dns.doh2.query.a: {status: unsupported, reason: Authoritative-server role required; this package selects Unbound's recursive-resolver configuration.}
+  dns.doh2.interoperability.query.a: {status: unsupported, reason: Authoritative-server role required; this package selects Unbound's recursive-resolver configuration.}
+unsupportedKnownCases: [dns.doh2.query.a, dns.doh2.interoperability.query.a]
+ports:
+  - {name: doh2, protocol: tcp, default: 20564, hostPort: 20564, containerPort: 443}
+  - {name: resolver-control, protocol: tcp, default: 20565, hostPort: 20565, containerPort: 444}
+environment: {PLAB_SECURE_DNS_PORT: "20564"}
+startup: {port: {name: doh2, environmentVariable: PLAB_SECURE_DNS_PORT, default: 20564}, readiness: {protocol: process, timeoutSeconds: 45}}
+readinessCheck: {type: processStarted, timeoutSeconds: 45, startupDelayMilliseconds: 3000}
+capabilities: [dns.recursive-resolver, dns.authoritative-server.fixture, dns.doh2, resolver.cache-flush, resolver.local-only-upstream, dnssec.fixture-zone-insecure, scenario.dns.doh2.resolver.interoperability.query.a]
+entrypoint: {kind: bash, path: run.sh, arguments: [], workingDirectory: .}
+shutdownBehavior: process
+artifactExports: [command.txt, version.txt, stdout.txt, stderr.txt, result.json]
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata: {manifest: protocol-lab.internal.json}
+notes: The loopback UDP authority is a deterministic fixture, not a measured implementation. DNSSEC validation remains enabled generally and is explicitly disabled only for the isolated plab.test fixture zone.

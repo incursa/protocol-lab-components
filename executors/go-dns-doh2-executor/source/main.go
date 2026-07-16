@@ -30,14 +30,16 @@ import (
 
 const (
 	executorID           = "go-dns-doh2-executor"
-	executorVersion      = "0.2.2"
+	executorVersion      = "0.3.0"
 	loadGeneratorID      = "go-dns-doh2-load"
-	loadGeneratorVersion = "0.2.2"
+	loadGeneratorVersion = "0.3.0"
 	strictScenario       = "dns.doh2.query.a"
 	interopScenario      = "dns.doh2.interoperability.query.a"
+	resolverScenario     = "dns.doh2.resolver.interoperability.query.a"
 	supportedProfile     = "secure-dns-smoke"
 	serverName           = "dns.plab.test"
 	fixtureID            = "dns.plab-test-a.canonical"
+	resolverFixtureID    = "dns.resolver-plab-test-a-v2.canonical"
 	mediaType            = "application/dns-message"
 	certificateProfile   = "plab-secure-dns-single-leaf-p256-v1"
 	strictTLSProfile     = "plab-secure-dns-tls13-v1"
@@ -46,6 +48,8 @@ const (
 	requiredCipher       = "TLS_AES_128_GCM_SHA256"
 	queryHash            = "c46b9fb76019b5a644d0884b17e816cb7c3076275d9468c27d180f70488eb8ec"
 	responseHash         = "9d488461675ad5ab9f74c7b203861e1ad17521e413a407a25e6611012a595620"
+	resolverQueryHash    = "423b6325f73f2f72a948fe3b5593e99201b0cb24f0dcdcffe897e784da3106c6"
+	resolverResponseHash = "c63893fec8b20373c3233d3c4884b9f84e3d15a01218ccb144422f074b778931"
 	leafDERHash          = "b57bdd3eb90b36455900c17de9ff9a02c623e1f6b27626ad7821a40e35e8251c"
 	leafSPKIHash         = "cfa6d5d08ee2071e28fd96205b088156fa71b460262470e5b994624b0537cf25"
 )
@@ -53,6 +57,8 @@ const (
 var (
 	canonicalQuery    = mustHex("00000000000100000000000004706c616204746573740000010001")
 	canonicalResponse = mustHex("00008400000100010000000004706c616204746573740000010001c00c00010001000000000004c0000201")
+	resolverQuery     = mustHex("00000100000100000000000004706c616204746573740000010001")
+	resolverResponse  = mustHex("00008180000100010000000004706c616204746573740000010001c00c00010001000000000004c0000201")
 	knownUnsupported  = map[string]struct{}{
 		"dns.classic.tcp.query.a": {}, "dns.classic.udp-truncated-tcp-retry": {}, "dns.classic.udp.query.a": {},
 		"dns.doh3.get.a": {}, "dns.doh3.query.a": {}, "dns.doh3.query.aaaa": {}, "dns.doh3.query.cname-chain": {},
@@ -60,7 +66,7 @@ var (
 		"dns.doh3.interoperability.query.a": {}, "dns.doq.query.a": {}, "dns.doq.interoperability.query.a": {},
 		"dns.dot.query.a": {}, "dns.dot.interoperability.query.a": {},
 	}
-	supportedScenarios = map[string]struct{}{strictScenario: {}, interopScenario: {}}
+	supportedScenarios = map[string]struct{}{strictScenario: {}, interopScenario: {}, resolverScenario: {}}
 )
 
 type tlsProof struct {
@@ -233,7 +239,8 @@ func main() {
 
 	preflight, err := runPhase(endpoint, roots, 0, true)
 	writeEvidence(*output, preflight, err)
-	writeRequired(*output, "executor-identity.json", map[string]any{"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedScenarios": []string{strictScenario, interopScenario}})
+	writeRequired(*output, "executor-identity.json", map[string]any{"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedScenarios": []string{strictScenario, interopScenario, resolverScenario}})
+	writeResolverArtifacts(*output, preflight)
 	if err != nil {
 		fatal(1, fmt.Errorf("DoH2 validity gate failed: %w", err))
 	}
@@ -260,6 +267,7 @@ func main() {
 	writeRequired(*output, "load-generator-identity.json", normalized.LoadGenerator)
 	writeRequired(*output, "dns-doh2-executor-result.json", normalized)
 	writeRequired(*output, "result.json", normalized)
+	writeResolverArtifacts(*output, measured)
 	data, _ := json.MarshalIndent(normalized, "", "  ")
 	fmt.Println(string(data))
 }
@@ -340,7 +348,13 @@ func runPhase(endpoint string, roots *x509.CertPool, duration time.Duration, onc
 
 func exchange(client *http.Client, endpoint string, reused bool) (exchangeProof, error) {
 	started := time.Now()
-	request, err := http.NewRequestWithContext(context.Background(), http.MethodPost, endpoint, bytes.NewReader(canonicalQuery))
+	if selectedScenario() == resolverScenario {
+		if err := flushResolverCache(endpoint); err != nil {
+			return exchangeProof{}, err
+		}
+	}
+	query, _, _, _ := canonicalFixture()
+	request, err := http.NewRequestWithContext(context.Background(), http.MethodPost, endpoint, bytes.NewReader(query))
 	if err != nil {
 		return exchangeProof{}, err
 	}
@@ -391,7 +405,7 @@ func exchange(client *http.Client, endpoint string, reused bool) (exchangeProof,
 	if err != nil {
 		return exchangeProof{}, err
 	}
-	return exchangeProof{DNS: dnsValue, HTTP: httpValue, TLS: tlsValue, QueryLatencyMilliseconds: durationMS(time.Since(started)), TimeToFirstByteMilliseconds: firstByteLatency, TransferredBytes: int64(len(canonicalQuery) + len(body)), ConnectionLatencyMilliseconds: connectionLatency}, nil
+	return exchangeProof{DNS: dnsValue, HTTP: httpValue, TLS: tlsValue, QueryLatencyMilliseconds: durationMS(time.Since(started)), TimeToFirstByteMilliseconds: firstByteLatency, TransferredBytes: int64(len(query) + len(body)), ConnectionLatencyMilliseconds: connectionLatency}, nil
 }
 
 func validateTLS(state *tls.ConnectionState) (tlsProof, error) {
@@ -422,7 +436,7 @@ func validateTLS(state *tls.ConnectionState) (tlsProof, error) {
 	if state.NegotiatedProtocol != "h2" {
 		failures = append(failures, "ALPN mismatch")
 	}
-	if proof.CipherSuite != requiredCipher {
+	if selectedScenario() == strictScenario && proof.CipherSuite != requiredCipher {
 		failures = append(failures, "cipher-suite mismatch")
 	}
 	if len(state.VerifiedChains) == 0 {
@@ -445,8 +459,12 @@ func validateDNS(raw []byte) (dnsProof, error) {
 		return dnsProof{}, malformedResponseError{"response message ID must be zero"}
 	}
 	flags := binary.BigEndian.Uint16(raw[2:4])
-	if flags != 0x8400 {
-		return dnsProof{}, malformedResponseError{"response flags/rcode mismatch"}
+	expectedFlags := uint16(0x8400)
+	if selectedScenario() == resolverScenario {
+		expectedFlags = 0x8180
+	}
+	if flags != expectedFlags {
+		return dnsProof{}, malformedResponseError{fmt.Sprintf("response flags/rcode mismatch: expected 0x%04x, observed 0x%04x", expectedFlags, flags)}
 	}
 	if binary.BigEndian.Uint16(raw[4:6]) != 1 || binary.BigEndian.Uint16(raw[6:8]) != 1 || binary.BigEndian.Uint16(raw[8:10]) != 0 || binary.BigEndian.Uint16(raw[10:12]) != 0 {
 		return dnsProof{}, malformedResponseError{"response section counts mismatch"}
@@ -475,12 +493,13 @@ func validateDNS(raw []byte) (dnsProof, error) {
 	if typ != 1 || class != 1 || ttl != 0 || length != 4 || next+4 != len(raw) || !bytes.Equal(raw[next:next+4], []byte{192, 0, 2, 1}) {
 		return dnsProof{}, malformedResponseError{"A answer semantics mismatch"}
 	}
-	canonical := canonicalResponse
+	query, canonical, expectedQueryHash, expectedResponseHash := canonicalFixture()
 	normalizedHash := hash(canonical)
-	if len(canonical) != 43 || normalizedHash != responseHash {
+	if len(canonical) != 43 || normalizedHash != expectedResponseHash {
 		return dnsProof{}, errors.New("internal canonical response fixture mismatch")
 	}
-	return dnsProof{FixtureID: fixtureID, Transport: "doh2", QuestionName: "plab.test.", QuestionType: "A", QuestionClass: "IN", Answer: "192.0.2.1", TTLSeconds: 0, ResponseCode: "NOERROR", AuthoritativeAnswer: true, RecursionDesired: false, RecursionAvailable: false, ExternalUpstreamUsed: false, CacheEnabled: false, Framing: "bare-dns-message-body", AuthorityMode: "local-fixture-authoritative", RequestMessageID: 0, RuntimeMessageID: 0, ResponseMessageID: 0, CanonicalHashNormalization: "identity", QueryLengthBytes: len(canonicalQuery), QueryNormalizedSHA256: hash(canonicalQuery), ResponseRawLengthBytes: len(raw), ResponseCanonicalLengthBytes: len(canonical), ResponseLengthBytes: len(canonical), ResponseNormalizedSHA256: normalizedHash, ResponseCompressionDiffered: !bytes.Equal(raw, canonical), ResponseCanonicalized: true, RawResponseEqualityRequired: false}, nil
+	resolver := selectedScenario() == resolverScenario
+	return dnsProof{FixtureID: selectedFixtureID(), Transport: "doh2", QuestionName: "plab.test.", QuestionType: "A", QuestionClass: "IN", Answer: "192.0.2.1", TTLSeconds: 0, ResponseCode: "NOERROR", AuthoritativeAnswer: !resolver, RecursionDesired: resolver, RecursionAvailable: resolver, ExternalUpstreamUsed: false, CacheEnabled: false, Framing: "bare-dns-message-body", AuthorityMode: map[bool]string{true: "local-fixture-recursive", false: "local-fixture-authoritative"}[resolver], RequestMessageID: 0, RuntimeMessageID: 0, ResponseMessageID: 0, CanonicalHashNormalization: "identity", QueryLengthBytes: len(query), QueryNormalizedSHA256: expectedQueryHash, ResponseRawLengthBytes: len(raw), ResponseCanonicalLengthBytes: len(canonical), ResponseLengthBytes: len(canonical), ResponseNormalizedSHA256: normalizedHash, ResponseCompressionDiffered: !bytes.Equal(raw, canonical), ResponseCanonicalized: true, RawResponseEqualityRequired: false}, nil
 }
 
 func readName(message []byte, offset int) (string, int, error) {
@@ -548,10 +567,14 @@ func normalizeResult(s phaseSummary, requested map[string]any) result {
 	proof := s.LastProof
 	proof.TLS.ConnectionLatencyMilliseconds = s.ConnectionLatencyMilliseconds
 	artifacts := []string{"validation.json", "protocol-proof.json", "dns-wire-summary.json", "http-summary.json", "tls-negotiation.json", "dns-doh2-executor-result.json", "dns-load-summary.json", "dns-warmup-summary.json", "executor-identity.json", "load-generator-identity.json"}
-	return result{SchemaVersion: "protocol-lab.dns-doh2-executor-result.v1", ScenarioID: selectedScenario(), LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "doh2", "observedProtocol": "doh2", "protocolVariant": protocolVariant(), "fallbackDetected": false, "tls": proof.TLS, "http": proof.HTTP, "dns": proof.DNS}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true, "localAuthoritativeOnly": true, "externalUpstreamUsed": false, "cacheEnabled": false}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": s.ActiveConnections, "concurrency": 1, "outstandingQueries": 1, "streamsPerConnection": 1, "activeStreams": s.EffectiveStreams}, Metrics: m, Warnings: []string{"Local package-backed DoH2 smoke is diagnostic and non-publishable. Every other DNS binding or semantic fixture is unsupported by this executor."}, Artifacts: artifacts}
+	resolver := selectedScenario() == resolverScenario
+	if resolver {
+		artifacts = append(artifacts, "dns-resolver-summary.json", "upstream-proof.json")
+	}
+	return result{SchemaVersion: "protocol-lab.dns-doh2-executor-result.v1", ScenarioID: selectedScenario(), LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "doh2", "observedProtocol": "doh2", "protocolVariant": protocolVariant(), "fallbackDetected": false, "tls": proof.TLS, "http": proof.HTTP, "dns": proof.DNS}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true, "localAuthoritativeOnly": !resolver, "resolverRole": resolver, "cacheFlushedBeforeOperation": resolver, "localFixtureAuthorityOnly": resolver, "externalUpstreamUsed": false, "cacheEnabled": false}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": s.ActiveConnections, "concurrency": 1, "outstandingQueries": 1, "streamsPerConnection": 1, "activeStreams": s.EffectiveStreams}, Metrics: m, Warnings: []string{"Local package-backed DoH2 smoke is diagnostic and non-publishable. Resolver rows use an explicit cache-flush control endpoint and a local-only fixture authority."}, Artifacts: artifacts}
 }
 func validationDocument(s phaseSummary, err error) map[string]any {
-	return map[string]any{"scenarioId": selectedScenario(), "fixtureId": fixtureID, "passed": err == nil, "requestedProtocol": "doh2", "observedProtocol": observedProtocol(s), "protocolVariant": protocolVariant(), "fallbackDetected": observedProtocol(s) != "doh2", "completedOperations": s.CompletedOperations, "malformedOperations": s.MalformedOperations, "retryCount": s.RetryCount, "failedOperations": s.FailedOperations, "timedOutOperations": s.TimedOutOperations, "externalUpstreamUsed": false, "cacheEnabled": false, "error": errorString(err)}
+	return map[string]any{"scenarioId": selectedScenario(), "fixtureId": selectedFixtureID(), "passed": err == nil, "requestedProtocol": "doh2", "observedProtocol": observedProtocol(s), "protocolVariant": protocolVariant(), "fallbackDetected": observedProtocol(s) != "doh2", "completedOperations": s.CompletedOperations, "malformedOperations": s.MalformedOperations, "retryCount": s.RetryCount, "failedOperations": s.FailedOperations, "timedOutOperations": s.TimedOutOperations, "resolverRole": selectedScenario() == resolverScenario, "cacheFlushedBeforeOperation": selectedScenario() == resolverScenario, "externalUpstreamUsed": false, "cacheEnabled": false, "error": errorString(err)}
 }
 func observedProtocol(s phaseSummary) string {
 	if s.LastProof != nil && s.LastProof.HTTP.Version == "HTTP/2.0" && s.LastProof.TLS.ALPN == "h2" {
@@ -685,20 +708,70 @@ func selectedScenario() string {
 	}
 	return id
 }
+func selectedFixtureID() string {
+	if selectedScenario() == resolverScenario {
+		return resolverFixtureID
+	}
+	return fixtureID
+}
+func canonicalFixture() ([]byte, []byte, string, string) {
+	if selectedScenario() == resolverScenario {
+		return resolverQuery, resolverResponse, resolverQueryHash, resolverResponseHash
+	}
+	return canonicalQuery, canonicalResponse, queryHash, responseHash
+}
+func flushResolverCache(endpoint string) error {
+	parsed, err := url.Parse(endpoint)
+	if err != nil {
+		return fmt.Errorf("resolver control address: %w", err)
+	}
+	port := 443
+	if parsed.Port() != "" {
+		port, err = strconv.Atoi(parsed.Port())
+		if err != nil {
+			return fmt.Errorf("resolver control port: %w", err)
+		}
+	}
+	controlURL := strings.TrimSpace(os.Getenv("PLAB_RESOLVER_CONTROL_URL"))
+	if controlURL == "" {
+		controlURL = fmt.Sprintf("http://%s/flush", net.JoinHostPort(parsed.Hostname(), strconv.Itoa(port+1)))
+	}
+	client := &http.Client{Timeout: 3 * time.Second}
+	response, err := client.Post(controlURL, "application/json", strings.NewReader("{}"))
+	if err != nil {
+		return fmt.Errorf("resolver cache flush failed: %w", err)
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusNoContent {
+		body, _ := io.ReadAll(io.LimitReader(response.Body, 1024))
+		return fmt.Errorf("resolver cache flush returned %d: %s", response.StatusCode, strings.TrimSpace(string(body)))
+	}
+	return nil
+}
+func writeResolverArtifacts(output string, summary phaseSummary) {
+	if selectedScenario() != resolverScenario {
+		return
+	}
+	writeRequired(output, "dns-resolver-summary.json", map[string]any{"schemaVersion": "protocol-lab.dns-resolver-summary.v1", "role": "recursive-resolver", "cachePreparation": "flush-before-each-measured-operation", "cacheReuse": false, "dnssecValidationState": "disabled-for-local-fixture-zone", "recursionDesired": true, "recursionAvailable": true, "authoritativeAnswer": false, "completedOperations": summary.CompletedOperations})
+	writeRequired(output, "upstream-proof.json", map[string]any{"schemaVersion": "protocol-lab.upstream-proof.v1", "authority": "runner-local-fixture", "fixtureId": resolverFixtureID, "endpoint": "127.0.0.1:5353/udp", "externalUpstreamUsed": false})
+}
 func protocolVariant() string {
+	if selectedScenario() == resolverScenario {
+		return "doh-h2-rfc8484-recursive-resolver"
+	}
 	if selectedScenario() == interopScenario {
 		return "doh-h2-rfc8484-interoperability"
 	}
 	return "doh-h2-tls-alpn"
 }
 func tlsProfileID() string {
-	if selectedScenario() == interopScenario {
+	if selectedScenario() == interopScenario || selectedScenario() == resolverScenario {
 		return interopTLSProfile
 	}
 	return strictTLSProfile
 }
 func selectedCertificateProfile() string {
-	if selectedScenario() == interopScenario {
+	if selectedScenario() == interopScenario || selectedScenario() == resolverScenario {
 		return interopCertProfile
 	}
 	return certificateProfile

@@ -1,8 +1,9 @@
-executorIdentity: {id: go-dns-doh2-executor, name: Go DNS-over-HTTPS HTTP/2 Test Executor, version: 0.2.2, vendor: Incursa}
-versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.2.2}
+executorIdentity: {id: go-dns-doh2-executor, name: Go DNS-over-HTTPS HTTP/2 Test Executor, version: 0.3.0, vendor: Incursa}
+versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.3.0}
 claimedCapabilities:
   - {id: dns.doh2.query.a, status: supported}
   - {id: dns.doh2.interoperability.query.a, status: supported}
+  - {id: dns.doh2.resolver.interoperability.query.a, status: supported}
   - {id: secure-dns-smoke, status: supported}
   - {id: exact-doh2-http2-tls1.3-proof, status: supported}
   - {id: canonical-dns-wire-proof, status: supported}
@@ -21,8 +22,8 @@ claimedCapabilities:
   - {id: dns.doq.interoperability.query.a, status: unsupported}
   - {id: dns.dot.query.a, status: unsupported}
   - {id: dns.dot.interoperability.query.a, status: unsupported}
-supportedTestSelectors: [{selectorType: test-id, expression: dns.doh2.query.a}, {selectorType: test-id, expression: dns.doh2.interoperability.query.a}]
-supportedScenarioSelectors: [{selectorType: scenario-id, expression: dns.doh2.query.a}, {selectorType: scenario-id, expression: dns.doh2.interoperability.query.a}]
+supportedTestSelectors: [{selectorType: test-id, expression: dns.doh2.query.a}, {selectorType: test-id, expression: dns.doh2.interoperability.query.a}, {selectorType: test-id, expression: dns.doh2.resolver.interoperability.query.a}]
+supportedScenarioSelectors: [{selectorType: scenario-id, expression: dns.doh2.query.a}, {selectorType: scenario-id, expression: dns.doh2.interoperability.query.a}, {selectorType: scenario-id, expression: dns.doh2.resolver.interoperability.query.a}]
 supportedProtocolFamilies: [doh2]
 supportedExecutionModes: [single-cell, process]
 requiredTargetEndpointBindings: [{bindingId: primary, purpose: test-endpoint, endpointType: https, protocols: [doh2]}]

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.unbound-doh2-resolver",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Unbound DoH2 Recursive Resolver",
+  "entryManifests": ["implementations/unbound-doh2-resolver.yaml"],
+  "providedImplementations": [{"implementationId": "unbound-doh2-resolver", "displayName": "Unbound DoH2 Recursive Resolver", "protocols": ["doh2"], "scenarios": ["dns.doh2.resolver.interoperability.query.a"]}],
+  "dependencies": {"requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "linux-containers", "value": "true"}]}
+}

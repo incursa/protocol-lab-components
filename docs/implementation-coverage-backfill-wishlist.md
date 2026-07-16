@@ -115,10 +115,11 @@ no recursive upstream dependency.
   authority and authenticated per-operation cache flush. Package-local exact
   wire, TLS, ALPN, role, and upstream-isolation proof passes; real-lab proof is
   tracked by the evidence gate below.
-- [ ] Add Unbound resolver packages for DoT and DoH2 with deterministic local
-  upstream authority, cold/warm cache states, and DNSSEC validation state
-  recorded. Native Unbound DoT is closed against the current contract because
-  it does not negotiate the required `dot` ALPN; DoH2 remains to implement.
+- [x] Evaluate Unbound resolver packages for DoT and DoH2 with deterministic
+  local upstream authority, cache-state control, and DNSSEC validation state
+  recorded. Native Unbound DoH2 is implemented; native Unbound DoT is closed
+  against the current contract because it does not negotiate the required
+  `dot` ALPN, and a TLS terminator would substitute the measured transport.
 - [ ] Add Knot Resolver packages for DoT and DoH2 under the same resolver
   contract and cache-state controls.
 - [ ] Evaluate Knot Resolver and Technitium resolver modes for DoQ and DoH3;

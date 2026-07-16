@@ -16,6 +16,9 @@ func TestCanonicalFixtureHashesAndLengths(t *testing.T) {
 	if proof.ResponseNormalizedSHA256 != responseHash || proof.ResponseMessageID != 0 {
 		t.Fatalf("proof=%+v", proof)
 	}
+	if len(resolverQuery) != 27 || hash(resolverQuery) != resolverQueryHash || len(resolverResponse) != 43 || hash(resolverResponse) != resolverResponseHash {
+		t.Fatal("resolver fixture mismatch")
+	}
 }
 func TestKnownUnsupportedInventoryIsExact(t *testing.T) {
 	expected := []string{"dns.classic.tcp.query.a", "dns.classic.udp-truncated-tcp-retry", "dns.classic.udp.query.a", "dns.doh3.get.a", "dns.doh3.query.a", "dns.doh3.query.aaaa", "dns.doh3.query.cname-chain", "dns.doh3.query.large-dnssec-shaped", "dns.doh3.query.nodata", "dns.doh3.query.nxdomain", "dns.doh3.interoperability.query.a", "dns.doq.query.a", "dns.doq.interoperability.query.a", "dns.dot.query.a", "dns.dot.interoperability.query.a"}
@@ -29,7 +32,7 @@ func TestKnownUnsupportedInventoryIsExact(t *testing.T) {
 	}
 }
 func TestStrictAndInteroperabilityScenariosAreAdmitted(t *testing.T) {
-	for _, id := range []string{strictScenario, interopScenario} {
+	for _, id := range []string{strictScenario, interopScenario, resolverScenario} {
 		if _, ok := supportedScenarios[id]; !ok {
 			t.Fatalf("missing supported scenario %s", id)
 		}
@@ -46,6 +49,17 @@ func TestProtocolVariantFollowsSelectedScenario(t *testing.T) {
 	}
 	if tlsProfileID() != interopTLSProfile || selectedCertificateProfile() != interopCertProfile {
 		t.Fatal("interoperability TLS profiles were not selected")
+	}
+	t.Setenv("PLAB_SCENARIO_ID", resolverScenario)
+	if got := protocolVariant(); got != "doh-h2-rfc8484-recursive-resolver" {
+		t.Fatalf("resolver variant=%q", got)
+	}
+	if selectedFixtureID() != resolverFixtureID {
+		t.Fatalf("resolver fixture=%q", selectedFixtureID())
+	}
+	proof, err := validateDNS(resolverResponse)
+	if err != nil || !proof.RecursionDesired || !proof.RecursionAvailable || proof.AuthoritativeAnswer {
+		t.Fatalf("resolver proof=%+v err=%v", proof, err)
 	}
 }
 func TestNormalizeTargetRejectsFallbackAndWrongPath(t *testing.T) {

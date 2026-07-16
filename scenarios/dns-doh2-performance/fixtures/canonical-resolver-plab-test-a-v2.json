@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "protocol-lab.dns-wire-fixture.v2",
+  "fixtureId": "dns.resolver-plab-test-a-v2.canonical",
+  "description": "Canonical recursive-resolver plab.test. IN A query and response with RD and RA set, AA clear, and a local-only fixture authority upstream.",
+  "semanticKind": "positive-answer",
+  "upstreamStandards": [
+    "https://www.rfc-editor.org/rfc/rfc1035",
+    "https://www.rfc-editor.org/rfc/rfc7858",
+    "https://www.rfc-editor.org/rfc/rfc8484"
+  ],
+  "question": {"name": "plab.test.", "type": "A", "class": "IN"},
+  "messages": {
+    "query": {
+      "messageId": 0,
+      "flags": ["RD"],
+      "sectionCounts": {"question": 1, "answer": 0, "authority": 0, "additional": 0},
+      "bareWire": {
+        "hex": "00000100000100000000000004706c616204746573740000010001",
+        "lengthBytes": 27,
+        "sha256": "423b6325f73f2f72a948fe3b5593e99201b0cb24f0dcdcffe897e784da3106c6"
+      }
+    },
+    "canonicalResponse": {
+      "messageId": 0,
+      "flags": ["QR", "RD", "RA"],
+      "responseCode": "NOERROR",
+      "sectionCounts": {"question": 1, "answer": 1, "authority": 0, "additional": 0},
+      "answers": [{"owner": "plab.test.", "type": "A", "class": "IN", "ttlSeconds": 0, "rdata": "192.0.2.1"}],
+      "bareWire": {
+        "hex": "00008180000100010000000004706c616204746573740000010001c00c00010001000000000004c0000201",
+        "lengthBytes": 43,
+        "sha256": "c63893fec8b20373c3233d3c4884b9f84e3d15a01218ccb144422f074b778931"
+      }
+    }
+  },
+  "transportFraming": {
+    "dot": {"framing": "length-prefixed-dns-message", "lengthPrefixOctets": 2, "byteOrder": "network", "canonicalQueryWireHex": "001b00000100000100000000000004706c616204746573740000010001", "canonicalResponseWireHex": "002b00008180000100010000000004706c616204746573740000010001c00c00010001000000000004c0000201"},
+    "doq": {"framing": "length-prefixed-dns-message", "lengthPrefixOctets": 2, "byteOrder": "network", "canonicalQueryWireHex": "001b00000100000100000000000004706c616204746573740000010001", "canonicalResponseWireHex": "002b00008180000100010000000004706c616204746573740000010001c00c00010001000000000004c0000201"},
+    "doh2": {"framing": "bare-dns-message-body", "mediaType": "application/dns-message", "queryBodySource": "messages.query.bareWire.hex", "responseBodySource": "messages.canonicalResponse.bareWire.hex"},
+    "doh3": {"framing": "bare-dns-message-body", "mediaType": "application/dns-message", "queryBodySource": "messages.query.bareWire.hex", "responseBodySource": "messages.canonicalResponse.bareWire.hex"}
+  },
+  "runtimeIdPolicy": {
+    "doh2": {"messageId": "zero", "canonicalHashNormalization": "identity"},
+    "doh3": {"messageId": "zero", "canonicalHashNormalization": "identity"},
+    "doq": {"messageId": "zero", "canonicalHashNormalization": "identity"},
+    "dot": {"messageId": "unique-among-outstanding-queries", "canonicalHashNormalization": "set-message-id-to-zero"}
+  },
+  "responseNormalization": {"rawResponseEqualityRequired": false, "compressionMayDiffer": true, "procedure": ["parse-dns-message", "canonical-reserialize", "compare-normalized-sha256"]}
+}

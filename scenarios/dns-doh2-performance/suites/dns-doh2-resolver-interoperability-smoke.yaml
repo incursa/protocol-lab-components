@@ -1,0 +1,10 @@
+id: dns-doh2-resolver-interoperability-smoke
+name: DNS over HTTPS HTTP/2 recursive resolver interoperability smoke suite
+description: Cold-cache recursive resolver DoH2 baseline using a runner-provided local authority as the only upstream.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: secure-dns-smoke
+scenarios: [dns.doh2.resolver.interoperability.query.a]
+protocol: doh2
+notes: Resolver-role evidence is diagnostic and is never compared with authoritative-server evidence.
+tags: [dns, doh, h2, interoperability, recursive-resolver, cold-cache, smoke, non-publishable]

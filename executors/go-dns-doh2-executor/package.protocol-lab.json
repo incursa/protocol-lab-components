@@ -1,7 +1,7 @@
 {
   "packageId": "org.protocol-lab.components.executor.go-dns-doh2-executor",
   "packageKind": "test-executor",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "component": {
     "name": "go-dns-doh2-executor",
     "family": "go-secure-dns",
@@ -21,6 +21,7 @@
     "supported": [
       "dns.doh2.query.a",
       "dns.doh2.interoperability.query.a",
+      "dns.doh2.resolver.interoperability.query.a",
       "doh2.exact-binding-proof",
       "http2.exact-version-proof",
       "tls13.exact-version-proof",
@@ -34,11 +35,13 @@
     ],
     "supportedTestCaseIds": [
       "dns.doh2.query.a",
-      "dns.doh2.interoperability.query.a"
+      "dns.doh2.interoperability.query.a",
+      "dns.doh2.resolver.interoperability.query.a"
     ],
     "supportedScenarios": [
       "dns.doh2.query.a",
-      "dns.doh2.interoperability.query.a"
+      "dns.doh2.interoperability.query.a",
+      "dns.doh2.resolver.interoperability.query.a"
     ],
     "unsupportedKnownCases": [
       "dns.classic.tcp.query.a",

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.go-dns-doh2-executor",
-  "packageVersion": "0.2.2",
+  "packageVersion": "0.3.0",
   "kind": "test-executor",
   "displayName": "Go DNS-over-HTTPS HTTP/2 Test Executor",
   "entryManifests": [
@@ -16,11 +16,13 @@
       ],
       "scenarios": [
         "dns.doh2.query.a",
-        "dns.doh2.interoperability.query.a"
+        "dns.doh2.interoperability.query.a",
+        "dns.doh2.resolver.interoperability.query.a"
       ],
       "tests": [
         "dns.doh2.query.a",
-        "dns.doh2.interoperability.query.a"
+        "dns.doh2.interoperability.query.a",
+        "dns.doh2.resolver.interoperability.query.a"
       ]
     }
   ],
