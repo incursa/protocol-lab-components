@@ -19,6 +19,7 @@
       ,"ProtocolLab controller job job-0d08b2ace1704d609ec9803e6e7119c7 (aioquic HTTP/3 0.3.2 status and 1 KiB validation plus measurement, completed 2026-07-15)"
       ,"ProtocolLab controller job job-610e9f2d38364cfc95b238ea6e012446 (quic-go HTTP/3 0.1.6 status, 1 KiB, and 64 KiB validation plus measurement, completed 2026-07-15)"
       ,"ProtocolLab controller job job-fb08e6a527b94ee1a922055a9401feee (Kestrel HTTP/3 0.1.6 status, 1 KiB, and 64 KiB validation plus measurement, completed 2026-07-15)"
+      ,"ProtocolLab controller job job-a3c8b35637e14c49b86332a928c5b15d (aioquic HTTP/3 0.3.3 h3spec status, response-header, and QPACK diagnostics, completed 2026-07-15)"
     ],
     "publicCatalog": "../protocol-lab-site/src/content/implementations/*.md"
   },
@@ -34,13 +35,13 @@
     "localDecisionDirectoryCount": 6,
     "quicHttp3InventoryCount": 19,
     "publicAuthoredCatalogCount": 19,
-    "currentVersionLiveProvenCount": 24,
-    "historicalVersionLiveProofOnlyCount": 2,
+    "currentVersionLiveProvenCount": 25,
+    "historicalVersionLiveProofOnlyCount": 1,
     "attemptedNoCompletedEvidenceCount": 2,
     "noLiveProofInReviewedSourcesCount": 16
   },
   "localImplementationPackages": [
-    { "path": "implementations/aioquic-http3/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.aioquic-http3", "version": "0.3.3", "implementationIds": ["aioquic-http3"], "protocols": ["h3"], "evidenceStatus": "historical-version-live-proof-only", "evidenceVersion": "0.3.2", "evidenceJobIds": ["job-0d08b2ace1704d609ec9803e6e7119c7"], "blocker": "Version 0.3.3 adds the QPACK diagnostic workload-family declaration and needs a current-package rerun; 0.3.2 status and 1 KiB rows remain retained historical proof." },
+    { "path": "implementations/aioquic-http3/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.aioquic-http3", "version": "0.3.3", "implementationIds": ["aioquic-http3"], "protocols": ["h3"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-a3c8b35637e14c49b86332a928c5b15d"], "blocker": "Current 0.3.3 h3spec status, response-header, and QPACK rows are live-proven; canonical status and 1 KiB payload proof remains retained on historical package 0.3.2, and 64 KiB remains unproven." },
     { "path": "implementations/apache-http1/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.apache-http1", "version": "0.1.4", "implementationIds": ["apache-http1"], "protocols": ["h1"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-f43cbc3c2b27435a83cfd4e3fd995d07"] },
     { "path": "implementations/apache-http2/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.apache-http2", "version": "0.1.3", "implementationIds": ["apache-http2"], "protocols": ["h2"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-da5c9d28da254812b88ba21c58a1c7ff"] },
     { "path": "implementations/bind9-doh2/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.bind9-doh2", "version": "0.1.0", "implementationIds": ["bind9-doh2"], "protocols": ["doh2"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-3e256dd1cb8a4f668464e2cd5e0eac7e"] },
@@ -97,7 +98,7 @@
     { "inventoryId": "incursa-quic-dotnet", "inventoryStatus": "packaged", "localPackageIds": [], "publicCatalogSlugs": ["incursa-http3"], "blocker": "Implementation-owned package and internal adapters remain outside this repository." },
     { "inventoryId": "msquic", "inventoryStatus": "internal-target", "localPackageIds": [], "publicCatalogSlugs": ["msquic-dotnet"], "blocker": "Existing internal raw adapter has no protocol-lab-components package." },
     { "inventoryId": "quic-go", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.quic-go-http3", "org.protocol-lab.components.implementation.quic-go-raw"], "publicCatalogSlugs": ["quic-go-http3"], "blocker": "HTTP/3 0.1.6 status, 1 KiB, and 64 KiB rows are current-live-proven; the current raw package head and broader H3 rows still need proof." },
-    { "inventoryId": "aioquic", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.aioquic-http3"], "publicCatalogSlugs": ["aioquic-http3"], "blocker": "Version 0.3.3 needs rerun after adding the QPACK diagnostic workload family; 0.3.2 status and 1 KiB rows remain retained historical proof." },
+    { "inventoryId": "aioquic", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.aioquic-http3"], "publicCatalogSlugs": ["aioquic-http3"], "blocker": "Current 0.3.3 h3spec status, response-header, and QPACK rows are live-proven; canonical status and 1 KiB payload proof remains retained on historical package 0.3.2, and 64 KiB remains unproven." },
     { "inventoryId": "quiche", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.quiche-http3"], "publicCatalogSlugs": ["quiche-http3"], "blocker": "Peer-characterization attempt produced no completed evidence." },
     { "inventoryId": "ngtcp2-nghttp3", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.ngtcp2-http3"], "publicCatalogSlugs": ["ngtcp2-http3"], "blocker": "Peer-characterization attempt did not reach the ngtcp2 cell." },
     { "inventoryId": "caddy", "inventoryStatus": "internal-target", "localPackageIds": ["org.protocol-lab.components.implementation.caddy-http3"], "publicCatalogSlugs": ["caddy-http3"], "blocker": "Inventory status is stale: a live-proven component package now exists." },

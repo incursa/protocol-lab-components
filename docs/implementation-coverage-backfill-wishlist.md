@@ -175,15 +175,17 @@ decision-ready gates below.
 | Implementation | Immutable package version | Proven rows | Completed controller job |
 | --- | --- | --- | --- |
 | aioquic | 0.3.2 | canonical JSON status and 1 KiB payload; validation and measurement passed | `job-0d08b2ace1704d609ec9803e6e7119c7` |
+| aioquic | 0.3.3 | h3spec status, response-header, and QPACK diagnostics; all 15 requests succeeded in each cell | `job-a3c8b35637e14c49b86332a928c5b15d` |
 | quic-go | 0.1.6 | canonical JSON status, 1 KiB, and 64 KiB payloads; validation and measurement passed | `job-610e9f2d38364cfc95b238ea6e012446` |
 | Kestrel | 0.1.6 | canonical JSON status, 1 KiB, and 64 KiB payloads; validation and measurement passed | `job-fb08e6a527b94ee1a922055a9401feee` |
 
 These runs used the package-backed managed HTTP/3 executor and retained
 the executor package identity, requested/effective load shapes, raw output,
 target-container telemetry, normalized metrics, and immutable target package
-provenance. They close current-head proof only for the rows shown; aioquic
-64 KiB, h3spec/QPACK, repeated comparison, publication, and decision-ready
-gates remain.
+provenance. They close current-head proof only for the rows shown. The current
+aioquic head now has h3spec/QPACK proof, while its 64 KiB payload row, the
+remaining compatible-target h3spec/QPACK matrix, repeated comparison,
+publication, and decision-ready gates remain.
 
 ### New catalog packages
 
