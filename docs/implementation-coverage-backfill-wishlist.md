@@ -1,6 +1,6 @@
 # ProtocolLab Implementation Coverage Backfill Wishlist
 
-Updated: 2026-07-15
+Updated: 2026-07-16
 
 This is the delivery backlog for the program after the initial implementation-
 diversity milestone. That milestone proved that fifteen new implementation
@@ -120,7 +120,7 @@ no recursive upstream dependency.
   recorded. Native Unbound DoH2 is implemented; native Unbound DoT is closed
   against the current contract because it does not negotiate the required
   `dot` ALPN, and a TLS terminator would substitute the measured transport.
-- [ ] Add Knot Resolver packages for DoT and DoH2 under the same resolver
+- [x] Add Knot Resolver packages for DoT and DoH2 under the same resolver
   contract and cache-state controls.
 - [ ] Evaluate Knot Resolver and Technitium resolver modes for DoQ and DoH3;
   implement every lane that can satisfy the exact public contract and keep
@@ -128,7 +128,7 @@ no recursive upstream dependency.
 
 ### Secure-DNS evidence gate
 
-- [ ] Run every supported secure-DNS package through its real executor and
+- [x] Run every currently supported secure-DNS package through its real executor and
   publish protocol-specific validation reports.
 - [ ] Produce decision-ready DoT and DoH2 comparisons separately for
   authoritative and resolver roles; retain DoH3 and DoQ as comparable
@@ -150,17 +150,20 @@ no recursive upstream dependency.
 | Authoritative product | Classic DNS/TCP | Technitium DNS Server | 0.1.1 | `job-0ada77e3fbad47928dec7cc74b3150ef` |
 | Recursive resolver | DoT | BIND 9 | 0.1.2 | `job-b24f3e383cca482483e8ec6115147afd` |
 | Recursive resolver | DoH2 | Unbound | 0.1.2 | `job-211960ceb67d47ff8b9becb6da92f533` |
+| Recursive resolver | DoT | Knot Resolver | 0.1.5 | `job-2312532e03364be7b28802d5743531da` |
+| Recursive resolver | DoH2 | Knot Resolver | 0.1.5 | `job-359859224d4a4bf2be9dd427a21883ac` |
 
-These are real isolated-pair controller runs with retained raw and normalized
+These are real controller runs with retained raw and normalized
 artifacts. They establish current package proof and the two-implementation DoT
 and DoH2 breadth counts. The BIND and Technitium classic rows are published
 diagnostic observations with accepted validation and measurements; they are
-not ranked or decision-ready. The BIND and Unbound resolver rows additionally
+not ranked or decision-ready. The BIND, Unbound, and Knot Resolver rows additionally
 retain cache-flush and local-only upstream proof and are visible on
 `lab.incursa.com` as measured validation. They remain diagnostic/unranked
 because they use one repetition and shared target/load worker placement. The
-secure-DNS set does not yet satisfy the second-resolver, repeated-run,
-variance/saturation, DoH3/DoQ second-ecosystem, or decision-ready gates below.
+secure-DNS set now satisfies the two-resolver live breadth floor for DoT and
+DoH2, but does not yet satisfy the repeated-run, variance/saturation,
+DoH3/DoQ second-ecosystem, or decision-ready gates below.
 
 ## Workstream B - raw QUIC transport backfill
 
