@@ -37,7 +37,7 @@ pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1 -RuntimeIdentifier linux-x
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.executor.quic-go-raw-load.0.1.13.<rid>.plabpkg
+org.protocol-lab.components.executor.quic-go-raw-load.0.1.14.<rid>.plabpkg
 ```
 
 ## Local Wrapper
@@ -60,6 +60,7 @@ pwsh ./executors/quic-go-raw-load/execute.ps1 --sni localhost --alpn plab-raw-qu
 - `quic.transport.multiplex.100x1kb`
 - `quic.transport.multiplex.100x64kb`
 - `quic.transport.multiplex.16x1mb`
+- `quic.transport.multiplex.mixed-4x16`
 - `quic.transport.stream-limits.100x64kb`
 - `quic.transport.flow-control.slow-reader-16x64kb`
 - `quic.transport.payload.large-1mb`
@@ -72,6 +73,7 @@ pwsh ./executors/quic-go-raw-load/execute.ps1 --sni localhost --alpn plab-raw-qu
 
 `quic.transport.cancellation.reset-stream` is declared by the scenario pack as pending. The current load executor does not yet drive reset/cancellation classification.
 
+Version `0.1.14` adds exact round-robin mixed-size multiplexing across stable connections.
 Version `0.1.13` fixes the public package declaration for the already-proven
 exact-content sustained 256x64KiB server-to-client download lane.
 Version `0.1.12` added exact-content sustained 256x64KiB server-to-client downloads.

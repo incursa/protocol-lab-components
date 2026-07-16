@@ -86,6 +86,37 @@ func TestValidateOptionsRejectsUnsupportedBehaviorOpenPatternCombos(t *testing.T
 			},
 		},
 		{
+			name: "mixed multiplex accepts exact round robin sequence",
+			options: options{
+				behavior:             "multiplex-streams-mixed-size",
+				payloadDirection:     "bidirectional",
+				payloadSizesBytes:    []int{1024, 16384, 65536, 1048576},
+				openPattern:          "concurrent",
+				streamsPerConnection: 16,
+			},
+		},
+		{
+			name: "mixed multiplex rejects missing size sequence",
+			options: options{
+				behavior:             "multiplex-streams-mixed-size",
+				payloadDirection:     "bidirectional",
+				openPattern:          "concurrent",
+				streamsPerConnection: 16,
+			},
+			wantErr: "requires payload-sizes-bytes",
+		},
+		{
+			name: "mixed multiplex rejects incomplete round robin",
+			options: options{
+				behavior:             "multiplex-streams-mixed-size",
+				payloadDirection:     "bidirectional",
+				payloadSizesBytes:    []int{1024, 16384, 65536},
+				openPattern:          "concurrent",
+				streamsPerConnection: 16,
+			},
+			wantErr: "must be divisible",
+		},
+		{
 			name: "multiplex-streams rejects sequential",
 			options: options{
 				behavior:             "multiplex-streams",
@@ -175,6 +206,39 @@ func TestValidateOptionsRejectsUnsupportedBehaviorOpenPatternCombos(t *testing.T
 				t.Fatalf("validateOptions error = %q, want substring %q", err.Error(), tt.wantErr)
 			}
 		})
+	}
+}
+
+func TestParsePayloadSizesAndRoundRobinSelection(t *testing.T) {
+	t.Parallel()
+
+	sizes, err := parsePayloadSizes("1024,16384,65536,1048576")
+	if err != nil {
+		t.Fatalf("parsePayloadSizes returned error: %v", err)
+	}
+	opts := options{payloadSizesBytes: sizes}
+	payloads := buildPayloads(opts)
+	wantSizes := []int{1024, 16384, 65536, 1048576, 1024, 16384, 65536, 1048576}
+	for streamIndex, wantSize := range wantSizes {
+		payload := payloadForStream(payloads, streamIndex)
+		if len(payload) != wantSize {
+			t.Fatalf("stream %d payload size = %d, want %d", streamIndex, len(payload), wantSize)
+		}
+		for byteIndex, value := range payload {
+			if value != byte(byteIndex%251) {
+				t.Fatalf("stream %d payload byte %d = %d, want %d", streamIndex, byteIndex, value, byte(byteIndex%251))
+			}
+		}
+	}
+}
+
+func TestParsePayloadSizesRejectsInvalidValues(t *testing.T) {
+	t.Parallel()
+
+	for _, value := range []string{"1024,,65536", "1024,0", "1024,invalid"} {
+		if _, err := parsePayloadSizes(value); err == nil {
+			t.Fatalf("parsePayloadSizes(%q) returned nil error", value)
+		}
 	}
 }
 

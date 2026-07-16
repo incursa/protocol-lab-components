@@ -33,6 +33,7 @@ supportedScenarios:
   - quic.transport.multiplex.100x1kb
   - quic.transport.multiplex.100x64kb
   - quic.transport.multiplex.16x1mb
+  - quic.transport.multiplex.mixed-4x16
   - quic.transport.stream-limits.100x64kb
   - quic.transport.flow-control.slow-reader-16x64kb
   - quic.transport.connection-churn
@@ -52,6 +53,7 @@ supportedTestCaseIds:
   - quic.transport.multiplex.100x1kb
   - quic.transport.multiplex.100x64kb
   - quic.transport.multiplex.16x1mb
+  - quic.transport.multiplex.mixed-4x16
   - quic.transport.stream-limits.100x64kb
   - quic.transport.flow-control.slow-reader-16x64kb
   - quic.transport.connection-churn
@@ -91,6 +93,9 @@ scenarioCoverage:
   quic.transport.multiplex.16x1mb:
     status: supported
     behavior: 16 concurrent 1MiB bidirectional stream echoes
+  quic.transport.multiplex.mixed-4x16:
+    status: supported
+    behavior: exact round-robin 1KiB, 16KiB, 64KiB, and 1MiB bidirectional stream echoes per stable connection
   quic.transport.stream-limits.100x64kb:
     status: supported
     behavior: 100 concurrent bidirectional streams on one connection

@@ -24,6 +24,7 @@ Supported scenarios:
 - `quic.transport.multiplex.100x1kb`
 - `quic.transport.multiplex.100x64kb`
 - `quic.transport.multiplex.16x1mb`
+- `quic.transport.multiplex.mixed-4x16`
 - `quic.transport.stream-limits.100x64kb`
 - `quic.transport.flow-control.slow-reader-16x64kb`
 - `quic.transport.connection-churn`
@@ -40,7 +41,7 @@ Unsupported until proven:
 
 The package covers cold handshake, connection churn, stream churn, stream echo,
 exact deterministic server-to-client download, and one-connection stream-limit
-pressure lanes.
+pressure lanes, including exact mixed-size echoes up to 1 MiB.
 
 The target listens on `quic://127.0.0.1:5447/` by default, uses ALPN
 `plab-raw-quic`, and honors `PROTOCOL_LAB_TARGET_BIND_ADDRESS`,

@@ -58,6 +58,7 @@ func TestWriteMetadataIncludesSupportedScenarios(t *testing.T) {
 		"quic.transport.multiplex.100x1kb",
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.multiplex.16x1mb",
+		"quic.transport.multiplex.mixed-4x16",
 		"quic.transport.stream-limits.100x64kb",
 		"quic.transport.flow-control.slow-reader-16x64kb",
 		"quic.transport.connection-churn",
@@ -234,6 +235,7 @@ func TestScenarioIdentitySelectsExactEchoBehavior(t *testing.T) {
 		{name: "upload only", scenarioID: "quic.transport.stream-throughput.64kb", want: 0},
 		{name: "small echo", scenarioID: "quic.transport.multiplex.100x1kb", want: 1024},
 		{name: "large echo", scenarioID: "quic.transport.multiplex.16x1mb", want: 1024 * 1024},
+		{name: "mixed echo", scenarioID: "quic.transport.multiplex.mixed-4x16", want: 1024 * 1024},
 		{name: "legacy default", scenarioID: "", want: defaultEchoMaxSize},
 	}
 
@@ -305,8 +307,8 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
 		t.Fatalf("unmarshal package manifest: %v", err)
 	}
-	if packageManifest.PackageVersion != "0.1.16" {
-		t.Fatalf("packageVersion = %q, want 0.1.16", packageManifest.PackageVersion)
+	if packageManifest.PackageVersion != "0.1.17" {
+		t.Fatalf("packageVersion = %q, want 0.1.17", packageManifest.PackageVersion)
 	}
 	if len(packageManifest.ProvidedImplementations) != 1 {
 		t.Fatalf("providedImplementations length = %d, want 1", len(packageManifest.ProvidedImplementations))
@@ -322,6 +324,7 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 		"quic.transport.multiplex.100x1kb",
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.multiplex.16x1mb",
+		"quic.transport.multiplex.mixed-4x16",
 		"quic.transport.stream-limits.100x64kb",
 		"quic.transport.flow-control.slow-reader-16x64kb",
 		"quic.transport.connection-churn",

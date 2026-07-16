@@ -37,6 +37,7 @@ type options struct {
 	behavior             string
 	streamType           string
 	payloadSizeBytes     int
+	payloadSizesBytes    []int
 	payloadDirection     string
 	openPattern          string
 	connections          int
@@ -228,6 +229,7 @@ func parseOptions(args []string) (options, error) {
 		streamsPerConnection: 1,
 		duration:             time.Second,
 	}
+	payloadSizesBytes := ""
 
 	fs := flag.NewFlagSet(toolName, flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
@@ -236,6 +238,7 @@ func parseOptions(args []string) (options, error) {
 	fs.StringVar(&opts.behavior, "behavior", opts.behavior, "raw QUIC behavior")
 	fs.StringVar(&opts.streamType, "stream-type", opts.streamType, "QUIC stream type")
 	fs.IntVar(&opts.payloadSizeBytes, "payload-size-bytes", opts.payloadSizeBytes, "payload size per stream")
+	fs.StringVar(&payloadSizesBytes, "payload-sizes-bytes", payloadSizesBytes, "comma-separated payload sizes selected round-robin per connection")
 	fs.StringVar(&opts.payloadDirection, "payload-direction", opts.payloadDirection, "payload direction")
 	fs.StringVar(&opts.openPattern, "open-pattern", opts.openPattern, "stream open pattern")
 	fs.IntVar(&opts.connections, "connections", opts.connections, "QUIC connections")
@@ -251,6 +254,13 @@ func parseOptions(args []string) (options, error) {
 		return opts, errors.New("expected exactly one quic:// target URL")
 	}
 	opts.target = fs.Arg(0)
+	if payloadSizesBytes != "" {
+		parsedPayloadSizes, parseErr := parsePayloadSizes(payloadSizesBytes)
+		if parseErr != nil {
+			return opts, parseErr
+		}
+		opts.payloadSizesBytes = parsedPayloadSizes
+	}
 
 	targetURL, err := url.Parse(opts.target)
 	if err != nil {
@@ -304,12 +314,25 @@ func validateOptions(opts options) error {
 		if opts.streamsPerConnection < 1 {
 			return errors.New("streams-per-connection must be greater than zero")
 		}
-	case "multiplex-streams", "duplex-streams", "stream-limit-pressure", "flow-control-slow-reader-100ms":
+	case "multiplex-streams", "multiplex-streams-mixed-size", "duplex-streams", "stream-limit-pressure", "flow-control-slow-reader-100ms":
 		if openPattern != "concurrent" {
 			return fmt.Errorf("behavior %q requires open-pattern %q", opts.behavior, "concurrent")
 		}
 		if opts.streamsPerConnection < 1 {
 			return errors.New("streams-per-connection must be greater than zero")
+		}
+		if behavior == "multiplex-streams-mixed-size" {
+			if payloadDirection != "bidirectional" {
+				return errors.New("multiplex-streams-mixed-size requires bidirectional payloads")
+			}
+			if len(opts.payloadSizesBytes) == 0 {
+				return errors.New("multiplex-streams-mixed-size requires payload-sizes-bytes")
+			}
+			if opts.streamsPerConnection%len(opts.payloadSizesBytes) != 0 {
+				return errors.New("streams-per-connection must be divisible by the mixed payload size count")
+			}
+		} else if len(opts.payloadSizesBytes) > 0 {
+			return fmt.Errorf("behavior %q does not accept payload-sizes-bytes", opts.behavior)
 		}
 	case "handshake-cold":
 		if openPattern != "sequential" {
@@ -332,6 +355,28 @@ func validateOptions(opts options) error {
 	return nil
 }
 
+func parsePayloadSizes(value string) ([]int, error) {
+	parts := strings.Split(value, ",")
+	sizes := make([]int, 0, len(parts))
+	for _, part := range parts {
+		trimmed := strings.TrimSpace(part)
+		if trimmed == "" {
+			return nil, errors.New("payload-sizes-bytes contains an empty value")
+		}
+
+		size, err := strconv.Atoi(trimmed)
+		if err != nil || size <= 0 {
+			return nil, fmt.Errorf("invalid payload size %q", trimmed)
+		}
+		if size > maximumDownloadPayloadLength {
+			return nil, fmt.Errorf("payload size %d exceeds %d-byte limit", size, maximumDownloadPayloadLength)
+		}
+		sizes = append(sizes, size)
+	}
+
+	return sizes, nil
+}
+
 func runLoad(ctx context.Context, opts options, duration time.Duration, discard bool) (runStats, error) {
 	return runLoadWithQUICConfig(ctx, opts, duration, discard, defaultQUICConfig())
 }
@@ -344,7 +389,7 @@ func runLoadWithQUICConfig(ctx context.Context, opts options, duration time.Dura
 	switch strings.ToLower(opts.behavior) {
 	case "stream-throughput", "latency-echo", "large-payload", "sustained-stream-256x64kb", "sustained-download-256x64kb":
 		return runStreamLoad(ctx, opts, duration, discard, streamOpenSequential, quicConfig)
-	case "multiplex-streams", "duplex-streams", "stream-limit-pressure", "flow-control-slow-reader-100ms":
+	case "multiplex-streams", "multiplex-streams-mixed-size", "duplex-streams", "stream-limit-pressure", "flow-control-slow-reader-100ms":
 		return runStreamLoad(ctx, opts, duration, discard, streamOpenConcurrent, quicConfig)
 	case "handshake-cold":
 		return runHandshakeColdLoad(ctx, opts, duration, discard, quicConfig)
@@ -369,10 +414,7 @@ func runStreamLoad(ctx context.Context, opts options, duration time.Duration, di
 	if err != nil {
 		return runStats{}, err
 	}
-	payload := make([]byte, opts.payloadSizeBytes)
-	for i := range payload {
-		payload[i] = byte(i % 251)
-	}
+	payloads := buildPayloads(opts)
 
 	connections := make([]*quic.Conn, 0, opts.connections)
 	tlsConfig := &tls.Config{
@@ -401,7 +443,7 @@ func runStreamLoad(ctx context.Context, opts options, duration time.Duration, di
 	firstBatch := true
 	for firstBatch || time.Now().Before(deadline) {
 		firstBatch = false
-		batch := runStreamBatch(ctx, connections, payload, opts, mode)
+		batch := runStreamBatch(ctx, connections, payloads, opts, mode)
 		if !discard {
 			stats.merge(batch)
 		}
@@ -416,22 +458,44 @@ func runStreamLoad(ctx context.Context, opts options, duration time.Duration, di
 	return stats, nil
 }
 
-func runStreamBatch(ctx context.Context, connections []*quic.Conn, payload []byte, opts options, mode streamOpenMode) runStats {
-	if mode == streamOpenSequential {
-		return runSequentialStreamBatch(ctx, connections, payload, opts)
+func buildPayloads(opts options) [][]byte {
+	sizes := opts.payloadSizesBytes
+	if len(sizes) == 0 {
+		sizes = []int{opts.payloadSizeBytes}
 	}
-	return runConcurrentStreamBatch(ctx, connections, payload, opts)
+
+	payloads := make([][]byte, len(sizes))
+	for payloadIndex, size := range sizes {
+		payload := make([]byte, size)
+		for byteIndex := range payload {
+			payload[byteIndex] = byte(byteIndex % 251)
+		}
+		payloads[payloadIndex] = payload
+	}
+	return payloads
 }
 
-func runConcurrentStreamBatch(ctx context.Context, connections []*quic.Conn, payload []byte, opts options) runStats {
+func payloadForStream(payloads [][]byte, streamIndex int) []byte {
+	return payloads[streamIndex%len(payloads)]
+}
+
+func runStreamBatch(ctx context.Context, connections []*quic.Conn, payloads [][]byte, opts options, mode streamOpenMode) runStats {
+	if mode == streamOpenSequential {
+		return runSequentialStreamBatch(ctx, connections, payloads, opts)
+	}
+	return runConcurrentStreamBatch(ctx, connections, payloads, opts)
+}
+
+func runConcurrentStreamBatch(ctx context.Context, connections []*quic.Conn, payloads [][]byte, opts options) runStats {
 	var stats runStats
 	var mutex sync.Mutex
 	var wg sync.WaitGroup
 
 	for _, conn := range connections {
 		for streamIndex := 0; streamIndex < opts.streamsPerConnection; streamIndex++ {
+			payload := payloadForStream(payloads, streamIndex)
 			wg.Add(1)
-			go func(conn *quic.Conn) {
+			go func(conn *quic.Conn, payload []byte) {
 				defer wg.Done()
 				latency, bytesSent, bytesReceived, err := runStream(ctx, conn, payload, opts)
 				atomic.AddInt64(&stats.totalRequests, 1)
@@ -451,7 +515,7 @@ func runConcurrentStreamBatch(ctx context.Context, connections []*quic.Conn, pay
 				mutex.Lock()
 				stats.latencies = append(stats.latencies, latency)
 				mutex.Unlock()
-			}(conn)
+			}(conn, payload)
 		}
 	}
 
@@ -459,7 +523,7 @@ func runConcurrentStreamBatch(ctx context.Context, connections []*quic.Conn, pay
 	return stats
 }
 
-func runSequentialStreamBatch(ctx context.Context, connections []*quic.Conn, payload []byte, opts options) runStats {
+func runSequentialStreamBatch(ctx context.Context, connections []*quic.Conn, payloads [][]byte, opts options) runStats {
 	var stats runStats
 	var mutex sync.Mutex
 	var wg sync.WaitGroup
@@ -469,7 +533,7 @@ func runSequentialStreamBatch(ctx context.Context, connections []*quic.Conn, pay
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			batch := runSequentialStreams(ctx, conn, payload, opts)
+			batch := runSequentialStreams(ctx, conn, payloads, opts)
 			mutex.Lock()
 			stats.merge(batch)
 			mutex.Unlock()
@@ -480,9 +544,10 @@ func runSequentialStreamBatch(ctx context.Context, connections []*quic.Conn, pay
 	return stats
 }
 
-func runSequentialStreams(ctx context.Context, conn *quic.Conn, payload []byte, opts options) runStats {
+func runSequentialStreams(ctx context.Context, conn *quic.Conn, payloads [][]byte, opts options) runStats {
 	var stats runStats
 	for streamIndex := 0; streamIndex < opts.streamsPerConnection; streamIndex++ {
+		payload := payloadForStream(payloads, streamIndex)
 		latency, bytesSent, bytesReceived, err := runStream(ctx, conn, payload, opts)
 		stats.totalRequests++
 		stats.bytesSent += bytesSent
@@ -875,7 +940,7 @@ func runConnectionChurnBatch(ctx context.Context, targetHost string, tlsConfig *
 				_ = conn.CloseWithError(0, "")
 			}()
 
-			batch := runSequentialStreams(ctx, conn, payload, opts)
+			batch := runSequentialStreams(ctx, conn, [][]byte{payload}, opts)
 			batch.connectLatencies = append(batch.connectLatencies, connectTimeMs)
 			mutex.Lock()
 			stats.merge(batch)

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.raw-quic-transport",
-  "packageVersion": "0.1.15",
+  "packageVersion": "0.1.16",
   "kind": "scenario-pack",
   "displayName": "Raw QUIC Transport Scenario Pack",
   "entryManifests": [
@@ -15,6 +15,7 @@
     "scenarios/quic/transport/multiplex-100-streams.yaml",
     "scenarios/quic/transport/multiplex-100x1kb.yaml",
     "scenarios/quic/transport/multiplex-16x1mb.yaml",
+    "scenarios/quic/transport/multiplex-mixed-4x16.yaml",
     "scenarios/quic/transport/stream-limits-100-streams.yaml",
     "scenarios/quic/transport/flow-control-slow-reader-16x64kb.yaml",
     "scenarios/quic/transport/payload-large-1mb.yaml",
@@ -95,6 +96,11 @@
     {
       "scenarioId": "quic.transport.multiplex.16x1mb",
       "displayName": "QUIC Multiplex 16x1MB",
+      "protocols": ["quic"]
+    },
+    {
+      "scenarioId": "quic.transport.multiplex.mixed-4x16",
+      "displayName": "QUIC Multiplex Mixed 4x16",
       "protocols": ["quic"]
     },
     {

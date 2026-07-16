@@ -1,0 +1,87 @@
+schemaVersion: "1.0"
+id: quic.transport.multiplex.mixed-4x16
+title: QUIC Multiplex Mixed 4x16
+name: QUIC Multiplex Mixed 4x16
+family: quic.transport
+description: Validate mixed 1KB, 16KB, 64KB, and 1MB payloads across 16 concurrent bidirectional streams on each of four stable QUIC connections.
+status: stable
+kind: protocolValidation
+layer: transport
+protocol: quic
+roles:
+  - server
+requires:
+  capabilities:
+    - quic.server
+  protocols:
+    - quic
+  roles:
+    - server
+trafficShape: bidirectional-stream
+implementationRole: server
+requiredCapabilities:
+  - quicTransport
+  - quicStreams
+  - quicMultiplexing
+parameters:
+  payloadSizeSequenceBytes: "1024,16384,65536,1048576"
+  payloadSelection: round-robin-per-connection
+quicTransport:
+  behavior: multiplex-streams-mixed-size
+  connectionCount: 4
+  streamType: bidirectional
+  streamCount: 16
+  payloadSizeBytes: 1048576
+  payloadDirection: bidirectional
+  openPattern: concurrent
+  expectedBytes: 9052160
+validation:
+  required: true
+  checks:
+    - quic-transport-metrics
+    - bytes-sent-received-match-expected
+    - completed-streams-match-expected
+    - zero-timeouts-and-errors
+    - concurrent-streams-complete
+    - mixed-payload-sequence-complete
+    - protocol:quic
+benchmark:
+  warmupSeconds: 5
+  durationSeconds: 30
+  repetitions: 1
+  connections:
+    - 4
+    - 16
+    - 32
+  streamsPerConnection:
+    - 16
+benchmarkCompat:
+  compatibleLoadShapes:
+    - quic-stream
+    - regression
+    - comparison
+  primaryMetrics:
+    - bytesPerSecond
+    - streamsPerSecond
+    - maxActiveStreams
+    - errorRate
+artifacts:
+  required:
+    - validation.json
+    - result.json
+  optional:
+    - protocol-diagnostic-artifact
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - quic.stream.maxActiveStreams
+  - quic.stream.completedStreams
+artifactRequirements:
+  - load-generator.stdout.txt
+  - load-generator.stderr.txt
+  - protocol-diagnostic-unavailable-note
+tags:
+  - quic
+  - multiplexing
+  - mixed-payload
+  - stable-connections

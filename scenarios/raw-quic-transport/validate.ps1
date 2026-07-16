@@ -12,6 +12,7 @@ $requiredFiles = @(
     "scenarios/quic/transport/multiplex-100-streams.yaml",
     "scenarios/quic/transport/multiplex-100x1kb.yaml",
     "scenarios/quic/transport/multiplex-16x1mb.yaml",
+    "scenarios/quic/transport/multiplex-mixed-4x16.yaml",
     "scenarios/quic/transport/stream-limits-100-streams.yaml",
     "scenarios/quic/transport/payload-large-1mb.yaml",
     "scenarios/quic/transport/duplex-streams.yaml",

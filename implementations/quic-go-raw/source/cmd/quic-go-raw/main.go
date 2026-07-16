@@ -50,6 +50,7 @@ var supportedScenarios = []string{
 	"quic.transport.multiplex.100x1kb",
 	"quic.transport.multiplex.100x64kb",
 	"quic.transport.multiplex.16x1mb",
+	"quic.transport.multiplex.mixed-4x16",
 	"quic.transport.stream-limits.100x64kb",
 	"quic.transport.flow-control.slow-reader-16x64kb",
 	"quic.transport.connection-churn",
@@ -147,6 +148,7 @@ func defaultEchoMaxSizeForScenario(scenarioID string) int64 {
 		"quic.transport.multiplex.100x1kb":
 		return 1024
 	case "quic.transport.multiplex.16x1mb",
+		"quic.transport.multiplex.mixed-4x16",
 		"quic.transport.duplex-streams.16x1mb":
 		return 1024 * 1024
 	default:

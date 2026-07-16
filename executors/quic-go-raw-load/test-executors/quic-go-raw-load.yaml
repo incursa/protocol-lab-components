@@ -1,13 +1,13 @@
 executorIdentity:
   id: quic-go-raw-load
   name: quic-go Raw QUIC Load Executor
-  version: 0.1.12
+  version: 0.1.13
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.12
+  executorVersion: 0.1.13
 claimedCapabilities:
   - id: quic.transport.stream-throughput.64kb
     status: supported
@@ -28,6 +28,8 @@ claimedCapabilities:
   - id: quic.transport.multiplex.100x64kb
     status: supported
   - id: quic.transport.multiplex.16x1mb
+    status: supported
+  - id: quic.transport.multiplex.mixed-4x16
     status: supported
   - id: quic.transport.stream-limits.100x64kb
     status: supported
@@ -72,6 +74,8 @@ supportedTestSelectors:
   - selectorType: test-id
     expression: quic.transport.multiplex.16x1mb
   - selectorType: test-id
+    expression: quic.transport.multiplex.mixed-4x16
+  - selectorType: test-id
     expression: quic.transport.stream-limits.100x64kb
   - selectorType: test-id
     expression: quic.transport.flow-control.slow-reader-16x64kb
@@ -110,6 +114,8 @@ supportedScenarioSelectors:
     expression: quic.transport.multiplex.100x64kb
   - selectorType: scenario-id
     expression: quic.transport.multiplex.16x1mb
+  - selectorType: scenario-id
+    expression: quic.transport.multiplex.mixed-4x16
   - selectorType: scenario-id
     expression: quic.transport.stream-limits.100x64kb
   - selectorType: scenario-id
@@ -152,6 +158,9 @@ scenarioCoverage:
     status: supported
   quic.transport.multiplex.16x1mb:
     status: supported
+  quic.transport.multiplex.mixed-4x16:
+    status: supported
+    behavior: exact round-robin 1KiB, 16KiB, 64KiB, and 1MiB bidirectional stream payloads per connection
   quic.transport.stream-limits.100x64kb:
     status: supported
   quic.transport.flow-control.slow-reader-16x64kb:

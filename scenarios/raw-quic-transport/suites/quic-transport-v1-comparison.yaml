@@ -15,6 +15,7 @@ scenarios:
   - quic.transport.multiplex.100x1kb
   - quic.transport.multiplex.100x64kb
   - quic.transport.multiplex.16x1mb
+  - quic.transport.multiplex.mixed-4x16
   - quic.transport.stream-limits.100x64kb
   - quic.transport.flow-control.slow-reader-16x64kb
   - quic.transport.connection-churn
@@ -30,4 +31,4 @@ defaults:
 counterCapture:
   enabledByDefault: false
   tool: dotnet-counters
-notes: Stable raw QUIC comparison input. The raw-quic-peer-confidence profile supplies timing and repetition policy while each scenario retains its valid connection and stream matrix. Connection churn establishes a fresh connection per operation; stream churn opens and closes 1,000 sequential streams on one stable connection. Stream-limit pressure intentionally remains a one-connection semantic capacity check. The slow-reader lane delays response reads by exactly 100 milliseconds to expose sender-side backpressure. Evidence remains local-lab only.
+notes: Stable raw QUIC comparison input. The raw-quic-peer-confidence profile supplies timing and repetition policy while each scenario retains its valid connection and stream matrix. Connection churn establishes a fresh connection per operation; stream churn opens and closes 1,000 sequential streams on one stable connection. Stream-limit pressure intentionally remains a one-connection semantic capacity check. The mixed-size lane repeats exact 1KB, 16KB, 64KB, and 1MB payloads across 16 concurrent streams per stable connection. The slow-reader lane delays response reads by exactly 100 milliseconds to expose sender-side backpressure. Evidence remains local-lab only.
