@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.unbound-doh2-resolver",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "implementation",
   "displayName": "Unbound DoH2 Recursive Resolver",
   "entryManifests": ["implementations/unbound-doh2-resolver.yaml"],

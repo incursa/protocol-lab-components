@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ErrorActionPreference='Stop'
-$image=if($env:PLAB_SECURE_DNS_IMAGE){$env:PLAB_SECURE_DNS_IMAGE}else{'incursa-protocol-lab-bind9-dot-resolver:0.1.0'}
+$image=if($env:PLAB_SECURE_DNS_IMAGE){$env:PLAB_SECURE_DNS_IMAGE}else{'incursa-protocol-lab-bind9-dot-resolver:0.1.1'}
 $port=if($env:PLAB_SECURE_DNS_PORT){[int]$env:PLAB_SECURE_DNS_PORT}else{20562}
 $controlPort=if($env:PLAB_RESOLVER_CONTROL_PORT){[int]$env:PLAB_RESOLVER_CONTROL_PORT}else{$port+1}
 Push-Location $PSScriptRoot
