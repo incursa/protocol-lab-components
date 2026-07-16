@@ -5,7 +5,7 @@ python3 - <<'PY'
 import hashlib,json,pathlib
 root=pathlib.Path('.')
 lock=json.loads((root/'authority-lock.json').read_text())
-assert lock['commit']=='c0475b05cb80362760ac57e58ecfa1610a766c10'
+assert lock['commit']=='cc149c76a3567b823491063d1a2bd42216539f70'
 for name,expected in lock['files'].items():
     path=root/name
     assert path.is_file(),f'missing {name}'

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.bind9-dot-resolver",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "BIND 9 DoT Recursive Resolver",
+  "entryManifests": ["implementations/bind9-dot-resolver.yaml"],
+  "providedImplementations": [{"implementationId": "bind9-dot-resolver", "displayName": "BIND 9 DoT Recursive Resolver", "protocols": ["dot"], "scenarios": ["dns.dot.resolver.interoperability.query.a"]}],
+  "dependencies": {"requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "linux-containers", "value": "true"}]}
+}

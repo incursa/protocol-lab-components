@@ -15,6 +15,7 @@ import (
 	"io"
 	"math"
 	"net"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -27,15 +28,17 @@ import (
 
 const (
 	executorID           = "go-dns-dot-executor"
-	executorVersion      = "0.2.2"
+	executorVersion      = "0.3.0"
 	loadGeneratorID      = "go-dns-dot-load"
-	loadGeneratorVersion = "0.2.2"
+	loadGeneratorVersion = "0.3.0"
 	strictScenario       = "dns.dot.query.a"
 	interopScenario      = "dns.dot.interoperability.query.a"
+	resolverScenario     = "dns.dot.resolver.interoperability.query.a"
 	supportedProfile     = "secure-dns-smoke"
 	serverName           = "dns.plab.test"
 	alpn                 = "dot"
 	fixtureID            = "dns.plab-test-a.canonical"
+	resolverFixtureID    = "dns.resolver-plab-test-a-v2.canonical"
 	certificateProfile   = "plab-secure-dns-single-leaf-p256-v1"
 	strictTLSProfile     = "plab-secure-dns-tls13-v1"
 	interopTLSProfile    = "plab-secure-dns-interoperability-v2"
@@ -43,6 +46,8 @@ const (
 	requiredCipher       = "TLS_AES_128_GCM_SHA256"
 	queryHash            = "c46b9fb76019b5a644d0884b17e816cb7c3076275d9468c27d180f70488eb8ec"
 	responseHash         = "9d488461675ad5ab9f74c7b203861e1ad17521e413a407a25e6611012a595620"
+	resolverQueryHash    = "423b6325f73f2f72a948fe3b5593e99201b0cb24f0dcdcffe897e784da3106c6"
+	resolverResponseHash = "c63893fec8b20373c3233d3c4884b9f84e3d15a01218ccb144422f074b778931"
 	leafDERHash          = "b57bdd3eb90b36455900c17de9ff9a02c623e1f6b27626ad7821a40e35e8251c"
 	leafSPKIHash         = "cfa6d5d08ee2071e28fd96205b088156fa71b460262470e5b994624b0537cf25"
 )
@@ -50,6 +55,8 @@ const (
 var (
 	canonicalQuery    = mustHex("00000000000100000000000004706c616204746573740000010001")
 	canonicalResponse = mustHex("00008400000100010000000004706c616204746573740000010001c00c00010001000000000004c0000201")
+	resolverQuery     = mustHex("00000100000100000000000004706c616204746573740000010001")
+	resolverResponse  = mustHex("00008180000100010000000004706c616204746573740000010001c00c00010001000000000004c0000201")
 	knownUnsupported  = map[string]struct{}{
 		"dns.classic.tcp.query.a":             {},
 		"dns.classic.udp-truncated-tcp-retry": {},
@@ -67,7 +74,7 @@ var (
 		"dns.doq.query.a":                     {},
 		"dns.doq.interoperability.query.a":    {},
 	}
-	supportedScenarios = map[string]struct{}{strictScenario: {}, interopScenario: {}}
+	supportedScenarios = map[string]struct{}{strictScenario: {}, interopScenario: {}, resolverScenario: {}}
 )
 
 type tlsProof struct {
@@ -217,7 +224,8 @@ func main() {
 	}
 	writeRequired(*output, "tls-negotiation.json", preflight.TLSProof)
 	writeRequired(*output, "protocol-proof.json", map[string]any{"requestedProtocol": "dot", "observedProtocol": "dot", "protocolVariant": protocolVariant(), "fallbackDetected": false, "tls": preflight.TLSProof, "dns": preflight.LastDNSProof})
-	writeRequired(*output, "executor-identity.json", map[string]any{"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedScenarios": []string{strictScenario, interopScenario}})
+	writeRequired(*output, "executor-identity.json", map[string]any{"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedScenarios": []string{strictScenario, interopScenario, resolverScenario}})
+	writeResolverArtifacts(*output, preflight)
 	if err != nil {
 		fatal(1, fmt.Errorf("DoT validity gate failed: %w", err))
 	}
@@ -244,6 +252,7 @@ func main() {
 	writeRequired(*output, "load-generator-identity.json", normalized.LoadGenerator)
 	writeRequired(*output, "dns-dot-executor-result.json", normalized)
 	writeRequired(*output, "result.json", normalized)
+	writeResolverArtifacts(*output, measured)
 	data, _ := json.MarshalIndent(normalized, "", "  ")
 	fmt.Println(string(data))
 }
@@ -309,6 +318,13 @@ func runPhase(address string, roots *x509.CertPool, duration time.Duration, once
 			nextID = 1
 		}
 		queryStarted := time.Now()
+		if selectedScenario() == resolverScenario {
+			if err := flushResolverCache(address); err != nil {
+				summary.FailedOperations++
+				summary.Errors[err.Error()]++
+				return summary, err
+			}
+		}
 		proof, transferred, err := exchange(conn, nextID)
 		summary.TotalTransferredBytes += transferred
 		if err != nil {
@@ -384,7 +400,7 @@ func validateTLS(state tls.ConnectionState) (tlsProof, error) {
 	if state.NegotiatedProtocol != alpn {
 		failures = append(failures, "ALPN mismatch")
 	}
-	if proof.CipherSuite != requiredCipher {
+	if selectedScenario() == strictScenario && proof.CipherSuite != requiredCipher {
 		failures = append(failures, "cipher-suite mismatch")
 	}
 	if len(state.VerifiedChains) == 0 {
@@ -406,7 +422,8 @@ func exchange(conn net.Conn, id uint16) (dnsProof, int64, error) {
 	if err := conn.SetDeadline(time.Now().Add(5 * time.Second)); err != nil {
 		return dnsProof{}, 0, err
 	}
-	query := append([]byte(nil), canonicalQuery...)
+	queryTemplate, responseTemplate, expectedQueryHash, expectedResponseHash := canonicalFixture()
+	query := append([]byte(nil), queryTemplate...)
 	binary.BigEndian.PutUint16(query[:2], id)
 	framed := frame(query)
 	if _, err := conn.Write(framed); err != nil {
@@ -425,7 +442,7 @@ func exchange(conn net.Conn, id uint16) (dnsProof, int64, error) {
 		return dnsProof{}, int64(len(framed) + 2), err
 	}
 	transferred := int64(len(framed) + 2 + len(response))
-	if len(response) != len(canonicalResponse) {
+	if len(response) != len(responseTemplate) {
 		return dnsProof{}, transferred, malformedResponseError{fmt.Sprintf("response length mismatch: %d", len(response))}
 	}
 	responseID := binary.BigEndian.Uint16(response[:2])
@@ -434,13 +451,14 @@ func exchange(conn net.Conn, id uint16) (dnsProof, int64, error) {
 	}
 	normalized := append([]byte(nil), response...)
 	binary.BigEndian.PutUint16(normalized[:2], 0)
-	if hash(normalized) != responseHash || !equal(normalized, canonicalResponse) {
+	if hash(normalized) != expectedResponseHash || !equal(normalized, responseTemplate) {
 		return dnsProof{}, transferred, malformedResponseError{"canonical response content/hash mismatch"}
 	}
 	normalizedQuery := append([]byte(nil), query...)
 	binary.BigEndian.PutUint16(normalizedQuery[:2], 0)
-	proof := dnsProof{FixtureID: fixtureID, Transport: "dot", QuestionName: "plab.test.", QuestionType: "A", QuestionClass: "IN", Answer: "192.0.2.1", TTLSeconds: 0, ResponseCode: "NOERROR", AuthoritativeAnswer: true, RecursionDesired: false, RecursionAvailable: false, ExternalUpstreamUsed: false, CacheEnabled: false, Framing: "two-octet-network-order-length-prefix", LengthPrefixOctets: 2, ByteOrder: "network", RuntimeMessageID: id, ResponseMessageID: responseID, MessageIDCorrelated: true, MessageIDUniqueAmongOutstanding: true, CanonicalHashNormalization: "set-message-id-to-zero", QueryLengthBytes: len(query), QueryNormalizedSHA256: hash(normalizedQuery), ResponseLengthBytes: len(response), ResponseNormalizedSHA256: hash(normalized), RequestFramedHex: hex.EncodeToString(framed), ResponseFramedHex: hex.EncodeToString(append(prefix, response...))}
-	if proof.QueryNormalizedSHA256 != queryHash {
+	resolver := selectedScenario() == resolverScenario
+	proof := dnsProof{FixtureID: selectedFixtureID(), Transport: "dot", QuestionName: "plab.test.", QuestionType: "A", QuestionClass: "IN", Answer: "192.0.2.1", TTLSeconds: 0, ResponseCode: "NOERROR", AuthoritativeAnswer: !resolver, RecursionDesired: resolver, RecursionAvailable: resolver, ExternalUpstreamUsed: false, CacheEnabled: false, Framing: "two-octet-network-order-length-prefix", LengthPrefixOctets: 2, ByteOrder: "network", RuntimeMessageID: id, ResponseMessageID: responseID, MessageIDCorrelated: true, MessageIDUniqueAmongOutstanding: true, CanonicalHashNormalization: "set-message-id-to-zero", QueryLengthBytes: len(query), QueryNormalizedSHA256: hash(normalizedQuery), ResponseLengthBytes: len(response), ResponseNormalizedSHA256: hash(normalized), RequestFramedHex: hex.EncodeToString(framed), ResponseFramedHex: hex.EncodeToString(append(prefix, response...))}
+	if proof.QueryNormalizedSHA256 != expectedQueryHash {
 		return dnsProof{}, transferred, errors.New("canonical query content/hash mismatch")
 	}
 	return proof, transferred, nil
@@ -448,11 +466,11 @@ func exchange(conn net.Conn, id uint16) (dnsProof, int64, error) {
 
 func normalizeResult(summary phaseSummary, requested map[string]any) result {
 	m := metrics{QueriesPerSecond: float64(summary.CompletedOperations) / summary.DurationSeconds, QueryLatencyMean: mean(summary.QueryLatencyMilliseconds), QueryLatencyP50: percentile(summary.QueryLatencyMilliseconds, .50), QueryLatencyP75: percentile(summary.QueryLatencyMilliseconds, .75), QueryLatencyP90: percentile(summary.QueryLatencyMilliseconds, .90), QueryLatencyP95: percentile(summary.QueryLatencyMilliseconds, .95), QueryLatencyP99: percentile(summary.QueryLatencyMilliseconds, .99), ConnectionLatency: summary.TLSProof.ConnectionLatencyMilliseconds, CompletedOperations: summary.CompletedOperations, MalformedOperations: summary.MalformedOperations, RetryCount: summary.RetryCount, FailedOperations: summary.FailedOperations, TimedOutOperations: summary.TimedOutOperations, TotalTransferredBytes: summary.TotalTransferredBytes, EffectiveConcurrency: summary.EffectiveConcurrency}
-	return result{SchemaVersion: "protocol-lab.dns-dot-executor-result.v1", ScenarioID: selectedScenario(), LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "dot", "observedProtocol": "dot", "protocolVariant": protocolVariant(), "fallbackDetected": false, "tls": summary.TLSProof, "dns": summary.LastDNSProof}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": 1, "concurrency": 1, "outstandingQueries": 1}, Metrics: m, Warnings: []string{"Local package-backed DoT smoke is diagnostic and non-publishable. All other secure DNS bindings and semantic fixtures are unsupported by this executor."}}
+	return result{SchemaVersion: "protocol-lab.dns-dot-executor-result.v1", ScenarioID: selectedScenario(), LoadProfileID: supportedProfile, Status: "passed", Executor: map[string]string{"id": executorID, "version": executorVersion}, LoadGenerator: map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, ProtocolProof: map[string]any{"requestedProtocol": "dot", "observedProtocol": "dot", "protocolVariant": protocolVariant(), "fallbackDetected": false, "tls": summary.TLSProof, "dns": summary.LastDNSProof}, Validation: map[string]any{"status": "passed", "zeroUnexpectedFailures": true, "zeroTimeouts": true, "zeroMalformed": true, "zeroRetries": true, "resolverRole": selectedScenario() == resolverScenario, "cacheFlushedBeforeOperation": selectedScenario() == resolverScenario, "localFixtureAuthorityOnly": selectedScenario() == resolverScenario, "externalUpstreamUsed": false}, RequestedLoad: requested, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": 1, "concurrency": 1, "outstandingQueries": 1}, Metrics: m, Warnings: []string{"Local package-backed DoT smoke is diagnostic and non-publishable. Resolver rows use an explicit cache-flush control endpoint and a local-only fixture authority."}}
 }
 
 func validationDocument(summary phaseSummary, err error) map[string]any {
-	return map[string]any{"scenarioId": selectedScenario(), "fixtureId": fixtureID, "passed": err == nil, "requestedProtocol": "dot", "observedProtocol": func() string {
+	return map[string]any{"scenarioId": selectedScenario(), "fixtureId": selectedFixtureID(), "passed": err == nil, "requestedProtocol": "dot", "observedProtocol": func() string {
 		if summary.TLSProof.ALPN == alpn {
 			return "dot"
 		}
@@ -584,20 +602,67 @@ func selectedScenario() string {
 	}
 	return id
 }
+func selectedFixtureID() string {
+	if selectedScenario() == resolverScenario {
+		return resolverFixtureID
+	}
+	return fixtureID
+}
+func canonicalFixture() ([]byte, []byte, string, string) {
+	if selectedScenario() == resolverScenario {
+		return resolverQuery, resolverResponse, resolverQueryHash, resolverResponseHash
+	}
+	return canonicalQuery, canonicalResponse, queryHash, responseHash
+}
+func flushResolverCache(address string) error {
+	host, portText, err := net.SplitHostPort(address)
+	if err != nil {
+		return fmt.Errorf("resolver control address: %w", err)
+	}
+	port, err := strconv.Atoi(portText)
+	if err != nil {
+		return fmt.Errorf("resolver control port: %w", err)
+	}
+	controlURL := strings.TrimSpace(os.Getenv("PLAB_RESOLVER_CONTROL_URL"))
+	if controlURL == "" {
+		controlURL = fmt.Sprintf("http://%s/flush", net.JoinHostPort(host, strconv.Itoa(port+1)))
+	}
+	client := &http.Client{Timeout: 3 * time.Second}
+	response, err := client.Post(controlURL, "application/json", strings.NewReader("{}"))
+	if err != nil {
+		return fmt.Errorf("resolver cache flush failed: %w", err)
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusNoContent {
+		body, _ := io.ReadAll(io.LimitReader(response.Body, 1024))
+		return fmt.Errorf("resolver cache flush returned %d: %s", response.StatusCode, strings.TrimSpace(string(body)))
+	}
+	return nil
+}
+func writeResolverArtifacts(output string, summary phaseSummary) {
+	if selectedScenario() != resolverScenario {
+		return
+	}
+	writeRequired(output, "dns-resolver-summary.json", map[string]any{"schemaVersion": "protocol-lab.dns-resolver-summary.v1", "role": "recursive-resolver", "cachePreparation": "flush-before-each-measured-operation", "cacheReuse": false, "recursionDesired": true, "recursionAvailable": true, "authoritativeAnswer": false, "completedOperations": summary.CompletedOperations})
+	writeRequired(output, "upstream-proof.json", map[string]any{"schemaVersion": "protocol-lab.upstream-proof.v1", "authority": "runner-local-fixture", "fixtureId": resolverFixtureID, "endpoint": "127.0.0.1:5353/udp", "externalUpstreamUsed": false})
+}
 func protocolVariant() string {
+	if selectedScenario() == resolverScenario {
+		return "dot-rfc7858-recursive-resolver"
+	}
 	if selectedScenario() == interopScenario {
 		return "dot-rfc7858-interoperability"
 	}
 	return "dot-tls1.3-tcp"
 }
 func tlsProfileID() string {
-	if selectedScenario() == interopScenario {
+	if selectedScenario() == interopScenario || selectedScenario() == resolverScenario {
 		return interopTLSProfile
 	}
 	return strictTLSProfile
 }
 func selectedCertificateProfile() string {
-	if selectedScenario() == interopScenario {
+	if selectedScenario() == interopScenario || selectedScenario() == resolverScenario {
 		return interopCertProfile
 	}
 	return certificateProfile

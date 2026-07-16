@@ -108,9 +108,17 @@ no recursive upstream dependency.
 
 ### Resolver targets
 
+- [x] Add a public resolver-specific DoT scenario, deterministic fixture,
+  suite, and cache-control artifact contract without mixing resolver rows with
+  authoritative rows.
+- [x] Add a native BIND 9 recursive DoT package with an isolated local fixture
+  authority and authenticated per-operation cache flush. Package-local exact
+  wire, TLS, ALPN, role, and upstream-isolation proof passes; real-lab proof is
+  tracked by the evidence gate below.
 - [ ] Add Unbound resolver packages for DoT and DoH2 with deterministic local
   upstream authority, cold/warm cache states, and DNSSEC validation state
-  recorded.
+  recorded. Native Unbound DoT is closed against the current contract because
+  it does not negotiate the required `dot` ALPN; DoH2 remains to implement.
 - [ ] Add Knot Resolver packages for DoT and DoH2 under the same resolver
   contract and cache-state controls.
 - [ ] Evaluate Knot Resolver and Technitium resolver modes for DoQ and DoH3;
@@ -238,10 +246,10 @@ gates remain.
 
 - [ ] Keep Kestrel, Caddy, nginx, and Apache packages aligned across their
   exact supported HTTP/1.1 and HTTP/2 origin semantics.
-- [ ] Add Go `net/http` HTTP/1.1 and HTTP/2 origin packages.
-- [ ] Add Node.js `node:http` and `node:http2` origin packages.
-- [ ] Add Rust hyper HTTP/1.1 and HTTP/2 origin packages.
-- [ ] Add Jetty HTTP/1.1 and HTTP/2 origin packages.
+- [x] Add Go `net/http` HTTP/1.1 and HTTP/2 origin packages.
+- [x] Add Node.js `node:http` and `node:http2` origin packages.
+- [x] Add Rust hyper HTTP/1.1 and HTTP/2 origin packages.
+- [x] Add Jetty HTTP/1.1 and HTTP/2 origin packages.
 - [ ] Preserve separate HTTP/2 h2c-prior-knowledge and TLS/ALPN execution
   variants; neither mode may provide evidence for the other.
 - [ ] Keep gateways/proxies in a separate cohort and add HAProxy HTTP/1.1 and
@@ -278,7 +286,7 @@ gates remain.
 
 ### WebSocket
 
-- [ ] Live-prove the existing Go HTTP/1.1 WebSocket target alongside Node
+- [x] Live-prove the existing Go HTTP/1.1 WebSocket target alongside Node
   `ws`, Jetty, uWebSockets, and websocat, preserving websocat's diagnostic-only
   limitations.
 - [ ] Add a second RFC 8441 implementation alongside Kestrel HTTP/2 WebSocket.

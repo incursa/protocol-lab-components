@@ -1,7 +1,7 @@
 {
   "schemaVersion":"protocol-lab-package-v2",
   "packageId":"org.protocol-lab.components.implementation.rust-hyper-origin",
-  "packageVersion":"0.1.0",
+  "packageVersion":"0.1.1",
   "kind":"implementation",
   "displayName":"Rust hyper HTTP Origin Implementations",
   "entryManifests":["implementations/rust-hyper-http1.yaml","implementations/rust-hyper-http2.yaml"],

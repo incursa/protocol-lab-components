@@ -1,7 +1,7 @@
 {
   "packageId": "org.protocol-lab.components.executor.go-dns-dot-executor",
   "packageKind": "test-executor",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "component": {
     "name": "go-dns-dot-executor",
     "family": "go-secure-dns",
@@ -21,6 +21,7 @@
     "supported": [
       "dns.dot.query.a",
       "dns.dot.interoperability.query.a",
+      "dns.dot.resolver.interoperability.query.a",
       "dot.exact-binding-proof",
       "tls13.exact-version-proof",
       "dns.canonical-wire-validation"
@@ -34,10 +35,12 @@
     "supportedTestCaseIds": [
       "dns.dot.query.a",
       "dns.dot.interoperability.query.a"
+      ,"dns.dot.resolver.interoperability.query.a"
     ],
     "supportedScenarios": [
       "dns.dot.query.a",
       "dns.dot.interoperability.query.a"
+      ,"dns.dot.resolver.interoperability.query.a"
     ],
     "unsupportedKnownCases": [
       "dns.classic.tcp.query.a",

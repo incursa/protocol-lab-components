@@ -1,6 +1,7 @@
 FROM rust@sha256:9dfaae478ecd298b6b5a039e1f2cc4fc040fc818a2de9aa78fa714dea036574d AS build
 
 WORKDIR /src
+RUN apk add --no-cache musl-dev=1.2.5-r12
 COPY source/Cargo.toml source/Cargo.lock ./
 COPY source/src ./src
 RUN cargo build --locked --release

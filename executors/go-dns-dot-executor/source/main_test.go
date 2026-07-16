@@ -18,6 +18,12 @@ func TestCanonicalFixtureHashesAndLengths(t *testing.T) {
 	if got := hexString(frame(canonicalQuery)); got != "001b00000000000100000000000004706c616204746573740000010001" {
 		t.Fatalf("framed query=%s", got)
 	}
+	if len(resolverQuery) != 27 || hash(resolverQuery) != resolverQueryHash {
+		t.Fatalf("resolver query mismatch: length=%d hash=%s", len(resolverQuery), hash(resolverQuery))
+	}
+	if len(resolverResponse) != 43 || hash(resolverResponse) != resolverResponseHash {
+		t.Fatalf("resolver response mismatch: length=%d hash=%s", len(resolverResponse), hash(resolverResponse))
+	}
 }
 
 func TestExchangeClassifiesMismatchedMessageIDAsMalformed(t *testing.T) {
@@ -92,7 +98,7 @@ func TestKnownUnsupportedInventoryIsExact(t *testing.T) {
 }
 
 func TestStrictAndInteroperabilityScenariosAreAdmitted(t *testing.T) {
-	for _, id := range []string{strictScenario, interopScenario} {
+	for _, id := range []string{strictScenario, interopScenario, resolverScenario} {
 		if _, ok := supportedScenarios[id]; !ok {
 			t.Fatalf("missing supported scenario %s", id)
 		}
@@ -110,6 +116,13 @@ func TestProtocolVariantFollowsSelectedScenario(t *testing.T) {
 	}
 	if tlsProfileID() != interopTLSProfile || selectedCertificateProfile() != interopCertProfile {
 		t.Fatal("interoperability TLS profiles were not selected")
+	}
+	t.Setenv("PLAB_SCENARIO_ID", resolverScenario)
+	if got := protocolVariant(); got != "dot-rfc7858-recursive-resolver" {
+		t.Fatalf("resolver variant=%q", got)
+	}
+	if selectedFixtureID() != resolverFixtureID {
+		t.Fatalf("resolver fixture=%q", selectedFixtureID())
 	}
 }
 

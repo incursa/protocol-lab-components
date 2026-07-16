@@ -1,0 +1,10 @@
+id: dns-dot-resolver-interoperability-smoke
+name: DNS over TLS recursive resolver interoperability smoke suite
+description: Cold-cache recursive resolver DoT baseline using a runner-provided local authority as the only upstream.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: secure-dns-smoke
+scenarios: [dns.dot.resolver.interoperability.query.a]
+protocol: dot
+notes: Resolver-role evidence is diagnostic and is never compared with authoritative-server evidence.
+tags: [dns, dot, interoperability, recursive-resolver, cold-cache, smoke, non-publishable]

@@ -1,0 +1,43 @@
+schemaVersion: "1.0"
+id: bind9-dot-resolver
+name: BIND 9 DoT Recursive Resolver
+description: Digest-pinned BIND 9.20.24 recursive resolver with authenticated cache flush and a loopback-only fixture authority.
+family: bind9
+role: recursive-resolver
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-bind9-dot-resolver:0.1.0
+dockerfile: docker/Dockerfile
+buildContext: docker
+dockerNetworkMode: published-port
+baseUrl: tls://127.0.0.1:20562
+dockerBaseUrl: tls://127.0.0.1:20562
+protocolBaseUrls: {dot: tls://127.0.0.1:20562}
+dockerProtocolBaseUrls: {dot: tls://127.0.0.1:20562}
+certificateMode: plab-secure-dns-interoperability-leaf-v2
+roles: [recursive-resolver]
+protocols: [dot]
+supportedProtocols: [dot]
+supportedWorkloadFamilies: [dns.secure]
+supportedProtocolVersions: [DoT/TLS1.3]
+supportedScenarios: [dns.dot.resolver.interoperability.query.a]
+supportedTestCaseIds: [dns.dot.resolver.interoperability.query.a]
+scenarioCoverage:
+  dns.dot.resolver.interoperability.query.a: {status: supported, executorId: go-dns-dot-executor, behavior: BIND recursive resolver with authenticated per-operation rndc flush and loopback-only plab.test authority}
+  dns.dot.query.a: {status: unsupported, reason: Authoritative-server role required; this package selects BIND's recursive-resolver configuration.}
+  dns.dot.interoperability.query.a: {status: unsupported, reason: Authoritative-server role required; this package selects BIND's recursive-resolver configuration.}
+unsupportedKnownCases: [dns.dot.query.a, dns.dot.interoperability.query.a]
+ports:
+  - {name: dot, protocol: tcp, default: 20562, hostPort: 20562, containerPort: 853}
+  - {name: resolver-control, protocol: tcp, default: 20563, hostPort: 20563, containerPort: 854}
+environment: {PLAB_SECURE_DNS_PORT: "20562"}
+startup: {port: {name: dot, environmentVariable: PLAB_SECURE_DNS_PORT, default: 20562}, readiness: {protocol: process, timeoutSeconds: 45}}
+readinessCheck: {type: processStarted, timeoutSeconds: 45, startupDelayMilliseconds: 2500}
+capabilities: [dns.recursive-resolver, dns.authoritative-server.fixture, dns.dot, resolver.cache-flush, resolver.local-only-upstream, scenario.dns.dot.resolver.interoperability.query.a]
+entrypoint: {kind: bash, path: run.sh, arguments: [], workingDirectory: .}
+shutdownBehavior: process
+artifactExports: [command.txt, version.txt, stdout.txt, stderr.txt, result.json]
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata: {manifest: protocol-lab.internal.json}
+notes: The second BIND process is an isolated fixture authority, not a measured implementation. No external upstream is configured.

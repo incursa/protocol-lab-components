@@ -1,0 +1,44 @@
+schemaVersion: "2.0"
+version: "2.1.0"
+id: dns.dot.resolver.interoperability.query.a
+title: DNS over TLS Recursive Resolver Interoperability A Query
+description: Query a selected recursive resolver over DoT with a cold cache and a runner-provided local fixture authority as its only upstream.
+status: draft
+kind: workload
+layer: application
+protocol: dot
+family: dns.secure
+semanticTemplateId: dns.resolver-query.a.plab-test
+protocolStack: [dns, dot, tls, tcp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc1035, https://www.rfc-editor.org/rfc/rfc7858, https://www.rfc-editor.org/rfc/rfc8310, https://www.rfc-editor.org/rfc/rfc9325]
+roles: [client, recursive-resolver, authoritative-server]
+requires: {capabilities: [dns.client, dns.recursive-resolver, dns.authoritative-server, dns.dot], protocols: [dot], roles: [client, recursive-resolver, authoritative-server]}
+trafficShape: request-response
+dns:
+  fixtureId: dns.resolver-plab-test-a-v2.canonical
+  transport: dot
+  authorityMode: local-fixture-recursive
+  cacheState: cold-before-operation
+  alpn: dot
+  connectionReuse: reuse
+  endpoint: {host: dns.plab.test, port: 853, serverName: dns.plab.test, addressResolution: runner-provided-local-binding}
+  tlsPolicy: {profileId: plab-secure-dns-interoperability-v2, allowedVersions: [tls1.2, tls1.3], resumptionPolicy: not-offered, earlyData: not-attempted, alpn: dot, certificateProfile: plab-secure-dns-interoperability-leaf-v2, cipherSuitePolicy: negotiated-rfc9325-compatible, keyExchangeGroupPolicy: negotiated-rfc9325-compatible, signatureSchemePolicy: negotiated-rfc9325-compatible, peerAuthentication: server-certificate-required, connectionLifecycle: pre-established-full-authenticated-connection, measuredWindow: dns-query-response, negotiatedParametersRequired: true}
+  resolverPolicy: {recursiveResolver: selected-target, recursionDesired: true, recursionAvailable: true, authoritativeAnswer: false, upstreamAuthority: runner-provided-local-fixture-authority, externalUpstream: prohibited, cachePreparation: flush-before-each-measured-operation, cacheReuse: prohibited, outOfZoneResponse: REFUSED, unknownNameResponse: NXDOMAIN, existingNameUnknownTypeResponse: NOERROR-NODATA}
+  framing: {kind: two-octet-network-order-length-prefix, lengthPrefixOctets: 2, byteOrder: network, canonicalQueryMessageLength: 27, canonicalQueryPrefixHex: 001b, canonicalResponseMessageLength: 43, canonicalResponsePrefixHex: 002b}
+  concurrencyPolicy: {pipelining: allowed, messageIdScope: tls-connection, messageIdUniqueness: outstanding-queries, responseOrdering: may-differ-from-query-order, responseCorrelation: [message-id, qname, qtype, qclass], timedOutMessageIdReuse: prohibited-until-connection-close}
+  query: {name: plab.test., type: A, class: IN, wireLength: 27, normalizedWireSha256: 423b6325f73f2f72a948fe3b5593e99201b0cb24f0dcdcffe897e784da3106c6}
+  expectedResponse: {rcode: NOERROR, answer: 192.0.2.1, ttl: 0, wireLength: 43, normalizedWireSha256: c63893fec8b20373c3233d3c4884b9f84e3d15a01218ccb144422f074b778931}
+  runtimeIdPolicy: {messageId: unique-among-outstanding-queries, canonicalHashNormalization: set-message-id-to-zero}
+  responseNormalization: {rawResponseEqualityRequired: false, compressionMayDiffer: true, procedure: [parse-dns-message, canonical-reserialize, compare-normalized-sha256]}
+  operationPolicy: {timeoutSource: load-profile.dns.queryTimeoutMilliseconds, retries: 0, onTimeout: abandon-query-and-record}
+executionProfile: {transportSecurity: tls, protocolVariant: dot-rfc7858-recursive-resolver, implementationRole: recursive-resolver, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode, platformProvenanceRequired: true, accelerationProvenanceRequired: true}
+validation:
+  required: true
+  checks: [protocol:dot, tls-version:tls1.2-or-tls1.3, alpn:dot, certificate-san:dns.plab.test, negotiated-parameters-recorded, tls-policy:rfc9325-compatible, port:853, no-fallback, cache-flushed-before-operation, upstream:local-fixture-authority, external-upstream:prohibited, query-rd-set, response-ra-set, response-aa-clear, response-question, rcode:NOERROR, answer:192.0.2.1, normalized-wire-length:43, normalized-wire-sha256, zero-retries, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: dot, expectedObserved: dot, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic], primaryMetrics: [queriesPerSecond, queryLatencyP50, queryLatencyP95, queryLatencyP99, failedOperations, timedOutOperations]}
+requiredMetrics: [queriesPerSecond, queryLatencyMean, queryLatencyP50, queryLatencyP75, queryLatencyP90, queryLatencyP95, queryLatencyP99, connectionLatency, completedOperations, malformedOperations, retryCount, failedOperations, timedOutOperations, totalTransferredBytes, effectiveConcurrency]
+artifacts: {required: [validation.json, protocol-proof.json, dns-wire-summary.json, dns-resolver-summary.json, upstream-proof.json, tls-negotiation.json, result.json, load.stdout.log, load.stderr.log], optional: [packet-summary.json, target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [external-recursive-resolver, public-recursive-resolver, unflushable-cache, external-upstream]}
+networkProfile: clean
+tags: [dns, dot, tls, interoperability, recursive-resolver, cold-cache, query, a, diagnostic, non-publishable]

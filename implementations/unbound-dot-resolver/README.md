@@ -1,8 +1,7 @@
 # Unbound DoT resolver feasibility decision
 
-Working identity: org.protocol-lab.components.implementation.unbound-dot-resolver.
+Working identity: `org.protocol-lab.components.implementation.unbound-dot-resolver`.
 
-Closed by prerequisite on the reconciled contract baseline. The only DoT scenario, dns.dot.query.a, requires the authoritative-server role, authoritative-answer behavior, recursion unavailable, cache disabled, and an origin-server execution profile. Unbound is a recursive validating caching resolver. Registering it against that scenario would be a false role and comparison claim, while package-v2 requires every provided implementation to name at least one scenario.
+The resolver-specific public contract and executor are now present, but the native Unbound 1.22.0 DoT service does not negotiate the required `dot` ALPN token. A local digest-pinned image smoke reached the authenticated TLS service and failed closed on the exact ALPN check. A TLS-terminating adapter would substitute the protocol implementation under test, so it is not an acceptable workaround.
 
-Do not publish or admit an Unbound DoT package until a resolver-specific DoT scenario, suite, comparison group, and ranking policy are committed. Upstream feasibility is otherwise positive: Unbound 1.22.0 has TLS service support; source tag commit 0076736fc40298eb6252705e6e158462c6b24d06, BSD-3-Clause.
-
+Do not publish or admit an Unbound DoT package unless upstream Unbound gains native `dot` ALPN support or the public contract changes for standards-backed reasons. This decision does not satisfy the resolver DoT live-diversity floor.
