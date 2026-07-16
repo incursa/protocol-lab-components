@@ -103,7 +103,7 @@ no recursive upstream dependency.
   than production server products.
 - [x] Add classic UDP and TCP evidence for BIND 9 so encrypted transport
   overhead can be studied without conflating roles.
-- [ ] Add classic UDP and TCP evidence for Technitium under the same exact
+- [x] Add classic UDP and TCP evidence for Technitium under the same exact
   authoritative role and deterministic zone contract.
 
 ### Resolver targets
@@ -137,12 +137,15 @@ no recursive upstream dependency.
 | Authoritative fixture | DoQ | Go DNS DoQ | 0.2.1 | `job-1c91832835d14fa8b049aa02ed8ccffd` |
 | Authoritative product | Classic DNS/UDP | BIND 9 | 0.1.0 | `job-88d1dbab8b6a40b7b43992995a02b219` |
 | Authoritative product | Classic DNS/TCP | BIND 9 | 0.1.0 | `job-799e5c5f78f44fb4805a23a2ff6a8744` |
+| Authoritative product | Classic DNS/UDP | Technitium DNS Server | 0.1.1 | `job-080eac8e1a4542fe9853023404077792` |
+| Authoritative product | Classic DNS/TCP | Technitium DNS Server | 0.1.1 | `job-0ada77e3fbad47928dec7cc74b3150ef` |
 
 These are real isolated-pair controller runs with retained raw and normalized
 artifacts. They establish current package proof and the two-implementation DoT
-and DoH2 breadth counts. The BIND classic rows are published diagnostic
-observations with accepted validation and measurements; they are not ranked or
-decision-ready. The secure-DNS set does not yet satisfy the repeated-run,
+and DoH2 breadth counts. The BIND and Technitium classic rows are published
+diagnostic observations with accepted validation and measurements; they are
+not ranked or decision-ready. The secure-DNS set does not yet satisfy the
+repeated-run,
 variance/saturation, resolver-role, DoH3/DoQ second-ecosystem, or decision-ready
 gates below.
 
