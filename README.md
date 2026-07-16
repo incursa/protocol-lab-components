@@ -49,6 +49,7 @@ implementations/
   quic-go-raw/
   quinn-raw/
   s2n-quic-raw/
+  picoquic-raw/
 executors/
   http1-reference/
   http1-go-smoke/
@@ -138,6 +139,7 @@ Implementation packages:
 - `org.protocol-lab.components.implementation.quic-go-raw`
 - `org.protocol-lab.components.implementation.quinn-raw`
 - `org.protocol-lab.components.implementation.s2n-quic-raw`
+- `org.protocol-lab.components.implementation.picoquic-raw`
 
 Test-executor packages:
 

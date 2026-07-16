@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.picoquic-raw",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "picoquic Raw QUIC Implementation",
+  "entryManifests": [
+    "implementations/picoquic-raw.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "picoquic-raw",
+      "displayName": "picoquic Raw QUIC",
+      "protocols": [
+        "quic"
+      ],
+      "scenarios": [
+        "quic.transport.handshake-cold",
+        "quic.transport.latency.echo-1kb",
+        "quic.transport.stream-throughput.1mb",
+        "quic.transport.multiplex.100x64kb",
+        "quic.transport.duplex-streams"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "quic",
+        "value": "true"
+      }
+    ]
+  }
+}
