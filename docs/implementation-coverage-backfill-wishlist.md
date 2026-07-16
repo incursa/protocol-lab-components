@@ -177,6 +177,9 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
 - [x] Package and live-prove the existing MSQuic/.NET raw adapter with explicit
   platform capability metadata.
 - [ ] Add raw transport packages for picoquic, Quinn, and s2n-quic.
+  - [ ] picoquic
+  - [x] Quinn
+  - [ ] s2n-quic
 - [ ] Add compatibility-first raw packages for aioquic, quiche, ngtcp2, XQUIC,
   LSQUIC, neqo, and mvfst where the upstream interop image exposes an exact
   scenario mapping.
@@ -192,6 +195,7 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
 | Incursa `quic-dotnet` | `dev-20260716T032138Z-c4c53766-clean` | 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; five accepted repetitions each | `job-ceced0c711554077b48af4195996efd4` |
 | MSQuic/.NET | `dev-20260716T034228Z-8a408704-clean` | 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; five accepted repetitions each | `job-73d3893c6b70459386e6fbf2428478f0` |
 | quic-go | `0.1.16` | Cold handshake, 1 KiB echo, 1 MiB stream throughput, 100x64 KiB multiplexing, and 16-stream duplex; current-head rows have accepted cross-worker measurements | `job-dfac45aec77143ef89781b85d50b5419`, `job-618030b559764ac98686ea78cd458257`, `job-9d4c7d6fa1c74ceea41aea0f91a2b84f`, `job-95c2770be54245388ff236cf2d508379`, `job-1df61cda4267436f98dd9ac7612266c4` |
+| Quinn | `0.1.0` | Cold handshake, 1 KiB echo, 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; every row has one accepted cross-worker measurement | `job-d81806366b4e447dab866e5f9652cbef`, `job-5eabc52f893046b7afc23fc67ba138b7`, `job-2bb41e44065f4c048289f2cfa1f20ad9`, `job-53da1c1d431e454ea4908a1809cc94f3`, `job-5c85e53f5dfe493ca30196b2a1a0fec3` |
 
 These clean implementation-owned packages were selected with immutable executor
 and scenario-package hashes. Each public report retains all 15 accepted cells
@@ -224,6 +228,24 @@ refused to replace the named 100-stream workload with the profile's one-stream
 shape. The completed rerun uses `raw-quic-peer-confidence` and records
 `c1-s100-r1`. This closes current-head quic-go breadth, not the repeated,
 physically isolated decision-ready gate.
+
+The Quinn target is immutable package
+`org.protocol-lab.components.implementation.quinn-raw@0.1.0`
+(`35ca2c4ba421...`) built from clean component commit `fd7e122`. It uses Quinn
+`0.11.11`, the exact `plab-raw-quic` ALPN, and the same pinned executor and
+scenario packages as the current quic-go proof. All five runs used the real
+isolated-pair path `plab-worker-load-01 -> plab-worker-sut-01`; handshake
+retained 102 controller artifacts and the other four retained 94 each. Their
+publication attempts (`pub_db0cf757995244dc88e559b3c88d232c`,
+`pub_01b7083ba6474c4a927221445743c764`,
+`pub_7a708c1bec98467ea3f1e03c9d25c7a1`,
+`pub_26e740b6b4f645f49e5fbdf36621774d`, and
+`pub_a237869114494fc9a97df0deec65e12b`) uploaded and verified the public
+objects and were accepted by the site import queue. All five report routes and
+the composite `/implementations/quinn-raw` drill-down were verified live. The
+measurements remain diagnostic/unranked because they use one repetition and
+the target/load VMs share physical host `r920`; Quinn adds a fourth live raw
+QUIC ecosystem but does not close the five-ecosystem or decision-ready floor.
 
 ## Workstream C - HTTP/3 catalog backfill
 
