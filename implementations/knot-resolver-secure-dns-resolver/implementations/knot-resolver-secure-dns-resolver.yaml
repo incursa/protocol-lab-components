@@ -6,7 +6,7 @@ family: knot-resolver
 role: recursive-resolver
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-knot-resolver-secure-dns-resolver:0.1.4
+image: incursa-protocol-lab-knot-resolver-secure-dns-resolver:0.1.5
 dockerfile: docker/Dockerfile
 buildContext: docker
 dockerNetworkMode: published-port
@@ -37,7 +37,7 @@ ports:
   - {name: doh2-resolver-control, protocol: tcp, default: 20569, hostPort: 20569, containerPort: 444}
 environment: {PLAB_SECURE_DNS_PORT: "20566", PLAB_RESOLVER_CONTROL_PORT: "20567", PLAB_DOH2_PORT: "20568", PLAB_DOH2_RESOLVER_CONTROL_PORT: "20569"}
 startup: {port: {name: dot-resolver-control, environmentVariable: PLAB_RESOLVER_CONTROL_PORT, default: 20567}, readiness: {protocol: process, timeoutSeconds: 45}}
-readinessCheck: {type: processStarted, timeoutSeconds: 45, startupDelayMilliseconds: 8000}
+readinessCheck: {type: processStarted, timeoutSeconds: 45, startupDelayMilliseconds: 30000}
 capabilities: [dns.recursive-resolver, dns.authoritative-server.fixture, dns.dot, dns.doh2, resolver.cache-flush, resolver.local-only-upstream, dnssec.fixture-zone-insecure, scenario.dns.dot.resolver.interoperability.query.a, scenario.dns.doh2.resolver.interoperability.query.a]
 entrypoint: {kind: bash, path: run.sh, arguments: [], workingDirectory: .}
 shutdownBehavior: process

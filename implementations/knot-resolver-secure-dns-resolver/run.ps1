@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param()
 $ErrorActionPreference='Stop'
-$image=if($env:PLAB_SECURE_DNS_IMAGE){$env:PLAB_SECURE_DNS_IMAGE}else{'incursa-protocol-lab-knot-resolver-secure-dns-resolver:0.1.4'}
+$image=if($env:PLAB_SECURE_DNS_IMAGE){$env:PLAB_SECURE_DNS_IMAGE}else{'incursa-protocol-lab-knot-resolver-secure-dns-resolver:0.1.5'}
 $dotPort=if($env:PLAB_SECURE_DNS_PORT){[int]$env:PLAB_SECURE_DNS_PORT}else{20566}
 $dotControlPort=if($env:PLAB_RESOLVER_CONTROL_PORT){[int]$env:PLAB_RESOLVER_CONTROL_PORT}else{$dotPort+1}
 $doh2Port=if($env:PLAB_DOH2_PORT){[int]$env:PLAB_DOH2_PORT}else{$dotPort+2}
