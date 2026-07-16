@@ -82,8 +82,8 @@ func TestPackageExecutionMetadataComesFromRunnerEnvironment(t *testing.T) {
 	t.Setenv("PLAB_CONCURRENCY", "8")
 	t.Setenv("PLAB_REPETITION", "3")
 
-	identity := executorFromEnvironment()
-	load := loadShapeFromEnvironment(options{
+	identity := executorIdentity()
+	load := requestedLoadShape(options{
 		connections:          2,
 		streamsPerConnection: 4,
 		duration:             5 * time.Second,
@@ -96,7 +96,21 @@ func TestPackageExecutionMetadataComesFromRunnerEnvironment(t *testing.T) {
 	if load.Connections != 2 || load.Concurrency != 8 || load.StreamsPerConnection != 4 {
 		t.Fatalf("load = %+v", load)
 	}
-	if load.DurationSeconds != 5 || load.WarmupSeconds != 1 || load.Repetitions != 3 {
+	if load.DurationSeconds != 5 || load.WarmupSeconds != 1 || load.Repetitions != 1 {
 		t.Fatalf("load timing = %+v", load)
+	}
+}
+
+func TestOutputDocumentIncludesCompleteExecutionEnvelope(t *testing.T) {
+	t.Setenv("PLAB_EXECUTOR_ID", "quic-go-raw-load")
+	t.Setenv("PLAB_EXECUTOR_VERSION", "0.1.4")
+
+	document := newOutputDocument(options{connections: 1, streamsPerConnection: 4, duration: 5 * time.Second, warmup: time.Second}, metricsOutput{})
+
+	if document.SchemaVersion != outputSchemaVersion {
+		t.Fatalf("schemaVersion = %q", document.SchemaVersion)
+	}
+	if document.Executor.Version != "0.1.4" || document.LoadGenerator.Version != "0.1.4" {
+		t.Fatalf("identity envelope = %+v / %+v", document.Executor, document.LoadGenerator)
 	}
 }

@@ -22,6 +22,7 @@ import (
 )
 
 const toolName = "quic-go-raw-load"
+const outputSchemaVersion = "protocol-lab.raw-quic-executor-result.v1"
 
 type options struct {
 	sni                  string
@@ -73,18 +74,20 @@ type metricsOutput struct {
 }
 
 type outputDocument struct {
-	Tool          string           `json:"tool"`
-	Target        string           `json:"target"`
-	Behavior      string           `json:"behavior"`
-	Executor      executorIdentity `json:"executor"`
-	RequestedLoad loadShapeOutput  `json:"requestedLoad"`
-	EffectiveLoad loadShapeOutput  `json:"effectiveLoad"`
-	Metrics       metricsOutput    `json:"metrics"`
-	Warnings      []string         `json:"warnings,omitempty"`
-	Errors        []string         `json:"errors,omitempty"`
+	SchemaVersion string          `json:"schemaVersion"`
+	Executor      identityOutput  `json:"executor"`
+	LoadGenerator identityOutput  `json:"loadGenerator"`
+	RequestedLoad loadShapeOutput `json:"requestedLoad"`
+	EffectiveLoad loadShapeOutput `json:"effectiveLoad"`
+	Tool          string          `json:"tool"`
+	Target        string          `json:"target"`
+	Behavior      string          `json:"behavior"`
+	Metrics       metricsOutput   `json:"metrics"`
+	Warnings      []string        `json:"warnings,omitempty"`
+	Errors        []string        `json:"errors,omitempty"`
 }
 
-type executorIdentity struct {
+type identityOutput struct {
 	ID      string `json:"id"`
 	Version string `json:"version"`
 }
@@ -99,6 +102,12 @@ type loadShapeOutput struct {
 }
 
 func main() {
+	if len(os.Args) == 2 && (os.Args[1] == "--version" || os.Args[1] == "version") {
+		identity := executorIdentity()
+		fmt.Printf("%s %s\n", identity.ID, identity.Version)
+		return
+	}
+
 	opts, err := parseOptions(os.Args[1:])
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -119,16 +128,8 @@ func main() {
 		elapsed = time.Nanosecond
 	}
 
-	document := outputDocument{
-		Tool:          toolName,
-		Target:        opts.target,
-		Behavior:      opts.behavior,
-		Executor:      executorFromEnvironment(),
-		RequestedLoad: loadShapeFromEnvironment(opts),
-		EffectiveLoad: loadShapeFromEnvironment(opts),
-		Metrics:       buildMetrics(stats, elapsed),
-		Warnings:      warnings,
-	}
+	document := newOutputDocument(opts, buildMetrics(stats, elapsed))
+	document.Warnings = warnings
 	if len(stats.errors) > 0 {
 		document.Errors = stats.errors
 	}
@@ -148,26 +149,39 @@ func main() {
 	}
 }
 
-func executorFromEnvironment() executorIdentity {
-	id := os.Getenv("PLAB_EXECUTOR_ID")
-	if id == "" {
-		id = toolName
+func newOutputDocument(opts options, metrics metricsOutput) outputDocument {
+	shape := requestedLoadShape(opts)
+	return outputDocument{
+		SchemaVersion: outputSchemaVersion,
+		Executor:      executorIdentity(),
+		LoadGenerator: loadGeneratorIdentity(),
+		RequestedLoad: shape,
+		EffectiveLoad: shape,
+		Tool:          toolName,
+		Target:        opts.target,
+		Behavior:      opts.behavior,
+		Metrics:       metrics,
 	}
-	version := os.Getenv("PLAB_EXECUTOR_VERSION")
-	if version == "" {
-		version = "source"
-	}
-	return executorIdentity{ID: id, Version: version}
 }
 
-func loadShapeFromEnvironment(opts options) loadShapeOutput {
-	concurrency := opts.connections * opts.streamsPerConnection
-	if value, err := strconv.Atoi(os.Getenv("PLAB_CONCURRENCY")); err == nil && value >= 0 {
-		concurrency = value
+func executorIdentity() identityOutput {
+	return identityOutput{
+		ID:      environmentOrDefault("PLAB_EXECUTOR_ID", toolName),
+		Version: environmentOrDefault("PLAB_EXECUTOR_VERSION", "source"),
 	}
-	repetitions := 1
-	if value, err := strconv.Atoi(os.Getenv("PLAB_REPETITION")); err == nil && value > 0 {
-		repetitions = value
+}
+
+func loadGeneratorIdentity() identityOutput {
+	return identityOutput{
+		ID:      environmentOrDefault("PLAB_LOAD_GENERATOR_ID", toolName),
+		Version: environmentOrDefault("PLAB_LOAD_GENERATOR_VERSION", executorIdentity().Version),
+	}
+}
+
+func requestedLoadShape(opts options) loadShapeOutput {
+	concurrency := opts.connections * max(1, opts.streamsPerConnection)
+	if value, err := strconv.Atoi(os.Getenv("PLAB_CONCURRENCY")); err == nil && value > 0 {
+		concurrency = value
 	}
 	return loadShapeOutput{
 		Connections:          opts.connections,
@@ -175,8 +189,15 @@ func loadShapeFromEnvironment(opts options) loadShapeOutput {
 		StreamsPerConnection: opts.streamsPerConnection,
 		DurationSeconds:      int(opts.duration.Seconds()),
 		WarmupSeconds:        int(opts.warmup.Seconds()),
-		Repetitions:          repetitions,
+		Repetitions:          1,
 	}
+}
+
+func environmentOrDefault(name string, fallback string) string {
+	if value := strings.TrimSpace(os.Getenv(name)); value != "" {
+		return value
+	}
+	return fallback
 }
 
 func parseOptions(args []string) (options, error) {
