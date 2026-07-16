@@ -170,7 +170,7 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
 
 ## Workstream B - raw QUIC transport backfill
 
-- [ ] Keep `quic-go-raw` current across handshake/echo, 1 MiB stream
+- [x] Keep `quic-go-raw` current across handshake/echo, 1 MiB stream
   throughput, multiplexing, and duplex workloads.
 - [x] Package and live-prove the Incursa `quic-dotnet` raw target through its
   implementation-owned handoff without coupling the runner to Incursa code.
@@ -191,12 +191,39 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
 | --- | --- | --- | --- |
 | Incursa `quic-dotnet` | `dev-20260716T032138Z-c4c53766-clean` | 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; five accepted repetitions each | `job-ceced0c711554077b48af4195996efd4` |
 | MSQuic/.NET | `dev-20260716T034228Z-8a408704-clean` | 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; five accepted repetitions each | `job-73d3893c6b70459386e6fbf2428478f0` |
+| quic-go | `0.1.16` | Cold handshake, 1 KiB echo, 1 MiB stream throughput, 100x64 KiB multiplexing, and 16-stream duplex; current-head rows have accepted cross-worker measurements | `job-dfac45aec77143ef89781b85d50b5419`, `job-618030b559764ac98686ea78cd458257`, `job-9d4c7d6fa1c74ceea41aea0f91a2b84f`, `job-95c2770be54245388ff236cf2d508379`, `job-1df61cda4267436f98dd9ac7612266c4` |
 
 These clean implementation-owned packages were selected with immutable executor
 and scenario-package hashes. Each public report retains all 15 accepted cells
 and their raw and normalized artifacts. They are live-proven diagnostic
 evidence, not decision-ready evidence: target and load execution still shared
 one worker, and both reports correctly remain `publishable=false`.
+
+The current quic-go target and executor heads are immutable package
+`org.protocol-lab.components.implementation.quic-go-raw@0.1.16`
+(`8d18e7bd2aec...`) and
+`org.protocol-lab.components.executor.quic-go-raw-load@0.1.13`
+(`789de256d5b0...`). The cross-worker proof used
+`plab-worker-load-01 -> plab-worker-sut-01` and is published as
+[`raw-quic-peer-matrix-raw-quic-peer-handshake-cold-raw-quic-transport-v1-smoke-cell-1`](https://lab.incursa.com/reports/raw-quic-peer-matrix-raw-quic-peer-handshake-cold-raw-quic-transport-v1-smoke-cell-1).
+It retains one accepted measurement and the exact topology but remains
+diagnostic/unranked because both VMs share physical host `r920` and only one
+repetition was run. The first isolated attempt
+(`job-9d0fb4f7ac504d07bdd3cae374a52f16`) is retained as failed ALPN evidence: the
+SUT role selected an unsupported catalog cell. Worker commit `eab14bf` now
+selects the single runnable resolved cell and rejects ambiguous multi-cell
+isolated jobs. A subsequent deployment-only permission failure
+(`job-84dcc68aa98a4f9dbb0979dd07613f49`) is also retained and was closed by
+restoring the `protocol-lab:protocol-lab` bundle ownership contract. Echo,
+1 MiB throughput, 100x64 KiB multiplexing, and 16-stream duplex then completed
+with one accepted cross-worker measurement and 94 retained controller
+artifacts each. All five reports were verified live on `lab.incursa.com`.
+The rejected generic-smoke multiplex attempt
+(`job-28cb5e982e5c4ba58e70aec9c0a8aef8`) is retained too: the runner correctly
+refused to replace the named 100-stream workload with the profile's one-stream
+shape. The completed rerun uses `raw-quic-peer-confidence` and records
+`c1-s100-r1`. This closes current-head quic-go breadth, not the repeated,
+physically isolated decision-ready gate.
 
 ## Workstream C - HTTP/3 catalog backfill
 
