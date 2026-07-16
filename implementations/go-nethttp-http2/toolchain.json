@@ -1,0 +1,7 @@
+{
+  "language": "go",
+  "minimumVersion": "1.25.0",
+  "dependencies": {"golang.org/x/net": "v0.57.0"},
+  "buildFlags": ["-buildvcs=false", "-trimpath"],
+  "runtimeDependency": "none"
+}

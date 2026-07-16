@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.go-nethttp-http2",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Go net/http HTTP/2 Implementation",
+  "entryManifests": ["implementations/go-nethttp-http2.yaml"],
+  "providedImplementations": [{
+    "implementationId": "go-nethttp-http2",
+    "displayName": "Go net/http HTTP/2",
+    "protocols": ["h2"],
+    "scenarios": ["http2.core.plaintext", "http2.core.json"]
+  }]
+}

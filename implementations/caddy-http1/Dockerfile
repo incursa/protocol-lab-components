@@ -5,4 +5,4 @@ COPY Caddyfile /etc/caddy/Caddyfile
 ENV PLAB_HTTP_PORT=8080
 EXPOSE 8080
 
-CMD ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

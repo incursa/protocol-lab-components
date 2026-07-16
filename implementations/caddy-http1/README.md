@@ -1,6 +1,6 @@
 # Caddy HTTP/1 Implementation
 
-Lane-scoped Caddy HTTP/1.1 implementation package. Version `0.1.1` builds the
+Lane-scoped Caddy HTTP/1.1 implementation package. Version `0.1.2` builds the
 target from the official Caddy `2.11.2` Alpine image pinned by OCI index digest;
 it does not depend on a worker-installed Caddy binary and does not imply Caddy
 HTTP/2 or HTTP/3 support.

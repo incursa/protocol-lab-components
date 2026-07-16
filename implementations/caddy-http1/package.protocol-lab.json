@@ -1,7 +1,7 @@
 {
   "packageId": "org.protocol-lab.components.implementation.caddy-http1",
   "packageKind": "implementation",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "component": {
     "name": "caddy-http1",
     "family": "caddy",

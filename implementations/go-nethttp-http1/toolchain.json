@@ -1,0 +1,6 @@
+{
+  "language": "go",
+  "minimumVersion": "1.25.0",
+  "buildFlags": ["-buildvcs=false", "-trimpath"],
+  "runtimeDependency": "none"
+}

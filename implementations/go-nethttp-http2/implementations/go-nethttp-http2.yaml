@@ -1,0 +1,40 @@
+schemaVersion: "1.0"
+id: go-nethttp-http2
+name: Go net/http HTTP/2
+description: Independent Go net/http cleartext HTTP/2 origin for the shared ProtocolLab rows.
+family: go-nethttp
+role: server
+targetKind: process
+targetContract: process
+executable: bin/linux-x64/go-nethttp-http2
+workingDirectory: .
+baseUrl: http://127.0.0.1:8082
+protocolBaseUrls: {h2: http://127.0.0.1:8082}
+dockerNetworkMode: published-port
+certificateMode: none
+roles: [server]
+protocols: [h2]
+supportedProtocols: [h2]
+supportedWorkloadFamilies: [http.application]
+protocolVersions: [h2c]
+entrypoint: {kind: process, path: bin/linux-x64/go-nethttp-http2, arguments: [], workingDirectory: .}
+ports:
+  - {name: h2, protocol: tcp, default: 8082}
+environment:
+  PLAB_HTTP_PORT: "8082"
+startup:
+  port: {name: h2, environmentVariable: PLAB_HTTP_PORT, default: 8082}
+readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 500}
+capabilities: [http.server, httpPlaintext, httpJson]
+supportedProtocolVersions: [h2c]
+supportedTestCaseIds: [http2.core.plaintext, http2.core.json]
+supportedScenarios: [http2.core.plaintext, http2.core.json]
+unsupportedKnownCases: [h1, h3, tls-alpn, websocket, server-sent-events]
+endpoints:
+  plaintext: {method: GET, path: /plaintext}
+  json: {method: GET, path: /json}
+shutdownBehavior: process
+artifactExports: [go-nethttp-http2.log]
+qlogSupport: false
+sslKeyLogSupport: false
+notes: h2c-prior-knowledge Go net/http cohort member; TLS ALPN is intentionally separate.
