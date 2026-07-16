@@ -26,6 +26,7 @@ $requiredFiles = @(
     "scenarios/quic/transport/zero-rtt-accepted.yaml",
     "scenarios/quic/transport/zero-rtt-rejected.yaml",
     "suites/raw-quic-transport-v1-smoke.yaml",
+    "suites/quic-transport-v1-comparison.yaml",
     "specifications/documents/rfc9000.json",
     "specifications/requirements/rfc9000/REQ-QUIC-RFC9000-0271.json",
     "specifications/requirements/rfc9000/REQ-QUIC-RFC9000-0897.json",

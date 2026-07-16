@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.raw-quic-transport",
-  "packageVersion": "0.1.14",
+  "packageVersion": "0.1.15",
   "kind": "scenario-pack",
   "displayName": "Raw QUIC Transport Scenario Pack",
   "entryManifests": [
@@ -30,6 +30,7 @@
     "scenarios/quic/transport/zero-rtt-accepted.yaml",
     "scenarios/quic/transport/zero-rtt-rejected.yaml",
     "suites/raw-quic-transport-v1-smoke.yaml",
+    "suites/quic-transport-v1-comparison.yaml",
     "specifications/documents/rfc9000.json",
     "specifications/requirements/rfc9000/REQ-QUIC-RFC9000-0271.json",
     "specifications/requirements/rfc9000/REQ-QUIC-RFC9000-0897.json",
@@ -199,6 +200,18 @@
       "displayName": "Raw QUIC transport package smoke suite",
       "purpose": "smoke",
       "resultKind": "validation",
+      "protocols": [
+        "quic"
+      ],
+      "testExecutors": [
+        "quic-go-raw-load"
+      ]
+    },
+    {
+      "suiteId": "quic-transport-v1-comparison",
+      "displayName": "ProtocolLab stable raw QUIC transport comparison suite",
+      "purpose": "benchmark",
+      "resultKind": "benchmark",
       "protocols": [
         "quic"
       ],

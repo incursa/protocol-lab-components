@@ -48,17 +48,22 @@ func TestWriteMetadataIncludesSupportedScenarios(t *testing.T) {
 	}
 
 	want := []string{
+		"quic.transport.stream-throughput.64kb",
 		"quic.transport.stream-throughput.1mb",
 		"quic.transport.stream-download.1mb",
+		"quic.transport.stream-throughput.16mb",
 		"quic.transport.sustained-stream.256x64kb",
 		"quic.transport.sustained-download.256x64kb",
 		"quic.transport.latency.echo-1kb",
+		"quic.transport.multiplex.100x1kb",
 		"quic.transport.multiplex.100x64kb",
+		"quic.transport.multiplex.16x1mb",
 		"quic.transport.stream-limits.100x64kb",
 		"quic.transport.flow-control.slow-reader-16x64kb",
 		"quic.transport.connection-churn",
 		"quic.transport.stream-churn",
 		"quic.transport.duplex-streams",
+		"quic.transport.duplex-streams.16x1mb",
 		"quic.transport.duplex-streams-peer-matrix",
 		"quic.transport.handshake-cold",
 	}
@@ -195,7 +200,7 @@ func TestServerHandlesConnectionChurnWithFreshConnections(t *testing.T) {
 }
 
 func TestServerAcceptsLargeClientToServerPayloadWithoutEcho(t *testing.T) {
-	stream := &fakeStream{reader: bytes.NewReader(bytes.Repeat([]byte{0x7}, 1024*1024))}
+	stream := &fakeStream{reader: bytes.NewReader(bytes.Repeat([]byte{0x7}, defaultEchoMaxSize+1))}
 	handleStream(stream, options{echoMaxBytes: defaultEchoMaxSize})
 
 	if stream.write.Len() != 0 {
@@ -203,6 +208,46 @@ func TestServerAcceptsLargeClientToServerPayloadWithoutEcho(t *testing.T) {
 	}
 	if !stream.closed {
 		t.Fatal("stream was not closed")
+	}
+}
+
+func TestServerEchoesOneMiBPayloadExactly(t *testing.T) {
+	payload := bytes.Repeat([]byte{0x5a}, defaultEchoMaxSize)
+	stream := &fakeStream{reader: bytes.NewReader(payload)}
+
+	handleStream(stream, options{echoMaxBytes: defaultEchoMaxSize})
+
+	if !bytes.Equal(stream.write.Bytes(), payload) {
+		t.Fatalf("echo payload mismatch: got %d bytes, want %d", stream.write.Len(), len(payload))
+	}
+	if !stream.closed {
+		t.Fatal("stream was not closed")
+	}
+}
+
+func TestScenarioIdentitySelectsExactEchoBehavior(t *testing.T) {
+	testCases := []struct {
+		name       string
+		scenarioID string
+		want       int64
+	}{
+		{name: "upload only", scenarioID: "quic.transport.stream-throughput.64kb", want: 0},
+		{name: "small echo", scenarioID: "quic.transport.multiplex.100x1kb", want: 1024},
+		{name: "large echo", scenarioID: "quic.transport.multiplex.16x1mb", want: 1024 * 1024},
+		{name: "legacy default", scenarioID: "", want: defaultEchoMaxSize},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Setenv("PLAB_SCENARIO_ID", testCase.scenarioID)
+			opts, err := parseOptions(nil)
+			if err != nil {
+				t.Fatalf("parseOptions returned error: %v", err)
+			}
+			if opts.echoMaxBytes != testCase.want {
+				t.Fatalf("echoMaxBytes = %d, want %d", opts.echoMaxBytes, testCase.want)
+			}
+		})
 	}
 }
 
@@ -260,24 +305,29 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
 		t.Fatalf("unmarshal package manifest: %v", err)
 	}
-	if packageManifest.PackageVersion != "0.1.15" {
-		t.Fatalf("packageVersion = %q, want 0.1.15", packageManifest.PackageVersion)
+	if packageManifest.PackageVersion != "0.1.16" {
+		t.Fatalf("packageVersion = %q, want 0.1.16", packageManifest.PackageVersion)
 	}
 	if len(packageManifest.ProvidedImplementations) != 1 {
 		t.Fatalf("providedImplementations length = %d, want 1", len(packageManifest.ProvidedImplementations))
 	}
 	wantPackageScenarios := []string{
+		"quic.transport.stream-throughput.64kb",
 		"quic.transport.stream-throughput.1mb",
 		"quic.transport.stream-download.1mb",
+		"quic.transport.stream-throughput.16mb",
 		"quic.transport.sustained-stream.256x64kb",
 		"quic.transport.sustained-download.256x64kb",
 		"quic.transport.latency.echo-1kb",
+		"quic.transport.multiplex.100x1kb",
 		"quic.transport.multiplex.100x64kb",
+		"quic.transport.multiplex.16x1mb",
 		"quic.transport.stream-limits.100x64kb",
 		"quic.transport.flow-control.slow-reader-16x64kb",
 		"quic.transport.connection-churn",
 		"quic.transport.stream-churn",
 		"quic.transport.duplex-streams",
+		"quic.transport.duplex-streams.16x1mb",
 		"quic.transport.duplex-streams-peer-matrix",
 		"quic.transport.handshake-cold",
 	}

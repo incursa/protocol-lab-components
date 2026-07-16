@@ -40,17 +40,22 @@ const (
 
 var quicGoVersion = "v0.60.0"
 var supportedScenarios = []string{
+	"quic.transport.stream-throughput.64kb",
 	"quic.transport.stream-throughput.1mb",
 	"quic.transport.stream-download.1mb",
+	"quic.transport.stream-throughput.16mb",
 	"quic.transport.sustained-stream.256x64kb",
 	"quic.transport.sustained-download.256x64kb",
 	"quic.transport.latency.echo-1kb",
+	"quic.transport.multiplex.100x1kb",
 	"quic.transport.multiplex.100x64kb",
+	"quic.transport.multiplex.16x1mb",
 	"quic.transport.stream-limits.100x64kb",
 	"quic.transport.flow-control.slow-reader-16x64kb",
 	"quic.transport.connection-churn",
 	"quic.transport.stream-churn",
 	"quic.transport.duplex-streams",
+	"quic.transport.duplex-streams.16x1mb",
 	"quic.transport.duplex-streams-peer-matrix",
 	"quic.transport.handshake-cold",
 }
@@ -101,7 +106,7 @@ func parseOptions(args []string) (options, error) {
 		listen:        defaultListenAddress(),
 		advertiseHost: strings.TrimSpace(os.Getenv("PROTOCOL_LAB_TARGET_ADVERTISE_HOST")),
 		alpn:          defaultALPN,
-		echoMaxBytes:  defaultEchoMaxSize,
+		echoMaxBytes:  defaultEchoMaxSizeForScenario(strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))),
 	}
 
 	fs := flag.NewFlagSet("quic-go-raw", flag.ContinueOnError)
@@ -126,6 +131,27 @@ func parseOptions(args []string) (options, error) {
 	}
 
 	return opts, nil
+}
+
+func defaultEchoMaxSizeForScenario(scenarioID string) int64 {
+	switch scenarioID {
+	case "quic.transport.stream-throughput.64kb",
+		"quic.transport.stream-throughput.1mb",
+		"quic.transport.stream-throughput.16mb",
+		"quic.transport.sustained-stream.256x64kb",
+		"quic.transport.stream-download.1mb",
+		"quic.transport.sustained-download.256x64kb",
+		"quic.transport.handshake-cold":
+		return 0
+	case "quic.transport.latency.echo-1kb",
+		"quic.transport.multiplex.100x1kb":
+		return 1024
+	case "quic.transport.multiplex.16x1mb",
+		"quic.transport.duplex-streams.16x1mb":
+		return 1024 * 1024
+	default:
+		return defaultEchoMaxSize
+	}
 }
 
 func defaultListenAddress() string {
