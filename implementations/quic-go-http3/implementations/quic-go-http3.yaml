@@ -12,7 +12,7 @@ commandArguments:
   - runtimes/linux-x64/run-quic-go-http3-server.sh
   - --listen
   - :5446
-image: incursa-protocol-lab-quic-go-http3:0.1.6
+image: incursa-protocol-lab-quic-go-http3:0.1.7
 dockerfile: docker/quic-go-http3.Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
@@ -31,6 +31,7 @@ supportedProtocols:
   - h3
 supportedWorkloadFamilies:
   - http.application
+  - http3.protocol
 supportedProtocolVersions:
   - http/3
 supportedScenarios:
@@ -39,12 +40,16 @@ supportedScenarios:
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
   - http3.payload.stream.100x16kb
+  - http3.headers.response-headers-50x32
+  - http3.protocol.qpack-repeated-headers
 supportedTestCaseIds:
   - http3.core.status
   - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
   - http3.payload.stream.100x16kb
+  - http3.headers.response-headers-50x32
+  - http3.protocol.qpack-repeated-headers
 scenarioCoverage:
   quic.transport.stream-throughput.1mb:
     status: unsupported
@@ -73,9 +78,13 @@ scenarioCoverage:
     endpoint: /stream/bytes?chunks=100&size=16384&delayMs=0
     behavior: streams 100 deterministic 16 KiB chunks without prebuffering the full body.
   http3-header-heavy-qpack:
-    status: unsupported
+    status: supported
     scenarioId: http3.headers.response-headers-50x32
-    reason: Package does not expose deterministic header-heavy/QPACK fixtures.
+    endpoint: /headers/response?count=50&size=32
+  http3.protocol.qpack-repeated-headers:
+    status: supported
+    scenarioId: http3.protocol.qpack-repeated-headers
+    executorId: h3spec-http3-qpack
   websocket-over-h3:
     status: unsupported
     scenarioId: http3.websocket.rfc9220.extended-connect
@@ -117,6 +126,9 @@ capabilities:
   - httpStatus
   - httpBytes
   - httpStreaming
+  - httpHeaders
+  - h3.server
+  - quic.server
 entrypoint:
   kind: pwsh
   path: run.ps1
@@ -150,6 +162,9 @@ endpoints:
   streamBytes100x16kb:
     method: GET
     path: /stream/bytes?chunks=100&size=16384&delayMs=0
+  responseHeaders50x32:
+    method: GET
+    path: /headers/response?count=50&size=32
 shutdownBehavior: process
 artifactExports:
   - command.txt

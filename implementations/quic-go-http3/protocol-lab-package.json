@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.quic-go-http3",
-  "packageVersion": "0.1.6",
+  "packageVersion": "0.1.7",
   "kind": "implementation",
   "displayName": "quic-go HTTP/3 Implementation",
   "entryManifests": [
@@ -19,7 +19,9 @@
         "http3.payload.bytes.1kb",
         "http3.payload.bytes.64kb",
         "http3.payload.bytes.1mb",
-        "http3.payload.stream.100x16kb"
+        "http3.payload.stream.100x16kb",
+        "http3.headers.response-headers-50x32",
+        "http3.protocol.qpack-repeated-headers"
       ]
     }
   ],

@@ -41,7 +41,7 @@
     "images": [
       {
         "name": "caddy-http3",
-        "image": "incursa-protocol-lab-caddy-http3:0.1.2",
+        "image": "incursa-protocol-lab-caddy-http3:0.1.3",
         "baseImage": "caddy:2.11.2-alpine",
         "baseImageIndexDigest": "caddy@sha256:834468128c7696cec0ceea6172f7d692daf645ae51983ca76e39da54a97c570d",
         "baseImageLinuxAmd64Digest": "caddy@sha256:6d125e80883be8a2bef5f088c7535945b42cdbb8a0f5471bf36eaf18dc0638f1",
@@ -50,13 +50,13 @@
     ]
   },
   "commands": {
-    "buildTemplate": "docker build --pull -f docker/Caddy.Dockerfile -t incursa-protocol-lab-caddy-http3:0.1.2 docker",
-    "serverTemplate": "docker run --rm -p <port>:8443/tcp -p <port>:8443/udp incursa-protocol-lab-caddy-http3:0.1.2 caddy run --config /etc/caddy/Caddyfile --adapter caddyfile",
+    "buildTemplate": "docker build --pull -f docker/Caddy.Dockerfile -t incursa-protocol-lab-caddy-http3:0.1.3 docker",
+    "serverTemplate": "docker run --rm -p <port>:8443/tcp -p <port>:8443/udp incursa-protocol-lab-caddy-http3:0.1.3 caddy run --config /etc/caddy/Caddyfile --adapter caddyfile",
     "planOnly": "pwsh ./run.ps1 -PlanOnly"
   },
   "knownLimitations": [
     "Docker-only HTTP/3 server package; it does not provide a client role.",
     "Caddy uses tls internal container-local certificate material; validation must record local certificate bypass where needed.",
-    "Package metadata advertises only locally wired HTTP application endpoints, not QPACK conformance or WebSocket-over-H3 support."
+    "Package metadata advertises locally wired HTTP application and h3spec/QPACK diagnostic endpoints, but not WebSocket-over-H3 support."
   ]
 }

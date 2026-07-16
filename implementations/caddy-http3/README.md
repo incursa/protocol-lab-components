@@ -6,8 +6,8 @@
 
 - Protocol family: `h3`
 - Role: server
-- Public scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`
-- Endpoints: `/status`, `/plaintext`, `/json`, `/protocol-lab/metadata`, `/bytes/1024`, `/bytes/65536`
+- Public scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`
+- Endpoints: `/status`, `/plaintext`, `/json`, `/protocol-lab/metadata`, `/bytes/1024`, `/bytes/65536`, `/headers/response?count=50&size=32`
 
 ## Known Unsupported
 
@@ -22,7 +22,7 @@
 
 - Base image: `caddy:2.11.2-alpine`
 - Linux amd64 image digest: `caddy@sha256:6d125e80883be8a2bef5f088c7535945b42cdbb8a0f5471bf36eaf18dc0638f1`
-- Component image tag: `incursa-protocol-lab-caddy-http3:0.1.2`
+- Component image tag: `incursa-protocol-lab-caddy-http3:0.1.3`
 - Certificate mode: Caddy `tls internal`
 
 ## Local Smoke
@@ -38,7 +38,7 @@ Build the wrapper image:
 ```powershell
 docker build --pull `
   -f ./implementations/caddy-http3/docker/Caddy.Dockerfile `
-  -t incursa-protocol-lab-caddy-http3:0.1.2 `
+  -t incursa-protocol-lab-caddy-http3:0.1.3 `
   ./implementations/caddy-http3/docker
 ```
 

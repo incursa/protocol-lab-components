@@ -6,8 +6,8 @@
 
 - Protocol family: `h3`
 - Role: server
-- Public scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`, `http3.payload.stream.100x16kb`
-- Endpoints: `/health`, `/status`, `/protocol-lab/metadata`, `/plaintext`, `/json`, `/bytes/1024`, `/bytes/65536`, `/bytes/1048576`, `/stream/bytes?chunks=100&size=16384&delayMs=0`
+- Public scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.payload.bytes.1mb`, `http3.payload.stream.100x16kb`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`
+- Endpoints: `/health`, `/status`, `/protocol-lab/metadata`, `/plaintext`, `/json`, `/bytes/1024`, `/bytes/65536`, `/bytes/1048576`, `/stream/bytes?chunks=100&size=16384&delayMs=0`, `/headers/response?count=50&size=32`
 - Capabilities: `http.server`, `httpStatus`, `httpBytes`, `httpStreaming`
 - Not-found behavior: any unmapped path returns HTTP status `404`
 
@@ -27,8 +27,8 @@
 - Builder image: `golang:1.25-bookworm`
 - Builder image digest: `golang@sha256:bbb255b0e131db500cf0520adc97441d2260cf629c7fa7e39e025ddf53995a24`
 - Runtime image: `scratch`
-- Package version: `0.1.6`
-- Component image tag: `incursa-protocol-lab-quic-go-http3:0.1.6`
+- Package version: `0.1.7`
+- Component image tag: `incursa-protocol-lab-quic-go-http3:0.1.7`
 - Host requirements: Docker and an HTTP/3-capable lab worker. The Go 1.25.x
   toolchain and quic-go v0.60.0 identity are pinned and retained inside the
   target image provenance; they are not host capability requirements.
@@ -50,7 +50,7 @@ Build the wrapper image:
 docker build --pull `
   --build-arg QUIC_GO_VERSION=v0.60.0 `
   -f ./implementations/quic-go-http3/docker/quic-go-http3.Dockerfile `
-  -t incursa-protocol-lab-quic-go-http3:0.1.6 `
+  -t incursa-protocol-lab-quic-go-http3:0.1.7 `
   ./implementations/quic-go-http3
 ```
 

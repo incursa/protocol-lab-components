@@ -89,6 +89,8 @@ func routes() http.Handler {
 				"http3.payload.bytes.64kb",
 				"http3.payload.bytes.1mb",
 				"http3.payload.stream.100x16kb",
+				"http3.headers.response-headers-50x32",
+				"http3.protocol.qpack-repeated-headers",
 			},
 			"unsupportedKnownCases": []string{"h1", "h2", "h2c", "raw-quic", "websocket", "server-sent-events"},
 		})
@@ -101,12 +103,28 @@ func routes() http.Handler {
 	mux.HandleFunc("/bytes/64kb", textHandler(bytes64KB, "application/octet-stream"))
 	mux.HandleFunc("/bytes/1048576", textHandler(bytes1MB, "application/octet-stream"))
 	mux.HandleFunc("/bytes/1mb", textHandler(bytes1MB, "application/octet-stream"))
+	mux.HandleFunc("/headers/response", responseHeadersHandler)
 	mux.HandleFunc(streamBytesPath, streamBytesHandler)
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "not found", http.StatusNotFound)
 	})
 
 	return mux
+}
+
+func responseHeadersHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Query().Get("count") != "50" || r.URL.Query().Get("size") != "32" {
+		http.Error(w, "expected count=50 and size=32", http.StatusBadRequest)
+		return
+	}
+
+	value := strings.Repeat("h", 32)
+	for index := 0; index < 50; index++ {
+		w.Header().Set(fmt.Sprintf("x-protocol-bench-header-%02d", index), value)
+	}
+	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Length", "7")
+	_, _ = w.Write([]byte("headers"))
 }
 
 func textHandler(body string, contentType string) http.HandlerFunc {

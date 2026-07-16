@@ -6,7 +6,7 @@ family: caddy
 role: server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-caddy-http3:0.1.2
+image: incursa-protocol-lab-caddy-http3:0.1.3
 dockerfile: docker/Caddy.Dockerfile
 buildContext: docker
 dockerNetworkMode: published-port
@@ -25,16 +25,21 @@ supportedProtocols:
   - h3
 supportedWorkloadFamilies:
   - http.application
+  - http3.protocol
 supportedProtocolVersions:
   - http/3
 supportedScenarios:
   - http3.core.status
   - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
+  - http3.headers.response-headers-50x32
+  - http3.protocol.qpack-repeated-headers
 supportedTestCaseIds:
   - http3.core.status
   - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
+  - http3.headers.response-headers-50x32
+  - http3.protocol.qpack-repeated-headers
 scenarioCoverage:
   quic.transport.stream-throughput.1mb:
     status: unsupported
@@ -58,9 +63,13 @@ scenarioCoverage:
     scenarioId: http3.payload.bytes.1mb
     reason: 1 MB response endpoint is not promoted until a package-backed live controller row validates it.
   http3-header-heavy-qpack:
-    status: unsupported
+    status: supported
     scenarioId: http3.headers.response-headers-50x32
-    reason: Caddy wrapper does not yet expose deterministic header-heavy/QPACK fixtures.
+    endpoint: /headers/response?count=50&size=32
+  http3.protocol.qpack-repeated-headers:
+    status: supported
+    scenarioId: http3.protocol.qpack-repeated-headers
+    executorId: h3spec-http3-qpack
   websocket-over-h3:
     status: unsupported
     scenarioId: http3.websocket.rfc9220.extended-connect
@@ -101,6 +110,9 @@ capabilities:
   - http.server
   - httpStatus
   - httpBytes
+  - httpHeaders
+  - h3.server
+  - quic.server
 entrypoint:
   kind: pwsh
   path: run.ps1
@@ -122,6 +134,9 @@ endpoints:
   bytes64kb:
     method: GET
     path: /bytes/65536
+  responseHeaders50x32:
+    method: GET
+    path: /headers/response?count=50&size=32
 shutdownBehavior: process
 artifactExports:
   - command.txt

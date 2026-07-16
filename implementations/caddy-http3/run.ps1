@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Image = 'incursa-protocol-lab-caddy-http3:0.1.2',
+    [string]$Image = 'incursa-protocol-lab-caddy-http3:0.1.3',
     [int]$Port = 5445,
     [switch]$SkipBuild,
     [switch]$PlanOnly,

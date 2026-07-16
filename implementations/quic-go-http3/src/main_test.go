@@ -4,10 +4,32 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
+
+func TestResponseHeadersHandlerEmitsCanonicalFixture(t *testing.T) {
+	request := httptest.NewRequest(http.MethodGet, "/headers/response?count=50&size=32", nil)
+	recorder := httptest.NewRecorder()
+
+	responseHeadersHandler(recorder, request)
+
+	if got, want := recorder.Code, http.StatusOK; got != want {
+		t.Fatalf("status = %d, want %d", got, want)
+	}
+	if got, want := recorder.Body.String(), "headers"; got != want {
+		t.Fatalf("body = %q, want %q", got, want)
+	}
+	for index := 0; index < 50; index++ {
+		name := fmt.Sprintf("x-protocol-bench-header-%02d", index)
+		if got, want := recorder.Header().Get(name), strings.Repeat("h", 32); got != want {
+			t.Fatalf("%s = %q, want %q", name, got, want)
+		}
+	}
+}
 
 func TestStreamBytesHandlerStreamsCanonicalQuery(t *testing.T) {
 	recorder := httptest.NewRecorder()

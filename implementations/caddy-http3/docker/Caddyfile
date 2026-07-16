@@ -20,7 +20,7 @@ localhost:8443 {
     respond /json "{\"message\":\"Hello, World!\"}" 200
 
     header /protocol-lab/metadata Content-Type "application/json"
-    respond /protocol-lab/metadata "{\"implementationId\":\"caddy-http3\",\"protocol\":\"h3\",\"packageId\":\"org.protocol-lab.components.implementation.caddy-http3\",\"supportedScenarios\":[\"http3.core.status\",\"http3.payload.bytes.1kb\",\"http3.payload.bytes.64kb\"]}" 200
+    respond /protocol-lab/metadata "{\"implementationId\":\"caddy-http3\",\"protocol\":\"h3\",\"packageId\":\"org.protocol-lab.components.implementation.caddy-http3\",\"supportedScenarios\":[\"http3.core.status\",\"http3.payload.bytes.1kb\",\"http3.payload.bytes.64kb\",\"http3.headers.response-headers-50x32\",\"http3.protocol.qpack-repeated-headers\"]}" 200
 
     handle /bytes/1024 {
         header Content-Type "application/octet-stream"
@@ -32,5 +32,60 @@ localhost:8443 {
         header Content-Type "application/octet-stream"
         root * /srv
         file_server
+    }
+
+    handle /headers/response {
+        header Content-Type "text/plain"
+        header x-protocol-bench-header-00 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-01 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-02 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-03 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-04 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-05 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-06 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-07 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-08 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-09 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-10 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-11 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-12 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-13 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-14 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-15 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-16 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-17 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-18 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-19 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-20 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-21 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-22 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-23 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-24 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-25 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-26 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-27 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-28 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-29 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-30 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-31 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-32 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-33 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-34 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-35 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-36 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-37 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-38 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-39 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-40 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-41 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-42 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-43 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-44 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-45 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-46 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-47 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-48 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        header x-protocol-bench-header-49 "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+        respond "headers" 200
     }
 }

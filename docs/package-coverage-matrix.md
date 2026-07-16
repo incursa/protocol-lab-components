@@ -26,15 +26,15 @@ This matrix tracks reusable component package coverage for implementations and e
 
 | Visible implementation or executor | Before package state | After package state |
 | --- | --- | --- |
-| `kestrel-http3` | source package present | self-contained Linux x64 target package; current status, 1KB, and 64KB live proof retained |
-| `caddy-http3` | visible on public site and present in internal consumer manifests, but not packaged in this repo | added and registered `org.protocol-lab.components.implementation.caddy-http3` |
-| `nginx-http3` | present in internal consumer manifests, but not packaged in this repo | added `org.protocol-lab.components.implementation.nginx-http3`; live H3 status, 1KB, and 64KB smoke passed |
+| `kestrel-http3` | source package present | self-contained Linux x64 target package; `0.1.7` adds the deterministic header/QPACK contract and awaits live proof; `0.1.6` retains historical status, 1KB, and 64KB proof |
+| `caddy-http3` | visible on public site and present in internal consumer manifests, but not packaged in this repo | current source `0.1.8` adds deterministic header/QPACK fixtures; `0.1.7` remains the latest live-proven immutable package |
+| `nginx-http3` | present in internal consumer manifests, but not packaged in this repo | current source `0.1.8` adds deterministic header/QPACK fixtures; `0.1.7` retains historical H3 status, 1KB, and 64KB proof |
 | `incursa-http3` / `quic-dotnet-dev` | live/package-owned outside this repo | unchanged; not duplicated in component repo |
 | `msquic-dotnet` / `quic-dotnet-raw-dev` | live/package-owned outside this repo | unchanged; raw QUIC scenario and quic-go executor remain reusable component packages |
 | `aioquic-http3` | source package present | current `0.3.3` package has live h3spec status, response-header, and QPACK proof; `0.3.2` retains historical canonical status and 1KB proof |
 | `quiche-http3` | source package present | source package present with explicit scenario coverage metadata |
 | `ngtcp2-http3` | source package present | source package present with explicit scenario coverage metadata |
-| `quic-go-http3` | protocol-lab-internal placeholder and raw QUIC executor only | added `org.protocol-lab.components.implementation.quic-go-http3`; current status, 1KB, and 64KB live proof retained |
+| `quic-go-http3` | protocol-lab-internal placeholder and raw QUIC executor only | current source `0.1.7` adds deterministic header/QPACK fixtures; `0.1.6` retains historical status, 1KB, and 64KB proof |
 | `quic-go-raw` | no raw QUIC implementation package | added `org.protocol-lab.components.implementation.quic-go-raw` for `quic.transport.stream-throughput.1mb` and `quic.transport.multiplex.100x64kb` only |
 | `quic-go-raw-load` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
 | `h3spec-http3-qpack` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
@@ -73,13 +73,13 @@ This matrix tracks reusable component package coverage for implementations and e
 
 | Package | Raw QUIC | H3 1KB | H3 64KB | H3 large body | Header-heavy / QPACK | WebSocket-over-H3 | h3spec / QPACK executor |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `kestrel-http3` | unsupported | supported, live proof | supported, live proof | supported metadata | unsupported | unsupported | compatible target, unproven |
-| `caddy-http3` | unsupported | supported, live proof | supported, live proof | unsupported | unsupported | unsupported | compatible target, unproven |
-| `nginx-http3` | unsupported | supported, live proof | supported, live proof | skipped pending broader fixture promotion | unsupported | unsupported | compatible target, unproven |
+| `kestrel-http3` | unsupported | supported, historical 0.1.6 proof | supported, historical 0.1.6 proof | supported metadata | supported, unproven | unsupported | compatible target, unproven |
+| `caddy-http3` | unsupported | supported, historical 0.1.7 proof | supported, historical 0.1.7 proof | unsupported | supported, unproven | unsupported | compatible target, unproven |
+| `nginx-http3` | unsupported | supported, historical 0.1.7 proof | supported, historical 0.1.7 proof | skipped pending broader fixture promotion | supported, unproven | unsupported | compatible target, unproven |
 | `aioquic-http3` | unsupported | supported, historical 0.3.2 proof | unproven | unsupported | supported, live proof | supported via RFC9220 endpoint and executor | compatible target, live proof |
 | `quiche-http3` | unsupported | validation-failed; characterization supported | validation-failed; characterization supported | validation-failed; characterization supported | client-only | unsupported | compatible target, unproven |
 | `ngtcp2-http3` | unsupported | validation-failed; characterization supported | validation-failed; characterization supported | validation-failed; characterization supported | client-only | unsupported | compatible target, unproven |
-| `quic-go-http3` | unsupported | supported, live proof | supported, live proof | supported metadata | unsupported | unsupported | compatible target, unproven |
+| `quic-go-http3` | unsupported | supported, historical 0.1.6 proof | supported, historical 0.1.6 proof | supported metadata | supported, unproven | unsupported | compatible target, unproven |
 | `quic-go-raw` | supported target for stream throughput and multiplex only, live proof | unsupported | unsupported | unsupported | unsupported | unsupported | unsupported |
 | `quic-go-raw-load` | supported executor | unsupported | unsupported | unsupported | unsupported | unsupported | unsupported |
 | `h3spec-http3-qpack` | unsupported | compatible target | compatible target | compatible target | supported, aioquic live proof | unsupported | supported, aioquic live proof |

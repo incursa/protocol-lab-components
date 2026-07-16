@@ -21,6 +21,7 @@ app.Lifetime.ApplicationStopped.Register(certificate.Dispose);
 var bytes1Kb = new string('x', 1024);
 var bytes64Kb = new string('x', 65_536);
 var bytes1Mb = new string('x', 1_048_576);
+var repeatedHeaderValue = new string('h', 32);
 
 app.MapGet("/health", () => Results.Json(new { status = "ok", implementationId = "kestrel-http3", protocol = "h3" }));
 app.MapGet("/status", () => Results.Json(new
@@ -37,7 +38,7 @@ app.MapGet("/protocol-lab/metadata", () => Results.Json(new
     packageId = "org.protocol-lab.components.implementation.kestrel-http3",
     protocol = "h3",
     protocolVersion = "http/3",
-    supportedScenarios = new[] { "http3.core.status", "http3.payload.bytes.1kb", "http3.payload.bytes.64kb", "http3.payload.bytes.1mb" },
+    supportedScenarios = new[] { "http3.core.status", "http3.payload.bytes.1kb", "http3.payload.bytes.64kb", "http3.payload.bytes.1mb", "http3.headers.response-headers-50x32", "http3.protocol.qpack-repeated-headers" },
     unsupportedKnownCases = new[] { "h1", "h2", "h2c", "raw-quic", "websocket", "server-sent-events" }
 }));
 app.MapGet("/plaintext", () => Results.Text("Hello, World!", "text/plain"));
@@ -46,6 +47,22 @@ app.MapGet("/bytes/1024", () => Results.Text(bytes1Kb, "application/octet-stream
 app.MapGet("/bytes/1kb", () => Results.Text(bytes1Kb, "application/octet-stream"));
 app.MapGet("/bytes/65536", () => Results.Text(bytes64Kb, "application/octet-stream"));
 app.MapGet("/bytes/1048576", () => Results.Text(bytes1Mb, "application/octet-stream"));
+app.MapGet("/headers/response", (HttpContext context, int? count, int? size) =>
+{
+    var headerCount = count ?? 50;
+    var headerSize = size ?? 32;
+    if (headerCount != 50 || headerSize != 32)
+    {
+        return Results.BadRequest(new { error = "expected count=50 and size=32" });
+    }
+
+    for (var index = 0; index < headerCount; index++)
+    {
+        context.Response.Headers.Append($"x-protocol-bench-header-{index:D2}", repeatedHeaderValue);
+    }
+
+    return Results.Text("headers", "text/plain");
+});
 
 app.Run();
 

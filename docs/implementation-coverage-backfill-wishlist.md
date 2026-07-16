@@ -162,8 +162,9 @@ decision-ready gates below.
 - [ ] Bring Kestrel, Incursa HTTP/3, Caddy, nginx, quic-go, and aioquic onto a
   common plaintext, JSON, 1 KiB, and 64 KiB support matrix where their exact
   semantics permit it.
-- [x] Re-run the current immutable quic-go and aioquic package heads so live
-  evidence matches the cataloged package versions.
+- [ ] Re-run the current immutable quic-go and aioquic package heads so live
+  evidence matches the cataloged package versions. aioquic `0.3.3` is current-
+  proven; quic-go `0.1.7` now awaits its header/QPACK live run.
 - [ ] Complete diagnostic peer-characterization evidence for quiche and
   ngtcp2, then add official payload rows only where status, content type,
   length, and payload bytes satisfy the canonical workload.
