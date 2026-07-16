@@ -1,6 +1,6 @@
 {
   "schemaVersion": "protocol-lab-implementation-coverage-baseline-v1",
-  "observedAt": "2026-07-15",
+  "observedAt": "2026-07-16",
   "scope": "Repository-local implementation packages and decision directories, the QUIC/HTTP3 candidate inventory, and the sibling protocol-lab-site authored implementation catalog.",
   "sourceFiles": {
     "packageManifests": "implementations/*/protocol-lab-package.json",
@@ -23,6 +23,7 @@
       ,"ProtocolLab controller job job-e05ec641965748f3830b5a006b3d8425 (Caddy 0.1.9, nginx 0.1.9, and quic-go 0.1.8 h3spec status, response-header, and QPACK diagnostics, completed and published 2026-07-15)"
       ,"ProtocolLab controller job job-6c8c02669dbf423fbcc7a12a5d364741 (Kestrel 0.1.8 h3spec status, response-header, and QPACK diagnostics, completed and published 2026-07-15)"
       ,"ProtocolLab controller jobs job-88d1dbab8b6a40b7b43992995a02b219 and job-799e5c5f78f44fb4805a23a2ff6a8744 (BIND 9 classic authoritative DNS over UDP and TCP, completed and published 2026-07-15)"
+      ,"ProtocolLab controller job job-73d3893c6b70459386e6fbf2428478f0 (MSQuic/.NET raw QUIC adapter, three workloads and 15 accepted cells, completed and published 2026-07-16)"
     ],
     "publicCatalog": "../protocol-lab-site/src/content/implementations/*.md"
   },
@@ -37,7 +38,7 @@
     "localPackageCount": 46,
     "localDecisionDirectoryCount": 6,
     "quicHttp3InventoryCount": 19,
-    "publicAuthoredCatalogCount": 22,
+    "publicAuthoredCatalogCount": 23,
     "currentVersionLiveProvenCount": 27,
     "historicalVersionLiveProofOnlyCount": 1,
     "attemptedNoCompletedEvidenceCount": 2,
@@ -101,7 +102,7 @@
   ],
   "quicHttp3InventoryMappings": [
     { "inventoryId": "incursa-quic-dotnet", "inventoryStatus": "packaged", "localPackageIds": [], "publicCatalogSlugs": ["incursa-http3", "quic-dotnet-raw-dev"], "blocker": "Implementation-owned raw QUIC package dev-20260716T032138Z-c4c53766-clean is live-proven in job-ceced0c711554077b48af4195996efd4. The package and adapter remain intentionally owned outside this repository; isolated-role and decision-ready proof remain." },
-    { "inventoryId": "msquic", "inventoryStatus": "internal-target", "localPackageIds": [], "publicCatalogSlugs": ["msquic-dotnet"], "blocker": "Existing internal raw adapter has no protocol-lab-components package." },
+    { "inventoryId": "msquic", "inventoryStatus": "packaged", "localPackageIds": [], "publicCatalogSlugs": ["msquic-dotnet", "msquic-dotnet-raw-adapter-v1"], "blocker": "Implementation-owned package dev-20260716T034228Z-8a408704-clean is live-proven in job-73d3893c6b70459386e6fbf2428478f0 with explicit libmsquic capability metadata. Isolated-role and decision-ready proof remain." },
     { "inventoryId": "quic-go", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.quic-go-http3", "org.protocol-lab.components.implementation.quic-go-raw"], "publicCatalogSlugs": ["quic-go-http3"], "blocker": "HTTP/3 0.1.8 h3spec/QPACK proof is current and published; 0.1.6 payload rows remain retained historical proof, and the current raw package head still needs proof." },
     { "inventoryId": "aioquic", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.aioquic-http3"], "publicCatalogSlugs": ["aioquic-http3"], "blocker": "Current 0.3.3 h3spec status, response-header, and QPACK rows are live-proven; canonical status and 1 KiB payload proof remains retained on historical package 0.3.2, and 64 KiB remains unproven." },
     { "inventoryId": "quiche", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.quiche-http3"], "publicCatalogSlugs": ["quiche-http3"], "blocker": "Peer-characterization attempt produced no completed evidence." },
@@ -130,6 +131,7 @@
     { "slug": "kestrel-http3", "status": "reference", "protocols": ["h3"], "inventoryId": "kestrel", "localPackageIds": ["org.protocol-lab.components.implementation.kestrel-http3"] },
     { "slug": "lsquic", "status": "external", "protocols": ["quic", "h3"], "inventoryId": "lsquic", "localPackageIds": [] },
     { "slug": "msquic-dotnet", "status": "external", "protocols": ["quic"], "inventoryId": "msquic", "localPackageIds": [] },
+    { "slug": "msquic-dotnet-raw-adapter-v1", "status": "public", "protocols": ["quic"], "inventoryId": "msquic", "localPackageIds": [] },
     { "slug": "mvfst-proxygen", "status": "planned", "protocols": ["quic", "h3"], "inventoryId": "mvfst-proxygen", "localPackageIds": [] },
     { "slug": "neqo", "status": "external", "protocols": ["quic", "h3"], "inventoryId": "neqo", "localPackageIds": [] },
     { "slug": "nginx-http3", "status": "planned", "protocols": ["h3"], "inventoryId": "nginx-quic", "localPackageIds": ["org.protocol-lab.components.implementation.nginx-http3"] },

@@ -155,7 +155,7 @@ gates below.
   throughput, multiplexing, and duplex workloads.
 - [x] Package and live-prove the Incursa `quic-dotnet` raw target through its
   implementation-owned handoff without coupling the runner to Incursa code.
-- [ ] Package and live-prove the existing MSQuic/.NET raw adapter with explicit
+- [x] Package and live-prove the existing MSQuic/.NET raw adapter with explicit
   platform capability metadata.
 - [ ] Add raw transport packages for picoquic, Quinn, and s2n-quic.
 - [ ] Add compatibility-first raw packages for aioquic, quiche, ngtcp2, XQUIC,
@@ -171,12 +171,13 @@ gates below.
 | Implementation | Immutable package version | Proven rows | Completed controller job |
 | --- | --- | --- | --- |
 | Incursa `quic-dotnet` | `dev-20260716T032138Z-c4c53766-clean` | 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; five accepted repetitions each | `job-ceced0c711554077b48af4195996efd4` |
+| MSQuic/.NET | `dev-20260716T034228Z-8a408704-clean` | 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; five accepted repetitions each | `job-73d3893c6b70459386e6fbf2428478f0` |
 
-This clean implementation-owned package was selected with immutable executor
-and scenario-package hashes. The public report retains all 15 accepted cells
-and their raw and normalized artifacts. It is live-proven diagnostic evidence,
-not decision-ready evidence: target and load execution still shared one worker,
-and the report correctly remains `publishable=false`.
+These clean implementation-owned packages were selected with immutable executor
+and scenario-package hashes. Each public report retains all 15 accepted cells
+and their raw and normalized artifacts. They are live-proven diagnostic
+evidence, not decision-ready evidence: target and load execution still shared
+one worker, and both reports correctly remain `publishable=false`.
 
 ## Workstream C - HTTP/3 catalog backfill
 

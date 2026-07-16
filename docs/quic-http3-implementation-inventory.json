@@ -48,16 +48,16 @@
       "displayName": "MSQuic",
       "upstream": "https://github.com/microsoft/msquic",
       "license": "MIT.",
-      "packageFeasibility": "internal-target",
-      "dockerImageAvailability": "QUIC interop runner lists ghcr.io/microsoft/msquic/qns:main; protocol-lab-internal also has a process-backed .NET raw QUIC adapter.",
+      "packageFeasibility": "packaged",
+      "dockerImageAvailability": "QUIC interop runner lists ghcr.io/microsoft/msquic/qns:main. ProtocolLab also has an immutable, self-contained Linux x64 package for the implementation-owned process-backed .NET raw QUIC adapter.",
       "roles": ["client", "server"],
       "quicRawSupport": "yes; general-purpose QUIC library and ProtocolLab raw adapter path.",
       "http3Support": "not directly in MSQuic; Kestrel and other stacks layer HTTP/3 over MsQuic.",
       "webSocketOverH3Support": "not direct.",
       "benchmarkSuitability": "high for transport-level baselines and adapter comparisons.",
-      "protocolLabComponentStatus": "internal adapter exists; no protocol-lab-components package yet.",
-      "nextPackageSlice": "Package the existing MSQuic/.NET raw adapter as a component with platform-gate metadata in protocol-lab.internal.json.",
-      "sourceRefs": ["https://github.com/microsoft/msquic", "https://raw.githubusercontent.com/quic-interop/quic-interop-runner/master/implementations_quic.json", "protocol-lab-internal/implementations/msquic-dotnet-raw-adapter-v1.yaml"]
+      "protocolLabComponentStatus": "implementation-owned raw adapter package live-proven with an explicit libmsquic capability gate and clean-source build provenance.",
+      "nextPackageSlice": "Add isolated-role and decision-ready common-cohort proof; keep the implementation package owned by protocol-lab-internal and the shared executor/scenarios owned by protocol-lab-components.",
+      "sourceRefs": ["https://github.com/microsoft/msquic", "https://raw.githubusercontent.com/quic-interop/quic-interop-runner/master/implementations_quic.json", "protocol-lab-internal/implementations/msquic-dotnet-raw-adapter-v1.yaml", "protocol-lab-internal/scripts/lab/New-ProtocolLabMsQuicDotNetRawPackage.ps1"]
     },
     {
       "id": "quic-go",
