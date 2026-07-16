@@ -1,7 +1,7 @@
 {
   "packageId": "org.protocol-lab.components.implementation.nginx-http1",
   "packageKind": "implementation",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "component": {
     "name": "nginx-http1",
     "family": "nginx",
@@ -50,7 +50,9 @@
       "linux",
       "windows"
     ],
-    "runtimes": [],
+    "runtimes": [
+      "Pinned nginx 1.29.0 Alpine OCI image"
+    ],
     "ports": [
       {
         "name": "http",
@@ -59,7 +61,7 @@
       }
     ],
     "externalTools": [
-      "nginx"
+      "docker"
     ]
   },
   "provenance": {
@@ -67,6 +69,6 @@
     "owners": [
       "protocol-lab-components"
     ],
-    "licenseNotes": "Confirm nginx license and binary redistribution requirements before publishing."
+    "licenseNotes": "nginx is BSD-2-Clause licensed; the package redistributes configuration and pins the official runtime image by digest."
   }
 }

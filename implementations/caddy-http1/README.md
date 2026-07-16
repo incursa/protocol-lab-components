@@ -1,7 +1,9 @@
 # Caddy HTTP/1 Implementation
 
-Lane-scoped Caddy HTTP/1.1 implementation package. This package requires a
-`caddy` binary on the worker and does not imply Caddy HTTP/2 or HTTP/3 support.
+Lane-scoped Caddy HTTP/1.1 implementation package. Version `0.1.1` builds the
+target from the official Caddy `2.11.2` Alpine image pinned by OCI index digest;
+it does not depend on a worker-installed Caddy binary and does not imply Caddy
+HTTP/2 or HTTP/3 support.
 
 ## Supported Slice
 
@@ -28,4 +30,10 @@ Invoke-WebRequest http://127.0.0.1:8080/json
 
 ```powershell
 pwsh ./scripts/package/Build-CaddyHttp1Package.ps1
+```
+
+Pinned runtime image:
+
+```text
+caddy@sha256:834468128c7696cec0ceea6172f7d692daf645ae51983ca76e39da54a97c570d
 ```

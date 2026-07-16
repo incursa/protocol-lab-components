@@ -1,13 +1,20 @@
 schemaVersion: "1.0"
 id: caddy-http1
 name: Caddy HTTP/1
-description: Lane-scoped Caddy HTTP/1.1 target using an externally installed caddy binary.
+description: Lane-scoped Caddy HTTP/1.1 target built from the official Caddy image pinned by OCI digest.
 family: caddy
 role: server
-targetKind: process
+targetKind: docker
 targetContract: process
-executable: run.ps1
-workingDirectory: .
+image: incursa-protocol-lab-caddy-http1:0.1.1
+dockerfile: Dockerfile
+buildContext: .
+baseUrl: http://127.0.0.1:8080
+dockerBaseUrl: http://127.0.0.1:8080
+protocolBaseUrls:
+  h1: http://127.0.0.1:8080
+dockerProtocolBaseUrls:
+  h1: http://127.0.0.1:8080
 dockerNetworkMode: published-port
 certificateMode: none
 roles:
@@ -29,6 +36,8 @@ ports:
   - name: http
     protocol: tcp
     default: 8080
+    hostPort: 8080
+    containerPort: 8080
 environment:
   PLAB_HTTP_PORT: "8080"
 startup:
@@ -42,8 +51,8 @@ startup:
     expectedStatus: 200
 readinessCheck:
   type: http
-  url: http://127.0.0.1:${PLAB_HTTP_PORT}/health
-  timeoutSeconds: 10
+  url: /health
+  timeoutSeconds: 20
 capabilities:
   - http.server
   - httpPlaintext
@@ -63,7 +72,12 @@ unsupportedKnownCases:
   - request-body-echo
   - server-sent-events
 requiredExternalTools:
-  - caddy
+  - docker
+runtime:
+  upstreamProgram: Caddy
+  upstreamProgramModified: false
+  imageReference: caddy@sha256:834468128c7696cec0ceea6172f7d692daf645ae51983ca76e39da54a97c570d
+  caddyVersion: 2.11.2
 endpoints:
   plaintext:
     method: GET
@@ -71,7 +85,7 @@ endpoints:
   json:
     method: GET
     path: /json
-shutdownBehavior: process
+shutdownBehavior: runner-owned-docker-container
 artifactExports:
   - caddy-http1.log
 qlogSupport: false

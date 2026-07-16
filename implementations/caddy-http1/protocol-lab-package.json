@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.caddy-http1",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "implementation",
   "displayName": "Caddy HTTP/1 Implementation",
   "entryManifests": [
@@ -23,8 +23,19 @@
   "dependencies": {
     "requiredCapabilities": [
       {
-        "name": "caddy",
+        "name": "docker",
         "value": "true"
+      },
+      {
+        "name": "linux-containers",
+        "value": "true"
+      }
+    ],
+    "runtimeImages": [
+      {
+        "name": "caddy",
+        "version": "2.11.2-alpine",
+        "reference": "caddy@sha256:834468128c7696cec0ceea6172f7d692daf645ae51983ca76e39da54a97c570d"
       }
     ]
   }

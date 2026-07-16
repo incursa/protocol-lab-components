@@ -1,7 +1,7 @@
 {
   "packageId": "org.protocol-lab.components.implementation.caddy-http1",
   "packageKind": "implementation",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "component": {
     "name": "caddy-http1",
     "family": "caddy",
@@ -50,7 +50,9 @@
       "linux",
       "windows"
     ],
-    "runtimes": [],
+    "runtimes": [
+      "Pinned Caddy 2.11.2 Alpine OCI image"
+    ],
     "ports": [
       {
         "name": "http",
@@ -59,7 +61,7 @@
       }
     ],
     "externalTools": [
-      "caddy"
+      "docker"
     ]
   },
   "provenance": {
@@ -67,6 +69,6 @@
     "owners": [
       "protocol-lab-components"
     ],
-    "licenseNotes": "Confirm Caddy license and binary redistribution requirements before publishing."
+    "licenseNotes": "Caddy is Apache-2.0 licensed; the package redistributes configuration and pins the official runtime image by digest."
   }
 }
