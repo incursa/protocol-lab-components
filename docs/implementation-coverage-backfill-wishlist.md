@@ -162,9 +162,9 @@ decision-ready gates below.
 - [ ] Bring Kestrel, Incursa HTTP/3, Caddy, nginx, quic-go, and aioquic onto a
   common plaintext, JSON, 1 KiB, and 64 KiB support matrix where their exact
   semantics permit it.
-- [ ] Re-run the current immutable quic-go and aioquic package heads so live
-  evidence matches the cataloged package versions. aioquic `0.3.3` is current-
-  proven; quic-go `0.1.8` now awaits its header/QPACK live run.
+- [x] Re-run the current immutable quic-go and aioquic package heads so live
+  evidence matches the cataloged package versions. aioquic `0.3.3` and
+  quic-go `0.1.8` now have current package-backed h3spec/QPACK proof.
 - [ ] Complete diagnostic peer-characterization evidence for quiche and
   ngtcp2, then add official payload rows only where status, content type,
   length, and payload bytes satisfy the canonical workload.
@@ -179,14 +179,21 @@ decision-ready gates below.
 | aioquic | 0.3.3 | h3spec status, response-header, and QPACK diagnostics; all 15 requests succeeded in each cell | `job-a3c8b35637e14c49b86332a928c5b15d` |
 | quic-go | 0.1.6 | canonical JSON status, 1 KiB, and 64 KiB payloads; validation and measurement passed | `job-610e9f2d38364cfc95b238ea6e012446` |
 | Kestrel | 0.1.6 | canonical JSON status, 1 KiB, and 64 KiB payloads; validation and measurement passed | `job-fb08e6a527b94ee1a922055a9401feee` |
+| Caddy | 0.1.9 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
+| nginx | 0.1.9 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
+| quic-go | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
+| Kestrel | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-6c8c02669dbf423fbcc7a12a5d364741` |
 
 These runs used the package-backed managed HTTP/3 executor and retained
 the executor package identity, requested/effective load shapes, raw output,
 target-container telemetry, normalized metrics, and immutable target package
 provenance. They close current-head proof only for the rows shown. The current
-aioquic head now has h3spec/QPACK proof, while its 64 KiB payload row, the
-remaining compatible-target h3spec/QPACK matrix, repeated comparison,
-publication, and decision-ready gates remain.
+aioquic, Caddy, nginx, quic-go, and Kestrel heads now have published
+h3spec/QPACK proof. Their report pages are visible at `lab.incursa.com` with
+package provenance and retained artifact links. aioquic 64 KiB, current-head
+payload reruns for the newly bumped packages, Incursa HTTP/3, explicit
+quiche/ngtcp2 compatibility outcomes, repeated comparison, and decision-ready
+gates remain.
 
 ### New catalog packages
 
