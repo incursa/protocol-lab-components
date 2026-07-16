@@ -1,0 +1,101 @@
+schemaVersion: "1.0"
+id: s2n-quic-raw
+name: s2n-quic Raw QUIC
+description: s2n-quic 1.83.0 raw QUIC transport target for ProtocolLab handshake, echo, upload throughput, multiplexing, and duplex validation.
+family: s2n-quic
+role: server
+targetKind: process
+targetContract: process
+executable: bin/linux-x64/s2n-quic-raw
+workingDirectory: .
+baseUrl: quic://127.0.0.1:5449/
+protocolBaseUrls:
+  quic: quic://127.0.0.1:5449/
+certificateMode: generated-self-signed-loopback-certificate
+roles:
+  - server
+protocols:
+  - quic
+supportedProtocols:
+  - quic
+supportedWorkloadFamilies:
+  - quic.transport
+supportedProtocolVersions:
+  - quic
+supportedScenarios:
+  - quic.transport.handshake-cold
+  - quic.transport.latency.echo-1kb
+  - quic.transport.stream-throughput.1mb
+  - quic.transport.multiplex.100x64kb
+  - quic.transport.duplex-streams
+supportedTestCaseIds:
+  - quic.transport.handshake-cold
+  - quic.transport.latency.echo-1kb
+  - quic.transport.stream-throughput.1mb
+  - quic.transport.multiplex.100x64kb
+  - quic.transport.duplex-streams
+scenarioCoverage:
+  quic.transport.handshake-cold:
+    status: supported
+    behavior: fresh s2n-quic connection with no application stream requirement
+  quic.transport.latency.echo-1kb:
+    status: supported
+    behavior: exact bidirectional 1 KiB stream echo
+  quic.transport.stream-throughput.1mb:
+    status: supported
+    behavior: exact client-to-server 1 MiB payload receipt with no response payload
+  quic.transport.multiplex.100x64kb:
+    status: supported
+    behavior: 100 concurrent bidirectional 64 KiB stream echoes
+  quic.transport.duplex-streams:
+    status: supported
+    behavior: 16 concurrent bidirectional 64 KiB stream echoes
+  http3.core.status:
+    status: unsupported
+    reason: Raw s2n-quic target does not expose HTTP/3 endpoints.
+unsupportedKnownCases:
+  - h1
+  - h2
+  - h2c
+  - h3
+  - websocket
+  - server-sent-events
+ports:
+  - name: quic
+    protocol: udp
+    hostPort: 5449
+    containerPort: 5449
+environment:
+  PLAB_QUIC_PORT: "5449"
+startup:
+  port:
+    name: quic
+    environmentVariable: PLAB_QUIC_PORT
+    default: 5449
+  readiness:
+    protocol: process
+    timeoutSeconds: 10
+readinessCheck:
+  type: processStarted
+  timeoutSeconds: 10
+  startupDelayMilliseconds: 750
+capabilities:
+  - quicTransport
+  - quicHandshake
+  - quicStreams
+  - quicMultiplexing
+  - quicDuplex
+entrypoint:
+  kind: process
+  path: bin/linux-x64/s2n-quic-raw
+  arguments: []
+  workingDirectory: .
+artifactExports:
+  - target.stdout.txt
+  - target.stderr.txt
+  - target-execution.json
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata:
+  manifest: protocol-lab.internal.json
+notes: Server-only s2n-quic raw QUIC package. It is distinct from HTTP/3 targets and uses the ProtocolLab raw QUIC ALPN and stream wire contract.
