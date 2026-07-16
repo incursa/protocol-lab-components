@@ -61,6 +61,15 @@ func TestValidateOptionsRejectsUnsupportedBehaviorOpenPatternCombos(t *testing.T
 			},
 		},
 		{
+			name: "sustained download accepts sequential",
+			options: options{
+				behavior:             "sustained-download-256x64kb",
+				payloadDirection:     "server-to-client",
+				openPattern:          "sequential",
+				streamsPerConnection: 1,
+			},
+		},
+		{
 			name: "stream limit pressure accepts concurrent",
 			options: options{
 				behavior:             "stream-limit-pressure",
@@ -327,6 +336,23 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 				sni:                  "localhost",
 				alpn:                 "plab-raw-quic",
 				behavior:             "stream-throughput",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     32,
+				payloadDirection:     "server-to-client",
+				openPattern:          "sequential",
+				connections:          1,
+				streamsPerConnection: 1,
+				duration:             25 * time.Millisecond,
+				target:               "",
+			},
+			wantBytesReceived: true,
+		},
+		{
+			name: "sustained-download sequential",
+			opts: options{
+				sni:                  "localhost",
+				alpn:                 "plab-raw-quic",
+				behavior:             "sustained-download-256x64kb",
 				streamType:           "bidirectional",
 				payloadSizeBytes:     32,
 				payloadDirection:     "server-to-client",

@@ -51,6 +51,7 @@ func TestWriteMetadataIncludesSupportedScenarios(t *testing.T) {
 		"quic.transport.stream-throughput.1mb",
 		"quic.transport.stream-download.1mb",
 		"quic.transport.sustained-stream.256x64kb",
+		"quic.transport.sustained-download.256x64kb",
 		"quic.transport.latency.echo-1kb",
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.stream-limits.100x64kb",
@@ -259,8 +260,8 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
 		t.Fatalf("unmarshal package manifest: %v", err)
 	}
-	if packageManifest.PackageVersion != "0.1.14" {
-		t.Fatalf("packageVersion = %q, want 0.1.14", packageManifest.PackageVersion)
+	if packageManifest.PackageVersion != "0.1.15" {
+		t.Fatalf("packageVersion = %q, want 0.1.15", packageManifest.PackageVersion)
 	}
 	if len(packageManifest.ProvidedImplementations) != 1 {
 		t.Fatalf("providedImplementations length = %d, want 1", len(packageManifest.ProvidedImplementations))
@@ -269,6 +270,7 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 		"quic.transport.stream-throughput.1mb",
 		"quic.transport.stream-download.1mb",
 		"quic.transport.sustained-stream.256x64kb",
+		"quic.transport.sustained-download.256x64kb",
 		"quic.transport.latency.echo-1kb",
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.stream-limits.100x64kb",

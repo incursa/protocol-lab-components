@@ -297,7 +297,7 @@ func validateOptions(opts options) error {
 	}
 
 	switch behavior {
-	case "stream-throughput", "latency-echo", "large-payload", "sustained-stream-256x64kb":
+	case "stream-throughput", "latency-echo", "large-payload", "sustained-stream-256x64kb", "sustained-download-256x64kb":
 		if openPattern != "sequential" {
 			return fmt.Errorf("behavior %q requires open-pattern %q", opts.behavior, "sequential")
 		}
@@ -342,7 +342,7 @@ func runLoadWithQUICConfig(ctx context.Context, opts options, duration time.Dura
 	}
 
 	switch strings.ToLower(opts.behavior) {
-	case "stream-throughput", "latency-echo", "large-payload", "sustained-stream-256x64kb":
+	case "stream-throughput", "latency-echo", "large-payload", "sustained-stream-256x64kb", "sustained-download-256x64kb":
 		return runStreamLoad(ctx, opts, duration, discard, streamOpenSequential, quicConfig)
 	case "multiplex-streams", "duplex-streams", "stream-limit-pressure", "flow-control-slow-reader-100ms":
 		return runStreamLoad(ctx, opts, duration, discard, streamOpenConcurrent, quicConfig)
