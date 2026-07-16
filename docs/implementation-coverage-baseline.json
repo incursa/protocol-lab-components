@@ -37,7 +37,7 @@
     "localPackageCount": 46,
     "localDecisionDirectoryCount": 6,
     "quicHttp3InventoryCount": 19,
-    "publicAuthoredCatalogCount": 21,
+    "publicAuthoredCatalogCount": 22,
     "currentVersionLiveProvenCount": 27,
     "historicalVersionLiveProofOnlyCount": 1,
     "attemptedNoCompletedEvidenceCount": 2,
@@ -100,7 +100,7 @@
     { "path": "implementations/unbound-dot-resolver", "candidateId": "unbound-dot-resolver", "evidenceStatus": "closed-by-decision", "decisionFile": "implementations/unbound-dot-resolver/README.md", "blocker": "Resolver-specific DoT scenario, suite, comparison group, and ranking policy are not committed." }
   ],
   "quicHttp3InventoryMappings": [
-    { "inventoryId": "incursa-quic-dotnet", "inventoryStatus": "packaged", "localPackageIds": [], "publicCatalogSlugs": ["incursa-http3"], "blocker": "Implementation-owned package and internal adapters remain outside this repository." },
+    { "inventoryId": "incursa-quic-dotnet", "inventoryStatus": "packaged", "localPackageIds": [], "publicCatalogSlugs": ["incursa-http3", "quic-dotnet-raw-dev"], "blocker": "Implementation-owned raw QUIC package dev-20260716T032138Z-c4c53766-clean is live-proven in job-ceced0c711554077b48af4195996efd4. The package and adapter remain intentionally owned outside this repository; isolated-role and decision-ready proof remain." },
     { "inventoryId": "msquic", "inventoryStatus": "internal-target", "localPackageIds": [], "publicCatalogSlugs": ["msquic-dotnet"], "blocker": "Existing internal raw adapter has no protocol-lab-components package." },
     { "inventoryId": "quic-go", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.quic-go-http3", "org.protocol-lab.components.implementation.quic-go-raw"], "publicCatalogSlugs": ["quic-go-http3"], "blocker": "HTTP/3 0.1.8 h3spec/QPACK proof is current and published; 0.1.6 payload rows remain retained historical proof, and the current raw package head still needs proof." },
     { "inventoryId": "aioquic", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.aioquic-http3"], "publicCatalogSlugs": ["aioquic-http3"], "blocker": "Current 0.3.3 h3spec status, response-header, and QPACK rows are live-proven; canonical status and 1 KiB payload proof remains retained on historical package 0.3.2, and 64 KiB remains unproven." },
@@ -136,6 +136,7 @@
     { "slug": "ngtcp2-http3", "status": "external", "protocols": ["quic", "h3"], "inventoryId": "ngtcp2-nghttp3", "localPackageIds": ["org.protocol-lab.components.implementation.ngtcp2-http3"] },
     { "slug": "picoquic", "status": "external", "protocols": ["quic"], "inventoryId": "picoquic", "localPackageIds": [] },
     { "slug": "quic-go-http3", "status": "external", "protocols": ["quic", "h3"], "inventoryId": "quic-go", "localPackageIds": ["org.protocol-lab.components.implementation.quic-go-http3", "org.protocol-lab.components.implementation.quic-go-raw"] },
+    { "slug": "quic-dotnet-raw-dev", "status": "public", "protocols": ["quic"], "inventoryId": "incursa-quic-dotnet", "localPackageIds": [] },
     { "slug": "quiche-http3", "status": "external", "protocols": ["h3"], "inventoryId": "quiche", "localPackageIds": ["org.protocol-lab.components.implementation.quiche-http3"] },
     { "slug": "quinn", "status": "external", "protocols": ["quic"], "inventoryId": "quinn", "localPackageIds": [] },
     { "slug": "s2n-quic", "status": "external", "protocols": ["quic"], "inventoryId": "s2n-quic", "localPackageIds": [] },

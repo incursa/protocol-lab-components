@@ -153,7 +153,7 @@ gates below.
 
 - [ ] Keep `quic-go-raw` current across handshake/echo, 1 MiB stream
   throughput, multiplexing, and duplex workloads.
-- [ ] Package and live-prove the Incursa `quic-dotnet` raw target through its
+- [x] Package and live-prove the Incursa `quic-dotnet` raw target through its
   implementation-owned handoff without coupling the runner to Incursa code.
 - [ ] Package and live-prove the existing MSQuic/.NET raw adapter with explicit
   platform capability metadata.
@@ -165,6 +165,18 @@ gates below.
   package; do not treat an HTTP/3 origin as a raw QUIC target.
 - [ ] Live-run all supported raw packages and meet the raw QUIC coverage floor
   with a three-ecosystem decision-ready common cohort.
+
+### Current retained raw QUIC evidence
+
+| Implementation | Immutable package version | Proven rows | Completed controller job |
+| --- | --- | --- | --- |
+| Incursa `quic-dotnet` | `dev-20260716T032138Z-c4c53766-clean` | 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; five accepted repetitions each | `job-ceced0c711554077b48af4195996efd4` |
+
+This clean implementation-owned package was selected with immutable executor
+and scenario-package hashes. The public report retains all 15 accepted cells
+and their raw and normalized artifacts. It is live-proven diagnostic evidence,
+not decision-ready evidence: target and load execution still shared one worker,
+and the report correctly remains `publishable=false`.
 
 ## Workstream C - HTTP/3 catalog backfill
 
