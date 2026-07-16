@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Image = 'incursa-protocol-lab-xquic-http3:0.1.0',
+    [string]$Image = 'incursa-protocol-lab-xquic-http3:0.1.1',
     [int]$Port = 4433,
     [string]$OutputRoot = 'artifacts/xquic-http3',
     [switch]$PlanOnly

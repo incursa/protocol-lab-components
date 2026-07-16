@@ -32,23 +32,19 @@
       {
         "name": "docker",
         "value": "true"
-      },
-      {
-        "name": "lsquic",
-        "value": "http3"
       }
     ],
     "images": [
       {
         "name": "lsquic-http3",
-        "image": "incursa-protocol-lab-lsquic-http3:0.1.0",
+        "image": "incursa-protocol-lab-lsquic-http3:0.1.1",
         "baseImage": "litespeedtech/lsquic-qir@sha256:7819190d3b19ac4f1a9b85d994fdc3a6de900973376d1c7dad345641c3fb28c8",
         "sourceRepoDigest": "litespeedtech/lsquic-qir@sha256:7819190d3b19ac4f1a9b85d994fdc3a6de900973376d1c7dad345641c3fb28c8"
       }
     ]
   },
   "commands": {
-    "buildTemplate": "docker build -f docker/lsquic-http3.Dockerfile -t incursa-protocol-lab-lsquic-http3:0.1.0 .",
+    "buildTemplate": "docker build -f docker/lsquic-http3.Dockerfile -t incursa-protocol-lab-lsquic-http3:0.1.1 .",
     "serverTemplate": "generate a self-signed certificate and diagnostic root, then run http_server in HTTP/3 mode on UDP 4433"
   },
   "knownLimitations": [

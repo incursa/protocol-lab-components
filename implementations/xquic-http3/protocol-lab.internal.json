@@ -32,23 +32,19 @@
       {
         "name": "docker",
         "value": "true"
-      },
-      {
-        "name": "xquic",
-        "value": "http3"
       }
     ],
     "images": [
       {
         "name": "xquic-http3",
-        "image": "incursa-protocol-lab-xquic-http3:0.1.0",
+        "image": "incursa-protocol-lab-xquic-http3:0.1.1",
         "baseImage": "ghcr.io/alibaba/xquic/xquic-interop@sha256:875df1e9935c6a07e26d7b5ae14df9edd06703061ce35920234a97d6991c58e0",
         "sourceRepoDigest": "ghcr.io/alibaba/xquic/xquic-interop@sha256:875df1e9935c6a07e26d7b5ae14df9edd06703061ce35920234a97d6991c58e0"
       }
     ]
   },
   "commands": {
-    "buildTemplate": "docker build -f docker/xquic-http3.Dockerfile -t incursa-protocol-lab-xquic-http3:0.1.0 .",
+    "buildTemplate": "docker build -f docker/xquic-http3.Dockerfile -t incursa-protocol-lab-xquic-http3:0.1.1 .",
     "serverTemplate": "generate a self-signed certificate and diagnostic root, then run demo_server in HTTP/3 interop mode on UDP 4433"
   },
   "knownLimitations": [

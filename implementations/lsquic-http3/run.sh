@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-image="${HTTP3_LSQUIC_IMAGE:-incursa-protocol-lab-lsquic-http3:0.1.0}"
+image="${HTTP3_LSQUIC_IMAGE:-incursa-protocol-lab-lsquic-http3:0.1.1}"
 port="${PLAB_PORT:-4433}"
 artifact_root="${PLAB_ARTIFACT_ROOT:-artifacts/lsquic-http3}"
 mkdir -p "$artifact_root"
