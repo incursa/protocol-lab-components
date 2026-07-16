@@ -17,4 +17,3 @@ fi
 
 export PLAB_QUIC_PORT="$port"
 exec "$command"
-

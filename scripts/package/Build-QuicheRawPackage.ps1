@@ -27,7 +27,6 @@ foreach ($path in @($sourcePackageManifest, $sourceInternalManifest, $sourceImpl
         throw "Required quiche raw package input was not found: $path"
     }
 }
-
 & docker build --pull --tag $buildImage --file (Join-Path $sourceRoot 'Dockerfile') $Root
 if ($LASTEXITCODE -ne 0) {
     throw "quiche raw image build failed with exit code $LASTEXITCODE."
@@ -103,4 +102,3 @@ finally {
         $archive.Dispose()
     }
 }
-

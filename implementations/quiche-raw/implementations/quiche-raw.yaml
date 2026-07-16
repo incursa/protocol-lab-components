@@ -99,4 +99,3 @@ sslKeyLogSupport: false
 executionMetadata:
   manifest: protocol-lab.internal.json
 notes: Server-only quiche raw QUIC package. It is distinct from the quiche HTTP/3 peer and uses the ProtocolLab raw QUIC ALPN and stream wire contract.
-
