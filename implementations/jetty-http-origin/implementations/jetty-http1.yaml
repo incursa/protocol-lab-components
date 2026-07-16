@@ -6,7 +6,7 @@ family: jetty
 role: server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-jetty-http-origin:0.1.0
+image: incursa-protocol-lab-jetty-http-origin:0.1.1
 dockerfile: Dockerfile
 buildContext: .
 baseUrl: http://127.0.0.1:8080
