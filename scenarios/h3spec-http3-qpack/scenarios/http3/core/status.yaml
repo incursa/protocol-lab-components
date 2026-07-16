@@ -21,6 +21,19 @@ trafficShape: request-response
 implementationRole: server
 requiredCapabilities:
   - httpStatus
+endpoint:
+  method: GET
+  path: /status
+  query: {}
+  requestHeaders: {}
+  expectedStatus: 200
+  expectedHeaders:
+    content-type: application/json
+  expectedBodyRule: jsonKeys
+  expectedJsonKeys:
+    - protocol
+    - server
+    - implementation
 validation:
   required: true
   checks:

@@ -7,7 +7,7 @@ port="${H3SPEC_PORT:-4433}"
 h3spec_executable="${H3SPEC_EXECUTABLE:-h3spec}"
 timeout_ms="${H3SPEC_TIMEOUT_MS:-5000}"
 output_root="${H3SPEC_OUTPUT_ROOT:-artifacts/h3spec-http3-qpack}"
-target_url=""
+target_url="${PLAB_TARGET_BASE_URL:-}"
 target_scheme=""
 plan_only="${H3SPEC_PLAN_ONLY:-false}"
 mode="${H3SPEC_MODE:-focused}"
@@ -215,6 +215,7 @@ PY
 
 "$python_bin" - "$results_path" <<'PY'
 import json
+import os
 import sys
 
 with open(sys.argv[1], encoding="utf-8") as handle:
@@ -223,6 +224,10 @@ with open(sys.argv[1], encoding="utf-8") as handle:
 summary = result.get("summary", {})
 payload = {
     "tool": "h3spec",
+    "executor": {
+        "id": os.environ.get("PLAB_EXECUTOR_ID", "h3spec-http3-qpack"),
+        "version": os.environ.get("PLAB_EXECUTOR_VERSION", "0.1.8"),
+    },
     "status": summary.get("status", "unknown"),
     "classification": summary.get("classification", "unknown"),
     "metrics": {
@@ -235,6 +240,16 @@ payload = {
         f"h3spec exitCode={summary.get('exitCode', '')}",
     ],
 }
+requested = {
+    "connections": int(os.environ.get("PLAB_CONNECTIONS", "1")),
+    "concurrency": int(os.environ.get("PLAB_CONCURRENCY", "1")),
+    "streamsPerConnection": int(os.environ.get("PLAB_STREAMS_PER_CONNECTION", "1")),
+    "durationSeconds": int(os.environ.get("PLAB_DURATION_SECONDS", "5")),
+    "warmupSeconds": int(os.environ.get("PLAB_WARMUP_SECONDS", "1")),
+    "repetitions": int(os.environ.get("PLAB_REPETITION", "1")),
+}
+payload["requestedLoad"] = requested
+payload["effectiveLoad"] = dict(requested)
 print(json.dumps(payload, separators=(",", ":")))
 PY
 

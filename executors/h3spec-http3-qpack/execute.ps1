@@ -241,8 +241,26 @@ finally {
 Invoke-H3SpecParser -StdoutPath $stdoutPath -StderrPath $stderrPath -MetadataPath $metadataPath -ResultsPath $resultsPath -ReportPath $reportPath
 
 $parsed = Get-Content -LiteralPath $resultsPath -Raw | ConvertFrom-Json
+$connections = if ($env:PLAB_CONNECTIONS) { [int]$env:PLAB_CONNECTIONS } else { 1 }
+$concurrency = if ($env:PLAB_CONCURRENCY) { [int]$env:PLAB_CONCURRENCY } else { 1 }
+$streamsPerConnection = if ($env:PLAB_STREAMS_PER_CONNECTION) { [int]$env:PLAB_STREAMS_PER_CONNECTION } else { 1 }
+$durationSeconds = if ($env:PLAB_DURATION_SECONDS) { [int]$env:PLAB_DURATION_SECONDS } else { 5 }
+$warmupSeconds = if ($env:PLAB_WARMUP_SECONDS) { [int]$env:PLAB_WARMUP_SECONDS } else { 1 }
+$repetitions = if ($env:PLAB_REPETITION) { [int]$env:PLAB_REPETITION } else { 1 }
+$loadShape = [ordered]@{
+    connections = $connections
+    concurrency = $concurrency
+    streamsPerConnection = $streamsPerConnection
+    durationSeconds = $durationSeconds
+    warmupSeconds = $warmupSeconds
+    repetitions = $repetitions
+}
 [ordered]@{
     tool = 'h3spec'
+    executor = [ordered]@{
+        id = if ($env:PLAB_EXECUTOR_ID) { $env:PLAB_EXECUTOR_ID } else { 'h3spec-http3-qpack' }
+        version = if ($env:PLAB_EXECUTOR_VERSION) { $env:PLAB_EXECUTOR_VERSION } else { '0.1.8' }
+    }
     status = [string]$parsed.summary.status
     classification = [string]$parsed.summary.classification
     metrics = [ordered]@{
@@ -254,6 +272,8 @@ $parsed = Get-Content -LiteralPath $resultsPath -Raw | ConvertFrom-Json
         "h3spec classification=$($parsed.summary.classification)",
         "h3spec exitCode=$($parsed.summary.exitCode)"
     )
+    requestedLoad = $loadShape
+    effectiveLoad = $loadShape
 } | ConvertTo-Json -Depth 5
 
 if ($FailOnH3SpecFailures -and -not $PlanOnly) {

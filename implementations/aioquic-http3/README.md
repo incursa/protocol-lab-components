@@ -1,6 +1,6 @@
 # aioquic HTTP/3 Implementation Wrapper
 
-`aioquic-http3` packages an aioquic HTTP/3 origin-server target. Version `0.3.2` preserves the existing HTTP/3 origin endpoints and authenticated, sustained RFC 9220 package proof while serving the canonical JSON identity document at `/status`.
+`aioquic-http3` packages an aioquic HTTP/3 origin-server target. Package version `0.3.3` preserves the `0.3.2` implementation image and existing HTTP/3 origin endpoints while declaring the QPACK diagnostic workload family used by h3spec.
 
 ## Supported
 

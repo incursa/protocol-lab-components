@@ -27,6 +27,7 @@ supportedProtocols:
   - websocket
 supportedWorkloadFamilies:
   - http.application
+  - http3.protocol
   - websocket
 supportedProtocolVersions:
   - http/3
