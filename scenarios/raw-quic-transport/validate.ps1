@@ -5,6 +5,7 @@ $requiredFiles = @(
     "protocol-lab-package.json",
     "protocol-lab.internal.json",
     "scenarios/quic/transport/stream-throughput.yaml",
+    "scenarios/quic/transport/stream-download-1mb.yaml",
     "scenarios/quic/transport/stream-throughput-64kb.yaml",
     "scenarios/quic/transport/stream-throughput-16mb.yaml",
     "scenarios/quic/transport/latency-echo-1kb.yaml",

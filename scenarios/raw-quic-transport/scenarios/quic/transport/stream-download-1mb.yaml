@@ -1,0 +1,89 @@
+schemaVersion: "1.0"
+id: quic.transport.stream-download.1mb
+title: QUIC Stream Download Throughput 1MB
+name: QUIC Stream Download Throughput 1MB
+family: quic.transport
+description: Validate single-stream server-to-client QUIC payload throughput with an exact deterministic 1 MiB response, independent of HTTP/3 application semantics.
+status: stable
+kind: protocolValidation
+layer: transport
+protocol: quic
+roles:
+  - server
+requires:
+  capabilities:
+    - quic.server
+  protocols:
+    - quic
+  roles:
+    - server
+trafficShape: bidirectional-stream
+implementationRole: server
+requiredCapabilities:
+  - quicTransport
+  - quicStreams
+quicTransport:
+  behavior: stream-throughput
+  connectionCount: 1
+  streamType: bidirectional
+  streamCount: 1
+  payloadSizeBytes: 1048576
+  payloadDirection: server-to-client
+  openPattern: sequential
+  expectedBytes: 1048576
+parameters:
+  requestPrelude: PLAB-DL1 followed by the unsigned 64-bit big-endian response payload length
+  payloadPattern: byte at zero-based offset N equals N modulo 251
+  payloadAccounting: request prelude is control data and is excluded from payload byte metrics
+validation:
+  required: true
+  checks:
+    - request-prelude-valid
+    - response-content-and-length-exact
+    - completed-streams-match-expected
+    - zero-timeouts-and-errors
+    - protocol:quic
+benchmark:
+  warmupSeconds: 5
+  durationSeconds: 30
+  repetitions: 1
+  connections:
+    - 1
+    - 4
+    - 16
+    - 32
+    - 64
+    - 128
+  streamsPerConnection:
+    - 1
+benchmarkCompat:
+  compatibleLoadShapes:
+    - quic-stream
+    - smoke
+    - regression
+    - comparison
+  primaryMetrics:
+    - bytesPerSecond
+    - streamsPerSecond
+    - streamDurationP95
+    - errorRate
+artifacts:
+  required:
+    - validation.json
+    - result.json
+  optional:
+    - protocol-diagnostic-artifact
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - quic.stream.bytesPerSecond
+  - quic.stream.completedStreams
+artifactRequirements:
+  - load-generator.stdout.txt
+  - load-generator.stderr.txt
+  - protocol-diagnostic-artifact
+tags:
+  - phase6
+  - quic
+  - throughput
+  - download

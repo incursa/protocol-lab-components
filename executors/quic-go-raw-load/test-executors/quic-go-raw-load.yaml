@@ -1,17 +1,19 @@
 executorIdentity:
   id: quic-go-raw-load
   name: quic-go Raw QUIC Load Executor
-  version: 0.1.9
+  version: 0.1.10
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.9
+  executorVersion: 0.1.10
 claimedCapabilities:
   - id: quic.transport.stream-throughput.64kb
     status: supported
   - id: quic.transport.stream-throughput.1mb
+    status: supported
+  - id: quic.transport.stream-download.1mb
     status: supported
   - id: quic.transport.stream-throughput.16mb
     status: supported
@@ -50,6 +52,8 @@ supportedTestSelectors:
   - selectorType: test-id
     expression: quic.transport.stream-throughput.1mb
   - selectorType: test-id
+    expression: quic.transport.stream-download.1mb
+  - selectorType: test-id
     expression: quic.transport.stream-throughput.16mb
   - selectorType: test-id
     expression: quic.transport.latency.echo-1kb
@@ -83,6 +87,8 @@ supportedScenarioSelectors:
   - selectorType: scenario-id
     expression: quic.transport.stream-throughput.1mb
   - selectorType: scenario-id
+    expression: quic.transport.stream-download.1mb
+  - selectorType: scenario-id
     expression: quic.transport.stream-throughput.16mb
   - selectorType: scenario-id
     expression: quic.transport.latency.echo-1kb
@@ -115,6 +121,9 @@ scenarioCoverage:
     status: supported
   quic.transport.stream-throughput.1mb:
     status: supported
+  quic.transport.stream-download.1mb:
+    status: supported
+    behavior: exact deterministic 1MiB server-to-client payload validation
   quic.transport.stream-throughput.16mb:
     status: supported
   quic.transport.latency.echo-1kb:

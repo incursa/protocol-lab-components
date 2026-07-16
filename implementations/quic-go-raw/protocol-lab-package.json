@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.quic-go-raw",
-  "packageVersion": "0.1.12",
+  "packageVersion": "0.1.13",
   "kind": "implementation",
   "displayName": "quic-go Raw QUIC Implementation",
   "entryManifests": [
@@ -16,6 +16,7 @@
       ],
       "scenarios": [
         "quic.transport.stream-throughput.1mb",
+        "quic.transport.stream-download.1mb",
         "quic.transport.latency.echo-1kb",
         "quic.transport.multiplex.100x64kb",
         "quic.transport.stream-limits.100x64kb",

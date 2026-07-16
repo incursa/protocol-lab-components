@@ -246,11 +246,12 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name        string
-		opts        options
-		echo        bool
-		wantConnect bool
-		wantBytes   bool
+		name              string
+		opts              options
+		echo              bool
+		wantConnect       bool
+		wantBytesSent     bool
+		wantBytesReceived bool
 	}{
 		{
 			name: "stream-throughput sequential",
@@ -267,9 +268,26 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 				duration:             25 * time.Millisecond,
 				target:               "",
 			},
-			echo:        false,
-			wantConnect: false,
-			wantBytes:   false,
+			echo:          false,
+			wantConnect:   false,
+			wantBytesSent: true,
+		},
+		{
+			name: "stream-download sequential",
+			opts: options{
+				sni:                  "localhost",
+				alpn:                 "plab-raw-quic",
+				behavior:             "stream-throughput",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     32,
+				payloadDirection:     "server-to-client",
+				openPattern:          "sequential",
+				connections:          1,
+				streamsPerConnection: 1,
+				duration:             25 * time.Millisecond,
+				target:               "",
+			},
+			wantBytesReceived: true,
 		},
 		{
 			name: "multiplex-streams concurrent",
@@ -286,9 +304,10 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 				duration:             25 * time.Millisecond,
 				target:               "",
 			},
-			echo:        true,
-			wantConnect: false,
-			wantBytes:   true,
+			echo:              true,
+			wantConnect:       false,
+			wantBytesSent:     true,
+			wantBytesReceived: true,
 		},
 		{
 			name: "flow control slow reader concurrent",
@@ -305,9 +324,10 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 				duration:             0,
 				target:               "",
 			},
-			echo:        true,
-			wantConnect: false,
-			wantBytes:   true,
+			echo:              true,
+			wantConnect:       false,
+			wantBytesSent:     true,
+			wantBytesReceived: true,
 		},
 		{
 			name: "handshake-cold",
@@ -326,7 +346,6 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 			},
 			echo:        false,
 			wantConnect: true,
-			wantBytes:   false,
 		},
 		{
 			name: "connection-churn",
@@ -343,9 +362,10 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 				duration:             25 * time.Millisecond,
 				target:               "",
 			},
-			echo:        true,
-			wantConnect: true,
-			wantBytes:   true,
+			echo:              true,
+			wantConnect:       true,
+			wantBytesSent:     true,
+			wantBytesReceived: true,
 		},
 		{
 			name: "stream-churn",
@@ -362,9 +382,10 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 				duration:             25 * time.Millisecond,
 				target:               "",
 			},
-			echo:        true,
-			wantConnect: false,
-			wantBytes:   true,
+			echo:              true,
+			wantConnect:       false,
+			wantBytesSent:     true,
+			wantBytesReceived: true,
 		},
 	}
 
@@ -400,12 +421,11 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 				t.Fatalf("connectTimeMeanMs = %f, want 0", metrics.ConnectTimeMeanMs)
 			}
 
-			if tt.wantBytes {
-				if metrics.BytesSent == 0 || metrics.BytesReceived == 0 {
-					t.Fatalf("bytesSent=%d bytesReceived=%d, want both > 0", metrics.BytesSent, metrics.BytesReceived)
-				}
-			} else if metrics.BytesReceived != 0 {
-				t.Fatalf("bytesReceived = %d, want 0", metrics.BytesReceived)
+			if (metrics.BytesSent > 0) != tt.wantBytesSent {
+				t.Fatalf("bytesSent = %d, want positive = %t", metrics.BytesSent, tt.wantBytesSent)
+			}
+			if (metrics.BytesReceived > 0) != tt.wantBytesReceived {
+				t.Fatalf("bytesReceived = %d, want positive = %t", metrics.BytesReceived, tt.wantBytesReceived)
 			}
 
 			if tt.opts.behavior == "flow-control-slow-reader-100ms" && metrics.LatencyMinMs < 100 {
@@ -516,7 +536,13 @@ func serveRawQUICTestConn(conn *quic.Conn, echo bool) {
 			if err != nil {
 				return
 			}
-			if echo && len(data) > 0 {
+			if payloadLength, ok := parseDownloadRequest(data, maximumDownloadPayloadLength); ok {
+				payload := make([]byte, payloadLength)
+				for index := range payload {
+					payload[index] = byte(index % 251)
+				}
+				_, _ = stream.Write(payload)
+			} else if echo && len(data) > 0 {
 				_, _ = stream.Write(data)
 			}
 			_ = stream.Close()

@@ -8,6 +8,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/binary"
 	"encoding/json"
 	"encoding/pem"
 	"errors"
@@ -27,17 +28,20 @@ import (
 )
 
 const (
-	implementationID   = "quic-go-raw"
-	packageID          = "org.protocol-lab.components.implementation.quic-go-raw"
-	defaultALPN        = "plab-raw-quic"
-	defaultPort        = "5447"
-	defaultEchoMaxSize = 64 * 1024
-	maxReadBytes       = 64 * 1024 * 1024
+	implementationID      = "quic-go-raw"
+	packageID             = "org.protocol-lab.components.implementation.quic-go-raw"
+	defaultALPN           = "plab-raw-quic"
+	defaultPort           = "5447"
+	defaultEchoMaxSize    = 64 * 1024
+	maxReadBytes          = 64 * 1024 * 1024
+	downloadRequestMagic  = "PLAB-DL1"
+	downloadRequestLength = len(downloadRequestMagic) + 8
 )
 
 var quicGoVersion = "v0.60.0"
 var supportedScenarios = []string{
 	"quic.transport.stream-throughput.1mb",
+	"quic.transport.stream-download.1mb",
 	"quic.transport.latency.echo-1kb",
 	"quic.transport.multiplex.100x64kb",
 	"quic.transport.stream-limits.100x64kb",
@@ -203,6 +207,12 @@ func handleStream(stream streamReadWriteCloser, opts options) {
 		log.Printf("stream payload exceeded limit: %d", len(payload))
 		return
 	}
+	if payloadLength, ok := parseDownloadRequest(payload, maxReadBytes); ok {
+		if err := writeDeterministicPayload(stream, payloadLength); err != nil {
+			log.Printf("write stream download failed: %v", err)
+		}
+		return
+	}
 	if int64(len(payload)) > opts.echoMaxBytes {
 		return
 	}
@@ -213,6 +223,40 @@ func handleStream(stream streamReadWriteCloser, opts options) {
 	if _, err := stream.Write(payload); err != nil {
 		log.Printf("write stream echo failed: %v", err)
 	}
+}
+
+func parseDownloadRequest(request []byte, maximumPayloadLength int) (int, bool) {
+	if len(request) != downloadRequestLength || string(request[:len(downloadRequestMagic)]) != downloadRequestMagic {
+		return 0, false
+	}
+
+	payloadLength := binary.BigEndian.Uint64(request[len(downloadRequestMagic):])
+	if payloadLength == 0 || payloadLength > uint64(maximumPayloadLength) {
+		return 0, false
+	}
+
+	return int(payloadLength), true
+}
+
+func writeDeterministicPayload(writer io.Writer, payloadLength int) error {
+	buffer := make([]byte, min(payloadLength, 64*1024))
+	for offset := 0; offset < payloadLength; {
+		chunkLength := min(len(buffer), payloadLength-offset)
+		for index := 0; index < chunkLength; index++ {
+			buffer[index] = byte((offset + index) % 251)
+		}
+
+		written, err := writer.Write(buffer[:chunkLength])
+		offset += written
+		if err != nil {
+			return err
+		}
+		if written != chunkLength {
+			return io.ErrShortWrite
+		}
+	}
+
+	return nil
 }
 
 func writeMetadata(writer io.Writer, opts options, listen string) {

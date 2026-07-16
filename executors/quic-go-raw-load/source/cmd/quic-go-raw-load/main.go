@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/tls"
+	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -25,6 +26,9 @@ import (
 const toolName = "quic-go-raw-load"
 const outputSchemaVersion = "protocol-lab.raw-quic-executor-result.v1"
 const slowReaderResponseDelay = 100 * time.Millisecond
+const downloadRequestMagic = "PLAB-DL1"
+const downloadRequestLength = len(downloadRequestMagic) + 8
+const maximumDownloadPayloadLength = 64 * 1024 * 1024
 
 type options struct {
 	sni                  string
@@ -280,6 +284,16 @@ func parseOptions(args []string) (options, error) {
 func validateOptions(opts options) error {
 	behavior := strings.ToLower(opts.behavior)
 	openPattern := strings.ToLower(opts.openPattern)
+	payloadDirection := strings.ToLower(opts.payloadDirection)
+
+	switch payloadDirection {
+	case "", "none", "client-to-server", "server-to-client", "bidirectional":
+	default:
+		return fmt.Errorf("unsupported payload direction %q", opts.payloadDirection)
+	}
+	if payloadDirection == "server-to-client" && opts.payloadSizeBytes > maximumDownloadPayloadLength {
+		return fmt.Errorf("server-to-client payload size exceeds %d-byte limit", maximumDownloadPayloadLength)
+	}
 
 	switch behavior {
 	case "stream-throughput", "latency-echo", "large-payload":
@@ -514,15 +528,22 @@ func runRequestResponseStream(ctx context.Context, conn *quic.Conn, payload []by
 		}
 	}()
 
-	written, err := stream.Write(payload)
-	if err != nil {
-		return 0, int64(written), 0, fmt.Errorf("write request payload: %w", err)
+	requestPayload := payload
+	accountedBytesSent := int64(len(payload))
+	if strings.EqualFold(opts.payloadDirection, "server-to-client") {
+		requestPayload = buildDownloadRequest(len(payload))
+		accountedBytesSent = 0
 	}
-	if written != len(payload) {
-		return 0, int64(written), 0, io.ErrShortWrite
+
+	written, err := stream.Write(requestPayload)
+	if err != nil {
+		return 0, accountedBytesSent, 0, fmt.Errorf("write request payload: %w", err)
+	}
+	if written != len(requestPayload) {
+		return 0, accountedBytesSent, 0, io.ErrShortWrite
 	}
 	if err := stream.Close(); err != nil {
-		return 0, int64(written), 0, fmt.Errorf("close request writes: %w", err)
+		return 0, accountedBytesSent, 0, fmt.Errorf("close request writes: %w", err)
 	}
 	closeStream = false
 
@@ -531,7 +552,7 @@ func runRequestResponseStream(ctx context.Context, conn *quic.Conn, payload []by
 		defer timer.Stop()
 		select {
 		case <-streamCtx.Done():
-			return 0, int64(written), 0, fmt.Errorf("wait before reading response: %w", streamCtx.Err())
+			return 0, accountedBytesSent, 0, fmt.Errorf("wait before reading response: %w", streamCtx.Err())
 		case <-timer.C:
 		}
 	}
@@ -541,6 +562,11 @@ func runRequestResponseStream(ctx context.Context, conn *quic.Conn, payload []by
 	for {
 		read, readErr := stream.Read(buffer)
 		if read > 0 {
+			if !strings.EqualFold(opts.payloadDirection, "client-to-server") {
+				if err := validateDeterministicPayloadChunk(payload, received, buffer[:read]); err != nil {
+					return 0, accountedBytesSent, received + int64(read), fmt.Errorf("validate response payload: %w", err)
+				}
+			}
 			received += int64(read)
 		}
 		if readErr == nil {
@@ -549,18 +575,52 @@ func runRequestResponseStream(ctx context.Context, conn *quic.Conn, payload []by
 		if errors.Is(readErr, io.EOF) {
 			break
 		}
-		return 0, int64(written), received, fmt.Errorf("read response payload or EOF: %w", readErr)
+		return 0, accountedBytesSent, received, fmt.Errorf("read response payload or EOF: %w", readErr)
 	}
 
 	if strings.EqualFold(opts.payloadDirection, "client-to-server") {
 		if received != 0 {
-			return 0, int64(written), received, fmt.Errorf("received %d response bytes, expected 0", received)
+			return 0, accountedBytesSent, received, fmt.Errorf("received %d response bytes, expected 0", received)
 		}
 	} else if received != int64(len(payload)) {
-		return 0, int64(written), received, fmt.Errorf("received %d echoed bytes, expected %d", received, len(payload))
+		return 0, accountedBytesSent, received, fmt.Errorf("received %d response bytes, expected %d", received, len(payload))
 	}
 
-	return float64(time.Since(start).Microseconds()) / 1000.0, int64(written), received, nil
+	return float64(time.Since(start).Microseconds()) / 1000.0, accountedBytesSent, received, nil
+}
+
+func buildDownloadRequest(payloadLength int) []byte {
+	request := make([]byte, downloadRequestLength)
+	copy(request, downloadRequestMagic)
+	binary.BigEndian.PutUint64(request[len(downloadRequestMagic):], uint64(payloadLength))
+	return request
+}
+
+func parseDownloadRequest(request []byte, maximumPayloadLength int) (int, bool) {
+	if len(request) != downloadRequestLength || string(request[:len(downloadRequestMagic)]) != downloadRequestMagic {
+		return 0, false
+	}
+
+	payloadLength := binary.BigEndian.Uint64(request[len(downloadRequestMagic):])
+	if payloadLength == 0 || payloadLength > uint64(maximumPayloadLength) {
+		return 0, false
+	}
+
+	return int(payloadLength), true
+}
+
+func validateDeterministicPayloadChunk(expected []byte, offset int64, chunk []byte) error {
+	if offset < 0 || offset+int64(len(chunk)) > int64(len(expected)) {
+		return fmt.Errorf("response exceeded expected %d-byte payload at offset %d", len(expected), offset)
+	}
+
+	for index, actual := range chunk {
+		if wanted := expected[int(offset)+index]; actual != wanted {
+			return fmt.Errorf("byte at offset %d was %d, expected %d", int(offset)+index, actual, wanted)
+		}
+	}
+
+	return nil
 }
 
 func responseReadDelay(behavior string) time.Duration {

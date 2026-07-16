@@ -15,6 +15,7 @@ the canonical implementation entrypoint.
 Supported scenarios:
 
 - `quic.transport.stream-throughput.1mb`
+- `quic.transport.stream-download.1mb`
 - `quic.transport.latency.echo-1kb`
 - `quic.transport.multiplex.100x64kb`
 - `quic.transport.stream-limits.100x64kb`
@@ -31,7 +32,8 @@ Unsupported until proven:
 - raw QUIC large-payload, cancellation, `quic.transport.resumption-rejected`, `quic.transport.resumed-handshake`, `quic.transport.zero-rtt-accepted`, and `quic.transport.zero-rtt-rejected` lanes
 
 The package covers cold handshake, connection churn, stream churn, stream echo,
-and one-connection stream-limit pressure lanes.
+exact deterministic server-to-client download, and one-connection stream-limit
+pressure lanes.
 
 The target listens on `quic://127.0.0.1:5447/` by default, uses ALPN
 `plab-raw-quic`, and honors `PROTOCOL_LAB_TARGET_BIND_ADDRESS`,

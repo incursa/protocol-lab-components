@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"encoding/binary"
 	"encoding/json"
 	"io"
 	"os"
@@ -48,6 +49,7 @@ func TestWriteMetadataIncludesSupportedScenarios(t *testing.T) {
 
 	want := []string{
 		"quic.transport.stream-throughput.1mb",
+		"quic.transport.stream-download.1mb",
 		"quic.transport.latency.echo-1kb",
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.stream-limits.100x64kb",
@@ -202,6 +204,41 @@ func TestServerAcceptsLargeClientToServerPayloadWithoutEcho(t *testing.T) {
 	}
 }
 
+func TestServerWritesExactDeterministicDownloadPayload(t *testing.T) {
+	const payloadLength = 1024 * 1024
+	request := make([]byte, downloadRequestLength)
+	copy(request, downloadRequestMagic)
+	binary.BigEndian.PutUint64(request[len(downloadRequestMagic):], payloadLength)
+	stream := &fakeStream{reader: bytes.NewReader(request)}
+
+	handleStream(stream, options{echoMaxBytes: defaultEchoMaxSize})
+
+	if stream.write.Len() != payloadLength {
+		t.Fatalf("download payload length = %d, want %d", stream.write.Len(), payloadLength)
+	}
+	for index, actual := range stream.write.Bytes() {
+		if want := byte(index % 251); actual != want {
+			t.Fatalf("download byte at offset %d = %d, want %d", index, actual, want)
+		}
+	}
+	if !stream.closed {
+		t.Fatal("stream was not closed")
+	}
+}
+
+func TestParseDownloadRequestRejectsMalformedAndOversizedRequests(t *testing.T) {
+	if _, ok := parseDownloadRequest([]byte("PLAB-DL1"), maxReadBytes); ok {
+		t.Fatal("short download request was accepted")
+	}
+
+	request := make([]byte, downloadRequestLength)
+	copy(request, downloadRequestMagic)
+	binary.BigEndian.PutUint64(request[len(downloadRequestMagic):], uint64(maxReadBytes+1))
+	if _, ok := parseDownloadRequest(request, maxReadBytes); ok {
+		t.Fatal("oversized download request was accepted")
+	}
+}
+
 func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	packageManifestPath := filepath.Join("..", "..", "..", "protocol-lab-package.json")
 	internalManifestPath := filepath.Join("..", "..", "..", "protocol-lab.internal.json")
@@ -221,14 +258,15 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
 		t.Fatalf("unmarshal package manifest: %v", err)
 	}
-	if packageManifest.PackageVersion != "0.1.12" {
-		t.Fatalf("packageVersion = %q, want 0.1.12", packageManifest.PackageVersion)
+	if packageManifest.PackageVersion != "0.1.13" {
+		t.Fatalf("packageVersion = %q, want 0.1.13", packageManifest.PackageVersion)
 	}
 	if len(packageManifest.ProvidedImplementations) != 1 {
 		t.Fatalf("providedImplementations length = %d, want 1", len(packageManifest.ProvidedImplementations))
 	}
 	wantPackageScenarios := []string{
 		"quic.transport.stream-throughput.1mb",
+		"quic.transport.stream-download.1mb",
 		"quic.transport.latency.echo-1kb",
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.stream-limits.100x64kb",

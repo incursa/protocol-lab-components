@@ -25,13 +25,14 @@ pwsh ./scenarios/raw-quic-transport/validate.ps1
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.scenario.raw-quic-transport.0.1.11.plabpkg
+org.protocol-lab.components.scenario.raw-quic-transport.0.1.12.plabpkg
 ```
 
 ## Packaged Scenarios
 
 - `quic.transport.stream-throughput.64kb`
 - `quic.transport.stream-throughput.1mb`
+- `quic.transport.stream-download.1mb`
 - `quic.transport.stream-throughput.16mb`
 - `quic.transport.latency.echo-1kb`
 - `quic.transport.multiplex.100x1kb`
@@ -54,5 +55,5 @@ org.protocol-lab.components.scenario.raw-quic-transport.0.1.11.plabpkg
 
 The smoke suite includes only scenarios currently supported by `quic-go-raw-load`. The cancellation manifest remains an explicit pending lane. Stream churn remains separate from connection churn and now runs as a stable-connection executor lane. Resumption-rejected, resumed-handshake, zero-rtt-accepted, and zero-rtt-rejected are packaged here without claiming executor support yet.
 
-Version `0.1.11` adds orthogonal payload-size and stream-count variants for
-single-stream throughput, multiplexing, and simultaneous duplex evidence.
+Version `0.1.12` adds exact deterministic server-to-client download coverage
+to the existing orthogonal upload, multiplexing, and duplex evidence.

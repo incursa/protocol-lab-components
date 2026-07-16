@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.quic-go-raw-load",
-  "packageVersion": "0.1.9",
+  "packageVersion": "0.1.10",
   "kind": "test-executor",
   "displayName": "quic-go Raw QUIC Load Executor",
   "entryManifests": [
@@ -17,6 +17,7 @@
       "scenarios": [
         "quic.transport.stream-throughput.64kb",
         "quic.transport.stream-throughput.1mb",
+        "quic.transport.stream-download.1mb",
         "quic.transport.stream-throughput.16mb",
         "quic.transport.latency.echo-1kb",
         "quic.transport.multiplex.100x1kb",
@@ -35,6 +36,7 @@
       "tests": [
         "quic.transport.stream-throughput.64kb",
         "quic.transport.stream-throughput.1mb",
+        "quic.transport.stream-download.1mb",
         "quic.transport.stream-throughput.16mb",
         "quic.transport.latency.echo-1kb",
         "quic.transport.multiplex.100x1kb",
