@@ -40,6 +40,7 @@ var supportedScenarios = []string{
 	"quic.transport.stream-throughput.1mb",
 	"quic.transport.latency.echo-1kb",
 	"quic.transport.multiplex.100x64kb",
+	"quic.transport.stream-limits.100x64kb",
 	"quic.transport.connection-churn",
 	"quic.transport.stream-churn",
 	"quic.transport.duplex-streams",

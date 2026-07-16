@@ -1,7 +1,7 @@
 schemaVersion: "1.0"
 id: quic-go-raw
 name: quic-go Raw QUIC
-description: quic-go raw QUIC transport target for ProtocolLab latency echo, stream throughput, multiplexing, connection churn, stream churn, cold handshake, and duplex scenarios.
+description: quic-go raw QUIC transport target for ProtocolLab latency echo, stream throughput, multiplexing, stream-limit pressure, connection churn, stream churn, cold handshake, and duplex scenarios.
 family: quic-go
 role: server
 targetKind: process
@@ -26,6 +26,7 @@ supportedScenarios:
   - quic.transport.stream-throughput.1mb
   - quic.transport.latency.echo-1kb
   - quic.transport.multiplex.100x64kb
+  - quic.transport.stream-limits.100x64kb
   - quic.transport.connection-churn
   - quic.transport.stream-churn
   - quic.transport.duplex-streams
@@ -35,6 +36,7 @@ supportedTestCaseIds:
   - quic.transport.stream-throughput.1mb
   - quic.transport.latency.echo-1kb
   - quic.transport.multiplex.100x64kb
+  - quic.transport.stream-limits.100x64kb
   - quic.transport.connection-churn
   - quic.transport.stream-churn
   - quic.transport.duplex-streams
@@ -50,6 +52,9 @@ scenarioCoverage:
   quic.transport.multiplex.100x64kb:
     status: supported
     behavior: bidirectional stream echo
+  quic.transport.stream-limits.100x64kb:
+    status: supported
+    behavior: 100 concurrent bidirectional streams on one connection
   quic.transport.connection-churn:
     status: supported
     behavior: fresh connection establishment with bidirectional stream echo
@@ -77,9 +82,6 @@ scenarioCoverage:
   quic.transport.zero-rtt-rejected:
     status: unsupported
     reason: quic-go raw target package does not currently expose an executable zero-RTT rejection proof path.
-  quic.transport.stream-limits.100x64kb:
-    status: unsupported
-    reason: Not proven for this package yet.
   quic.transport.payload.large-1mb:
     status: unsupported
     reason: Not proven for this package yet.

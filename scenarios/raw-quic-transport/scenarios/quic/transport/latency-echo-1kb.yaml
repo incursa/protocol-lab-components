@@ -1,8 +1,14 @@
 schemaVersion: "1.0"
-title: QUIC Echo Latency 1KB
+id: quic.transport.latency.echo-1kb
+version: "1.0"
+title: QUIC Echo Latency 1 KiB
+name: QUIC Echo Latency 1 KiB
+family: quic.transport
+description: Validate and benchmark small bidirectional QUIC stream echo latency independently of HTTP/3.
 status: stable
 kind: protocolValidation
 layer: transport
+protocol: quic
 roles:
   - server
 requires:
@@ -13,11 +19,6 @@ requires:
   roles:
     - server
 trafficShape: bidirectional-stream
-id: quic.transport.latency.echo-1kb
-name: QUIC Echo Latency 1KB
-family: quic.transport
-description: Validate and benchmark small bidirectional QUIC stream echo latency.
-protocol: quic
 implementationRole: server
 requiredCapabilities:
   - quicTransport
@@ -35,19 +36,32 @@ validation:
   required: true
   checks:
     - payload-bytes-delivered
+    - echoed-bytes-match-expected
+    - completed-streams-match-expected
     - latency-sample-recorded
+    - zero-timeouts-and-errors
+    - protocol:quic
 benchmark:
-  warmupSeconds: 2
-  durationSeconds: 10
+  warmupSeconds: 5
+  durationSeconds: 15
   repetitions: 1
   connections:
     - 1
+    - 4
+    - 16
+    - 32
+    - 64
+    - 128
   streamsPerConnection:
     - 1
 benchmarkCompat:
   compatibleLoadShapes:
-    - fixed-path-request-response
+    - quic-latency
+    - smoke
+    - regression
+    - comparison
   primaryMetrics:
+    - streamsPerSecond
     - latencyP50
     - latencyP95
     - latencyP99
@@ -57,16 +71,17 @@ artifacts:
     - validation.json
     - result.json
   optional:
-    - qlog
+    - protocol-diagnostic-artifact
     - counters
 networkProfile: clean
 requiredMetrics:
   - quic.stream.completedStreams
   - quic.stream.latencyP50
 artifactRequirements:
-  - load-tool.stdout.txt
-  - load-tool.stderr.txt
+  - load-generator.stdout.txt
+  - load-generator.stderr.txt
+  - protocol-diagnostic-artifact
 tags:
+  - phase6
   - quic
   - latency
-  - correctness

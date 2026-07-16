@@ -281,14 +281,14 @@ func validateOptions(opts options) error {
 	openPattern := strings.ToLower(opts.openPattern)
 
 	switch behavior {
-	case "stream-throughput", "latency-echo":
+	case "stream-throughput", "latency-echo", "large-payload":
 		if openPattern != "sequential" {
 			return fmt.Errorf("behavior %q requires open-pattern %q", opts.behavior, "sequential")
 		}
 		if opts.streamsPerConnection < 1 {
 			return errors.New("streams-per-connection must be greater than zero")
 		}
-	case "multiplex-streams", "duplex-streams":
+	case "multiplex-streams", "duplex-streams", "stream-limit-pressure":
 		if openPattern != "concurrent" {
 			return fmt.Errorf("behavior %q requires open-pattern %q", opts.behavior, "concurrent")
 		}
@@ -326,9 +326,9 @@ func runLoadWithQUICConfig(ctx context.Context, opts options, duration time.Dura
 	}
 
 	switch strings.ToLower(opts.behavior) {
-	case "stream-throughput", "latency-echo":
+	case "stream-throughput", "latency-echo", "large-payload":
 		return runStreamLoad(ctx, opts, duration, discard, streamOpenSequential, quicConfig)
-	case "multiplex-streams", "duplex-streams":
+	case "multiplex-streams", "duplex-streams", "stream-limit-pressure":
 		return runStreamLoad(ctx, opts, duration, discard, streamOpenConcurrent, quicConfig)
 	case "handshake-cold":
 		return runHandshakeColdLoad(ctx, opts, duration, discard, quicConfig)

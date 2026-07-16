@@ -1,8 +1,14 @@
 schemaVersion: "1.0"
-title: QUIC Stream Limit Pressure 100x64KB
+id: quic.transport.stream-limits.100x64kb
+version: "1.0"
+title: QUIC Stream Limit Pressure 100x64 KiB
+name: QUIC Stream Limit Pressure 100x64 KiB
+family: quic.transport
+description: Validate a 100-stream bidirectional batch against one QUIC connection to exercise advertised stream capacity independently of HTTP/3.
 status: stable
 kind: protocolValidation
 layer: transport
+protocol: quic
 roles:
   - server
 requires:
@@ -13,11 +19,6 @@ requires:
   roles:
     - server
 trafficShape: bidirectional-stream
-id: quic.transport.stream-limits.100x64kb
-name: QUIC Stream Limit Pressure 100x64KB
-family: quic.transport
-description: Validate and benchmark a high-concurrency bidirectional stream batch that exercises advertised stream capacity without using the HTTP/3 lane.
-protocol: quic
 implementationRole: server
 requiredCapabilities:
   - quicTransport
@@ -36,10 +37,14 @@ validation:
   required: true
   checks:
     - concurrent-streams-complete
+    - completed-streams-match-expected
+    - echoed-bytes-match-expected
     - no-stream-limit-deadlock
+    - zero-timeouts-and-errors
+    - protocol:quic
 benchmark:
   warmupSeconds: 5
-  durationSeconds: 30
+  durationSeconds: 15
   repetitions: 1
   connections:
     - 1
@@ -47,9 +52,12 @@ benchmark:
     - 100
 benchmarkCompat:
   compatibleLoadShapes:
-    - fixed-path-request-response
+    - quic-stream-limit-pressure
+    - smoke
+    - regression
+    - comparison
   primaryMetrics:
-    - requestsPerSecond
+    - streamsPerSecond
     - latencyP50
     - latencyP95
     - latencyP99
@@ -59,16 +67,17 @@ artifacts:
     - validation.json
     - result.json
   optional:
-    - qlog
+    - protocol-diagnostic-artifact
     - counters
 networkProfile: clean
 requiredMetrics:
   - quic.stream.maxActiveStreams
   - quic.stream.completedStreams
 artifactRequirements:
-  - load-tool.stdout.txt
-  - load-tool.stderr.txt
+  - load-generator.stdout.txt
+  - load-generator.stderr.txt
+  - protocol-diagnostic-artifact
 tags:
+  - phase6
   - quic
   - stream-limits
-  - correctness

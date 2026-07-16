@@ -36,6 +36,30 @@ func TestValidateOptionsRejectsUnsupportedBehaviorOpenPatternCombos(t *testing.T
 			},
 		},
 		{
+			name: "latency echo accepts sequential",
+			options: options{
+				behavior:             "latency-echo",
+				openPattern:          "sequential",
+				streamsPerConnection: 1,
+			},
+		},
+		{
+			name: "large payload accepts sequential",
+			options: options{
+				behavior:             "large-payload",
+				openPattern:          "sequential",
+				streamsPerConnection: 1,
+			},
+		},
+		{
+			name: "stream limit pressure accepts concurrent",
+			options: options{
+				behavior:             "stream-limit-pressure",
+				openPattern:          "concurrent",
+				streamsPerConnection: 100,
+			},
+		},
+		{
 			name: "multiplex-streams rejects sequential",
 			options: options{
 				behavior:             "multiplex-streams",
