@@ -176,8 +176,8 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
   implementation-owned handoff without coupling the runner to Incursa code.
 - [x] Package and live-prove the existing MSQuic/.NET raw adapter with explicit
   platform capability metadata.
-- [ ] Add raw transport packages for picoquic, Quinn, and s2n-quic.
-  - [ ] picoquic
+- [x] Add raw transport packages for picoquic, Quinn, and s2n-quic.
+  - [x] picoquic
   - [x] Quinn
   - [x] s2n-quic
 - [ ] Add compatibility-first raw packages for aioquic, quiche, ngtcp2, XQUIC,
@@ -197,6 +197,7 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
 | quic-go | `0.1.16` | Cold handshake, 1 KiB echo, 1 MiB stream throughput, 100x64 KiB multiplexing, and 16-stream duplex; current-head rows have accepted cross-worker measurements | `job-dfac45aec77143ef89781b85d50b5419`, `job-618030b559764ac98686ea78cd458257`, `job-9d4c7d6fa1c74ceea41aea0f91a2b84f`, `job-95c2770be54245388ff236cf2d508379`, `job-1df61cda4267436f98dd9ac7612266c4` |
 | Quinn | `0.1.0` | Cold handshake, 1 KiB echo, 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; every row has one accepted cross-worker measurement | `job-d81806366b4e447dab866e5f9652cbef`, `job-5eabc52f893046b7afc23fc67ba138b7`, `job-2bb41e44065f4c048289f2cfa1f20ad9`, `job-53da1c1d431e454ea4908a1809cc94f3`, `job-5c85e53f5dfe493ca30196b2a1a0fec3` |
 | s2n-quic | `0.1.0` | Cold handshake, 1 KiB echo, 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; every row has one accepted cross-worker measurement | `job-2e586cdfd6084ece82f91d327d9f95c7`, `job-d507de39055e4b01b53c5f0e4cb0e4b4`, `job-00fbbb776aa94930b1bfcab074af4119`, `job-555ac25d829746baa9722cc6d2bdc3f6`, `job-4c3d644cd576452da12e586d1b64bfb6` |
+| picoquic | `0.1.0` | Cold handshake, 1 KiB echo, 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; every row has one accepted cross-worker measurement | `job-3150078923e34eac9a1c957be289de91`, `job-4cb1795c45ae4ebe89a528cc2b9cda98`, `job-8a40e17c3b164247a35209add5ed212c`, `job-207ec5092cd74380a130441eb51d0236`, `job-bdefa794c67541648a5ab7d4026aeb1e` |
 
 These clean implementation-owned packages were selected with immutable executor
 and scenario-package hashes. Each public report retains all 15 accepted cells
@@ -266,6 +267,26 @@ This reaches the five-ecosystem raw QUIC breadth floor with three common
 workloads, but the rows remain diagnostic/unranked because they use one
 repetition and the target/load VMs share physical host `r920`; the repeated,
 physically isolated decision-ready cohort is still open.
+
+The picoquic target is immutable package
+`org.protocol-lab.components.implementation.picoquic-raw@0.1.0`
+(`8e55c4749732...`) built from clean component commit `830e9c2`. It pins
+picoquic commit `13671ce7bdf58c278a29da2d49a32f76c21d6c6d` and picotls commit
+`bfa67875982afc4c24f21e146cef4747fa189c2f`, negotiates the exact
+`plab-raw-quic` ALPN, and preserves the same canonical stream wire behavior as
+the common raw cohort. All five jobs used `plab-worker-load-01 ->
+plab-worker-sut-01`; handshake retained 92 controller artifacts and the other
+four retained 83 each. Publication attempts
+(`pub_dc34593bcfa440d48330b883dafc358f`,
+`pub_04434134e2954c58a4a8e4e9ef9a2c96`,
+`pub_942fb811cfe64f17a5f481ea34afffd1`,
+`pub_52b1c01186d849f0ab80a501d2344c36`, and
+`pub_caac479c0297466eb96f92f221aabd79`) uploaded and verified the public
+objects and were accepted by the site import queue. All five report routes and
+the composite `/implementations/picoquic-raw` drill-down were verified live.
+picoquic adds another fully common raw implementation but does not upgrade the
+cohort beyond diagnostic/unranked evidence: it still uses one repetition and
+the target/load VMs share physical host `r920`.
 
 ## Workstream C - HTTP/3 catalog backfill
 
