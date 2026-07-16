@@ -9,17 +9,14 @@ kind: interopValidation
 layer: protocol
 protocol: h3
 roles:
-  - client
   - server
 requires:
   capabilities:
-    - h3.client
     - h3.server
     - external-peer
   protocols:
     - h3
   roles:
-    - client
     - server
 trafficShape: request-response
 implementationRole: server

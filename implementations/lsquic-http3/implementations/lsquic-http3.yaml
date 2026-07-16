@@ -7,7 +7,7 @@ roles:
   - server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-lsquic-http3:0.1.1
+image: incursa-protocol-lab-lsquic-http3:0.1.2
 dockerfile: docker/lsquic-http3.Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
@@ -24,6 +24,7 @@ supportedProtocols:
   - h3
 supportedWorkloadFamilies:
   - http.application
+  - http3.external
 supportedProtocolVersions:
   - http/3
 supportedScenarios:
@@ -82,6 +83,9 @@ readinessCheck:
 capabilities:
   - http.server
   - httpStatus
+  - h3.server
+  - h3ExternalPeer
+  - external-peer
 unsupportedKnownCases:
   - h1
   - h2
