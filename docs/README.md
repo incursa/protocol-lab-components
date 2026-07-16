@@ -23,6 +23,9 @@ This documentation supports the component package repository.
   the QUIC/HTTP3 inventory, cited live-evidence state, and the sibling site's
   authored public implementation catalog. Validate it with
   `pwsh ./scripts/package/Test-ImplementationCoverageBaseline.ps1`.
+- [Raw QUIC interop-image feasibility](raw-quic-interop-image-feasibility-2026-07-16.md)
+  records exact compatibility decisions where an upstream interop binary does
+  not expose the canonical raw ALPN and stream contract.
 - [TLS endpoint/tool feasibility](tls-endpoint-tool-feasibility.md) records the
   exact OpenSSL and GnuTLS wrapper boundary plus the repository-backed rustls
   and s2n-tls no-package decisions.

@@ -185,7 +185,9 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
   scenario mapping.
   - [x] aioquic
   - [x] quiche
-  - [ ] ngtcp2
+  - [x] ngtcp2 interop-image evaluation; no exact raw mapping, with the dated
+    blocker and re-entry condition in
+    `docs/raw-quic-interop-image-feasibility-2026-07-16.md`
   - [ ] XQUIC
   - [ ] LSQUIC
   - [ ] neqo
