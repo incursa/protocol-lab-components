@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.h3spec-http3-qpack",
-  "packageVersion": "0.1.6",
+  "packageVersion": "0.1.7",
   "kind": "test-executor",
   "displayName": "h3spec HTTP/3 and QPACK Test Executor",
   "entryManifests": [
