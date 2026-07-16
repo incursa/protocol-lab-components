@@ -7,22 +7,28 @@ timeout_seconds="${PLAB_TIMEOUT_SECONDS:-5}"
 image="${HTTP3_XQUIC_IMAGE:-ghcr.io/alibaba/xquic/xquic-interop@sha256:875df1e9935c6a07e26d7b5ae14df9edd06703061ce35920234a97d6991c58e0}"
 output_root="${PLAB_ARTIFACT_DIR:-${PLAB_OUTPUT_ROOT:-artifacts/xquic-http3-client}}"
 executor_id="${PLAB_EXECUTOR_ID:-xquic-http3-client}"
-executor_version="${PLAB_EXECUTOR_VERSION:-0.1.1}"
+executor_version="${PLAB_EXECUTOR_VERSION:-0.1.2}"
 connections="${PLAB_CONNECTIONS:-1}"
 concurrency="${PLAB_CONCURRENCY:-1}"
 streams="${PLAB_STREAMS_PER_CONNECTION:-1}"
 duration="${PLAB_DURATION_SECONDS:-0}"
 warmup="${PLAB_WARMUP_SECONDS:-0}"
+container_target_url="${target_url/localhost/host.docker.internal}"
+container_target_url="${container_target_url/127.0.0.1/host.docker.internal}"
+docker_host_args=()
+if [ "$(uname -s)" = "Linux" ]; then
+  docker_host_args+=(--add-host=host.docker.internal:host-gateway)
+fi
 mkdir -p "$output_root"
 output_root="$(cd "$output_root" && pwd)"
-shell="cd /xquic_bin && ./demo_client -l d -L /out/client.log -D /out -U '$target_url' -A h3 -K $timeout_seconds -o"
-printf 'docker run --rm -v %q:/out --entrypoint bash %q -lc %q\n' "$output_root" "$image" "$shell" >"$output_root/command.txt"
+shell="cd /xquic_bin && ./demo_client -l d -L /out/client.log -D /out -U '$container_target_url' -A h3 -K $timeout_seconds -o"
+printf 'docker run --rm %s -v %q:/out --entrypoint bash %q -lc %q\n' "${docker_host_args[*]}" "$output_root" "$image" "$shell" >"$output_root/command.txt"
 if [ "${PLAB_PLAN_ONLY:-0}" = 1 ]; then
   printf '{"status":"planned","targetUrl":"%s","expectedStatus":%s,"image":"%s"}\n' "$target_url" "$expected_status" "$image" >"$output_root/result.json"
   exit 0
 fi
 set +e
-docker run --rm -v "$output_root:/out" --entrypoint bash "$image" -lc "$shell" >"$output_root/stdout.txt" 2>"$output_root/stderr.txt"
+docker run --rm "${docker_host_args[@]}" -v "$output_root:/out" --entrypoint bash "$image" -lc "$shell" >"$output_root/stdout.txt" 2>"$output_root/stderr.txt"
 exit_code=$?
 set -e
 status_observed=false

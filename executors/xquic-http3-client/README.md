@@ -9,10 +9,11 @@ The wrapper intentionally does not turn XQUIC's current missing response FIN
 into a payload success. It records `responseCompletionWarning=true`, retains
 the full client log, and emits no canonical payload or benchmark claim.
 
-Version `0.1.1` consumes the runner's target and artifact bindings and emits the
-standard HTTP executor parser record for its single diagnostic request. The
-record retains the response-completion warning and makes no payload or latency
-claim.
+Version `0.1.2` consumes the runner's target and artifact bindings, rewrites
+loopback targets to the Docker host gateway for its nested client container,
+and emits the standard HTTP executor parser record for its single diagnostic
+request. The record retains the response-completion warning and makes no
+payload or latency claim.
 
 ```powershell
 pwsh ./scripts/package/Build-XquicHttp3ClientPackage.ps1

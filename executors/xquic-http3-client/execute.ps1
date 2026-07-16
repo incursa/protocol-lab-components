@@ -12,8 +12,13 @@ $ErrorActionPreference = 'Stop'
 $root = if ([IO.Path]::IsPathRooted($OutputRoot)) { $OutputRoot } else { Join-Path (Get-Location) $OutputRoot }
 New-Item -ItemType Directory -Force -Path $root | Out-Null
 if ($TargetUrl.Contains("'")) { throw 'TargetUrl cannot contain a single quote.' }
-$shell = "cd /xquic_bin && ./demo_client -l d -L /out/client.log -D /out -U '$TargetUrl' -A h3 -K $TimeoutSeconds -o"
-$args = @('run', '--rm', '-v', "${root}:/out", '--entrypoint', 'bash', $Image, '-lc', $shell)
+$containerTargetUrl = $TargetUrl -replace '://localhost(?=[:/])', '://host.docker.internal' -replace '://127\.0\.0\.1(?=[:/])', '://host.docker.internal'
+$shell = "cd /xquic_bin && ./demo_client -l d -L /out/client.log -D /out -U '$containerTargetUrl' -A h3 -K $TimeoutSeconds -o"
+$args = @('run', '--rm')
+if ($IsLinux) {
+    $args += '--add-host=host.docker.internal:host-gateway'
+}
+$args += @('-v', "${root}:/out", '--entrypoint', 'bash', $Image, '-lc', $shell)
 Set-Content -LiteralPath (Join-Path $root 'command.txt') -Value ('docker ' + ($args -join ' '))
 if ($PlanOnly) {
     [ordered]@{ status = 'planned'; targetUrl = $TargetUrl; expectedStatus = $ExpectedStatus; image = $Image } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $root 'result.json')
@@ -39,7 +44,7 @@ $passed = $exitCode -eq 0 -and $statusObserved -and $alpnObserved
 } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $root 'result.json')
 if (-not $passed) { throw 'XQUIC HTTP/3 diagnostic validation failed.' }
 $executorId = if ($env:PLAB_EXECUTOR_ID) { $env:PLAB_EXECUTOR_ID } else { 'xquic-http3-client' }
-$executorVersion = if ($env:PLAB_EXECUTOR_VERSION) { $env:PLAB_EXECUTOR_VERSION } else { '0.1.1' }
+$executorVersion = if ($env:PLAB_EXECUTOR_VERSION) { $env:PLAB_EXECUTOR_VERSION } else { '0.1.2' }
 $connections = if ($env:PLAB_CONNECTIONS) { [int]$env:PLAB_CONNECTIONS } else { 1 }
 $concurrency = if ($env:PLAB_CONCURRENCY) { [int]$env:PLAB_CONCURRENCY } else { 1 }
 $streams = if ($env:PLAB_STREAMS_PER_CONNECTION) { [int]$env:PLAB_STREAMS_PER_CONNECTION } else { 1 }

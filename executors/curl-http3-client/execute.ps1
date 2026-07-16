@@ -18,9 +18,15 @@ $stdoutPath = Join-Path $resolvedOutputRoot 'stdout.txt'
 $stderrPath = Join-Path $resolvedOutputRoot 'stderr.txt'
 $commandPath = Join-Path $resolvedOutputRoot 'command.txt'
 $resultPath = Join-Path $resolvedOutputRoot 'result.json'
+$containerTargetUrl = $TargetUrl -replace '://localhost(?=[:/])', '://host.docker.internal' -replace '://127\.0\.0\.1(?=[:/])', '://host.docker.internal'
 
 $dockerArguments = @(
-    'run', '--rm',
+    'run', '--rm'
+)
+if ($IsLinux) {
+    $dockerArguments += '--add-host=host.docker.internal:host-gateway'
+}
+$dockerArguments += @(
     '-v', "${resolvedOutputRoot}:/out",
     $Image,
     'curl',
@@ -31,7 +37,7 @@ $dockerArguments = @(
     '--show-error',
     '--output', '/out/body.bin',
     '--write-out', '%{http_code}',
-    $TargetUrl
+    $containerTargetUrl
 )
 
 Set-Content -LiteralPath $commandPath -Value ("docker " + ($dockerArguments -join ' '))
@@ -78,7 +84,7 @@ if ($actualStatus -ne $ExpectedStatus) {
 }
 
 $executorId = if ($env:PLAB_EXECUTOR_ID) { $env:PLAB_EXECUTOR_ID } else { 'curl-http3-client' }
-$executorVersion = if ($env:PLAB_EXECUTOR_VERSION) { $env:PLAB_EXECUTOR_VERSION } else { '0.1.6' }
+$executorVersion = if ($env:PLAB_EXECUTOR_VERSION) { $env:PLAB_EXECUTOR_VERSION } else { '0.1.7' }
 $connections = if ($env:PLAB_CONNECTIONS) { [int]$env:PLAB_CONNECTIONS } else { 1 }
 $concurrency = if ($env:PLAB_CONCURRENCY) { [int]$env:PLAB_CONCURRENCY } else { 1 }
 $streams = if ($env:PLAB_STREAMS_PER_CONNECTION) { [int]$env:PLAB_STREAMS_PER_CONNECTION } else { 1 }

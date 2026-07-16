@@ -1,13 +1,13 @@
 executorIdentity:
   id: xquic-http3-client
   name: XQUIC HTTP/3 Client Test Executor
-  version: 0.1.1
+  version: 0.1.2
   vendor: Alibaba XQUIC via Incursa wrapper
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.1
+  executorVersion: 0.1.2
 claimedCapabilities:
   - id: http3.external.peer-characterization
     status: supported
