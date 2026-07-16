@@ -1,0 +1,5 @@
+{
+  "schemaVersion":"protocol-lab-internal-execution-v1",
+  "environments":[{"os":"linux","arch":"x64","entrypoint":{"kind":"docker","path":"Dockerfile","arguments":[],"workingDirectory":"."}}],
+  "dependencies":{"requiresDotNet":false,"requiresDocker":true,"requiresPwsh":false,"requiresBash":false,"requiresGo":false,"requiredCapabilities":[{"name":"docker","value":"true"},{"name":"linux-containers","value":"true"}],"runtimeImages":[{"name":"node","version":"24.4.1-alpine","reference":"node@sha256:820e86612c21d0636580206d802a726f2595366e1b867e564cbc652024151e8a"}]}
+}

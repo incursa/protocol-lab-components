@@ -1,0 +1,10 @@
+{
+  "schemaVersion":"protocol-lab-package-v2",
+  "packageId":"org.protocol-lab.components.implementation.node-http1",
+  "packageVersion":"0.1.0",
+  "kind":"implementation",
+  "displayName":"Node.js node:http HTTP/1 Implementation",
+  "entryManifests":["implementations/node-http1.yaml"],
+  "providedImplementations":[{"implementationId":"node-http1","displayName":"Node.js node:http HTTP/1","protocols":["h1"],"scenarios":["http1.core.plaintext","http1.core.json"]}],
+  "dependencies":{"requiredCapabilities":[{"name":"docker","value":"true"},{"name":"linux-containers","value":"true"}]}
+}

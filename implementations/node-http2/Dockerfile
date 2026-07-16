@@ -1,0 +1,7 @@
+FROM node@sha256:820e86612c21d0636580206d802a726f2595366e1b867e564cbc652024151e8a
+
+WORKDIR /app
+COPY server.js /app/server.js
+ENV PLAB_HTTP_PORT=8082
+EXPOSE 8082
+CMD ["node", "/app/server.js"]
