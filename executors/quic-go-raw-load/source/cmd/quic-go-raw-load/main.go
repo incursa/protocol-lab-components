@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"net"
 	"net/url"
 	"os"
 	"sort"
@@ -48,6 +49,7 @@ type runStats struct {
 	bytesSent          int64
 	bytesReceived      int64
 	latencies          []float64
+	connectLatencies   []float64
 	errors             []string
 }
 
@@ -73,20 +75,6 @@ type metricsOutput struct {
 	ErrorRate                float64 `json:"errorRate"`
 }
 
-type outputDocument struct {
-	SchemaVersion string          `json:"schemaVersion"`
-	Executor      identityOutput  `json:"executor"`
-	LoadGenerator identityOutput  `json:"loadGenerator"`
-	RequestedLoad loadShapeOutput `json:"requestedLoad"`
-	EffectiveLoad loadShapeOutput `json:"effectiveLoad"`
-	Tool          string          `json:"tool"`
-	Target        string          `json:"target"`
-	Behavior      string          `json:"behavior"`
-	Metrics       metricsOutput   `json:"metrics"`
-	Warnings      []string        `json:"warnings,omitempty"`
-	Errors        []string        `json:"errors,omitempty"`
-}
-
 type identityOutput struct {
 	ID      string `json:"id"`
 	Version string `json:"version"`
@@ -101,10 +89,23 @@ type loadShapeOutput struct {
 	Repetitions          int `json:"repetitions"`
 }
 
+type outputDocument struct {
+	SchemaVersion string          `json:"schemaVersion"`
+	Executor      identityOutput  `json:"executor"`
+	LoadGenerator identityOutput  `json:"loadGenerator"`
+	RequestedLoad loadShapeOutput `json:"requestedLoad"`
+	EffectiveLoad loadShapeOutput `json:"effectiveLoad"`
+	Tool          string          `json:"tool"`
+	Target        string          `json:"target"`
+	Behavior      string          `json:"behavior"`
+	Metrics       metricsOutput   `json:"metrics"`
+	Warnings      []string        `json:"warnings,omitempty"`
+	Errors        []string        `json:"errors,omitempty"`
+}
+
 func main() {
 	if len(os.Args) == 2 && (os.Args[1] == "--version" || os.Args[1] == "version") {
-		identity := executorIdentity()
-		fmt.Printf("%s %s\n", identity.ID, identity.Version)
+		fmt.Printf("%s %s\n", executorIdentity().ID, executorIdentity().Version)
 		return
 	}
 
@@ -114,10 +115,17 @@ func main() {
 		os.Exit(2)
 	}
 
-	warnings := validateOptions(opts)
+	warnings := []string{}
 	if opts.warmup > 0 {
-		if _, err := runLoad(context.Background(), opts, opts.warmup, true); err != nil {
-			warnings = append(warnings, fmt.Sprintf("warmup failed: %v", err))
+		if _, warmupErr := runLoad(context.Background(), opts, opts.warmup, true); warmupErr != nil {
+			document := newOutputDocument(opts, buildMetrics(runStats{}, time.Nanosecond))
+			document.Errors = []string{fmt.Sprintf("warmup failed: %v", warmupErr)}
+			encoder := json.NewEncoder(os.Stdout)
+			encoder.SetIndent("", "  ")
+			if encodeErr := encoder.Encode(document); encodeErr != nil {
+				fmt.Fprintln(os.Stderr, encodeErr)
+			}
+			os.Exit(1)
 		}
 	}
 
@@ -167,7 +175,7 @@ func newOutputDocument(opts options, metrics metricsOutput) outputDocument {
 func executorIdentity() identityOutput {
 	return identityOutput{
 		ID:      environmentOrDefault("PLAB_EXECUTOR_ID", toolName),
-		Version: environmentOrDefault("PLAB_EXECUTOR_VERSION", "source"),
+		Version: environmentOrDefault("PLAB_EXECUTOR_VERSION", "development"),
 	}
 }
 
@@ -183,12 +191,13 @@ func requestedLoadShape(opts options) loadShapeOutput {
 	if value, err := strconv.Atoi(os.Getenv("PLAB_CONCURRENCY")); err == nil && value > 0 {
 		concurrency = value
 	}
+
 	return loadShapeOutput{
 		Connections:          opts.connections,
 		Concurrency:          concurrency,
 		StreamsPerConnection: opts.streamsPerConnection,
-		DurationSeconds:      int(opts.duration.Seconds()),
-		WarmupSeconds:        int(opts.warmup.Seconds()),
+		DurationSeconds:      int(opts.duration / time.Second),
+		WarmupSeconds:        int(opts.warmup / time.Second),
 		Repetitions:          1,
 	}
 }
@@ -250,9 +259,6 @@ func parseOptions(args []string) (options, error) {
 	if opts.connections < 1 {
 		return opts, errors.New("connections must be greater than zero")
 	}
-	if opts.streamsPerConnection < 1 {
-		return opts, errors.New("streams-per-connection must be greater than zero")
-	}
 	if opts.payloadSizeBytes < 0 {
 		return opts, errors.New("payload-size-bytes cannot be negative")
 	}
@@ -263,24 +269,84 @@ func parseOptions(args []string) (options, error) {
 		return opts, errors.New("warmup cannot be negative")
 	}
 
+	if err := validateOptions(opts); err != nil {
+		return opts, err
+	}
+
 	return opts, nil
 }
 
-func validateOptions(opts options) []string {
-	warnings := make([]string, 0)
-	if !strings.EqualFold(opts.streamType, "bidirectional") {
-		warnings = append(warnings, "only bidirectional streams are implemented; using bidirectional streams")
+func validateOptions(opts options) error {
+	behavior := strings.ToLower(opts.behavior)
+	openPattern := strings.ToLower(opts.openPattern)
+
+	switch behavior {
+	case "stream-throughput", "latency-echo":
+		if openPattern != "sequential" {
+			return fmt.Errorf("behavior %q requires open-pattern %q", opts.behavior, "sequential")
+		}
+		if opts.streamsPerConnection < 1 {
+			return errors.New("streams-per-connection must be greater than zero")
+		}
+	case "multiplex-streams", "duplex-streams":
+		if openPattern != "concurrent" {
+			return fmt.Errorf("behavior %q requires open-pattern %q", opts.behavior, "concurrent")
+		}
+		if opts.streamsPerConnection < 1 {
+			return errors.New("streams-per-connection must be greater than zero")
+		}
+	case "handshake-cold":
+		if openPattern != "sequential" {
+			return fmt.Errorf("behavior %q requires open-pattern %q", opts.behavior, "sequential")
+		}
+		if opts.streamsPerConnection != 0 {
+			return errors.New("handshake-cold requires streams-per-connection to be zero")
+		}
+	case "connection-churn":
+		if openPattern != "churn" {
+			return fmt.Errorf("behavior %q requires open-pattern %q", opts.behavior, "churn")
+		}
+		if opts.streamsPerConnection < 1 {
+			return errors.New("connection-churn requires streams-per-connection to be greater than zero")
+		}
+	default:
+		return fmt.Errorf("unsupported behavior %q", opts.behavior)
 	}
-	if !strings.EqualFold(opts.openPattern, "concurrent") {
-		warnings = append(warnings, "only concurrent stream opening is implemented; using concurrent batches")
-	}
-	if !strings.EqualFold(opts.payloadDirection, "bidirectional") {
-		warnings = append(warnings, "non-bidirectional payload directions are measured, but response bytes may be zero")
-	}
-	return warnings
+
+	return nil
 }
 
 func runLoad(ctx context.Context, opts options, duration time.Duration, discard bool) (runStats, error) {
+	return runLoadWithQUICConfig(ctx, opts, duration, discard, defaultQUICConfig())
+}
+
+func runLoadWithQUICConfig(ctx context.Context, opts options, duration time.Duration, discard bool, quicConfig *quic.Config) (runStats, error) {
+	if quicConfig == nil {
+		quicConfig = defaultQUICConfig()
+	}
+
+	switch strings.ToLower(opts.behavior) {
+	case "stream-throughput", "latency-echo":
+		return runStreamLoad(ctx, opts, duration, discard, streamOpenSequential, quicConfig)
+	case "multiplex-streams", "duplex-streams":
+		return runStreamLoad(ctx, opts, duration, discard, streamOpenConcurrent, quicConfig)
+	case "handshake-cold":
+		return runHandshakeColdLoad(ctx, opts, duration, discard, quicConfig)
+	case "connection-churn":
+		return runConnectionChurnLoad(ctx, opts, duration, discard, quicConfig)
+	default:
+		return runStats{}, fmt.Errorf("unsupported behavior %q", opts.behavior)
+	}
+}
+
+type streamOpenMode int
+
+const (
+	streamOpenSequential streamOpenMode = iota
+	streamOpenConcurrent
+)
+
+func runStreamLoad(ctx context.Context, opts options, duration time.Duration, discard bool, mode streamOpenMode, quicConfig *quic.Config) (runStats, error) {
 	targetURL, err := url.Parse(opts.target)
 	if err != nil {
 		return runStats{}, err
@@ -295,10 +361,6 @@ func runLoad(ctx context.Context, opts options, duration time.Duration, discard 
 		InsecureSkipVerify: true, // Local ProtocolLab raw QUIC endpoints use generated self-signed certificates.
 		NextProtos:         []string{opts.alpn},
 		ServerName:         opts.sni,
-	}
-	quicConfig := &quic.Config{
-		MaxIdleTimeout:  30 * time.Second,
-		KeepAlivePeriod: 5 * time.Second,
 	}
 
 	for i := 0; i < opts.connections; i++ {
@@ -321,11 +383,11 @@ func runLoad(ctx context.Context, opts options, duration time.Duration, discard 
 	firstBatch := true
 	for firstBatch || time.Now().Before(deadline) {
 		firstBatch = false
-		batch := runBatch(ctx, connections, payload, opts)
+		batch := runStreamBatch(ctx, connections, payload, opts, mode)
 		if !discard {
 			stats.merge(batch)
 		}
-		if len(batch.errors) > 0 && !discard {
+		if len(batch.errors) > 0 {
 			return stats, errors.New(batch.errors[0])
 		}
 		if duration <= 0 {
@@ -336,7 +398,14 @@ func runLoad(ctx context.Context, opts options, duration time.Duration, discard 
 	return stats, nil
 }
 
-func runBatch(ctx context.Context, connections []*quic.Conn, payload []byte, opts options) runStats {
+func runStreamBatch(ctx context.Context, connections []*quic.Conn, payload []byte, opts options, mode streamOpenMode) runStats {
+	if mode == streamOpenSequential {
+		return runSequentialStreamBatch(ctx, connections, payload, opts)
+	}
+	return runConcurrentStreamBatch(ctx, connections, payload, opts)
+}
+
+func runConcurrentStreamBatch(ctx context.Context, connections []*quic.Conn, payload []byte, opts options) runStats {
 	var stats runStats
 	var mutex sync.Mutex
 	var wg sync.WaitGroup
@@ -352,7 +421,7 @@ func runBatch(ctx context.Context, connections []*quic.Conn, payload []byte, opt
 				atomic.AddInt64(&stats.bytesReceived, bytesReceived)
 				if err != nil {
 					atomic.AddInt64(&stats.failedRequests, 1)
-					if errors.Is(err, context.DeadlineExceeded) {
+					if isTimeoutError(err) {
 						atomic.AddInt64(&stats.timeoutRequests, 1)
 					}
 					mutex.Lock()
@@ -372,8 +441,118 @@ func runBatch(ctx context.Context, connections []*quic.Conn, payload []byte, opt
 	return stats
 }
 
+func runSequentialStreamBatch(ctx context.Context, connections []*quic.Conn, payload []byte, opts options) runStats {
+	var stats runStats
+	var mutex sync.Mutex
+	var wg sync.WaitGroup
+
+	for _, conn := range connections {
+		conn := conn
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			batch := runSequentialStreams(ctx, conn, payload, opts)
+			mutex.Lock()
+			stats.merge(batch)
+			mutex.Unlock()
+		}()
+	}
+
+	wg.Wait()
+	return stats
+}
+
+func runSequentialStreams(ctx context.Context, conn *quic.Conn, payload []byte, opts options) runStats {
+	var stats runStats
+	for streamIndex := 0; streamIndex < opts.streamsPerConnection; streamIndex++ {
+		latency, bytesSent, bytesReceived, err := runStream(ctx, conn, payload, opts)
+		stats.totalRequests++
+		stats.bytesSent += bytesSent
+		stats.bytesReceived += bytesReceived
+		if err != nil {
+			stats.failedRequests++
+			if isTimeoutError(err) {
+				stats.timeoutRequests++
+			}
+			stats.errors = append(stats.errors, err.Error())
+			continue
+		}
+		stats.successfulRequests++
+		stats.latencies = append(stats.latencies, latency)
+	}
+
+	return stats
+}
+
 func runStream(ctx context.Context, conn *quic.Conn, payload []byte, opts options) (float64, int64, int64, error) {
-	streamCtx, cancel := context.WithTimeout(ctx, maxDuration(opts.duration+30*time.Second, 30*time.Second))
+	if strings.EqualFold(opts.behavior, "duplex-streams") {
+		return runDuplexStream(ctx, conn, payload, opts)
+	}
+	return runRequestResponseStream(ctx, conn, payload, opts)
+}
+
+func runRequestResponseStream(ctx context.Context, conn *quic.Conn, payload []byte, opts options) (float64, int64, int64, error) {
+	streamTimeout := maxDuration(opts.duration+30*time.Second, 30*time.Second)
+	streamCtx, cancel := context.WithTimeout(ctx, streamTimeout)
+	defer cancel()
+
+	start := time.Now()
+	stream, err := conn.OpenStreamSync(streamCtx)
+	if err != nil {
+		return 0, 0, 0, fmt.Errorf("open stream: %w", err)
+	}
+	if err := stream.SetDeadline(time.Now().Add(streamTimeout)); err != nil {
+		return 0, 0, 0, fmt.Errorf("set stream deadline: %w", err)
+	}
+	closeStream := true
+	defer func() {
+		if closeStream {
+			_ = stream.Close()
+		}
+	}()
+
+	written, err := stream.Write(payload)
+	if err != nil {
+		return 0, int64(written), 0, fmt.Errorf("write request payload: %w", err)
+	}
+	if written != len(payload) {
+		return 0, int64(written), 0, io.ErrShortWrite
+	}
+	if err := stream.Close(); err != nil {
+		return 0, int64(written), 0, fmt.Errorf("close request writes: %w", err)
+	}
+	closeStream = false
+
+	var received int64
+	buffer := make([]byte, 64*1024)
+	for {
+		read, readErr := stream.Read(buffer)
+		if read > 0 {
+			received += int64(read)
+		}
+		if readErr == nil {
+			continue
+		}
+		if errors.Is(readErr, io.EOF) {
+			break
+		}
+		return 0, int64(written), received, fmt.Errorf("read response payload or EOF: %w", readErr)
+	}
+
+	if strings.EqualFold(opts.payloadDirection, "client-to-server") {
+		if received != 0 {
+			return 0, int64(written), received, fmt.Errorf("received %d response bytes, expected 0", received)
+		}
+	} else if received != int64(len(payload)) {
+		return 0, int64(written), received, fmt.Errorf("received %d echoed bytes, expected %d", received, len(payload))
+	}
+
+	return float64(time.Since(start).Microseconds()) / 1000.0, int64(written), received, nil
+}
+
+func runDuplexStream(ctx context.Context, conn *quic.Conn, payload []byte, opts options) (float64, int64, int64, error) {
+	streamTimeout := maxDuration(opts.duration+30*time.Second, 30*time.Second)
+	streamCtx, cancel := context.WithTimeout(ctx, streamTimeout)
 	defer cancel()
 
 	start := time.Now()
@@ -381,41 +560,250 @@ func runStream(ctx context.Context, conn *quic.Conn, payload []byte, opts option
 	if err != nil {
 		return 0, 0, 0, err
 	}
-	defer stream.Close()
+	if err := stream.SetDeadline(time.Now().Add(streamTimeout)); err != nil {
+		return 0, 0, 0, err
+	}
+	closeStream := true
+	type readResult struct {
+		received int64
+		err      error
+	}
+	readResults := make(chan readResult, 1)
+	go func() {
+		var result readResult
+		buffer := make([]byte, 64*1024)
+		for {
+			read, err := stream.Read(buffer)
+			if read > 0 {
+				result.received += int64(read)
+			}
+			if err == nil {
+				continue
+			}
+			if errors.Is(err, io.EOF) {
+				readResults <- result
+				return
+			}
+			result.err = err
+			readResults <- result
+			return
+		}
+	}()
+	defer func() {
+		if closeStream {
+			_ = stream.Close()
+		}
+	}()
 
 	written, err := stream.Write(payload)
 	if err != nil {
-		return 0, int64(written), 0, err
+		_ = stream.Close()
+		closeStream = false
+		result := <-readResults
+		return 0, int64(written), result.received, err
 	}
 	if written != len(payload) {
-		return 0, int64(written), 0, io.ErrShortWrite
+		_ = stream.Close()
+		closeStream = false
+		result := <-readResults
+		return 0, int64(written), result.received, io.ErrShortWrite
 	}
 	if err := stream.Close(); err != nil {
-		return 0, int64(written), 0, err
+		closeStream = false
+		result := <-readResults
+		return 0, int64(written), result.received, err
 	}
+	closeStream = false
 
-	var received int64
-	if !strings.EqualFold(opts.payloadDirection, "client-to-server") {
-		buffer := make([]byte, 64*1024)
-		for {
-			read, readErr := stream.Read(buffer)
-			if read > 0 {
-				received += int64(read)
-			}
-			if readErr == nil {
-				continue
-			}
-			if errors.Is(readErr, io.EOF) {
-				break
-			}
-			return 0, int64(written), received, readErr
+	result := <-readResults
+	received := result.received
+	if strings.EqualFold(opts.payloadDirection, "client-to-server") {
+		if received != 0 {
+			return 0, int64(written), received, fmt.Errorf("received %d response bytes, expected 0", received)
 		}
-		if received != int64(len(payload)) {
-			return 0, int64(written), received, fmt.Errorf("received %d echoed bytes, expected %d", received, len(payload))
-		}
+	} else if received != int64(len(payload)) {
+		return 0, int64(written), received, fmt.Errorf("received %d echoed bytes, expected %d", received, len(payload))
+	}
+	if result.err != nil {
+		return 0, int64(written), received, result.err
 	}
 
 	return float64(time.Since(start).Microseconds()) / 1000.0, int64(written), received, nil
+}
+
+func runHandshakeColdLoad(ctx context.Context, opts options, duration time.Duration, discard bool, quicConfig *quic.Config) (runStats, error) {
+	targetURL, err := url.Parse(opts.target)
+	if err != nil {
+		return runStats{}, err
+	}
+
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: true, // Local ProtocolLab raw QUIC endpoints use generated self-signed certificates.
+		NextProtos:         []string{opts.alpn},
+		ServerName:         opts.sni,
+	}
+
+	stats := runStats{
+		connectLatencies: make([]float64, 0, opts.connections),
+	}
+	deadline := time.Now().Add(duration)
+	firstBatch := true
+	for firstBatch || time.Now().Before(deadline) {
+		firstBatch = false
+		batch := runHandshakeColdBatch(ctx, targetURL.Host, tlsConfig, quicConfig, opts)
+		if !discard {
+			stats.merge(batch)
+		}
+		if len(batch.errors) > 0 && !discard {
+			return stats, errors.New(batch.errors[0])
+		}
+		if duration <= 0 {
+			break
+		}
+	}
+
+	return stats, nil
+}
+
+func runHandshakeColdBatch(ctx context.Context, targetHost string, tlsConfig *tls.Config, quicConfig *quic.Config, opts options) runStats {
+	var stats runStats
+	var mutex sync.Mutex
+	var wg sync.WaitGroup
+
+	for i := 0; i < opts.connections; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			conn, connectTimeMs, err := dialQUICConn(ctx, targetHost, tlsConfig, quicConfig)
+			mutex.Lock()
+			stats.totalRequests++
+			if err != nil {
+				stats.failedRequests++
+				if isTimeoutError(err) {
+					stats.timeoutRequests++
+				}
+				stats.errors = append(stats.errors, err.Error())
+				mutex.Unlock()
+				return
+			}
+			stats.successfulRequests++
+			stats.connectLatencies = append(stats.connectLatencies, connectTimeMs)
+			mutex.Unlock()
+			_ = conn.CloseWithError(0, "")
+		}()
+	}
+
+	wg.Wait()
+	return stats
+}
+
+func runConnectionChurnLoad(ctx context.Context, opts options, duration time.Duration, discard bool, quicConfig *quic.Config) (runStats, error) {
+	targetURL, err := url.Parse(opts.target)
+	if err != nil {
+		return runStats{}, err
+	}
+
+	payload := make([]byte, opts.payloadSizeBytes)
+	for i := range payload {
+		payload[i] = byte(i % 251)
+	}
+
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: true, // Local ProtocolLab raw QUIC endpoints use generated self-signed certificates.
+		NextProtos:         []string{opts.alpn},
+		ServerName:         opts.sni,
+	}
+
+	stats := runStats{
+		latencies:        make([]float64, 0, opts.connections*opts.streamsPerConnection),
+		connectLatencies: make([]float64, 0, opts.connections),
+	}
+	deadline := time.Now().Add(duration)
+	firstBatch := true
+	for firstBatch || time.Now().Before(deadline) {
+		firstBatch = false
+		batch := runConnectionChurnBatch(ctx, targetURL.Host, tlsConfig, quicConfig, payload, opts)
+		if !discard {
+			stats.merge(batch)
+		}
+		if len(batch.errors) > 0 && !discard {
+			return stats, errors.New(batch.errors[0])
+		}
+		if duration <= 0 {
+			break
+		}
+	}
+
+	return stats, nil
+}
+
+func runConnectionChurnBatch(ctx context.Context, targetHost string, tlsConfig *tls.Config, quicConfig *quic.Config, payload []byte, opts options) runStats {
+	var stats runStats
+	var mutex sync.Mutex
+	var wg sync.WaitGroup
+
+	for i := 0; i < opts.connections; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			conn, connectTimeMs, err := dialQUICConn(ctx, targetHost, tlsConfig, quicConfig)
+			if err != nil {
+				failedRequests := int64(opts.streamsPerConnection)
+				if failedRequests < 1 {
+					failedRequests = 1
+				}
+				batch := runStats{
+					totalRequests:   failedRequests,
+					failedRequests:  failedRequests,
+					timeoutRequests: boolToInt64(isTimeoutError(err)) * failedRequests,
+					errors:          []string{err.Error()},
+				}
+				mutex.Lock()
+				stats.merge(batch)
+				mutex.Unlock()
+				return
+			}
+			defer func() {
+				_ = conn.CloseWithError(0, "")
+			}()
+
+			batch := runSequentialStreams(ctx, conn, payload, opts)
+			batch.connectLatencies = append(batch.connectLatencies, connectTimeMs)
+			mutex.Lock()
+			stats.merge(batch)
+			mutex.Unlock()
+		}()
+	}
+
+	wg.Wait()
+	return stats
+}
+
+func dialQUICConn(ctx context.Context, targetHost string, tlsConfig *tls.Config, quicConfig *quic.Config) (*quic.Conn, float64, error) {
+	start := time.Now()
+	conn, err := quic.DialAddr(ctx, targetHost, tlsConfig, quicConfig)
+	if err != nil {
+		return nil, 0, err
+	}
+	return conn, float64(time.Since(start).Microseconds()) / 1000.0, nil
+}
+
+func defaultQUICConfig() *quic.Config {
+	return &quic.Config{
+		MaxIdleTimeout:  30 * time.Second,
+		KeepAlivePeriod: 5 * time.Second,
+	}
+}
+
+func isTimeoutError(err error) bool {
+	if err == nil {
+		return false
+	}
+	if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, os.ErrDeadlineExceeded) {
+		return true
+	}
+	var netErr net.Error
+	return errors.As(err, &netErr) && netErr.Timeout()
 }
 
 func (s *runStats) merge(other runStats) {
@@ -426,6 +814,7 @@ func (s *runStats) merge(other runStats) {
 	s.bytesSent += other.bytesSent
 	s.bytesReceived += other.bytesReceived
 	s.latencies = append(s.latencies, other.latencies...)
+	s.connectLatencies = append(s.connectLatencies, other.connectLatencies...)
 	s.errors = append(s.errors, other.errors...)
 }
 
@@ -462,7 +851,7 @@ func buildMetrics(stats runStats, elapsed time.Duration) metricsOutput {
 		LatencyP95Ms:             percentile(stats.latencies, 95),
 		LatencyP99Ms:             percentile(stats.latencies, 99),
 		LatencyMaxMs:             percentile(stats.latencies, 100),
-		ConnectTimeMeanMs:        0,
+		ConnectTimeMeanMs:        mean(stats.connectLatencies),
 		TimeToFirstByteMeanMs:    0,
 		ErrorRate:                errorRate,
 	}
@@ -504,4 +893,11 @@ func maxDuration(a time.Duration, b time.Duration) time.Duration {
 		return a
 	}
 	return b
+}
+
+func boolToInt64(v bool) int64 {
+	if v {
+		return 1
+	}
+	return 0
 }

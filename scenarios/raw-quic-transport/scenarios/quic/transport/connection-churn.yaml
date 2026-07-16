@@ -1,0 +1,92 @@
+schemaVersion: "1.0"
+id: quic.transport.connection-churn
+version: "1.0"
+title: QUIC Connection Churn
+name: QUIC Connection Churn
+family: quic.transport
+description: Validate repeated fresh QUIC connection establishment with one bidirectional request-response stream per connection.
+status: stable
+kind: protocolValidation
+layer: transport
+protocol: quic
+roles:
+  - server
+requires:
+  capabilities:
+    - quic.server
+  protocols:
+    - quic
+  roles:
+    - server
+trafficShape: connection-lifecycle
+implementationRole: server
+requiredCapabilities:
+  - quicTransport
+  - quicStreams
+quicTransport:
+  behavior: connection-churn
+  connectionCount: 1
+  streamType: bidirectional
+  streamCount: 1
+  payloadSizeBytes: 128
+  payloadDirection: bidirectional
+  openPattern: churn
+  expectedBytes: 256
+validation:
+  required: true
+  checks:
+    - fresh-connection-per-operation
+    - connection-and-stream-churn-completes
+    - echoed-bytes-match-expected
+    - zero-timeouts-and-errors
+    - protocol:quic
+  quic:
+    handshakeMustComplete: true
+    session:
+      resumptionState: fresh
+      earlyData: not-attempted
+      replaySafety: not-applicable
+benchmark:
+  warmupSeconds: 5
+  durationSeconds: 30
+  repetitions: 1
+  connections:
+    - 1
+    - 4
+    - 16
+    - 32
+    - 64
+    - 128
+  streamsPerConnection:
+    - 1
+benchmarkCompat:
+  compatibleLoadShapes:
+    - quic-connection-churn
+    - smoke
+    - regression
+    - comparison
+  primaryMetrics:
+    - connectionsPerSecond
+    - connectTimeMeanMs
+    - streamDurationP95
+    - errorRate
+artifacts:
+  required:
+    - validation.json
+    - result.json
+  optional:
+    - protocol-diagnostic-artifact
+    - counters
+networkProfile: clean
+requiredMetrics:
+  - quic.connection.successCount
+  - quic.connection.durationMs
+  - quic.stream.completedStreams
+artifactRequirements:
+  - load-generator.stdout.txt
+  - load-generator.stderr.txt
+  - protocol-diagnostic-artifact
+tags:
+  - phase6
+  - quic
+  - connection-churn

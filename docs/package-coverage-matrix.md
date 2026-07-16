@@ -38,7 +38,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | `quiche-http3` | source package present | source package present with explicit scenario coverage metadata |
 | `ngtcp2-http3` | source package present | source package present with explicit scenario coverage metadata |
 | `quic-go-http3` | protocol-lab-internal placeholder and raw QUIC executor only | current `0.1.8` has published h3spec status, response-header, and QPACK proof; `0.1.6` retains historical payload proof |
-| `quic-go-raw` | no raw QUIC implementation package | added `org.protocol-lab.components.implementation.quic-go-raw` for `quic.transport.stream-throughput.1mb` and `quic.transport.multiplex.100x64kb` only |
+| `quic-go-raw` | no raw QUIC implementation package | added `org.protocol-lab.components.implementation.quic-go-raw` for cold handshake, connection churn, stream churn, throughput, multiplex, and duplex raw QUIC scenarios |
 | `quic-go-raw-load` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
 | `h3spec-http3-qpack` | source executor package present | source executor package present with explicit comparison-lane coverage metadata |
 | `aioquic-rfc9220-websocket` | source executor package present | corrected `0.3.0` exact six-ID RFC9220 executor plus origin-server `aioquic-http3@0.3.0`; it requires authenticated certificate proof, exact sustained profiles, executor/generator/parser identities, archive and immutable image digests, bounded raw artifacts, and fail-closed selection |

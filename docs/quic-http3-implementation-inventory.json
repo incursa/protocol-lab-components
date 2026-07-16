@@ -71,7 +71,7 @@
       "http3Support": "yes; quic-go documents HTTP/3, QPACK, HTTP Datagrams, and related extensions.",
       "webSocketOverH3Support": "not in core package; related webtransport-go covers WebTransport over HTTP/3.",
       "benchmarkSuitability": "high for raw QUIC target and load generation plus HTTP/3 server baseline smoke; publishable leaderboard claims still need isolated/repeated evidence.",
-      "protocolLabComponentStatus": "raw QUIC target packaged as org.protocol-lab.components.implementation.quic-go-raw for stream throughput, multiplex, and duplex scenarios; raw QUIC executor packaged; HTTP/3 server implementation packaged as org.protocol-lab.components.implementation.quic-go-http3 with live H3 1KB validation proof.",
+      "protocolLabComponentStatus": "raw QUIC target packaged as org.protocol-lab.components.implementation.quic-go-raw for cold handshake, connection churn, stream churn, throughput, multiplex, and duplex scenarios; raw QUIC executor packaged; HTTP/3 server implementation packaged as org.protocol-lab.components.implementation.quic-go-http3 with live H3 1KB validation proof.",
       "nextPackageSlice": "Extend quic-go raw only after additional raw scenarios have live package-backed proof; keep HTTP/3 expansion in the quic-go-http3 package.",
       "sourceRefs": ["https://github.com/quic-go/quic-go", "https://raw.githubusercontent.com/quic-interop/quic-interop-runner/master/implementations_quic.json", "protocol-lab-components/implementations/quic-go-raw/protocol-lab-package.json", "protocol-lab-components/executors/quic-go-raw-load/protocol-lab-package.json", "protocol-lab-components/implementations/quic-go-http3/protocol-lab-package.json"]
     },

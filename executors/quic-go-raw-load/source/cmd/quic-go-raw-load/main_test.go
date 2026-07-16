@@ -1,61 +1,128 @@
 package main
 
 import (
-	"sort"
+	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/tls"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
+	"errors"
+	"io"
+	"math/big"
+	"net"
+	"strings"
 	"testing"
 	"time"
+
+	"github.com/quic-go/quic-go"
 )
 
-func TestParseOptionsMapsProtocolLabArguments(t *testing.T) {
-	opts, err := parseOptions([]string{
-		"--sni", "localhost",
-		"--alpn", "plab-raw-quic",
-		"--behavior", "multiplex-streams",
-		"--stream-type", "bidirectional",
-		"--payload-size-bytes", "65536",
-		"--payload-direction", "bidirectional",
-		"--open-pattern", "concurrent",
-		"--connections", "1",
-		"--streams-per-connection", "100",
-		"--duration", "30s",
-		"--warmup", "5s",
-		"--fail-on-errors",
-		"quic://127.0.0.1:4433/",
-	})
-	if err != nil {
-		t.Fatalf("parseOptions returned error: %v", err)
+func TestValidateOptionsRejectsUnsupportedBehaviorOpenPatternCombos(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		options options
+		wantErr string
+	}{
+		{
+			name: "stream-throughput accepts sequential",
+			options: options{
+				behavior:             "stream-throughput",
+				openPattern:          "sequential",
+				streamsPerConnection: 1,
+			},
+		},
+		{
+			name: "multiplex-streams rejects sequential",
+			options: options{
+				behavior:             "multiplex-streams",
+				openPattern:          "sequential",
+				streamsPerConnection: 1,
+			},
+			wantErr: "requires open-pattern",
+		},
+		{
+			name: "handshake-cold accepts zero-stream sequential",
+			options: options{
+				behavior:             "handshake-cold",
+				openPattern:          "sequential",
+				streamsPerConnection: 0,
+			},
+		},
+		{
+			name: "handshake-cold rejects concurrent",
+			options: options{
+				behavior:             "handshake-cold",
+				openPattern:          "concurrent",
+				streamsPerConnection: 0,
+			},
+			wantErr: "requires open-pattern",
+		},
+		{
+			name: "connection-churn accepts churn",
+			options: options{
+				behavior:             "connection-churn",
+				openPattern:          "churn",
+				streamsPerConnection: 8,
+			},
+		},
+		{
+			name: "connection-churn rejects concurrent",
+			options: options{
+				behavior:             "connection-churn",
+				openPattern:          "concurrent",
+				streamsPerConnection: 8,
+			},
+			wantErr: "requires open-pattern",
+		},
+		{
+			name: "unknown behavior rejects",
+			options: options{
+				behavior:             "made-up",
+				openPattern:          "sequential",
+				streamsPerConnection: 1,
+			},
+			wantErr: "unsupported behavior",
+		},
 	}
 
-	if opts.connections != 1 {
-		t.Fatalf("connections = %d, want 1", opts.connections)
-	}
-	if opts.streamsPerConnection != 100 {
-		t.Fatalf("streamsPerConnection = %d, want 100", opts.streamsPerConnection)
-	}
-	if opts.duration != 30*time.Second {
-		t.Fatalf("duration = %s, want 30s", opts.duration)
-	}
-	if opts.warmup != 5*time.Second {
-		t.Fatalf("warmup = %s, want 5s", opts.warmup)
-	}
-	if !opts.failOnErrors {
-		t.Fatal("failOnErrors = false, want true")
-	}
-	if opts.target != "quic://127.0.0.1:4433/" {
-		t.Fatalf("target = %q", opts.target)
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			err := validateOptions(tt.options)
+			if tt.wantErr == "" {
+				if err != nil {
+					t.Fatalf("validateOptions returned error: %v", err)
+				}
+				return
+			}
+			if err == nil {
+				t.Fatalf("validateOptions returned nil error, want substring %q", tt.wantErr)
+			}
+			if !strings.Contains(err.Error(), tt.wantErr) {
+				t.Fatalf("validateOptions error = %q, want substring %q", err.Error(), tt.wantErr)
+			}
+		})
 	}
 }
 
-func TestBuildMetricsComputesRawQuicFields(t *testing.T) {
+func TestBuildMetricsIncludesConnectTimeMean(t *testing.T) {
+	t.Parallel()
+
 	stats := runStats{
 		totalRequests:      4,
 		successfulRequests: 3,
 		failedRequests:     1,
 		bytesSent:          12,
 		bytesReceived:      9,
-		latencies:          []float64{10, 20, 30},
+		latencies:          []float64{30, 10, 20},
+		connectLatencies:   []float64{9, 21, 30},
 	}
-	sort.Float64s(stats.latencies)
 
 	metrics := buildMetrics(stats, 3*time.Second)
 
@@ -64,6 +131,9 @@ func TestBuildMetricsComputesRawQuicFields(t *testing.T) {
 	}
 	if metrics.ThroughputBytesPerSecond != 4 {
 		t.Fatalf("throughputBytesPerSecond = %f, want 4", metrics.ThroughputBytesPerSecond)
+	}
+	if metrics.ConnectTimeMeanMs != 20 {
+		t.Fatalf("connectTimeMeanMs = %f, want 20", metrics.ConnectTimeMeanMs)
 	}
 	if metrics.ErrorRate != 0.25 {
 		t.Fatalf("errorRate = %f, want 0.25", metrics.ErrorRate)
@@ -76,41 +146,360 @@ func TestBuildMetricsComputesRawQuicFields(t *testing.T) {
 	}
 }
 
-func TestPackageExecutionMetadataComesFromRunnerEnvironment(t *testing.T) {
+func TestOutputDocumentEchoesPackagedExecutorIdentityAndRequestedLoad(t *testing.T) {
 	t.Setenv("PLAB_EXECUTOR_ID", "quic-go-raw-load")
-	t.Setenv("PLAB_EXECUTOR_VERSION", "0.1.3")
+	t.Setenv("PLAB_EXECUTOR_VERSION", "package-v1")
+	t.Setenv("PLAB_LOAD_GENERATOR_ID", "quic-go-raw-load")
+	t.Setenv("PLAB_LOAD_GENERATOR_VERSION", "package-v1")
 	t.Setenv("PLAB_CONCURRENCY", "8")
-	t.Setenv("PLAB_REPETITION", "3")
 
-	identity := executorIdentity()
-	load := requestedLoadShape(options{
+	opts := options{
+		behavior:             "multiplex-streams",
 		connections:          2,
 		streamsPerConnection: 4,
 		duration:             5 * time.Second,
 		warmup:               time.Second,
-	})
+		target:               "quic://127.0.0.1:4433/",
+	}
+	document := newOutputDocument(opts, metricsOutput{SuccessfulRequests: 1})
 
-	if identity.ID != "quic-go-raw-load" || identity.Version != "0.1.3" {
-		t.Fatalf("identity = %+v", identity)
+	if document.SchemaVersion != outputSchemaVersion {
+		t.Fatalf("schemaVersion = %q, want %q", document.SchemaVersion, outputSchemaVersion)
 	}
-	if load.Connections != 2 || load.Concurrency != 8 || load.StreamsPerConnection != 4 {
-		t.Fatalf("load = %+v", load)
+	if document.Executor.ID != "quic-go-raw-load" || document.Executor.Version != "package-v1" {
+		t.Fatalf("executor = %#v, want package identity", document.Executor)
 	}
-	if load.DurationSeconds != 5 || load.WarmupSeconds != 1 || load.Repetitions != 1 {
-		t.Fatalf("load timing = %+v", load)
+	if document.LoadGenerator.ID != "quic-go-raw-load" || document.LoadGenerator.Version != "package-v1" {
+		t.Fatalf("loadGenerator = %#v, want package identity", document.LoadGenerator)
+	}
+	if document.RequestedLoad.Connections != 2 || document.RequestedLoad.Concurrency != 8 ||
+		document.RequestedLoad.StreamsPerConnection != 4 || document.RequestedLoad.DurationSeconds != 5 ||
+		document.RequestedLoad.WarmupSeconds != 1 {
+		t.Fatalf("requestedLoad = %#v, want injected load shape", document.RequestedLoad)
+	}
+	if document.EffectiveLoad != document.RequestedLoad {
+		t.Fatalf("effectiveLoad = %#v, requestedLoad = %#v", document.EffectiveLoad, document.RequestedLoad)
 	}
 }
 
-func TestOutputDocumentIncludesCompleteExecutionEnvelope(t *testing.T) {
-	t.Setenv("PLAB_EXECUTOR_ID", "quic-go-raw-load")
-	t.Setenv("PLAB_EXECUTOR_VERSION", "0.1.4")
+func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
+	t.Parallel()
 
-	document := newOutputDocument(options{connections: 1, streamsPerConnection: 4, duration: 5 * time.Second, warmup: time.Second}, metricsOutput{})
-
-	if document.SchemaVersion != outputSchemaVersion {
-		t.Fatalf("schemaVersion = %q", document.SchemaVersion)
+	tests := []struct {
+		name        string
+		opts        options
+		echo        bool
+		wantConnect bool
+		wantBytes   bool
+	}{
+		{
+			name: "stream-throughput sequential",
+			opts: options{
+				sni:                  "localhost",
+				alpn:                 "plab-raw-quic",
+				behavior:             "stream-throughput",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     32,
+				payloadDirection:     "client-to-server",
+				openPattern:          "sequential",
+				connections:          1,
+				streamsPerConnection: 1,
+				duration:             25 * time.Millisecond,
+				target:               "",
+			},
+			echo:        false,
+			wantConnect: false,
+			wantBytes:   false,
+		},
+		{
+			name: "multiplex-streams concurrent",
+			opts: options{
+				sni:                  "localhost",
+				alpn:                 "plab-raw-quic",
+				behavior:             "multiplex-streams",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     32,
+				payloadDirection:     "bidirectional",
+				openPattern:          "concurrent",
+				connections:          1,
+				streamsPerConnection: 4,
+				duration:             25 * time.Millisecond,
+				target:               "",
+			},
+			echo:        true,
+			wantConnect: false,
+			wantBytes:   true,
+		},
+		{
+			name: "handshake-cold",
+			opts: options{
+				sni:                  "localhost",
+				alpn:                 "plab-raw-quic",
+				behavior:             "handshake-cold",
+				streamType:           "none",
+				payloadSizeBytes:     0,
+				payloadDirection:     "none",
+				openPattern:          "sequential",
+				connections:          1,
+				streamsPerConnection: 0,
+				duration:             25 * time.Millisecond,
+				target:               "",
+			},
+			echo:        false,
+			wantConnect: true,
+			wantBytes:   false,
+		},
+		{
+			name: "connection-churn",
+			opts: options{
+				sni:                  "localhost",
+				alpn:                 "plab-raw-quic",
+				behavior:             "connection-churn",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     16,
+				payloadDirection:     "bidirectional",
+				openPattern:          "churn",
+				connections:          1,
+				streamsPerConnection: 2,
+				duration:             25 * time.Millisecond,
+				target:               "",
+			},
+			echo:        true,
+			wantConnect: true,
+			wantBytes:   true,
+		},
 	}
-	if document.Executor.Version != "0.1.4" || document.LoadGenerator.Version != "0.1.4" {
-		t.Fatalf("identity envelope = %+v / %+v", document.Executor, document.LoadGenerator)
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			serverTarget := startRawQUICTestServer(t, tt.echo)
+			tt.opts.target = serverTarget
+
+			if err := validateOptions(tt.opts); err != nil {
+				t.Fatalf("validateOptions returned error: %v", err)
+			}
+
+			stats, err := runLoad(context.Background(), tt.opts, tt.opts.duration, false)
+			if err != nil {
+				t.Fatalf("runLoad returned error: %v", err)
+			}
+			if stats.successfulRequests == 0 {
+				t.Fatal("successfulRequests = 0, want > 0")
+			}
+			if stats.failedRequests != 0 {
+				t.Fatalf("failedRequests = %d, want 0", stats.failedRequests)
+			}
+
+			metrics := buildMetrics(stats, tt.opts.duration)
+			if tt.wantConnect {
+				if metrics.ConnectTimeMeanMs <= 0 {
+					t.Fatalf("connectTimeMeanMs = %f, want > 0", metrics.ConnectTimeMeanMs)
+				}
+			} else if metrics.ConnectTimeMeanMs != 0 {
+				t.Fatalf("connectTimeMeanMs = %f, want 0", metrics.ConnectTimeMeanMs)
+			}
+
+			if tt.wantBytes {
+				if metrics.BytesSent == 0 || metrics.BytesReceived == 0 {
+					t.Fatalf("bytesSent=%d bytesReceived=%d, want both > 0", metrics.BytesSent, metrics.BytesReceived)
+				}
+			} else if metrics.BytesReceived != 0 {
+				t.Fatalf("bytesReceived = %d, want 0", metrics.BytesReceived)
+			}
+		})
+	}
+}
+
+func TestRunLoadDuplexStreamsWithTightWindowsDoesNotDeadlock(t *testing.T) {
+	serverConfig := tightQUICConfig()
+	clientConfig := tightQUICConfig()
+	serverTarget := startRawQUICTestServerWithConfig(t, true, serverConfig, true)
+
+	opts := options{
+		sni:                  "localhost",
+		alpn:                 "plab-raw-quic",
+		behavior:             "duplex-streams",
+		streamType:           "bidirectional",
+		payloadSizeBytes:     64 * 1024,
+		payloadDirection:     "bidirectional",
+		openPattern:          "concurrent",
+		connections:          1,
+		streamsPerConnection: 1,
+		duration:             100 * time.Millisecond,
+		target:               serverTarget,
+	}
+
+	if err := validateOptions(opts); err != nil {
+		t.Fatalf("validateOptions returned error: %v", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	stats, err := runLoadWithQUICConfig(ctx, opts, 0, false, clientConfig)
+	if err != nil {
+		t.Fatalf("runLoadWithQUICConfig returned error: %v", err)
+	}
+	if stats.successfulRequests != 1 {
+		t.Fatalf("successfulRequests = %d, want 1", stats.successfulRequests)
+	}
+	if stats.failedRequests != 0 {
+		t.Fatalf("failedRequests = %d, want 0", stats.failedRequests)
+	}
+
+	metrics := buildMetrics(stats, opts.duration)
+	if metrics.BytesSent == 0 || metrics.BytesReceived == 0 {
+		t.Fatalf("bytesSent=%d bytesReceived=%d, want both > 0", metrics.BytesSent, metrics.BytesReceived)
+	}
+}
+
+func startRawQUICTestServer(t *testing.T, echo bool) string {
+	return startRawQUICTestServerWithConfig(t, echo, nil, false)
+}
+
+func startRawQUICTestServerWithConfig(t *testing.T, echo bool, serverConfig *quic.Config, chunkedEcho bool) string {
+	t.Helper()
+
+	tlsConf := testServerTLSConfig(t)
+	if serverConfig == nil {
+		serverConfig = defaultQUICConfig()
+	}
+	serverConfig = serverConfig.Clone()
+	serverConfig.MaxIdleTimeout = time.Second
+	serverConfig.KeepAlivePeriod = 250 * time.Millisecond
+
+	listener, err := quic.ListenAddr("127.0.0.1:0", tlsConf, serverConfig)
+	if err != nil {
+		t.Fatalf("quic.ListenAddr returned error: %v", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	t.Cleanup(func() {
+		cancel()
+		_ = listener.Close()
+	})
+
+	go func() {
+		for {
+			conn, err := listener.Accept(ctx)
+			if err != nil {
+				return
+			}
+			if chunkedEcho {
+				go serveChunkedEchoRawQUICTestConn(conn, echo)
+				continue
+			}
+			go serveRawQUICTestConn(conn, echo)
+		}
+	}()
+
+	return "quic://" + listener.Addr().String() + "/"
+}
+
+func serveRawQUICTestConn(conn *quic.Conn, echo bool) {
+	defer conn.CloseWithError(0, "")
+
+	for {
+		stream, err := conn.AcceptStream(context.Background())
+		if err != nil {
+			return
+		}
+		go func(stream *quic.Stream) {
+			defer stream.Close()
+
+			data, err := io.ReadAll(stream)
+			if err != nil {
+				return
+			}
+			if echo && len(data) > 0 {
+				_, _ = stream.Write(data)
+			}
+			_ = stream.Close()
+		}(stream)
+	}
+}
+
+func serveChunkedEchoRawQUICTestConn(conn *quic.Conn, echo bool) {
+	defer conn.CloseWithError(0, "")
+
+	for {
+		stream, err := conn.AcceptStream(context.Background())
+		if err != nil {
+			return
+		}
+		go func(stream *quic.Stream) {
+			defer stream.Close()
+
+			buffer := make([]byte, 1024)
+			for {
+				read, readErr := stream.Read(buffer)
+				if read > 0 && echo {
+					_, _ = stream.Write(buffer[:read])
+				}
+				if readErr == nil {
+					continue
+				}
+				if !errors.Is(readErr, io.EOF) {
+					return
+				}
+				return
+			}
+		}(stream)
+	}
+}
+
+func testServerTLSConfig(t *testing.T) *tls.Config {
+	t.Helper()
+
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatalf("rsa.GenerateKey returned error: %v", err)
+	}
+
+	template := &x509.Certificate{
+		SerialNumber: big.NewInt(1),
+		Subject: pkix.Name{
+			CommonName:   "quic-go-raw-load-test",
+			Organization: []string{"Incursa"},
+		},
+		NotBefore:             time.Now().Add(-time.Hour),
+		NotAfter:              time.Now().Add(time.Hour),
+		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+		BasicConstraintsValid: true,
+		DNSNames:              []string{"localhost"},
+		IPAddresses:           []net.IP{net.ParseIP("127.0.0.1")},
+	}
+
+	derBytes, err := x509.CreateCertificate(rand.Reader, template, template, &key.PublicKey, key)
+	if err != nil {
+		t.Fatalf("x509.CreateCertificate returned error: %v", err)
+	}
+
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
+	keyPEM := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(key)})
+	cert, err := tls.X509KeyPair(certPEM, keyPEM)
+	if err != nil {
+		t.Fatalf("tls.X509KeyPair returned error: %v", err)
+	}
+
+	return &tls.Config{
+		Certificates: []tls.Certificate{cert},
+		NextProtos:   []string{"plab-raw-quic"},
+		MinVersion:   tls.VersionTLS13,
+	}
+}
+
+func tightQUICConfig() *quic.Config {
+	return &quic.Config{
+		InitialStreamReceiveWindow:     1024,
+		MaxStreamReceiveWindow:         1024,
+		InitialConnectionReceiveWindow: 1024,
+		MaxConnectionReceiveWindow:     1024,
+		MaxIdleTimeout:                 time.Second,
+		KeepAlivePeriod:                250 * time.Millisecond,
 	}
 }

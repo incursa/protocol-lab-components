@@ -21,4 +21,4 @@ defaults:
   streamsPerConnection: 1
 testExecutors:
   - quic-go-raw-load
-notes: The cancellation scenario is packaged but intentionally excluded from this suite until the raw executor supports reset and cancellation classification. The cold-handshake, stream-churn, resumption-rejected, resumed-handshake, zero-rtt-accepted, and zero-rtt-rejected contracts are also packaged outside smoke until the executor surface grows to advertise them.
+notes: The cancellation scenario is packaged but intentionally excluded from this suite until the raw executor supports reset and cancellation classification. Cold handshake and connection churn are executable through the raw peer comparison suite but remain outside this stream-oriented smoke suite because they require distinct load shapes. Stream churn remains outside smoke because it requires stable-connection churn behavior distinct from connection churn. Resumption-rejected, resumed-handshake, zero-rtt-accepted, and zero-rtt-rejected also remain outside smoke until executable proof exists.

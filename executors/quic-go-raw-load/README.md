@@ -37,7 +37,7 @@ pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1 -RuntimeIdentifier linux-x
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.executor.quic-go-raw-load.0.1.4.<rid>.plabpkg
+org.protocol-lab.components.executor.quic-go-raw-load.0.1.5.<rid>.plabpkg
 ```
 
 ## Local Wrapper
@@ -55,6 +55,8 @@ pwsh ./executors/quic-go-raw-load/execute.ps1 --sni localhost --alpn plab-raw-qu
 - `quic.transport.multiplex.100x64kb`
 - `quic.transport.stream-limits.100x64kb`
 - `quic.transport.payload.large-1mb`
+- `quic.transport.handshake-cold`
+- `quic.transport.connection-churn`
 - `quic.transport.duplex-streams`
 - `quic.transport.duplex-streams-peer-matrix`
 

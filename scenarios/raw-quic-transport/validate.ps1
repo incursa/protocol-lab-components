@@ -13,6 +13,7 @@ $requiredFiles = @(
     "scenarios/quic/transport/duplex-streams-peer-matrix.yaml",
     "scenarios/quic/transport/cancellation-reset-stream.yaml",
     "scenarios/quic/transport/handshake-cold.yaml",
+    "scenarios/quic/transport/connection-churn.yaml",
     "scenarios/quic/transport/stream-churn.yaml",
     "scenarios/quic/transport/resumption-rejected.yaml",
     "scenarios/quic/transport/resumed-handshake.yaml",

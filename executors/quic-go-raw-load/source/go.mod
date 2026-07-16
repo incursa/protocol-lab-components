@@ -1,6 +1,8 @@
 module incursa.com/protocol-lab/adapters/quicgo
 
-go 1.26
+go 1.26.2
+
+toolchain go1.26.5
 
 require github.com/quic-go/quic-go v0.60.0
 

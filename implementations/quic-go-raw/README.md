@@ -16,6 +16,7 @@ Supported scenarios:
 
 - `quic.transport.stream-throughput.1mb`
 - `quic.transport.multiplex.100x64kb`
+- `quic.transport.connection-churn`
 - `quic.transport.stream-churn`
 - `quic.transport.duplex-streams`
 - `quic.transport.duplex-streams-peer-matrix`
@@ -26,7 +27,7 @@ Unsupported until proven:
 - HTTP/3 scenarios
 - raw QUIC latency, stream-limit, large-payload, cancellation, `quic.transport.resumption-rejected`, `quic.transport.resumed-handshake`, `quic.transport.zero-rtt-accepted`, and `quic.transport.zero-rtt-rejected` lanes
 
-The package covers cold handshake, stream churn, and stream echo lanes.
+The package covers cold handshake, connection churn, stream churn, and stream echo lanes.
 
 The target listens on `quic://127.0.0.1:5447/` by default, uses ALPN
 `plab-raw-quic`, and honors `PROTOCOL_LAB_TARGET_BIND_ADDRESS`,

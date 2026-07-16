@@ -49,6 +49,7 @@ func TestWriteMetadataIncludesSupportedScenarios(t *testing.T) {
 	want := []string{
 		"quic.transport.stream-throughput.1mb",
 		"quic.transport.multiplex.100x64kb",
+		"quic.transport.connection-churn",
 		"quic.transport.stream-churn",
 		"quic.transport.duplex-streams",
 		"quic.transport.duplex-streams-peer-matrix",
@@ -217,8 +218,8 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
 		t.Fatalf("unmarshal package manifest: %v", err)
 	}
-	if packageManifest.PackageVersion != "0.1.8" {
-		t.Fatalf("packageVersion = %q, want 0.1.8", packageManifest.PackageVersion)
+	if packageManifest.PackageVersion != "0.1.9" {
+		t.Fatalf("packageVersion = %q, want 0.1.9", packageManifest.PackageVersion)
 	}
 	if len(packageManifest.ProvidedImplementations) != 1 {
 		t.Fatalf("providedImplementations length = %d, want 1", len(packageManifest.ProvidedImplementations))
@@ -226,6 +227,7 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	wantPackageScenarios := []string{
 		"quic.transport.stream-throughput.1mb",
 		"quic.transport.multiplex.100x64kb",
+		"quic.transport.connection-churn",
 		"quic.transport.stream-churn",
 		"quic.transport.duplex-streams",
 		"quic.transport.duplex-streams-peer-matrix",
@@ -315,6 +317,9 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	}
 	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.stream-churn")) {
 		t.Fatal("implementation YAML does not advertise quic.transport.stream-churn")
+	}
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.connection-churn")) {
+		t.Fatal("implementation YAML does not advertise quic.transport.connection-churn")
 	}
 	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.handshake-cold")) {
 		t.Fatal("implementation YAML does not advertise quic.transport.handshake-cold")

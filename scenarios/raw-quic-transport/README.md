@@ -25,7 +25,7 @@ pwsh ./scenarios/raw-quic-transport/validate.ps1
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.scenario.raw-quic-transport.0.1.6.plabpkg
+org.protocol-lab.components.scenario.raw-quic-transport.0.1.7.plabpkg
 ```
 
 ## Packaged Scenarios
@@ -39,15 +39,16 @@ org.protocol-lab.components.scenario.raw-quic-transport.0.1.6.plabpkg
 - `quic.transport.duplex-streams-peer-matrix`
 - `quic.transport.cancellation.reset-stream`
 - `quic.transport.handshake-cold`
+- `quic.transport.connection-churn`
 - `quic.transport.stream-churn`
 - `quic.transport.resumption-rejected`
 - `quic.transport.resumed-handshake`
 - `quic.transport.zero-rtt-accepted`
 - `quic.transport.zero-rtt-rejected`
 
-The smoke suite includes only scenarios currently supported by `quic-go-raw-load`. The cancellation manifest remains an explicit pending lane, and the cold-handshake, stream-churn, resumption-rejected, resumed-handshake, zero-rtt-accepted, and zero-rtt-rejected contracts are packaged here without claiming executor support yet.
+The smoke suite includes only scenarios currently supported by `quic-go-raw-load`. The cancellation manifest remains an explicit pending lane. Stream churn remains separate from connection churn and is not claimed by the executor. Resumption-rejected, resumed-handshake, zero-rtt-accepted, and zero-rtt-rejected are packaged here without claiming executor support yet.
 
-Version `0.1.6` also carries the canonical proposed RFC 9000 cold-handshake mapping and a
+Version `0.1.7` also carries the canonical proposed RFC 9000 cold-handshake mapping and a
 bounded named profile. The mapping uses only `exercises` and `observes`, and the
 resulting coverage remains diagnostic-only. Package presence and a successful
 handshake do not imply conformance, certification, or a universal requirement pass.
