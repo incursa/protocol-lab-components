@@ -27,7 +27,6 @@ if ($IsLinux) {
     $dockerArguments += '--add-host=host.docker.internal:host-gateway'
 }
 $dockerArguments += @(
-    '-v', "${resolvedOutputRoot}:/out",
     $Image,
     'curl',
     '--http3-only',
@@ -35,7 +34,7 @@ $dockerArguments += @(
     '--insecure',
     '--silent',
     '--show-error',
-    '--output', '/out/body.bin',
+    '--output', '/dev/null',
     '--write-out', '%{http_code}',
     $containerTargetUrl
 )
@@ -84,7 +83,7 @@ if ($actualStatus -ne $ExpectedStatus) {
 }
 
 $executorId = if ($env:PLAB_EXECUTOR_ID) { $env:PLAB_EXECUTOR_ID } else { 'curl-http3-client' }
-$executorVersion = if ($env:PLAB_EXECUTOR_VERSION) { $env:PLAB_EXECUTOR_VERSION } else { '0.1.7' }
+$executorVersion = if ($env:PLAB_EXECUTOR_VERSION) { $env:PLAB_EXECUTOR_VERSION } else { '0.1.8' }
 $connections = if ($env:PLAB_CONNECTIONS) { [int]$env:PLAB_CONNECTIONS } else { 1 }
 $concurrency = if ($env:PLAB_CONCURRENCY) { [int]$env:PLAB_CONCURRENCY } else { 1 }
 $streams = if ($env:PLAB_STREAMS_PER_CONNECTION) { [int]$env:PLAB_STREAMS_PER_CONNECTION } else { 1 }

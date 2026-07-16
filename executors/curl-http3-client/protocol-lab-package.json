@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.curl-http3-client",
-  "packageVersion": "0.1.7",
+  "packageVersion": "0.1.8",
   "kind": "test-executor",
   "displayName": "curl HTTP/3 Client Test Executor",
   "entryManifests": [
