@@ -148,15 +148,19 @@ no recursive upstream dependency.
 | Authoritative product | Classic DNS/TCP | BIND 9 | 0.1.0 | `job-799e5c5f78f44fb4805a23a2ff6a8744` |
 | Authoritative product | Classic DNS/UDP | Technitium DNS Server | 0.1.1 | `job-080eac8e1a4542fe9853023404077792` |
 | Authoritative product | Classic DNS/TCP | Technitium DNS Server | 0.1.1 | `job-0ada77e3fbad47928dec7cc74b3150ef` |
+| Recursive resolver | DoT | BIND 9 | 0.1.2 | `job-b24f3e383cca482483e8ec6115147afd` |
+| Recursive resolver | DoH2 | Unbound | 0.1.2 | `job-211960ceb67d47ff8b9becb6da92f533` |
 
 These are real isolated-pair controller runs with retained raw and normalized
 artifacts. They establish current package proof and the two-implementation DoT
 and DoH2 breadth counts. The BIND and Technitium classic rows are published
 diagnostic observations with accepted validation and measurements; they are
-not ranked or decision-ready. The secure-DNS set does not yet satisfy the
-repeated-run,
-variance/saturation, resolver-role, DoH3/DoQ second-ecosystem, or decision-ready
-gates below.
+not ranked or decision-ready. The BIND and Unbound resolver rows additionally
+retain cache-flush and local-only upstream proof and are visible on
+`lab.incursa.com` as measured validation. They remain diagnostic/unranked
+because they use one repetition and shared target/load worker placement. The
+secure-DNS set does not yet satisfy the second-resolver, repeated-run,
+variance/saturation, DoH3/DoQ second-ecosystem, or decision-ready gates below.
 
 ## Workstream B - raw QUIC transport backfill
 
