@@ -6,14 +6,14 @@ family: knot-resolver
 role: recursive-resolver
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-knot-resolver-secure-dns-resolver:0.1.2
+image: incursa-protocol-lab-knot-resolver-secure-dns-resolver:0.1.4
 dockerfile: docker/Dockerfile
 buildContext: docker
 dockerNetworkMode: published-port
 baseUrl: tls://127.0.0.1:20566
 dockerBaseUrl: tls://127.0.0.1:20566
-protocolBaseUrls: {dot: tls://127.0.0.1:20566, doh2: https://127.0.0.1:20567}
-dockerProtocolBaseUrls: {dot: tls://127.0.0.1:20566, doh2: https://127.0.0.1:20567}
+protocolBaseUrls: {dot: tls://127.0.0.1:20566, doh2: https://127.0.0.1:20568}
+dockerProtocolBaseUrls: {dot: tls://127.0.0.1:20566, doh2: https://127.0.0.1:20568}
 certificateMode: plab-secure-dns-interoperability-leaf-v2
 roles: [recursive-resolver]
 protocols: [dot, doh2]
@@ -32,10 +32,11 @@ scenarioCoverage:
 unsupportedKnownCases: [dns.dot.query.a, dns.dot.interoperability.query.a, dns.doh2.query.a, dns.doh2.interoperability.query.a]
 ports:
   - {name: dot, protocol: tcp, default: 20566, hostPort: 20566, containerPort: 853}
-  - {name: doh2, protocol: tcp, default: 20567, hostPort: 20567, containerPort: 443}
-  - {name: resolver-control, protocol: tcp, default: 20568, hostPort: 20568, containerPort: 444}
-environment: {PLAB_SECURE_DNS_PORT: "20566", PLAB_DOH2_PORT: "20567", PLAB_RESOLVER_CONTROL_PORT: "20568"}
-startup: {port: {name: resolver-control, environmentVariable: PLAB_RESOLVER_CONTROL_PORT, default: 20568}, readiness: {protocol: process, timeoutSeconds: 45}}
+  - {name: dot-resolver-control, protocol: tcp, default: 20567, hostPort: 20567, containerPort: 444}
+  - {name: doh2, protocol: tcp, default: 20568, hostPort: 20568, containerPort: 443}
+  - {name: doh2-resolver-control, protocol: tcp, default: 20569, hostPort: 20569, containerPort: 444}
+environment: {PLAB_SECURE_DNS_PORT: "20566", PLAB_RESOLVER_CONTROL_PORT: "20567", PLAB_DOH2_PORT: "20568", PLAB_DOH2_RESOLVER_CONTROL_PORT: "20569"}
+startup: {port: {name: dot-resolver-control, environmentVariable: PLAB_RESOLVER_CONTROL_PORT, default: 20567}, readiness: {protocol: process, timeoutSeconds: 45}}
 readinessCheck: {type: processStarted, timeoutSeconds: 45, startupDelayMilliseconds: 8000}
 capabilities: [dns.recursive-resolver, dns.authoritative-server.fixture, dns.dot, dns.doh2, resolver.cache-flush, resolver.local-only-upstream, dnssec.fixture-zone-insecure, scenario.dns.dot.resolver.interoperability.query.a, scenario.dns.doh2.resolver.interoperability.query.a]
 entrypoint: {kind: bash, path: run.sh, arguments: [], workingDirectory: .}

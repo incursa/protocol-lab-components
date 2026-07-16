@@ -14,7 +14,7 @@ import (
 var canonicalQuestion = []byte{4, 'p', 'l', 'a', 'b', 4, 't', 'e', 's', 't', 0, 0, 1, 0, 1}
 
 func main() {
-	authority := flag.String("authority", "127.0.0.1:5353", "fixture authority UDP address")
+	authority := flag.String("authority", "127.0.0.1:53", "fixture authority UDP address")
 	listen := flag.String("listen", "0.0.0.0:444", "cache-control HTTP address")
 	config := flag.String("knot-config", "/opt/protocol-lab/knot-resolver/config.yaml", "Knot Resolver configuration")
 	flag.Parse()
@@ -51,6 +51,11 @@ func serveAuthority(address string) {
 			continue
 		}
 		request := append([]byte(nil), buffer[:length]...)
+		queryFlags := uint16(0)
+		if len(request) >= 4 {
+			queryFlags = binary.BigEndian.Uint16(request[2:4])
+		}
+		log.Printf("fixture query length=%d flags=0x%04x qtype=%d wire=%x", len(request), queryFlags, questionType(request), request)
 		response, ok := fixtureResponse(request)
 		if !ok {
 			continue
@@ -59,6 +64,25 @@ func serveAuthority(address string) {
 			log.Print(err)
 		}
 	}
+}
+
+func questionType(message []byte) uint16 {
+	offset := 12
+	for offset < len(message) {
+		length := int(message[offset])
+		offset++
+		if length == 0 {
+			if offset+2 <= len(message) {
+				return binary.BigEndian.Uint16(message[offset : offset+2])
+			}
+			return 0
+		}
+		if length > 63 || offset+length > len(message) {
+			return 0
+		}
+		offset += length
+	}
+	return 0
 }
 
 func fixtureResponse(request []byte) ([]byte, bool) {

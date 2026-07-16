@@ -20,7 +20,7 @@ while [ "$attempt" -lt 45 ]; do
 done
 if [ "$ready" != true ]; then echo "Knot Resolver management API did not become ready." >&2; exit 1; fi
 /usr/local/bin/plab-knot-resolver-fixture \
-  -authority 127.0.0.1:5353 \
+  -authority 127.0.0.1:53 \
   -listen 0.0.0.0:444 \
   -knot-config "$config" &
 helper_pid=$!
