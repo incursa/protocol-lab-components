@@ -122,9 +122,12 @@ no recursive upstream dependency.
   `dot` ALPN, and a TLS terminator would substitute the measured transport.
 - [x] Add Knot Resolver packages for DoT and DoH2 under the same resolver
   contract and cache-state controls.
-- [ ] Evaluate Knot Resolver and Technitium resolver modes for DoQ and DoH3;
+- [x] Evaluate Knot Resolver and Technitium resolver modes for DoQ and DoH3;
   implement every lane that can satisfy the exact public contract and keep
-  non-conforming lanes visible as unsupported.
+  non-conforming lanes visible as unsupported. The dated
+  [resolver QUIC feasibility decision](secure-dns-resolver-quic-feasibility-2026-07-16.md)
+  records why none can currently declare an exact resolver-role DoQ or DoH3
+  cell without role substitution or transport-policy overclaiming.
 
 ### Secure-DNS evidence gate
 
