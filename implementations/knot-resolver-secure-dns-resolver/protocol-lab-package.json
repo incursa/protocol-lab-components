@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.knot-resolver-secure-dns-resolver",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "implementation",
   "displayName": "Knot Resolver Secure DNS Recursive Resolver",
   "entryManifests": ["implementations/knot-resolver-secure-dns-resolver.yaml"],

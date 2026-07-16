@@ -23,3 +23,7 @@ forward:
     servers: [127.0.0.1@5353]
     options:
       dnssec: false
+  - subtree: .
+    servers: [127.0.0.1@5353]
+    options:
+      dnssec: false
