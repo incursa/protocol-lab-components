@@ -42,6 +42,7 @@ var quicGoVersion = "v0.60.0"
 var supportedScenarios = []string{
 	"quic.transport.stream-throughput.1mb",
 	"quic.transport.stream-download.1mb",
+	"quic.transport.sustained-stream.256x64kb",
 	"quic.transport.latency.echo-1kb",
 	"quic.transport.multiplex.100x64kb",
 	"quic.transport.stream-limits.100x64kb",

@@ -1,7 +1,7 @@
 schemaVersion: "1.0"
 id: quic-go-raw
 name: quic-go Raw QUIC
-description: quic-go raw QUIC transport target for ProtocolLab latency echo, stream throughput, multiplexing, stream-limit pressure, slow-reader flow control, connection churn, stream churn, cold handshake, and duplex scenarios.
+description: quic-go raw QUIC transport target for ProtocolLab latency echo, stream throughput, sustained stream writes, multiplexing, stream-limit pressure, slow-reader flow control, connection churn, stream churn, cold handshake, and duplex scenarios.
 family: quic-go
 role: server
 targetKind: process
@@ -25,6 +25,7 @@ supportedProtocolVersions:
 supportedScenarios:
   - quic.transport.stream-throughput.1mb
   - quic.transport.stream-download.1mb
+  - quic.transport.sustained-stream.256x64kb
   - quic.transport.latency.echo-1kb
   - quic.transport.multiplex.100x64kb
   - quic.transport.stream-limits.100x64kb
@@ -37,6 +38,7 @@ supportedScenarios:
 supportedTestCaseIds:
   - quic.transport.stream-throughput.1mb
   - quic.transport.stream-download.1mb
+  - quic.transport.sustained-stream.256x64kb
   - quic.transport.latency.echo-1kb
   - quic.transport.multiplex.100x64kb
   - quic.transport.stream-limits.100x64kb
@@ -53,6 +55,9 @@ scenarioCoverage:
   quic.transport.stream-download.1mb:
     status: supported
     behavior: exact deterministic 1MiB server-to-client payload after PLAB-DL1 request prelude
+  quic.transport.sustained-stream.256x64kb:
+    status: supported
+    behavior: consumes exactly 16MiB on one stream before confirming EOF
   quic.transport.latency.echo-1kb:
     status: supported
     behavior: bidirectional 1KiB stream echo

@@ -1,13 +1,13 @@
 executorIdentity:
   id: quic-go-raw-load
   name: quic-go Raw QUIC Load Executor
-  version: 0.1.10
+  version: 0.1.11
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.10
+  executorVersion: 0.1.11
 claimedCapabilities:
   - id: quic.transport.stream-throughput.64kb
     status: supported
@@ -16,6 +16,8 @@ claimedCapabilities:
   - id: quic.transport.stream-download.1mb
     status: supported
   - id: quic.transport.stream-throughput.16mb
+    status: supported
+  - id: quic.transport.sustained-stream.256x64kb
     status: supported
   - id: quic.transport.latency.echo-1kb
     status: supported
@@ -56,6 +58,8 @@ supportedTestSelectors:
   - selectorType: test-id
     expression: quic.transport.stream-throughput.16mb
   - selectorType: test-id
+    expression: quic.transport.sustained-stream.256x64kb
+  - selectorType: test-id
     expression: quic.transport.latency.echo-1kb
   - selectorType: test-id
     expression: quic.transport.multiplex.100x1kb
@@ -90,6 +94,8 @@ supportedScenarioSelectors:
     expression: quic.transport.stream-download.1mb
   - selectorType: scenario-id
     expression: quic.transport.stream-throughput.16mb
+  - selectorType: scenario-id
+    expression: quic.transport.sustained-stream.256x64kb
   - selectorType: scenario-id
     expression: quic.transport.latency.echo-1kb
   - selectorType: scenario-id
@@ -126,6 +132,9 @@ scenarioCoverage:
     behavior: exact deterministic 1MiB server-to-client payload validation
   quic.transport.stream-throughput.16mb:
     status: supported
+  quic.transport.sustained-stream.256x64kb:
+    status: supported
+    behavior: exactly 256 sequential 64KiB writes on one long-lived stream
   quic.transport.latency.echo-1kb:
     status: supported
   quic.transport.multiplex.100x1kb:

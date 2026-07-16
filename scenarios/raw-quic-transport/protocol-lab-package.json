@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.raw-quic-transport",
-  "packageVersion": "0.1.12",
+  "packageVersion": "0.1.13",
   "kind": "scenario-pack",
   "displayName": "Raw QUIC Transport Scenario Pack",
   "entryManifests": [
@@ -9,6 +9,7 @@
     "scenarios/quic/transport/stream-download-1mb.yaml",
     "scenarios/quic/transport/stream-throughput-64kb.yaml",
     "scenarios/quic/transport/stream-throughput-16mb.yaml",
+    "scenarios/quic/transport/sustained-stream-256x64kb.yaml",
     "scenarios/quic/transport/latency-echo-1kb.yaml",
     "scenarios/quic/transport/multiplex-100-streams.yaml",
     "scenarios/quic/transport/multiplex-100x1kb.yaml",
@@ -58,6 +59,11 @@
     {
       "scenarioId": "quic.transport.stream-throughput.16mb",
       "displayName": "QUIC Stream Throughput 16MB",
+      "protocols": ["quic"]
+    },
+    {
+      "scenarioId": "quic.transport.sustained-stream.256x64kb",
+      "displayName": "QUIC Sustained Stream 256x64KB",
       "protocols": ["quic"]
     },
     {

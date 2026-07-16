@@ -1,12 +1,13 @@
 id: raw-quic-transport-v1-smoke
 name: ProtocolLab raw QUIC transport package smoke suite
-description: Package-backed raw QUIC smoke coverage for reusable throughput, latency, multiplexing, stream limit pressure, slow-reader flow control, large payload, stream churn, and duplex lanes.
+description: Package-backed raw QUIC smoke coverage for reusable throughput, sustained stream writes, latency, multiplexing, stream limit pressure, slow-reader flow control, large payload, stream churn, and duplex lanes.
 purpose: smoke
 resultKind: validation
 loadProfileId: raw-quic-peer-confidence
 scenarios:
   - quic.transport.stream-throughput.1mb
   - quic.transport.stream-download.1mb
+  - quic.transport.sustained-stream.256x64kb
   - quic.transport.latency.echo-1kb
   - quic.transport.multiplex.100x64kb
   - quic.transport.stream-limits.100x64kb

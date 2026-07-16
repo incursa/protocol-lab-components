@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
@@ -47,6 +48,14 @@ func TestValidateOptionsRejectsUnsupportedBehaviorOpenPatternCombos(t *testing.T
 			name: "large payload accepts sequential",
 			options: options{
 				behavior:             "large-payload",
+				openPattern:          "sequential",
+				streamsPerConnection: 1,
+			},
+		},
+		{
+			name: "sustained stream accepts sequential",
+			options: options{
+				behavior:             "sustained-stream-256x64kb",
 				openPattern:          "sequential",
 				streamsPerConnection: 1,
 			},
@@ -169,6 +178,46 @@ func TestResponseReadDelayIsExactAndBehaviorScoped(t *testing.T) {
 	if got := responseReadDelay("multiplex-streams"); got != 0 {
 		t.Fatalf("responseReadDelay(multiplex) = %s, want 0", got)
 	}
+}
+
+func TestWritePayloadInChunksPreservesPayloadAndBoundaries(t *testing.T) {
+	t.Parallel()
+
+	payload := make([]byte, 256*64*1024)
+	for index := range payload {
+		payload[index] = byte(index % 251)
+	}
+	writer := &recordingWriter{}
+
+	written, err := writePayloadInChunks(writer, payload, 64*1024)
+	if err != nil {
+		t.Fatalf("writePayloadInChunks returned error: %v", err)
+	}
+	if written != len(payload) {
+		t.Fatalf("written = %d, want %d", written, len(payload))
+	}
+	if len(writer.writeSizes) != 256 {
+		t.Fatalf("write calls = %d, want 256", len(writer.writeSizes))
+	}
+	for index, size := range writer.writeSizes {
+		if size != 64*1024 {
+			t.Fatalf("write %d size = %d, want 65536", index, size)
+		}
+	}
+	if !bytes.Equal(writer.bytes, payload) {
+		t.Fatal("written payload did not preserve the source bytes")
+	}
+}
+
+type recordingWriter struct {
+	bytes      []byte
+	writeSizes []int
+}
+
+func (writer *recordingWriter) Write(payload []byte) (int, error) {
+	writer.writeSizes = append(writer.writeSizes, len(payload))
+	writer.bytes = append(writer.bytes, payload...)
+	return len(payload), nil
 }
 
 func TestBuildMetricsIncludesConnectTimeMean(t *testing.T) {

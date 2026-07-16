@@ -29,6 +29,7 @@ const slowReaderResponseDelay = 100 * time.Millisecond
 const downloadRequestMagic = "PLAB-DL1"
 const downloadRequestLength = len(downloadRequestMagic) + 8
 const maximumDownloadPayloadLength = 64 * 1024 * 1024
+const sustainedStreamChunkSize = 64 * 1024
 
 type options struct {
 	sni                  string
@@ -296,7 +297,7 @@ func validateOptions(opts options) error {
 	}
 
 	switch behavior {
-	case "stream-throughput", "latency-echo", "large-payload":
+	case "stream-throughput", "latency-echo", "large-payload", "sustained-stream-256x64kb":
 		if openPattern != "sequential" {
 			return fmt.Errorf("behavior %q requires open-pattern %q", opts.behavior, "sequential")
 		}
@@ -341,7 +342,7 @@ func runLoadWithQUICConfig(ctx context.Context, opts options, duration time.Dura
 	}
 
 	switch strings.ToLower(opts.behavior) {
-	case "stream-throughput", "latency-echo", "large-payload":
+	case "stream-throughput", "latency-echo", "large-payload", "sustained-stream-256x64kb":
 		return runStreamLoad(ctx, opts, duration, discard, streamOpenSequential, quicConfig)
 	case "multiplex-streams", "duplex-streams", "stream-limit-pressure", "flow-control-slow-reader-100ms":
 		return runStreamLoad(ctx, opts, duration, discard, streamOpenConcurrent, quicConfig)
@@ -535,7 +536,12 @@ func runRequestResponseStream(ctx context.Context, conn *quic.Conn, payload []by
 		accountedBytesSent = 0
 	}
 
-	written, err := stream.Write(requestPayload)
+	var written int
+	if strings.EqualFold(opts.behavior, "sustained-stream-256x64kb") {
+		written, err = writePayloadInChunks(stream, requestPayload, sustainedStreamChunkSize)
+	} else {
+		written, err = stream.Write(requestPayload)
+	}
 	if err != nil {
 		return 0, accountedBytesSent, 0, fmt.Errorf("write request payload: %w", err)
 	}
@@ -587,6 +593,28 @@ func runRequestResponseStream(ctx context.Context, conn *quic.Conn, payload []by
 	}
 
 	return float64(time.Since(start).Microseconds()) / 1000.0, accountedBytesSent, received, nil
+}
+
+func writePayloadInChunks(writer io.Writer, payload []byte, chunkSize int) (int, error) {
+	if chunkSize <= 0 {
+		return 0, errors.New("chunk size must be greater than zero")
+	}
+
+	totalWritten := 0
+	for totalWritten < len(payload) {
+		chunkEnd := min(totalWritten+chunkSize, len(payload))
+		chunk := payload[totalWritten:chunkEnd]
+		written, err := writer.Write(chunk)
+		totalWritten += written
+		if err != nil {
+			return totalWritten, err
+		}
+		if written != len(chunk) {
+			return totalWritten, io.ErrShortWrite
+		}
+	}
+
+	return totalWritten, nil
 }
 
 func buildDownloadRequest(payloadLength int) []byte {

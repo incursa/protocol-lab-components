@@ -34,6 +34,7 @@ org.protocol-lab.components.scenario.raw-quic-transport.0.1.12.plabpkg
 - `quic.transport.stream-throughput.1mb`
 - `quic.transport.stream-download.1mb`
 - `quic.transport.stream-throughput.16mb`
+- `quic.transport.sustained-stream.256x64kb`
 - `quic.transport.latency.echo-1kb`
 - `quic.transport.multiplex.100x1kb`
 - `quic.transport.multiplex.100x64kb`
