@@ -10,6 +10,9 @@ executable: run.ps1
 project: src/KestrelHttp3.csproj
 workingDirectory: .
 dockerNetworkMode: published-port
+baseUrl: https://127.0.0.1:8443
+protocolBaseUrls:
+  h3: https://127.0.0.1:8443
 certificateMode: dev-cert
 roles:
   - server
