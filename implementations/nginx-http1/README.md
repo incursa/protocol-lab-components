@@ -1,6 +1,6 @@
 # nginx HTTP/1 Implementation
 
-Lane-scoped nginx HTTP/1.1 implementation package. Version `0.1.1` builds the
+Lane-scoped nginx HTTP/1.1 implementation package. Version `0.1.2` builds the
 target from the official nginx `1.29.0` Alpine image pinned by OCI index digest;
 it does not depend on a worker-installed nginx binary and does not imply nginx
 HTTP/2 or HTTP/3 support.

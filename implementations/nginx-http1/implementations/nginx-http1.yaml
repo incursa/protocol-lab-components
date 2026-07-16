@@ -6,7 +6,7 @@ family: nginx
 role: server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-nginx-http1:0.1.1
+image: incursa-protocol-lab-nginx-http1:0.1.2
 dockerfile: Dockerfile
 buildContext: .
 baseUrl: http://127.0.0.1:8080

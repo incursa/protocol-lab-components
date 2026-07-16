@@ -19,13 +19,13 @@ http {
         }
 
         location = /json {
+            default_type application/json;
             return 200 "{\"message\":\"Hello, World!\"}";
-            add_header Content-Type application/json;
         }
 
         location = /protocol-lab/metadata {
+            default_type application/json;
             return 200 "{\"implementationId\":\"nginx-http1\",\"protocol\":\"h1\",\"packageId\":\"org.protocol-lab.components.implementation.nginx-http1\"}";
-            add_header Content-Type application/json;
         }
     }
 }
