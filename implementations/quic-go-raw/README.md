@@ -15,6 +15,7 @@ the canonical implementation entrypoint.
 Supported scenarios:
 
 - `quic.transport.stream-throughput.1mb`
+- `quic.transport.latency.echo-1kb`
 - `quic.transport.multiplex.100x64kb`
 - `quic.transport.connection-churn`
 - `quic.transport.stream-churn`
@@ -25,7 +26,7 @@ Supported scenarios:
 Unsupported until proven:
 
 - HTTP/3 scenarios
-- raw QUIC latency, stream-limit, large-payload, cancellation, `quic.transport.resumption-rejected`, `quic.transport.resumed-handshake`, `quic.transport.zero-rtt-accepted`, and `quic.transport.zero-rtt-rejected` lanes
+- raw QUIC stream-limit, large-payload, cancellation, `quic.transport.resumption-rejected`, `quic.transport.resumed-handshake`, `quic.transport.zero-rtt-accepted`, and `quic.transport.zero-rtt-rejected` lanes
 
 The package covers cold handshake, connection churn, stream churn, and stream echo lanes.
 

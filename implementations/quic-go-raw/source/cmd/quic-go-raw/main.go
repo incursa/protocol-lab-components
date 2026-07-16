@@ -38,6 +38,7 @@ const (
 var quicGoVersion = "v0.60.0"
 var supportedScenarios = []string{
 	"quic.transport.stream-throughput.1mb",
+	"quic.transport.latency.echo-1kb",
 	"quic.transport.multiplex.100x64kb",
 	"quic.transport.connection-churn",
 	"quic.transport.stream-churn",

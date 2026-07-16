@@ -48,6 +48,7 @@ func TestWriteMetadataIncludesSupportedScenarios(t *testing.T) {
 
 	want := []string{
 		"quic.transport.stream-throughput.1mb",
+		"quic.transport.latency.echo-1kb",
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.connection-churn",
 		"quic.transport.stream-churn",
@@ -218,14 +219,15 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	if err := json.Unmarshal(packageManifestBytes, &packageManifest); err != nil {
 		t.Fatalf("unmarshal package manifest: %v", err)
 	}
-	if packageManifest.PackageVersion != "0.1.9" {
-		t.Fatalf("packageVersion = %q, want 0.1.9", packageManifest.PackageVersion)
+	if packageManifest.PackageVersion != "0.1.10" {
+		t.Fatalf("packageVersion = %q, want 0.1.10", packageManifest.PackageVersion)
 	}
 	if len(packageManifest.ProvidedImplementations) != 1 {
 		t.Fatalf("providedImplementations length = %d, want 1", len(packageManifest.ProvidedImplementations))
 	}
 	wantPackageScenarios := []string{
 		"quic.transport.stream-throughput.1mb",
+		"quic.transport.latency.echo-1kb",
 		"quic.transport.multiplex.100x64kb",
 		"quic.transport.connection-churn",
 		"quic.transport.stream-churn",
@@ -323,6 +325,9 @@ func TestPackageManifestsStayDualRidAndCanonical(t *testing.T) {
 	}
 	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.handshake-cold")) {
 		t.Fatal("implementation YAML does not advertise quic.transport.handshake-cold")
+	}
+	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.latency.echo-1kb")) {
+		t.Fatal("implementation YAML does not advertise quic.transport.latency.echo-1kb")
 	}
 	if !bytes.Contains(implementationManifestBytes, []byte("quic.transport.resumption-rejected")) {
 		t.Fatal("implementation YAML does not mark quic.transport.resumption-rejected unsupported")
