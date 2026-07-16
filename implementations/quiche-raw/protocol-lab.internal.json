@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "process",
+        "path": "bin/linux-x64/quiche-raw",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": false,
+    "requiresPwsh": false,
+    "requiresBash": false,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      { "name": "quic", "value": "true" }
+    ],
+    "modules": [
+      {
+        "name": "quiche",
+        "version": "0.29.3",
+        "sourceRepository": "https://github.com/cloudflare/quiche"
+      }
+    ]
+  },
+  "commands": {
+    "buildTemplate": "pwsh ../../scripts/package/Build-QuicheRawPackage.ps1",
+    "serverTemplate": "bash ./run.sh",
+    "planOnly": "PLAB_PLAN_ONLY=1 bash ./run.sh"
+  },
+  "knownLimitations": [
+    "Server-only raw QUIC transport package; it does not provide HTTP/3.",
+    "Only the five declared ProtocolLab raw transport scenarios are supported until additional exact wire behavior is implemented and proven.",
+    "The package uses local self-signed fixture TLS material and ALPN plab-raw-quic."
+  ]
+}
+
