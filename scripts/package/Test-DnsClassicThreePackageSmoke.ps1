@@ -14,7 +14,7 @@ function Get-Archive([string]$Pattern){$matches=@(Get-ChildItem $OutputRoot -Fil
 if(-not $SkipBuild){& (Join-Path $PSScriptRoot 'Build-DnsClassicCalibrationScenarioPackage.ps1') -Root $Root -OutputRoot $OutputRoot -AllowDirtySource:$AllowDirtySource;& (Join-Path $PSScriptRoot 'Build-GoDnsClassicAuthorityPackage.ps1') win-x64 -Root $Root -OutputRoot $OutputRoot -AllowDirtySource:$AllowDirtySource;& (Join-Path $PSScriptRoot 'Build-GoDnsUdpExecutorPackage.ps1') win-x64 -Root $Root -OutputRoot $OutputRoot -AllowDirtySource:$AllowDirtySource;& (Join-Path $PSScriptRoot 'Build-GoDnsTcpExecutorPackage.ps1') win-x64 -Root $Root -OutputRoot $OutputRoot -AllowDirtySource:$AllowDirtySource}
 if(Test-Path $SmokeRoot){Remove-Item $SmokeRoot -Recurse -Force};New-Item -ItemType Directory -Force $SmokeRoot|Out-Null
 $scenarioRoot=Join-Path $SmokeRoot 'scenario';$targetRoot=Join-Path $SmokeRoot 'target';$udpRoot=Join-Path $SmokeRoot 'udp-executor';$tcpRoot=Join-Path $SmokeRoot 'tcp-executor'
-$scenarioManifest=Expand-Package (Get-Archive 'org.protocol-lab.components.scenario.dns-classic-calibration.0.1.0.plabpkg') $scenarioRoot
+$scenarioManifest=Expand-Package (Get-Archive 'org.protocol-lab.components.scenario.dns-classic-calibration.0.1.1.plabpkg') $scenarioRoot
 $targetManifest=Expand-Package (Get-Archive 'org.protocol-lab.components.implementation.go-dns-classic-authority.0.1.0.win-x64.plabpkg') $targetRoot
 $udpManifest=Expand-Package (Get-Archive 'org.protocol-lab.components.executor.go-dns-udp-executor.0.1.0.win-x64.plabpkg') $udpRoot
 $tcpManifest=Expand-Package (Get-Archive 'org.protocol-lab.components.executor.go-dns-tcp-executor.0.1.0.win-x64.plabpkg') $tcpRoot
