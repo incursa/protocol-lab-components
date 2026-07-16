@@ -47,6 +47,7 @@ implementations/
   ngtcp2-http3/
   quic-go-http3/
   quic-go-raw/
+  quinn-raw/
 executors/
   http1-reference/
   http1-go-smoke/
@@ -134,6 +135,7 @@ Implementation packages:
 - `org.protocol-lab.components.implementation.ngtcp2-http3`
 - `org.protocol-lab.components.implementation.quic-go-http3`
 - `org.protocol-lab.components.implementation.quic-go-raw`
+- `org.protocol-lab.components.implementation.quinn-raw`
 
 Test-executor packages:
 
