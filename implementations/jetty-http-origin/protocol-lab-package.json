@@ -1,0 +1,13 @@
+{
+  "schemaVersion":"protocol-lab-package-v2",
+  "packageId":"org.protocol-lab.components.implementation.jetty-http-origin",
+  "packageVersion":"0.1.0",
+  "kind":"implementation",
+  "displayName":"Eclipse Jetty HTTP Origin Implementations",
+  "entryManifests":["implementations/jetty-http1.yaml","implementations/jetty-http2.yaml"],
+  "providedImplementations":[
+    {"implementationId":"jetty-http1","displayName":"Eclipse Jetty HTTP/1","protocols":["h1"],"scenarios":["http1.core.plaintext","http1.core.json"]},
+    {"implementationId":"jetty-http2","displayName":"Eclipse Jetty HTTP/2","protocols":["h2"],"scenarios":["http2.core.plaintext","http2.core.json"]}
+  ],
+  "dependencies":{"requiredCapabilities":[{"name":"docker","value":"true"},{"name":"linux-containers","value":"true"}]}
+}

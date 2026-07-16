@@ -1,0 +1,13 @@
+{
+  "schemaVersion":"protocol-lab-package-v2",
+  "packageId":"org.protocol-lab.components.implementation.rust-hyper-origin",
+  "packageVersion":"0.1.0",
+  "kind":"implementation",
+  "displayName":"Rust hyper HTTP Origin Implementations",
+  "entryManifests":["implementations/rust-hyper-http1.yaml","implementations/rust-hyper-http2.yaml"],
+  "providedImplementations":[
+    {"implementationId":"rust-hyper-http1","displayName":"Rust hyper HTTP/1","protocols":["h1"],"scenarios":["http1.core.plaintext","http1.core.json"]},
+    {"implementationId":"rust-hyper-http2","displayName":"Rust hyper HTTP/2","protocols":["h2"],"scenarios":["http2.core.plaintext","http2.core.json"]}
+  ],
+  "dependencies":{"requiredCapabilities":[{"name":"docker","value":"true"},{"name":"linux-containers","value":"true"}]}
+}
