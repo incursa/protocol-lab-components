@@ -274,6 +274,25 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 			wantBytes:   true,
 		},
 		{
+			name: "flow control slow reader concurrent",
+			opts: options{
+				sni:                  "localhost",
+				alpn:                 "plab-raw-quic",
+				behavior:             "flow-control-slow-reader-100ms",
+				streamType:           "bidirectional",
+				payloadSizeBytes:     32,
+				payloadDirection:     "bidirectional",
+				openPattern:          "concurrent",
+				connections:          1,
+				streamsPerConnection: 4,
+				duration:             0,
+				target:               "",
+			},
+			echo:        true,
+			wantConnect: false,
+			wantBytes:   true,
+		},
+		{
 			name: "handshake-cold",
 			opts: options{
 				sni:                  "localhost",
@@ -351,6 +370,10 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 				}
 			} else if metrics.BytesReceived != 0 {
 				t.Fatalf("bytesReceived = %d, want 0", metrics.BytesReceived)
+			}
+
+			if tt.opts.behavior == "flow-control-slow-reader-100ms" && metrics.LatencyMinMs < 100 {
+				t.Fatalf("latencyMinMs = %f, want >= 100ms", metrics.LatencyMinMs)
 			}
 		})
 	}
