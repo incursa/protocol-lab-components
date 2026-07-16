@@ -34,14 +34,14 @@
     "closed-by-decision": "The directory intentionally contains a repository-backed feasibility decision rather than a package manifest."
   },
   "summary": {
-    "localPackageCount": 45,
+    "localPackageCount": 46,
     "localDecisionDirectoryCount": 6,
     "quicHttp3InventoryCount": 19,
     "publicAuthoredCatalogCount": 20,
     "currentVersionLiveProvenCount": 26,
     "historicalVersionLiveProofOnlyCount": 1,
     "attemptedNoCompletedEvidenceCount": 2,
-    "noLiveProofInReviewedSourcesCount": 16
+    "noLiveProofInReviewedSourcesCount": 17
   },
   "localImplementationPackages": [
     { "path": "implementations/aioquic-http3/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.aioquic-http3", "version": "0.3.3", "implementationIds": ["aioquic-http3"], "protocols": ["h3"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-a3c8b35637e14c49b86332a928c5b15d"], "blocker": "Current 0.3.3 h3spec status, response-header, and QPACK rows are live-proven; canonical status and 1 KiB payload proof remains retained on historical package 0.3.2, and 64 KiB remains unproven." },
@@ -50,6 +50,7 @@
     { "path": "implementations/bind9-classic-authority/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.bind9-classic-authority", "version": "0.1.0", "implementationIds": ["bind9-classic-authority"], "protocols": ["dns-tcp", "dns-udp"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-88d1dbab8b6a40b7b43992995a02b219", "job-799e5c5f78f44fb4805a23a2ff6a8744"], "blocker": "Current UDP and TCP rows are live-proven and published as diagnostic observations; repeated comparison and decision-ready gates remain." },
     { "path": "implementations/bind9-doh2/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.bind9-doh2", "version": "0.1.0", "implementationIds": ["bind9-doh2"], "protocols": ["doh2"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-3e256dd1cb8a4f668464e2cd5e0eac7e"] },
     { "path": "implementations/bind9-dot/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.bind9-dot", "version": "0.1.0", "implementationIds": ["bind9-dot"], "protocols": ["dot"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-8120d7bbb8c342828c643eec54d5927a", "job-4568f06d29494058995f2a3bf7dab774"] },
+    { "path": "implementations/technitium-classic-authority/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.technitium-classic-authority", "version": "0.1.0", "implementationIds": ["technitium-classic-authority"], "protocols": ["dns-udp"], "evidenceStatus": "no-live-proof-in-reviewed-sources", "evidenceJobIds": [], "blocker": "Exact UDP validation and diagnostic load pass locally; a completed real-controller UDP run is required. TCP is unsupported because the target closes the reused connection during the exact diagnostic load." },
     { "path": "implementations/caddy-http1/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.caddy-http1", "version": "0.1.0", "implementationIds": ["caddy-http1"], "protocols": ["h1"], "evidenceStatus": "no-live-proof-in-reviewed-sources", "evidenceJobIds": [], "blocker": "No completed job is cited for this package in the reviewed sources." },
     { "path": "implementations/caddy-http2/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.caddy-http2", "version": "0.1.0", "implementationIds": ["caddy-http2"], "protocols": ["h2"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-a91de4823b9a424cb2a813f169b85efd"] },
     { "path": "implementations/caddy-http3/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.caddy-http3", "version": "0.1.9", "implementationIds": ["caddy-http3"], "protocols": ["h3"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-e05ec641965748f3830b5a006b3d8425"], "blocker": "Current h3spec status, response-header, and QPACK rows are live-proven and published; canonical payload rows remain retained on historical 0.1.7." },

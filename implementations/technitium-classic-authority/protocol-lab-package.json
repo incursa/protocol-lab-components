@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.technitium-classic-authority",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Technitium Classic DNS Authority",
+  "entryManifests": [
+    "implementations/technitium-classic-authority.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "technitium-classic-authority",
+      "displayName": "Technitium Classic DNS Authority",
+      "protocols": [
+        "dns-udp"
+      ],
+      "scenarios": [
+        "dns.classic.udp.query.a"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {
+        "name": "docker",
+        "value": "true"
+      }
+    ]
+  }
+}
