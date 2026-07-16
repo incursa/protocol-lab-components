@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Image = 'incursa-protocol-lab-quic-go-http3:0.1.5',
+    [string]$Image = 'incursa-protocol-lab-quic-go-http3:0.1.6',
     [int]$Port = 5446,
     [switch]$SkipBuild,
     [switch]$PlanOnly,
