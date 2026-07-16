@@ -184,7 +184,7 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
   LSQUIC, neqo, and mvfst where the upstream interop image exposes an exact
   scenario mapping.
   - [x] aioquic
-  - [ ] quiche
+  - [x] quiche
   - [ ] ngtcp2
   - [ ] XQUIC
   - [ ] LSQUIC
@@ -206,6 +206,7 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
 | s2n-quic | `0.1.0` | Cold handshake, 1 KiB echo, 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; every row has one accepted cross-worker measurement | `job-2e586cdfd6084ece82f91d327d9f95c7`, `job-d507de39055e4b01b53c5f0e4cb0e4b4`, `job-00fbbb776aa94930b1bfcab074af4119`, `job-555ac25d829746baa9722cc6d2bdc3f6`, `job-4c3d644cd576452da12e586d1b64bfb6` |
 | picoquic | `0.1.0` | Cold handshake, 1 KiB echo, 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; every row has one accepted cross-worker measurement | `job-3150078923e34eac9a1c957be289de91`, `job-4cb1795c45ae4ebe89a528cc2b9cda98`, `job-8a40e17c3b164247a35209add5ed212c`, `job-207ec5092cd74380a130441eb51d0236`, `job-bdefa794c67541648a5ab7d4026aeb1e` |
 | aioquic | `0.1.0` | Cold handshake, 1 KiB echo, 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; every row has one accepted cross-worker measurement | `job-12341c52aa404a19b1e8ccb9c8a71e80`, `job-6c1e3f6aee044cc7b967819995d2d0c7`, `job-9218d24df059426892d50f620482a782`, `job-0e91044175c34a0999f5e02263c32cfa`, `job-e79487caff9d44889973184d7cb4a3fa` |
+| quiche | `0.1.0` | Cold handshake, 1 KiB echo, 1 MiB stream throughput, 100x64 KiB multiplexing, and duplex streams; every row has one accepted cross-worker measurement | `job-dab2f6a8587d44568fe0cbe93e99621e`, `job-fa095524f84e4cfa861d5c2aa6dbd350`, `job-7a9d939a10d34fcf88b0acec9f704d6d`, `job-896ab3b02b27452ebcce08ca10b42d5a`, `job-49d9885474d34a0a8e5d292b6501141d` |
 
 These clean implementation-owned packages were selected with immutable executor
 and scenario-package hashes. Each public report retains all 15 accepted cells
@@ -309,6 +310,23 @@ four retained 94 each. Publication attempts
 `pub_c5c41fee4bca41088de85f5ee43f8a74`,
 `pub_5f0c0261c96d41ccac326babdfddc719`, and
 `pub_d464ca2661864f63ab5248bb9e7d356f`) uploaded and verified the public
+objects and were accepted by the site import queue. All five report routes
+were verified live. The rows remain diagnostic/unranked because they use one
+repetition and the target/load VMs share physical host `r920`.
+
+The quiche target is immutable package
+`org.protocol-lab.components.implementation.quiche-raw@0.1.0`
+(`7fa952c88af1...`) built from clean component commit `2ca3eb3`. It uses
+Cloudflare quiche `0.29.3`, negotiates the exact `plab-raw-quic` ALPN, and
+keeps the UDP event loop and canonical application stream behavior separate
+from the existing quiche HTTP/3 peer package. All five jobs used
+`plab-worker-load-01 -> plab-worker-sut-01`; handshake retained 102 controller
+artifacts and the other four retained 94 each. Publication attempts
+(`pub_62bf69e7a67e430cae7e149838f6ba08`,
+`pub_538490da6e4c4fee9bca16fc059bb653`,
+`pub_4e816db3d7814b3784ff77fc11486682`,
+`pub_2b94b07f92294bc3aefb1f3c4c4c80c0`, and
+`pub_df078fe77d4c43c4b7942c31dd3ed810`) uploaded and verified the public
 objects and were accepted by the site import queue. All five report routes
 were verified live. The rows remain diagnostic/unranked because they use one
 repetition and the target/load VMs share physical host `r920`.
