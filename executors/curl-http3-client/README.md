@@ -51,6 +51,11 @@ Version `0.1.5` invokes the `curl` executable explicitly. The pinned peer
 image currently defaults to `/bin/sh`, so passing curl flags directly as the
 container command fails before any network request is attempted.
 
+Version `0.1.6` consumes the runner's `PLAB_TARGET_BASE_URL` and
+`PLAB_ARTIFACT_DIR` bindings and emits the standard
+`protocol-lab.http-executor-result.v1` parser record. Its metrics describe one
+diagnostic validation request and are not benchmark payload or latency claims.
+
 ## Build Package
 
 ```powershell

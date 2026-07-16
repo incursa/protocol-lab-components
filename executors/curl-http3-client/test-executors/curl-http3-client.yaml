@@ -1,13 +1,13 @@
 executorIdentity:
   id: curl-http3-client
   name: curl HTTP/3 Client Test Executor
-  version: 0.1.5
+  version: 0.1.6
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.5
+  executorVersion: 0.1.6
 claimedCapabilities:
   - id: http3.core.status
     status: supported
@@ -100,6 +100,10 @@ metricsAvailability:
   availableKinds:
     - session
     - validation
+parser:
+  id: protocol-lab-http-json
+  type: protocol-lab-http-json
+  preservesRawOutput: true
 telemetry:
   supported: true
   supported_contract_versions:
