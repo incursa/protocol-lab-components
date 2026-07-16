@@ -162,7 +162,7 @@ decision-ready gates below.
 - [ ] Bring Kestrel, Incursa HTTP/3, Caddy, nginx, quic-go, and aioquic onto a
   common plaintext, JSON, 1 KiB, and 64 KiB support matrix where their exact
   semantics permit it.
-- [ ] Re-run the current immutable quic-go and aioquic package heads so live
+- [x] Re-run the current immutable quic-go and aioquic package heads so live
   evidence matches the cataloged package versions.
 - [ ] Complete diagnostic peer-characterization evidence for quiche and
   ngtcp2, then add official payload rows only where status, content type,
@@ -175,12 +175,15 @@ decision-ready gates below.
 | Implementation | Immutable package version | Proven rows | Completed controller job |
 | --- | --- | --- | --- |
 | aioquic | 0.3.2 | canonical JSON status and 1 KiB payload; validation and measurement passed | `job-0d08b2ace1704d609ec9803e6e7119c7` |
+| quic-go | 0.1.6 | canonical JSON status, 1 KiB, and 64 KiB payloads; validation and measurement passed | `job-610e9f2d38364cfc95b238ea6e012446` |
+| Kestrel | 0.1.6 | canonical JSON status, 1 KiB, and 64 KiB payloads; validation and measurement passed | `job-fb08e6a527b94ee1a922055a9401feee` |
 
-The aioquic run used the package-backed managed HTTP/3 executor and retained
+These runs used the package-backed managed HTTP/3 executor and retained
 the executor package identity, requested/effective load shapes, raw output,
 target-container telemetry, normalized metrics, and immutable target package
-provenance. It closes current-head proof for those two rows only; 64 KiB,
-h3spec/QPACK, repeated comparison, publication, and decision-ready gates remain.
+provenance. They close current-head proof only for the rows shown; aioquic
+64 KiB, h3spec/QPACK, repeated comparison, publication, and decision-ready
+gates remain.
 
 ### New catalog packages
 
