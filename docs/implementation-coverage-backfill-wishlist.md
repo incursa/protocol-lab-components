@@ -381,8 +381,17 @@ gates remain.
 
 ### New catalog packages
 
-- [ ] Package and live-prove XQUIC, LSQUIC, and neqo from reproducibly pinned
-  upstream/interop artifacts.
+- [x] Package and live-prove XQUIC, LSQUIC, and neqo from reproducibly pinned
+  upstream/interop artifacts. Current packages `xquic-http3@0.1.2`,
+  `lsquic-http3@0.1.2`, and `neqo-http3@0.1.2` have accepted real-controller
+  diagnostic runs `job-5091e92be8ca496f869bb2fce80de604`,
+  `job-71d3e12c58e842419cb7679456fcd9d8`, and
+  `job-caa700398b4a4d86891ce696a855f553`; each retained 69 artifacts and was
+  published as `pub_00899a85364f4d0caf18fc7b06f59ec2`,
+  `pub_de1b8ce62c6646199d0201198586d01f`, and
+  `pub_5355b3c27f6140e3b19680f9a320588a`. These are one-request
+  interoperability observations, not canonical payload or rankable latency
+  results.
 - [ ] Package mvfst/Proxygen as an HTTP/3 origin only if the Proxygen layer
   satisfies the origin contract; keep raw mvfst evidence separate.
 - [ ] Add H2O as an experimental HTTP/3 origin with that status visible in
