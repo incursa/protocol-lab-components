@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.kestrel-http3",
-  "packageVersion": "0.1.4",
+  "packageVersion": "0.1.5",
   "kind": "implementation",
   "displayName": "Kestrel HTTP/3 Implementation",
   "entryManifests": [
@@ -24,10 +24,6 @@
   ],
   "dependencies": {
     "requiredCapabilities": [
-      {
-        "name": "dotnet-runtime",
-        "value": "10"
-      },
       {
         "name": "http3-runtime",
         "value": "true"

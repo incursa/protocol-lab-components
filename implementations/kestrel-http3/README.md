@@ -2,7 +2,7 @@
 
 `kestrel-http3` is a lane-scoped Protocol Lab implementation package for HTTP/3 over Kestrel. It is intentionally separate from `kestrel-http1` and `kestrel-http2` so inventory can select exactly the protocol lane under test.
 
-- Package version: `0.1.4`
+- Package version: `0.1.5`
 
 ## Supported
 
@@ -22,8 +22,8 @@
 ## Local Smoke
 
 The target creates a short-lived, loopback-only self-signed certificate for
-each process. Start it through the same cross-platform entrypoint used by the
-package:
+each process. The admitted package contains a self-contained Linux x64 target;
+for source smoke, run:
 
 ```powershell
 dotnet run --project ./implementations/kestrel-http3/src/KestrelHttp3.csproj --no-launch-profile

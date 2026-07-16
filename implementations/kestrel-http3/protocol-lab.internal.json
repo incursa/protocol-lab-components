@@ -2,37 +2,23 @@
   "schemaVersion": "protocol-lab-internal-execution-v1",
   "environments": [
     {
-      "os": "windows",
-      "arch": "x64",
-      "entrypoint": {
-        "kind": "process",
-        "path": "dotnet",
-        "arguments": ["run", "--project", "src/KestrelHttp3.csproj", "--no-launch-profile"],
-        "workingDirectory": "."
-      }
-    },
-    {
       "os": "linux",
       "arch": "x64",
       "entrypoint": {
         "kind": "process",
-        "path": "dotnet",
-        "arguments": ["run", "--project", "src/KestrelHttp3.csproj", "--no-launch-profile"],
+        "path": "bin/kestrel-http3",
+        "arguments": [],
         "workingDirectory": "."
       }
     }
   ],
   "dependencies": {
-    "requiresDotNet": true,
+    "requiresDotNet": false,
     "requiresDocker": false,
-    "requiresPwsh": true,
-    "requiresBash": true,
+    "requiresPwsh": false,
+    "requiresBash": false,
     "requiresGo": false,
     "requiredCapabilities": [
-      {
-        "name": "dotnet-runtime",
-        "value": "10"
-      },
       {
         "name": "http3-runtime",
         "value": "true"

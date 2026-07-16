@@ -6,12 +6,7 @@ family: kestrel
 role: server
 targetKind: process
 targetContract: process
-executable: dotnet
-commandArguments:
-  - run
-  - --project
-  - src/KestrelHttp3.csproj
-  - --no-launch-profile
+executable: bin/kestrel-http3
 project: src/KestrelHttp3.csproj
 workingDirectory: .
 dockerNetworkMode: published-port
@@ -31,12 +26,8 @@ protocolVersions:
   - http/3
 entrypoint:
   kind: process
-  path: dotnet
-  arguments:
-    - run
-    - --project
-    - src/KestrelHttp3.csproj
-    - --no-launch-profile
+  path: bin/kestrel-http3
+  arguments: []
   workingDirectory: .
 ports:
   - name: h3
