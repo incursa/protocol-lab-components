@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.tls13-handshake-performance",
-  "packageVersion": "0.2.1",
+  "packageVersion": "0.2.2",
   "kind": "scenario-pack",
   "displayName": "TLS Performance Contract Scenario Pack",
   "entryManifests": [
@@ -17,6 +17,7 @@
     "scenarios/tls/record/throughput.yaml",
     "suites/tls-performance-smoke.yaml",
     "suites/tls-contract-breadth-smoke.yaml",
+    "suites/tls-security-diagnostics.yaml",
     "load-profiles/tls-smoke.yaml",
     "load-profiles/tls-diagnostic.yaml",
     "fixtures/public-contracts/tls-record-coverage/valid/tls-record-coverage-v1.json",
@@ -37,6 +38,7 @@
   ],
   "providedSuites": [
     { "suiteId": "tls-performance-smoke", "displayName": "TLS Performance Smoke", "protocols": ["tls"] },
-    { "suiteId": "tls-contract-breadth-smoke", "displayName": "TLS Contract Breadth Smoke", "protocols": ["tls"] }
+    { "suiteId": "tls-contract-breadth-smoke", "displayName": "TLS Contract Breadth Smoke", "protocols": ["tls"] },
+    { "suiteId": "tls-security-diagnostics", "displayName": "TLS Early-Data and KeyUpdate Diagnostics", "protocols": ["tls"] }
   ]
 }

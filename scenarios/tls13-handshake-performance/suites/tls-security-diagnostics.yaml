@@ -1,0 +1,10 @@
+id: tls-security-diagnostics
+name: TLS early-data and KeyUpdate diagnostics
+description: Bounded security-sensitive TLS 1.3 diagnostic selection.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: tls-diagnostic
+scenarios: [tls.early-data.accepted, tls.early-data.rejected, tls.key-update.diagnostic]
+protocol: tls
+notes: 0-RTT cells require replay-safe fixtures and single-use ticket provenance; KeyUpdate is diagnostic-only.
+tags: [tls, zero-rtt, key-update, diagnostic, non-publishable]

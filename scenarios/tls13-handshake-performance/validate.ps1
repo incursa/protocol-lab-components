@@ -3,7 +3,7 @@ param()
 
 $ErrorActionPreference = 'Stop'
 $lock = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'authority-lock.json') -Raw | ConvertFrom-Json
-if ($lock.commit -ne '8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574') {
+if ($lock.commit -ne 'd5b78d7c07ef0e8a600e92887da2aa150ab89a60') {
     throw "Unexpected ProtocolLab authority commit: $($lock.commit)"
 }
 foreach ($property in $lock.files.PSObject.Properties) {
