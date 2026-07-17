@@ -141,6 +141,7 @@ capabilities:
   - http.server
   - httpStatus
   - httpBytes
+  - h3ExternalPeer
 endpoints:
   bytes1kb:
     method: GET
