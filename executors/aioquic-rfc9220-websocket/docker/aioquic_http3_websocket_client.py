@@ -37,9 +37,9 @@ BINARY_PAYLOAD = bytes([0xA5]) * 6000
 BINARY_SHA256 = "8f8d8f75d55c80475ffb0c12b1ede7083d6df689e8ef04f05176c5050873bfb7"
 FRAGMENT_BYTES = [1024, 2048, 2928]
 EXECUTOR_ID = "aioquic-rfc9220-websocket"
-EXECUTOR_VERSION = "0.3.0"
+EXECUTOR_VERSION = "0.3.1"
 LOAD_GENERATOR_ID = "aioquic-rfc9220-websocket-load"
-LOAD_GENERATOR_VERSION = "0.3.0"
+LOAD_GENERATOR_VERSION = "0.3.1"
 PARSER_ID = "protocol-lab-rfc9220-json"
 SUPPORTED_SCENARIOS = {
     "http3.websocket.rfc9220.extended-connect",
@@ -533,7 +533,7 @@ def build_result(protocol, args, load, peer_der):
         "loadProfileId": args.load_profile_id,
         "status": "passed",
         "passed": True,
-        "implementationRole": "origin-server",
+        "implementationRole": args.implementation_role,
         "authorityCommit": "8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574",
         "requestedLoad": requested,
         "effectiveLoad": {**requested, "activeConnections": 1, "activeStreams": active_streams, "measuredDurationSeconds": load["measuredSeconds"]},
@@ -551,7 +551,7 @@ def build_result(protocol, args, load, peer_der):
             "load-generator-identity.json", "parser-identity.json", "tls-peer-certificate.der", "client-result.json",
             "result.json", "load.stdout.log", "load.stderr.log",
         ],
-        "warnings": ["Local package-backed RFC 9220 evidence is diagnostic and non-publishable."],
+        "warnings": [],
     }
 
 
@@ -572,7 +572,7 @@ def write_artifacts(output_path, result, peer_der):
         "materialization-proof.json": result["materialization"],
         "executor-identity.json": {"executorId": EXECUTOR_ID, "executorVersion": EXECUTOR_VERSION, "role": "test-executor"},
         "load-generator-identity.json": {"loadGeneratorId": LOAD_GENERATOR_ID, "loadGeneratorVersion": LOAD_GENERATOR_VERSION},
-        "parser-identity.json": {"parserId": PARSER_ID, "parserVersion": "0.3.0"},
+        "parser-identity.json": {"parserId": PARSER_ID, "parserVersion": "0.3.1"},
     }
     for name, payload in artifacts.items():
         (output.parent / name).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
@@ -634,6 +634,7 @@ def parse_args():
     parser.add_argument("--target-package-sha256", required=True)
     parser.add_argument("--executor-image-id", required=True)
     parser.add_argument("--target-image-id", required=True)
+    parser.add_argument("--implementation-role", required=True, choices=["origin-server", "proxy"])
     return parser.parse_args()
 
 

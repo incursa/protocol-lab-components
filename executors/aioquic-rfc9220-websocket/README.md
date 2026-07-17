@@ -24,13 +24,13 @@
 
 - Base image: `python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203`
 - Python package: `aioquic==1.3.0`
-- Component image tag: `incursa-protocol-lab-aioquic-rfc9220-websocket:0.3.0`
+- Component image tag: `incursa-protocol-lab-aioquic-rfc9220-websocket:0.3.1`
 - aioquic license text: `third-party/aioquic-LICENSE.txt`
 - Package-local trust anchor: `certs/root.pem` for exact `websocket.plab.test` certificate authentication
 
 ## Historical Scenario Evidence
 
-The historical external row is not substituted for package-local `0.3.0` evidence. Corrected evidence is produced only from extracted scenario `0.2.2`, executor `0.3.0`, and target `0.3.0` packages.
+The historical external row is not substituted for package-local evidence. Version `0.3.1` records the selected target role explicitly, allowing the same exact client to retain honest `origin-server` or `proxy` evidence.
 
 | External row | Scenarios | Status | Evidence |
 | --- | --- | --- | --- |
@@ -50,7 +50,7 @@ Build the wrapper image:
 ```powershell
 docker build --build-arg AIOQUIC_VERSION=1.3.0 `
   -f ./executors/aioquic-rfc9220-websocket/docker/aioquic-rfc9220-websocket.Dockerfile `
-  -t incursa-protocol-lab-aioquic-rfc9220-websocket:0.3.0 `
+  -t incursa-protocol-lab-aioquic-rfc9220-websocket:0.3.1 `
   ./executors/aioquic-rfc9220-websocket
 ```
 

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.nghttpx-rfc9220-gateway",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "nghttpx RFC 9220 WebSocket Gateway",
+  "entryManifests": [
+    "implementations/nghttpx-rfc9220-gateway.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "nghttpx-rfc9220-gateway",
+      "displayName": "nghttpx RFC 9220 WebSocket Gateway",
+      "protocols": ["h3", "websocket"],
+      "scenarios": [
+        "http3.websocket.rfc9220.extended-connect",
+        "http3.websocket.rfc9220.control-frames",
+        "http3.websocket.rfc9220.text-echo",
+        "http3.websocket.rfc9220.binary-echo",
+        "http3.websocket.rfc9220.close",
+        "http3.websocket.rfc9220.fragmented-binary-echo"
+      ]
+    }
+  ],
+  "dependencies": {
+    "requiredCapabilities": [
+      {"name": "docker", "value": "true"},
+      {"name": "http3-runtime", "value": "true"},
+      {"name": "linux-containers", "value": "true"}
+    ]
+  }
+}

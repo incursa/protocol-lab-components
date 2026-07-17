@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {"os": "linux", "arch": "x64", "entrypoint": {"kind": "bash", "path": "run.sh", "arguments": [], "workingDirectory": "."}}
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": false,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {"name": "docker", "value": "true"},
+      {"name": "http3-runtime", "value": "true"},
+      {"name": "linux-containers", "value": "true"}
+    ],
+    "sourcePins": [
+      {"name": "nghttp2", "version": "1.69.0", "commit": "68cb6900fde14c77f0cd7add0e094a862960eb99"},
+      {"name": "ngtcp2", "version": "1.22.1", "commit": "716e64b05f4a3709dfc0b0522cf9fd4456d055e5"},
+      {"name": "nghttp3", "version": "1.15.0", "commit": "d326f4c1eb3f6a780d77793b30e16756c498f913"},
+      {"name": "aws-lc", "version": "1.72.0", "commit": "d50ded594c835fd277997461815ad473949f2c7a"}
+    ]
+  },
+  "knownLimitations": [
+    "nghttpx documents HTTP/3 support as experimental.",
+    "The tested frontend is HTTP/3 only; nghttpx forwards the WebSocket to a package-owned HTTP/1.1 fixture backend.",
+    "Hot reload is not exercised and the image is built without the optional eBPF reload path."
+  ]
+}

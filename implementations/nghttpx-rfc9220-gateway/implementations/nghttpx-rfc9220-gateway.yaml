@@ -1,0 +1,71 @@
+schemaVersion: "1.0"
+id: nghttpx-rfc9220-gateway
+name: nghttpx RFC 9220 WebSocket Gateway
+description: nghttpx terminates RFC 9220 WebSockets over HTTP/3 and forwards them to a package-owned HTTP/1.1 WebSocket fixture.
+family: nghttpx
+role: proxy
+roles: [proxy]
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-nghttpx-rfc9220-gateway:0.1.0
+dockerfile: Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+baseUrl: https://localhost:4433
+dockerBaseUrl: https://localhost:4433
+protocolBaseUrls: {h3: https://localhost:4433}
+dockerProtocolBaseUrls: {h3: https://localhost:4433}
+certificateMode: package-local-authenticated-websocket-plab-test-certificate
+protocols: [h3, websocket]
+supportedProtocols: [h3, websocket]
+supportedWorkloadFamilies: [websocket]
+supportedProtocolVersions: [http/3]
+ports:
+  - {name: h3, protocol: udp, default: 4433, hostPort: 4433, containerPort: 4433}
+readinessCheck: {type: processStarted, timeoutSeconds: 120, startupDelayMilliseconds: 1000}
+capabilities: [http.proxy, h3.server, quic.server, websocket.server, rfc9220WebSocket, websocket.fragmentation]
+supportedTestCaseIds:
+  - http3.websocket.rfc9220.extended-connect
+  - http3.websocket.rfc9220.control-frames
+  - http3.websocket.rfc9220.text-echo
+  - http3.websocket.rfc9220.binary-echo
+  - http3.websocket.rfc9220.close
+  - http3.websocket.rfc9220.fragmented-binary-echo
+supportedScenarios:
+  - http3.websocket.rfc9220.extended-connect
+  - http3.websocket.rfc9220.control-frames
+  - http3.websocket.rfc9220.text-echo
+  - http3.websocket.rfc9220.binary-echo
+  - http3.websocket.rfc9220.close
+  - http3.websocket.rfc9220.fragmented-binary-echo
+scenarioCoverage:
+  websocket-over-h3:
+    status: supported
+    scenarioId: http3.websocket.rfc9220.extended-connect
+    executorId: aioquic-rfc9220-websocket
+    reason: nghttpx accepts RFC 9220 Extended CONNECT on its HTTP/3 frontend and bridges the WebSocket to an HTTP/1.1 fixture backend.
+  http3.websocket.rfc9220.fragmented-binary-echo:
+    status: supported
+    scenarioId: http3.websocket.rfc9220.fragmented-binary-echo
+    executorId: aioquic-rfc9220-websocket
+    reason: The gateway and fixture preserve the committed masked 1024, 2048, and 2928 byte fragment plan and echo the reassembled 6000-byte binary message.
+unsupportedKnownCases: [origin-server-cohort, h1, h2, raw-quic, webtransport, upload, streaming]
+requiredExternalTools: [docker]
+targetCapabilityProof:
+  id: nghttpx-http3
+  required: true
+  dockerExecArguments: [nghttpx, --version]
+  expectedOutputContains: nghttp2/1.69.0
+runtime:
+  upstreamProgram: nghttpx
+  upstreamProgramModified: false
+  nghttp2Version: 1.69.0
+  ngtcp2Version: 1.22.1
+  nghttp3Version: 1.15.0
+  awsLcVersion: 1.72.0
+dockerCommandArguments: []
+shutdownBehavior: runner-owned-docker-container
+artifactExports: [nghttpx.stderr.log, websocket-backend.stdout.log]
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Gateway/proxy cohort only; the package-owned backend is a deterministic WebSocket fixture and is not cataloged as a tested implementation.

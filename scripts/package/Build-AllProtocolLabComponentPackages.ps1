@@ -336,6 +336,7 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'implementations/nginx-http1'; script = 'Build-NginxHttp1Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/nginx-http2'; script = 'Build-NginxHttp2Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/haproxy-http-gateway'; script = 'Build-HaproxyHttpGatewayPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/nghttpx-rfc9220-gateway'; script = 'Build-NghttpxRfc9220GatewayPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/apache-http1'; script = 'Build-ApacheHttp1Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/apache-http2'; script = 'Build-ApacheHttp2Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/nginx-http3'; script = 'Build-NginxHttp3Package.ps1'; arguments = @() },

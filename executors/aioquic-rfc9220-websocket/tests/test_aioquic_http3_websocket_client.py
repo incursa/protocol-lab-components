@@ -51,9 +51,9 @@ class FrameContractTests(unittest.TestCase):
 
     def test_runner_admission_identities_are_versioned_together(self):
         self.assertEqual(CLIENT.EXECUTOR_ID, "aioquic-rfc9220-websocket")
-        self.assertEqual(CLIENT.EXECUTOR_VERSION, "0.3.0")
+        self.assertEqual(CLIENT.EXECUTOR_VERSION, "0.3.1")
         self.assertEqual(CLIENT.LOAD_GENERATOR_ID, "aioquic-rfc9220-websocket-load")
-        self.assertEqual(CLIENT.LOAD_GENERATOR_VERSION, "0.3.0")
+        self.assertEqual(CLIENT.LOAD_GENERATOR_VERSION, "0.3.1")
         self.assertEqual(CLIENT.PARSER_ID, "protocol-lab-rfc9220-json")
 
     def test_sha256_admission_is_fail_closed(self):
