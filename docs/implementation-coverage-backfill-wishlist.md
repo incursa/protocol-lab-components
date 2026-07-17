@@ -358,7 +358,7 @@ repetition and the target/load VMs share physical host `r920`.
 - [x] Re-run the current immutable quic-go and aioquic package heads so live
   evidence matches the cataloged package versions. aioquic `0.3.3` and
   quic-go `0.1.8` now have current package-backed h3spec/QPACK proof.
-- [ ] Complete diagnostic peer-characterization evidence for quiche and
+- [x] Complete diagnostic peer-characterization evidence for quiche and
   ngtcp2, then add official payload rows only where status, content type,
   length, and payload bytes satisfy the canonical workload.
 - [ ] Exercise h3spec/QPACK against every compatible HTTP/3 target and retain
@@ -376,6 +376,8 @@ repetition and the target/load VMs share physical host `r920`.
 | nginx | 0.1.9 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
 | quic-go | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
 | Kestrel | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-6c8c02669dbf423fbcc7a12a5d364741` |
+| quiche | 0.1.9 | external-peer characterization; HTTP/3 validation and curl executor succeeded; 69 artifacts retained | `job-264b0c16f0d8416bafe4c31d11d7ad34` |
+| ngtcp2/nghttp3 | 0.1.8 | external-peer characterization; HTTP/3 validation and curl executor succeeded; 69 artifacts retained | `job-0e3ba289ca7540fda07a072372282f2b` |
 
 These runs used the package-backed managed HTTP/3 executor and retained
 the executor package identity, requested/effective load shapes, raw output,
@@ -385,8 +387,11 @@ aioquic, Caddy, nginx, quic-go, and Kestrel heads now have published
 h3spec/QPACK proof. Their report pages are visible at `lab.incursa.com` with
 package provenance and retained artifact links. aioquic 64 KiB, current-head
 payload reruns for the newly bumped packages, Incursa HTTP/3, explicit
-quiche/ngtcp2 compatibility outcomes, repeated comparison, and decision-ready
-gates remain.
+official payload rows for quiche/ngtcp2, repeated comparison, and
+decision-ready gates remain. Their diagnostic peer reports were uploaded,
+object-verified, import-enqueued as `pub_8d32767d83d347e6804a3ecf9425eef7`
+and `pub_c54b4fb23d754416a5d1e0eaf73b81f5`, and verified live at their exact
+report routes.
 
 ### New catalog packages
 
