@@ -389,9 +389,12 @@ package provenance and retained artifact links. aioquic 64 KiB, current-head
 payload reruns for the newly bumped packages, Incursa HTTP/3, explicit
 official payload rows for quiche/ngtcp2, repeated comparison, and
 decision-ready gates remain. Their diagnostic peer reports were uploaded,
-object-verified, import-enqueued as `pub_8d32767d83d347e6804a3ecf9425eef7`
-and `pub_c54b4fb23d754416a5d1e0eaf73b81f5`, and verified live at their exact
-report routes.
+object-verified, import-enqueued as corrected publications
+`pub_5b1c4ebce0a64c1e899809282fbf83b7` and
+`pub_cb35429502384840938c11be0524a8f5`, and verified live at their exact
+report routes. Both reports explicitly show one passed validated run, zero
+accepted measurements, and no RPS/latency value; the successful request is not
+presented as a performance number.
 
 ### New catalog packages
 
