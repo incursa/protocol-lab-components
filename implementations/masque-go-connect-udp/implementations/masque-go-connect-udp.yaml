@@ -9,7 +9,7 @@ targetContract: process
 executable: bash
 workingDirectory: .
 commandArguments: [run.sh]
-image: incursa-protocol-lab-masque-go-connect-udp:0.1.1
+image: incursa-protocol-lab-masque-go-connect-udp:0.1.2
 dockerfile: docker/Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
@@ -32,7 +32,7 @@ scenarioCoverage:
 ports: [{name: masque, protocol: udp, default: 5471, hostPort: 5471, containerPort: 4443}]
 startup:
   port: {name: masque, environmentVariable: PLAB_TARGET_PORT, default: 5471}
-readinessCheck: {type: processStarted, timeoutSeconds: 120, startupDelayMilliseconds: 30000}
+readinessCheck: {type: processStarted, timeoutSeconds: 180, startupDelayMilliseconds: 120000}
 capabilities: [masque.proxy, masque.connect-udp, h3.server, http-datagram, quic.server, tls1.3, udp.echo-target]
 endpoints:
   proxy: {method: CONNECT, protocol: connect-udp, pathTemplate: "/.well-known/masque/udp/{target_host}/{target_port}/", authority: masque-proxy.plab.test}

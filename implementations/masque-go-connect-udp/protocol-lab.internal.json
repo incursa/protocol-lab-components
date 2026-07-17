@@ -13,7 +13,7 @@
     "requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "http3-runtime", "value": "true"}],
     "images": [{
       "name": "masque-go-connect-udp",
-      "image": "incursa-protocol-lab-masque-go-connect-udp:0.1.1",
+      "image": "incursa-protocol-lab-masque-go-connect-udp:0.1.2",
       "baseImage": "golang:1.25-bookworm",
       "sourceRuntime": "scratch",
       "module": "github.com/quic-go/masque-go",
@@ -24,8 +24,8 @@
     }]
   },
   "commands": {
-    "buildTemplate": "docker build --pull -f docker/Dockerfile -t incursa-protocol-lab-masque-go-connect-udp:0.1.1 .",
-    "serverTemplate": "docker run --rm -p <port>:4443/udp incursa-protocol-lab-masque-go-connect-udp:0.1.1"
+    "buildTemplate": "docker build --pull -f docker/Dockerfile -t incursa-protocol-lab-masque-go-connect-udp:0.1.2 .",
+    "serverTemplate": "docker run --rm -p <port>:4443/udp incursa-protocol-lab-masque-go-connect-udp:0.1.2"
   },
   "knownLimitations": [
     "The package exposes only masque.connect-udp-tunnel with a logically distinct but co-located UDP echo target.",

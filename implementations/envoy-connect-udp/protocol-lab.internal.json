@@ -13,7 +13,7 @@
     "requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "http3-runtime", "value": "true"}],
     "images": [{
       "name": "envoy-connect-udp",
-      "image": "incursa-protocol-lab-envoy-connect-udp:0.1.1",
+      "image": "incursa-protocol-lab-envoy-connect-udp:0.1.2",
       "baseImage": "envoyproxy/envoy:v1.38.3",
       "baseImageLinuxAmd64Digest": "envoyproxy/envoy@sha256:5f7c43e1147412fdb3af578c651c67478a3df818eae89d2261e707e06c209cdb",
       "sourceRuntime": "envoy",
@@ -25,8 +25,8 @@
     }]
   },
   "commands": {
-    "buildTemplate": "docker build --pull -f docker/Dockerfile -t incursa-protocol-lab-envoy-connect-udp:0.1.1 .",
-    "serverTemplate": "docker run --rm -p <port>:4443/udp incursa-protocol-lab-envoy-connect-udp:0.1.1"
+    "buildTemplate": "docker build --pull -f docker/Dockerfile -t incursa-protocol-lab-envoy-connect-udp:0.1.2 .",
+    "serverTemplate": "docker run --rm -p <port>:4443/udp incursa-protocol-lab-envoy-connect-udp:0.1.2"
   },
   "knownLimitations": [
     "Envoy documents CONNECT-UDP as alpha; this package exposes only the exact deterministic scenario.",

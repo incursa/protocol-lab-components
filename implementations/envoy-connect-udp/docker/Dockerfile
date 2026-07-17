@@ -10,5 +10,6 @@ COPY --from=echo-build /out/udp-echo /usr/local/bin/udp-echo
 COPY docker/envoy.yaml /etc/envoy/envoy.yaml
 COPY docker/run.sh /usr/local/bin/protocol-lab-run
 COPY certs /certs
+RUN chmod 0755 /usr/local/bin/protocol-lab-run /usr/local/bin/udp-echo
 EXPOSE 4443/udp
 ENTRYPOINT ["/usr/local/bin/protocol-lab-run"]
