@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.ngtcp2-http3",
-  "packageVersion": "0.1.8",
+  "packageVersion": "0.1.9",
   "kind": "implementation",
   "displayName": "ngtcp2/nghttp3 HTTP/3 Implementation Wrapper",
   "entryManifests": [
@@ -15,7 +15,8 @@
         "h3"
       ],
       "scenarios": [
-        "http3.external.peer-characterization"
+        "http3.external.peer-characterization",
+        "http3.protocol.qpack-repeated-headers"
       ]
     }
   ],

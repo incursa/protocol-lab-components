@@ -26,12 +26,15 @@ supportedProtocols:
 supportedWorkloadFamilies:
   - http.application
   - http3.external
+  - http3.protocol
 supportedProtocolVersions:
   - http/3
 supportedScenarios:
   - http3.external.peer-characterization
+  - http3.protocol.qpack-repeated-headers
 supportedTestCaseIds:
   - http3.external.peer-characterization
+  - http3.protocol.qpack-repeated-headers
 scenarioCoverage:
   http3.external.peer-characterization:
     status: supported
@@ -68,9 +71,10 @@ scenarioCoverage:
     status: unsupported
     reason: Package does not expose RFC9220 WebSocket-over-H3 behavior.
   h3spec-qpack-executor:
-    status: compatible-target-unproven
+    status: supported
     executorId: h3spec-http3-qpack
-    reason: No ngtcp2 package-backed h3spec/QPACK target proof is recorded here.
+    scenarioId: http3.protocol.qpack-repeated-headers
+    reason: The package exposes a live HTTP/3 server target for diagnostic h3spec/QPACK triage; the run outcome, including failures or no-selected-case classifications, must remain explicit.
 externalPeerScenarios:
   officialProtocolLabRows:
     - scenarioId: http3.core.status
@@ -144,6 +148,10 @@ capabilities:
   - httpStatus
   - httpBytes
   - h3ExternalPeer
+  - h3.server
+  - quic.server
+  - h3Protocol
+  - h3Qpack
 endpoints:
   bytes1kb:
     method: GET

@@ -15,12 +15,26 @@ foreach ($component in @('quiche-http3', 'ngtcp2-http3')) {
         throw "$component does not provide the HTTP/3 peer-characterization scenario."
     }
 
+    if ($package.providedImplementations.scenarios -notcontains 'http3.protocol.qpack-repeated-headers') {
+        throw "$component does not provide the diagnostic QPACK scenario."
+    }
+
     if ($manifestText -notmatch '(?m)^\s*- http3\.external\s*$') {
         throw "$component does not declare the http3.external workload family."
     }
 
+    if ($manifestText -notmatch '(?m)^\s*- http3\.protocol\s*$') {
+        throw "$component does not declare the http3.protocol workload family."
+    }
+
     if ($manifestText -notmatch '(?m)^\s*- h3ExternalPeer\s*$') {
         throw "$component does not declare the h3ExternalPeer capability."
+    }
+
+    foreach ($capability in @('h3.server', 'quic.server', 'h3Protocol', 'h3Qpack')) {
+        if ($manifestText -notmatch "(?m)^\s*- $([regex]::Escape($capability))\s*$") {
+            throw "$component does not declare the $capability capability required for diagnostic QPACK triage."
+        }
     }
 
     if ($manifestText -notmatch '/tmp/www/index\.html') {
