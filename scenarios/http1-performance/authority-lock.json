@@ -1,10 +1,12 @@
 {
   "repository": "https://github.com/incursa/protocol-lab",
-  "commit": "0dbb719b29202bf2335c48c03b294035e88839b0",
+  "commit": "d5b78d7c07ef0e8a600e92887da2aa150ab89a60",
   "files": {
     "scenarios/http1/core/plaintext.yaml": "04ef584037f88efc89d0aca23354f02b3507ed7e6ce62d60f138216d93e41fef",
     "scenarios/http1/core/json.yaml": "838ee7b8b6b4e1088a83dd5681b88d52f636c284e8b03df1f20ffc75354beebf",
     "suites/http1-performance-smoke.yaml": "55a7fda4d253a16116b86320fc6e7d5c7c69701193e0d6bb0bbce82cfdcf9b4c",
-    "load-profiles/http1-smoke.yaml": "85d0d895037410b33150eeeb73ac52b826919bbbd9eb1d6a19dab4b32b070beb"
+    "suites/http1-comparison-benchmark.yaml": "508166c7090b5ce9c7d0d7407e6dffee240b8cf024c7a4da475257b8719ee8ba",
+    "load-profiles/http1-smoke.yaml": "85d0d895037410b33150eeeb73ac52b826919bbbd9eb1d6a19dab4b32b070beb",
+    "load-profiles/http1-comparison.yaml": "312840fa12c36f7d2469bc04ba9465fa55339f84b480d68d112d4b30dd4b36a7"
   }
 }

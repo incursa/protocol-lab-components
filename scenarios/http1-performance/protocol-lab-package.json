@@ -1,14 +1,16 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.http1-performance",
-  "packageVersion": "0.1.1",
+  "packageVersion": "0.1.2",
   "kind": "scenario-pack",
   "displayName": "HTTP/1 Performance Smoke Scenario Pack",
   "entryManifests": [
     "scenarios/http1/core/plaintext.yaml",
     "scenarios/http1/core/json.yaml",
     "suites/http1-performance-smoke.yaml",
-    "load-profiles/http1-smoke.yaml"
+    "suites/http1-comparison-benchmark.yaml",
+    "load-profiles/http1-smoke.yaml",
+    "load-profiles/http1-comparison.yaml"
   ],
   "providedScenarios": [
     {
@@ -26,6 +28,11 @@
     {
       "suiteId": "http1-performance-smoke",
       "displayName": "HTTP/1 Implementation Performance Smoke",
+      "protocols": ["h1"]
+    },
+    {
+      "suiteId": "http1-comparison-benchmark",
+      "displayName": "ProtocolLab HTTP/1 Comparison Benchmark",
       "protocols": ["h1"]
     }
   ]

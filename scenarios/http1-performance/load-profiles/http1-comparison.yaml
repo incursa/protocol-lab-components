@@ -1,0 +1,33 @@
+# Load Profile Contract v1
+schemaVersion: protocol-lab.load-profile.v1
+
+id: http1-comparison
+title: HTTP/1 Comparison
+status: stable
+purpose: comparison
+
+description: >
+  Repeatable protocol-specific comparison profile for non-publishable performance evidence under a stable selection.
+
+durationSeconds: 30
+warmupSeconds: 10
+cooldownSeconds: 5
+repetitions: 3
+
+http1:
+  connections: 128
+  concurrency: 128
+  requestTimeoutSeconds: 10
+
+evidence:
+  minimumTier: comparison
+  publishable: false
+
+artifacts:
+  required:
+    - load.stdout.log
+    - load.stderr.log
+    - result.json
+  optional:
+    - counters
+    - telemetry-bundle.json
