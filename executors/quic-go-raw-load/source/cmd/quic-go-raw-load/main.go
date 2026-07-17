@@ -658,6 +658,31 @@ func responseReadDelay(behavior string) time.Duration {
 	return 0
 }
 
+func validateDuplexResponse(payloadDirection string, expectedBytes int, received int64, readErr error) error {
+	expected := int64(expectedBytes)
+	if strings.EqualFold(payloadDirection, "client-to-server") {
+		expected = 0
+	}
+
+	if received != expected {
+		var mismatch error
+		if strings.EqualFold(payloadDirection, "client-to-server") {
+			mismatch = fmt.Errorf("received %d response bytes, expected 0", received)
+		} else {
+			mismatch = fmt.Errorf("received %d echoed bytes, expected %d", received, expectedBytes)
+		}
+		if readErr != nil {
+			return fmt.Errorf("%v; response read failed: %w", mismatch, readErr)
+		}
+		return mismatch
+	}
+
+	if readErr != nil {
+		return fmt.Errorf("read response payload or EOF: %w", readErr)
+	}
+	return nil
+}
+
 func runDuplexStream(ctx context.Context, conn *quic.Conn, payload []byte, opts options) (float64, int64, int64, error) {
 	streamTimeout := maxDuration(opts.duration+30*time.Second, 30*time.Second)
 	streamCtx, cancel := context.WithTimeout(ctx, streamTimeout)
@@ -725,15 +750,8 @@ func runDuplexStream(ctx context.Context, conn *quic.Conn, payload []byte, opts 
 
 	result := <-readResults
 	received := result.received
-	if strings.EqualFold(opts.payloadDirection, "client-to-server") {
-		if received != 0 {
-			return 0, int64(written), received, fmt.Errorf("received %d response bytes, expected 0", received)
-		}
-	} else if received != int64(len(payload)) {
-		return 0, int64(written), received, fmt.Errorf("received %d echoed bytes, expected %d", received, len(payload))
-	}
-	if result.err != nil {
-		return 0, int64(written), received, result.err
+	if err := validateDuplexResponse(opts.payloadDirection, len(payload), received, result.err); err != nil {
+		return 0, int64(written), received, err
 	}
 
 	return float64(time.Since(start).Microseconds()) / 1000.0, int64(written), received, nil

@@ -189,6 +189,81 @@ func TestResponseReadDelayIsExactAndBehaviorScoped(t *testing.T) {
 	}
 }
 
+func TestValidateDuplexResponsePreservesMismatchAndReadFailure(t *testing.T) {
+	t.Parallel()
+
+	readFailure := errors.New("transport closed")
+	tests := []struct {
+		name             string
+		payloadDirection string
+		expectedBytes    int
+		received         int64
+		readErr          error
+		wantErr          string
+		wantWrapped      bool
+	}{
+		{
+			name:             "exact echo",
+			payloadDirection: "bidirectional",
+			expectedBytes:    1024,
+			received:         1024,
+		},
+		{
+			name:             "short echo",
+			payloadDirection: "bidirectional",
+			expectedBytes:    1024,
+			received:         221,
+			wantErr:          "received 221 echoed bytes, expected 1024",
+		},
+		{
+			name:             "short echo with transport failure",
+			payloadDirection: "bidirectional",
+			expectedBytes:    1024,
+			received:         221,
+			readErr:          readFailure,
+			wantErr:          "received 221 echoed bytes, expected 1024; response read failed: transport closed",
+			wantWrapped:      true,
+		},
+		{
+			name:             "complete echo with transport failure",
+			payloadDirection: "bidirectional",
+			expectedBytes:    1024,
+			received:         1024,
+			readErr:          readFailure,
+			wantErr:          "read response payload or EOF: transport closed",
+			wantWrapped:      true,
+		},
+		{
+			name:             "unexpected client-to-server response",
+			payloadDirection: "client-to-server",
+			expectedBytes:    1024,
+			received:         1,
+			wantErr:          "received 1 response bytes, expected 0",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			err := validateDuplexResponse(tt.payloadDirection, tt.expectedBytes, tt.received, tt.readErr)
+			if tt.wantErr == "" {
+				if err != nil {
+					t.Fatalf("validateDuplexResponse returned error: %v", err)
+				}
+				return
+			}
+			if err == nil || err.Error() != tt.wantErr {
+				t.Fatalf("validateDuplexResponse error = %v, want %q", err, tt.wantErr)
+			}
+			if tt.wantWrapped && !errors.Is(err, readFailure) {
+				t.Fatalf("validateDuplexResponse error did not wrap read failure: %v", err)
+			}
+		})
+	}
+}
+
 func TestWritePayloadInChunksPreservesPayloadAndBoundaries(t *testing.T) {
 	t.Parallel()
 
