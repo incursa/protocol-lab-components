@@ -7,7 +7,7 @@ The build follows the upstream nghttp2 HTTP/3 recipe with immutable source commi
 ## Local build
 
 ```powershell
-docker build -t incursa-protocol-lab-nghttpx-rfc9220-gateway:0.1.0 .\implementations\nghttpx-rfc9220-gateway
+docker build -t incursa-protocol-lab-nghttpx-rfc9220-gateway:0.1.1 .\implementations\nghttpx-rfc9220-gateway
 ```
 
 The container listens on UDP 4433 with the package-local `websocket.plab.test` certificate and exposes `/websocket-proof` through RFC 9220 Extended CONNECT.

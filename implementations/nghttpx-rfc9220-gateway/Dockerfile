@@ -12,25 +12,31 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src
-RUN git clone https://github.com/aws/aws-lc.git aws-lc \
+RUN git init aws-lc \
     && cd aws-lc \
-    && git checkout "$AWS_LC_COMMIT" \
+    && git remote add origin https://github.com/aws/aws-lc.git \
+    && git fetch --depth 1 origin "$AWS_LC_COMMIT" \
+    && git checkout --detach FETCH_HEAD \
     && cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DDISABLE_GO=ON -DCMAKE_INSTALL_PREFIX=/opt/aws-lc \
     && cmake --build build --parallel \
     && cmake --install build
 
-RUN git clone https://github.com/ngtcp2/nghttp3.git nghttp3 \
+RUN git init nghttp3 \
     && cd nghttp3 \
-    && git checkout "$NGHTTP3_COMMIT" \
+    && git remote add origin https://github.com/ngtcp2/nghttp3.git \
+    && git fetch --depth 1 origin "$NGHTTP3_COMMIT" \
+    && git checkout --detach FETCH_HEAD \
     && git submodule update --init --depth 1 \
     && autoreconf -i \
     && ./configure --prefix=/opt/nghttp3 --enable-lib-only \
     && make -j"$(nproc)" \
     && make install
 
-RUN git clone https://github.com/ngtcp2/ngtcp2.git ngtcp2 \
+RUN git init ngtcp2 \
     && cd ngtcp2 \
-    && git checkout "$NGTCP2_COMMIT" \
+    && git remote add origin https://github.com/ngtcp2/ngtcp2.git \
+    && git fetch --depth 1 origin "$NGTCP2_COMMIT" \
+    && git checkout --detach FETCH_HEAD \
     && git submodule update --init --depth 1 \
     && autoreconf -i \
     && PKG_CONFIG_PATH=/opt/aws-lc/lib/pkgconfig:/opt/nghttp3/lib/pkgconfig \
@@ -40,9 +46,11 @@ RUN git clone https://github.com/ngtcp2/ngtcp2.git ngtcp2 \
     && make -j"$(nproc)" \
     && make install
 
-RUN git clone https://github.com/nghttp2/nghttp2.git nghttp2 \
+RUN git init nghttp2 \
     && cd nghttp2 \
-    && git checkout "$NGHTTP2_COMMIT" \
+    && git remote add origin https://github.com/nghttp2/nghttp2.git \
+    && git fetch --depth 1 origin "$NGHTTP2_COMMIT" \
+    && git checkout --detach FETCH_HEAD \
     && git submodule update --init --depth 1 \
     && autoreconf -i \
     && PKG_CONFIG_PATH=/opt/aws-lc/lib/pkgconfig:/opt/nghttp3/lib/pkgconfig:/opt/ngtcp2/lib/pkgconfig \

@@ -157,7 +157,7 @@ async def handle(reader, writer):
 
 async def main():
     server = await asyncio.start_server(handle, "127.0.0.1", 8080)
-    emit("ready", implementationId="nghttpx-rfc9220-gateway", implementationVersion="0.1.0", implementationRole="proxy", runtimeComponent="nghttpx", listenAddress="0.0.0.0:4433", protocol="h3", quicVersion="QUICv1", tlsVersion="TLS 1.3", alpn="h3", settingsEnableConnectProtocol=1, path=PATH, binaryPayloadSha256=BINARY_SHA256)
+    emit("ready", implementationId="nghttpx-rfc9220-gateway", implementationVersion="0.1.1", implementationRole="proxy", runtimeComponent="nghttpx", listenAddress="0.0.0.0:4433", protocol="h3", quicVersion="QUICv1", tlsVersion="TLS 1.3", alpn="h3", settingsEnableConnectProtocol=1, path=PATH, binaryPayloadSha256=BINARY_SHA256)
     async with server:
         await server.serve_forever()
 
