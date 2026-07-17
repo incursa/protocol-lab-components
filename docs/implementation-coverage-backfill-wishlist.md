@@ -693,7 +693,11 @@ host `r920` and only one outer repetition was retained.
   adopts a stricter requirement.
 - [ ] Require physically separated target/load roles, controlled network/CPU
   conditions, source/image parity, variance within policy, and non-saturation
-  evidence before a result is decision-ready.
+  evidence before a result is decision-ready. Controller inventory verified on
+  2026-07-17: the ready SUT and both ready load workers are all Proxmox VMs
+  labeled `host=r920` with `evidenceTier=lab-vm-single-host`. No physically
+  isolated pairing is presently schedulable, so this remains a lab-topology
+  prerequisite rather than a package-level change.
 - [x] Publish accepted reports through the normal report-import pipeline and
   verify their protocol, implementation, workload, run, artifact, and
   comparison pages on `lab.incursa.com`.
