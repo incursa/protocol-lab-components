@@ -373,10 +373,12 @@ repetition and the target/load VMs share physical host `r920`.
   Its diagnostic publication `pub_3c2bb946dc294069ad70a3acfd04268a` is live
   at
   `https://lab.incursa.com/reports/rack-lab-kestrel-http3-v018-common-core-process-h3-local-v1-cell-1-matrix`.
-  The implementation-owned Incursa package is now admitted and live-proven
-  for its advertised 1 KiB and 64 KiB rows; remaining work is its separately
-  owned status/JSON support and the exact missing common variants, not a
-  Docker substitution.
+  The implementation-owned Incursa package now covers the exact common
+  plaintext and JSON variants through source-owned declarations and a neutral
+  HTTP/3 scenario package, in addition to its advertised payload rows. The
+  remaining work is to bring the other exact compatible implementations onto
+  all four common variants, not to substitute a Docker target for Incursa's
+  required process path.
 - [x] Re-run the current immutable quic-go and aioquic package heads so live
   evidence matches the cataloged package versions. aioquic `0.3.3` and
   quic-go `0.1.8` now have current package-backed h3spec/QPACK proof.
@@ -406,6 +408,7 @@ repetition and the target/load VMs share physical host `r920`.
 | Incursa.Quic | dev-20260717T203500Z-incursa-h3-availability | implementation-owned 1 KiB and 64 KiB process-target rows; validation, explicit H3 proof, and measurement passed | `job-f99e3769217a420fa60ff9321ddd38c6` |
 | Incursa.Quic | dev-20260717T203500Z-incursa-h3-availability | implementation-owned 1 MiB process-target row; validation, explicit H3 proof, and measurement passed | `job-f3e5e0a7233d41698761ac3126a78237` |
 | Incursa.Quic | dev-20260717T203500Z-incursa-h3-availability | implementation-owned 100x16 KiB streaming process-target row; validation, explicit H3 proof, and measurement passed | `job-f5e514cec44d4c8a8f8db9fdf8d33bf5` |
+| Incursa.Quic | dev-20260717T211000Z-a9ec754a-clean | exact `/plaintext` and `/json` process-target rows from committed source; both validations and accepted measurements passed with retained H3 traces and package provenance | `job-328a648d2a4240e994dda26fdcc53666` |
 | quiche | 0.1.10 | h3spec HTTP/3/QPACK diagnostic; target validation passed, 13/15 conformance cases passed, and RFC 9204 Sections 4.1.3 and 4.4.3 failed | `job-14c77c9f080840389da6a733c648c3f7` |
 | ngtcp2/nghttp3 | 0.1.9 | h3spec HTTP/3/QPACK diagnostic; target validation and all 15/15 conformance cases passed | `job-14c77c9f080840389da6a733c648c3f7` |
 | quiche | 0.1.9 | historical external-peer characterization; HTTP/3 validation and curl executor succeeded; 69 artifacts retained | `job-264b0c16f0d8416bafe4c31d11d7ad34` |
@@ -440,10 +443,19 @@ The separate 1 MiB job `job-f3e5e0a7233d41698761ac3126a78237` also passed and
 is live as `pub_8fa91ea7af3a487fae924987dee4a0aa` at
 `https://lab.incursa.com/reports/rack-lab-incursa-quic-http3-v20260717-advertised-1mb-process-h3-local-v1-cell-1`.
 Both reports are diagnostic/unranked because they have one repetition, a
-shared host, and no published parity artifact. The package intentionally
-declares payload rows only, so status/JSON support remains an
-implementation-owned expansion rather than an inferred capability. The
-initial default HTTP/3 package pair did not advertise
+shared host, and no published parity artifact. Committed Incursa source commit
+`a9ec754a0dec73956eaa50dcf2dee69c47b91036` now explicitly declares the
+separate `http3.core.plaintext` and `http3.core.json` capabilities. Neutral
+scenario and executor packages
+`protocol-lab-h3-scenarios@dev-20260717T211000Z-h3-core-contract`
+(`d5182f13d7fb...`) and
+`protocol-lab-managed-httpclient-h3-load@dev-20260717T211000Z-h3-core-contract`
+(`2973deed3d5e...`) drove both process-target rows in
+`job-328a648d2a4240e994dda26fdcc53666`. Both validations and accepted
+measurements passed; the object-verified diagnostic publication
+`pub_750fdff1b408451696347c48fccf6a67` is visible at
+`https://lab.incursa.com/reports/rack-lab-incursa-quic-http3-v20260717-common-core-process-h3-local-v1-cell-1-matrix`.
+The initial default HTTP/3 package pair did not advertise
 `http3.payload.stream.100x16kb`, so the controller correctly preview-blocked
 that cell. Regenerating the existing current-source package builder with the
 stream scenario admitted immutable executor
@@ -454,8 +466,9 @@ stream scenario admitted immutable executor
 `job-f5e514cec44d4c8a8f8db9fdf8d33bf5`, published as
 `pub_2558c256ea52431db1ce5203d3dc932c` at
 `https://lab.incursa.com/reports/rack-lab-incursa-quic-http3-v20260717-stream100x16-process-h3-local-v1-cell-1`.
-All four currently advertised Incursa HTTP/3 rows now have retained
-current-package controller proof. Explicit official payload rows for
+All four original advertised Incursa HTTP/3 payload rows now have retained
+current-package controller proof, and the later committed plaintext/JSON
+declarations have their own current-package proof above. Explicit official payload rows for
 quiche/ngtcp2, the exact remaining common JSON/variant rows, repeated
 comparison, and decision-ready gates remain. Their diagnostic peer reports
 were uploaded,
