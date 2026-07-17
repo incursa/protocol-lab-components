@@ -405,14 +405,21 @@ gates remain.
 
 ## Workstream D - HTTP/1.1 and HTTP/2 origin breadth
 
+Current live-proven breadth is seven HTTP/1.1 origins and eight h2c origins.
+The live breadth floors are met; the combined completion gate below remains
+open because the workers used for the new comparison rows share one physical
+host and therefore do not satisfy the decision-ready topology requirement.
+
 - [ ] Keep Kestrel, Caddy, nginx, and Apache packages aligned across their
   exact supported HTTP/1.1 and HTTP/2 origin semantics.
 - [x] Add Go `net/http` HTTP/1.1 and HTTP/2 origin packages.
 - [x] Add Node.js `node:http` and `node:http2` origin packages.
 - [x] Add Rust hyper HTTP/1.1 and HTTP/2 origin packages.
 - [x] Add Jetty HTTP/1.1 and HTTP/2 origin packages.
-- [ ] Preserve separate HTTP/2 h2c-prior-knowledge and TLS/ALPN execution
-  variants; neither mode may provide evidence for the other.
+- [x] Preserve separate HTTP/2 h2c-prior-knowledge and TLS/ALPN execution
+  variants; neither mode may provide evidence for the other. The Node, Jetty,
+  and Rust comparison rows are explicitly h2c-only, and their public catalog
+  copy does not claim TLS/ALPN coverage.
 - [ ] Keep gateways/proxies in a separate cohort and add HAProxy HTTP/1.1 and
   HTTP/2 gateway packages only after that cohort is represented publicly.
 - [ ] Meet both HTTP origin coverage floors and publish decision-ready common
