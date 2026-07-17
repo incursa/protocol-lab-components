@@ -1,0 +1,43 @@
+schemaVersion: "1.0"
+id: jetty-http2-websocket
+name: Jetty HTTP/2 RFC 8441 WebSocket Origin
+description: Thin deterministic adapter over Jetty 12.1.9 HTTP/2 and WebSocket server APIs for exact RFC 8441 workloads.
+family: jetty-websocket
+role: origin-server
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-jetty-http2-websocket:0.1.0
+dockerfile: docker/Jetty.Dockerfile
+buildContext: docker
+dockerNetworkMode: published-port
+baseUrl: https://127.0.0.1:18452
+dockerBaseUrl: https://127.0.0.1:18452
+protocolBaseUrls: {h2: https://127.0.0.1:18452}
+dockerProtocolBaseUrls: {h2: https://127.0.0.1:18452}
+certificateMode: package-local-test-fixture
+roles: [origin-server]
+protocols: [h2, tls]
+supportedProtocols: [h2, tls]
+supportedWorkloadFamilies: [websocket]
+supportedProtocolVersions: [HTTP/2, RFC8441, RFC6455, TLS1.3]
+supportedScenarios: [http2.websocket.rfc8441.extended-connect, http2.websocket.rfc8441.control-frames, http2.websocket.rfc8441.text-echo, http2.websocket.rfc8441.binary-echo, http2.websocket.rfc8441.close, http2.websocket.rfc8441.multi-message-text-echo]
+supportedTestCaseIds: [http2.websocket.rfc8441.extended-connect, http2.websocket.rfc8441.control-frames, http2.websocket.rfc8441.text-echo, http2.websocket.rfc8441.binary-echo, http2.websocket.rfc8441.close, http2.websocket.rfc8441.multi-message-text-echo]
+scenarioCoverage:
+  http2.websocket.rfc8441.extended-connect: {status: supported, executorId: go-http2-websocket-executor, endpoint: /websocket}
+  http2.websocket.rfc8441.control-frames: {status: supported, executorId: go-http2-websocket-executor, endpoint: /websocket}
+  http2.websocket.rfc8441.text-echo: {status: supported, executorId: go-http2-websocket-executor, endpoint: /websocket}
+  http2.websocket.rfc8441.binary-echo: {status: supported, executorId: go-http2-websocket-executor, endpoint: /websocket}
+  http2.websocket.rfc8441.close: {status: supported, executorId: go-http2-websocket-executor, endpoint: /websocket}
+  http2.websocket.rfc8441.multi-message-text-echo: {status: supported, executorId: go-http2-websocket-executor, endpoint: /websocket}
+unsupportedKnownCases: [http1.websocket.rfc6455.cleartext.upgrade, http1.websocket.rfc6455.tls.upgrade, http3.websocket.rfc9220.extended-connect, http3.websocket.rfc9220.fragmented-binary-echo, websocket.extensions, websocket.subprotocols]
+ports: [{name: websocket-h2, protocol: tcp, default: 18452, hostPort: 18452, containerPort: 18452}]
+environment: {PLAB_TARGET_PORT: "18452"}
+startup: {port: {name: websocket-h2, environmentVariable: PLAB_TARGET_PORT, default: 18452}, readiness: {protocol: process, timeoutSeconds: 180}}
+readinessCheck: {type: processStarted, timeoutSeconds: 180, startupDelayMilliseconds: 3000}
+capabilities: [websocket.server, websocket.rfc8441, websocket.text-echo, websocket.binary-echo, websocket.control-frames, websocket.close, websocket.multi-message, tls.server, tls1.3, alpn.h2, http2.extended-connect]
+entrypoint: {kind: bash, path: run.sh, arguments: [], workingDirectory: .}
+shutdownBehavior: process
+artifactExports: [version.txt]
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Package-local authenticated test certificate; HTTP/1.1 Upgrade and HTTP/3 RFC 9220 remain separate cohorts.
