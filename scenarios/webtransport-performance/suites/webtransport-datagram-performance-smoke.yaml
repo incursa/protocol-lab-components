@@ -1,0 +1,10 @@
+id: webtransport-datagram-performance-smoke
+name: WebTransport datagram performance contract smoke suite
+description: Fast package-neutral validity selection for one authenticated WebTransport session and 32 deterministic echoed datagrams.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: webtransport-datagram-smoke
+scenarios: [webtransport.session-datagram-echo]
+protocol: webtransport
+notes: Contract selection only; implementation support requires an exact package-backed target and executor.
+tags: [webtransport, h3, datagram, smoke, non-rankable]

@@ -1,9 +1,12 @@
 {
   "repository": "https://github.com/incursa/protocol-lab",
-  "commit": "5b113ee75e6f4e329f638751580c9e6cf0c9a99e",
+  "commit": "dd518aee19d73fb1477320644785fa070b1b62f1",
   "files": {
     "scenarios/webtransport/session-bidi-echo.yaml": "a4f92892214382c839740696c5ddfb1d6eee7afb1088498606c3ed7fa9e82a00",
+    "scenarios/webtransport/session-datagram-echo.yaml": "d9c8bd82527d9a61b3c03c085dfd1b9991dc604d6e5ccbc1c80c0f383d382888",
     "load-profiles/webtransport-smoke.yaml": "6a2bf607380a218b57b7bf2c959a6ed9c4b70590c482f9970df60b643d83011c",
-    "suites/webtransport-performance-smoke.yaml": "6caff4c72e5e839d88aea502f6f56788839132136a3b202f3573a6941ec3666f"
+    "load-profiles/webtransport-datagram-smoke.yaml": "13bfc3201e420ebff27499b13d54d3c089074307d2d754e828c937bb283671a7",
+    "suites/webtransport-performance-smoke.yaml": "6caff4c72e5e839d88aea502f6f56788839132136a3b202f3573a6941ec3666f",
+    "suites/webtransport-datagram-performance-smoke.yaml": "d49f5c5b71cba631748e0a7164b50cc7a35d895e3b7fb49a6820124a1d869054"
   }
 }

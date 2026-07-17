@@ -1,6 +1,6 @@
 # WebTransport performance scenario pack
 
 Authority-locked package copy of the public
-`webtransport.session-bidi-echo` contract, `webtransport-smoke` load profile,
-and `webtransport-performance-smoke` diagnostic suite at ProtocolLab commit
-`5b113ee75e6f4e329f638751580c9e6cf0c9a99e`.
+`webtransport.session-bidi-echo` and `webtransport.session-datagram-echo`
+contracts, their separate smoke load profiles, and their diagnostic suites at
+ProtocolLab commit `dd518aee19d73fb1477320644785fa070b1b62f1`.

@@ -1,5 +1,5 @@
 {
-  "executor": {"language": "go", "module": "org.protocol-lab.components.executor.go-webtransport-executor", "version": "0.1.0", "buildFlags": ["-buildvcs=false", "-trimpath"]},
-  "loadGenerator": {"id": "webtransport-go-load", "version": "0.1.0", "engineModule": "github.com/quic-go/webtransport-go", "engineModuleVersion": "v0.11.1", "license": "MIT", "source": "https://github.com/quic-go/webtransport-go", "sourceTagCommit": "d03fbc34952e05e833ab2a3810ab55aeefe2bf30", "thirdPartyLicenseFiles": ["third-party/webtransport-go-LICENSE.txt", "third-party/quic-go-LICENSE.txt", "third-party/httpsfv-LICENSE.txt", "third-party/qpack-LICENSE.txt"]},
-  "authority": {"repository": "https://github.com/incursa/protocol-lab", "commit": "5b113ee75e6f4e329f638751580c9e6cf0c9a99e"}
+  "executor": {"language": "go", "module": "org.protocol-lab.components.executor.go-webtransport-executor", "version": "0.2.0", "buildFlags": ["-buildvcs=false", "-trimpath"]},
+  "loadGenerator": {"id": "webtransport-go-load", "version": "0.2.0", "engineModule": "github.com/quic-go/webtransport-go", "engineModuleVersion": "v0.11.1", "license": "MIT", "source": "https://github.com/quic-go/webtransport-go", "sourceTagCommit": "d03fbc34952e05e833ab2a3810ab55aeefe2bf30", "thirdPartyLicenseFiles": ["third-party/webtransport-go-LICENSE.txt", "third-party/quic-go-LICENSE.txt", "third-party/httpsfv-LICENSE.txt", "third-party/qpack-LICENSE.txt"]},
+  "authority": {"repository": "https://github.com/incursa/protocol-lab", "commit": "dd518aee19d73fb1477320644785fa070b1b62f1"}
 }

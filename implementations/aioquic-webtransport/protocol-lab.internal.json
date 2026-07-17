@@ -13,7 +13,7 @@
     "requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "http3-runtime", "value": "true"}, {"name": "python", "value": "3.12-slim"}, {"name": "aioquic", "value": "1.3.0"}],
     "images": [{
       "name": "aioquic-webtransport",
-      "image": "incursa-protocol-lab-aioquic-webtransport:0.1.2",
+      "image": "incursa-protocol-lab-aioquic-webtransport:0.1.3",
       "baseImage": "python:3.12-slim",
       "package": "aioquic==1.3.0",
       "sourceRepository": "https://github.com/aiortc/aioquic",
@@ -22,12 +22,12 @@
     }]
   },
   "commands": {
-    "buildTemplate": "docker build --pull -f docker/Dockerfile -t incursa-protocol-lab-aioquic-webtransport:0.1.2 .",
-    "serverTemplate": "docker run --rm -p <port>:4433/udp incursa-protocol-lab-aioquic-webtransport:0.1.2"
+    "buildTemplate": "docker build --pull -f docker/Dockerfile -t incursa-protocol-lab-aioquic-webtransport:0.1.3 .",
+    "serverTemplate": "docker run --rm -p <port>:4433/udp incursa-protocol-lab-aioquic-webtransport:0.1.3"
   },
   "knownLimitations": [
-    "The package exposes only the exact webtransport.session-bidi-echo lane.",
+    "The package exposes only the exact webtransport.session-bidi-echo and webtransport.session-datagram-echo lanes.",
     "The committed self-signed certificate is for webtransport.plab.test and is accepted only by the pinned test executor trust profile.",
-    "WebTransport datagrams, multiple streams, browser APIs, and MASQUE are not claimed."
+    "Multiple streams, unidirectional streams, browser APIs, and MASQUE are not claimed."
   ]
 }

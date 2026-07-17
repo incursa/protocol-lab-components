@@ -26,26 +26,37 @@ import (
 )
 
 const (
-	executorID            = "go-webtransport-executor"
-	executorVersion       = "0.1.0"
-	loadGeneratorID       = "webtransport-go-load"
-	loadGeneratorVersion  = "0.1.0"
-	engineModule          = "github.com/quic-go/webtransport-go"
-	engineModuleVersion   = "v0.11.1"
-	authorityCommit       = "5b113ee75e6f4e329f638751580c9e6cf0c9a99e"
-	scenarioID            = "webtransport.session-bidi-echo"
-	profileID             = "webtransport-smoke"
-	protocolVariant       = "webtransport-over-h3"
-	authority             = "webtransport.plab.test"
-	pathValue             = "/webtransport/echo"
-	payloadBytes          = 65536
-	payloadSHA256         = "4b640d85ab3ba30fd02c9fc9db4a8928f416322ad27022ea58a65aaee68a4df2"
-	certificateDERSHA256  = "de0f805e043ced1ca4742ad65ada6eb23d2338180f6129a3a72bfd367f932b9c"
-	certificateSPKISHA256 = "431113d9234c136aad960a67d7a9788b7c95ae7fa53d482dd3b48a0bc5aa69cc"
-	warmupDuration        = time.Second
-	measurementDuration   = 5 * time.Second
-	operationTimeout      = 10 * time.Second
+	executorID              = "go-webtransport-executor"
+	executorVersion         = "0.2.0"
+	loadGeneratorID         = "webtransport-go-load"
+	loadGeneratorVersion    = "0.2.0"
+	engineModule            = "github.com/quic-go/webtransport-go"
+	engineModuleVersion     = "v0.11.1"
+	authorityCommit         = "dd518aee19d73fb1477320644785fa070b1b62f1"
+	streamScenarioID        = "webtransport.session-bidi-echo"
+	datagramScenarioID      = "webtransport.session-datagram-echo"
+	streamProfileID         = "webtransport-smoke"
+	datagramProfileID       = "webtransport-datagram-smoke"
+	protocolVariant         = "webtransport-over-h3"
+	authority               = "webtransport.plab.test"
+	pathValue               = "/webtransport/echo"
+	payloadBytes            = 65536
+	payloadSHA256           = "4b640d85ab3ba30fd02c9fc9db4a8928f416322ad27022ea58a65aaee68a4df2"
+	datagramCount           = 32
+	payloadBytesPerDatagram = 256
+	payloadSetSHA256        = "2e975a37b4bff0a8022c0f89ab19e9a8e2599300e557e9b8ce3eff364cd33e8b"
+	certificateDERSHA256    = "de0f805e043ced1ca4742ad65ada6eb23d2338180f6129a3a72bfd367f932b9c"
+	certificateSPKISHA256   = "431113d9234c136aad960a67d7a9788b7c95ae7fa53d482dd3b48a0bc5aa69cc"
+	warmupDuration          = time.Second
+	measurementDuration     = 5 * time.Second
+	operationTimeout        = 10 * time.Second
 )
+
+type scenarioSpec struct {
+	ID        string
+	ProfileID string
+	Datagram  bool
+}
 
 type protocolProof struct {
 	Protocol                     string `json:"protocol"`
@@ -79,13 +90,22 @@ type protocolProof struct {
 	ObservedActiveSessions       int    `json:"observedActiveSessions"`
 	ObservedActiveStreams        int    `json:"observedActiveStreams"`
 	EffectiveConcurrency         int    `json:"effectiveConcurrency"`
+	DatagramCount                int    `json:"datagramCount,omitempty"`
+	PayloadBytesPerDatagram      int    `json:"payloadBytesPerDatagram,omitempty"`
+	PayloadGenerator             string `json:"payloadGenerator,omitempty"`
+	PayloadSetSHA256             string `json:"payloadSetSha256,omitempty"`
+	EchoedDatagramCount          int    `json:"echoedDatagramCount,omitempty"`
+	EchoedPayloadSetSHA256       string `json:"echoedPayloadSetSha256,omitempty"`
+	OrderedDatagramEcho          bool   `json:"orderedDatagramEcho,omitempty"`
+	LostDatagrams                int    `json:"lostDatagrams,omitempty"`
 }
 
 type operationResult struct {
-	Proof            protocolProof `json:"protocolProof"`
-	SessionLatencyMS float64       `json:"sessionLatencyMilliseconds"`
-	StreamLatencyMS  float64       `json:"streamLatencyMilliseconds"`
-	TransferredBytes int           `json:"transferredBytes"`
+	Proof               protocolProof `json:"protocolProof"`
+	SessionLatencyMS    float64       `json:"sessionLatencyMilliseconds"`
+	StreamLatencyMS     float64       `json:"streamLatencyMilliseconds"`
+	DatagramLatenciesMS []float64     `json:"datagramLatencyMilliseconds,omitempty"`
+	TransferredBytes    int           `json:"transferredBytes"`
 }
 
 type summary struct {
@@ -96,6 +116,9 @@ type summary struct {
 	TotalTransferredBytes int64            `json:"totalTransferredBytes"`
 	SessionLatencies      []float64        `json:"sessionLatencyMilliseconds"`
 	StreamLatencies       []float64        `json:"streamLatencyMilliseconds"`
+	DatagramLatencies     []float64        `json:"datagramLatencyMilliseconds"`
+	SentDatagrams         int              `json:"sentDatagrams"`
+	ReceivedDatagrams     int              `json:"receivedDatagrams"`
 	Last                  *operationResult `json:"lastOperation,omitempty"`
 	Errors                map[string]int   `json:"errors"`
 }
@@ -117,11 +140,12 @@ func main() {
 	verifyOptional("PLAB_LOAD_GENERATOR_VERSION", loadGeneratorVersion)
 	verifyOptional("PLAB_PROTOCOL", "webtransport")
 	verifyOptional("PLAB_PROTOCOL_VARIANT", protocolVariant)
-	verifyOptional("PLAB_LOAD_PROFILE_ID", profileID)
-	if id := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID")); id != "" && id != scenarioID {
-		emitUnsupported(outputOrDefault(*output), id)
+	spec, err := selectedScenario()
+	if err != nil {
+		emitUnsupported(outputOrDefault(*output), strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID")))
 		os.Exit(3)
 	}
+	verifyOptional("PLAB_LOAD_PROFILE_ID", spec.ProfileID)
 	if *output == "" {
 		*output = "artifacts"
 	}
@@ -137,9 +161,10 @@ func main() {
 		fatal(2, err)
 	}
 	payload := makePayload()
+	payloads := makeDatagramPayloadSet()
 	writeIdentity(*output)
 
-	preflight, err := runOperation(actualAddress, logicalURL, roots, payload)
+	preflight, err := runOperation(actualAddress, logicalURL, roots, spec, payload, payloads)
 	if err != nil {
 		writeFailure(*output, err)
 		fatal(1, err)
@@ -148,12 +173,12 @@ func main() {
 	if *validationOnly {
 		measured = summaryFromOperation(preflight)
 	} else {
-		warmup = runFor(actualAddress, logicalURL, roots, payload, warmupDuration)
+		warmup = runFor(actualAddress, logicalURL, roots, spec, payload, payloads, warmupDuration)
 		if warmup.FailedOperations != 0 || warmup.TimedOutOperations != 0 {
 			err = errors.New("warmup contained failed or timed-out operations")
 		}
 		if err == nil {
-			measured = runFor(actualAddress, logicalURL, roots, payload, measurementDuration)
+			measured = runFor(actualAddress, logicalURL, roots, spec, payload, payloads, measurementDuration)
 		}
 		if err == nil && (measured.CompletedOperations == 0 || measured.FailedOperations != 0 || measured.TimedOutOperations != 0) {
 			err = errors.New("measured window did not complete cleanly")
@@ -164,13 +189,24 @@ func main() {
 		writeFailure(*output, err)
 		fatal(1, err)
 	}
-	writeProofArtifacts(*output, preflight)
-	writeResult(*output, measured)
+	writeProofArtifacts(*output, spec, preflight)
+	writeResult(*output, spec, measured)
 	data, _ := os.ReadFile(filepath.Join(*output, "result.json"))
 	fmt.Print(string(data))
 }
 
-func runOperation(actualAddress, logicalURL string, roots *x509.CertPool, payload []byte) (operationResult, error) {
+func selectedScenario() (scenarioSpec, error) {
+	id := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
+	if id == "" || id == streamScenarioID {
+		return scenarioSpec{ID: streamScenarioID, ProfileID: streamProfileID}, nil
+	}
+	if id == datagramScenarioID {
+		return scenarioSpec{ID: datagramScenarioID, ProfileID: datagramProfileID, Datagram: true}, nil
+	}
+	return scenarioSpec{}, fmt.Errorf("unsupported WebTransport scenario %q", id)
+}
+
+func runOperation(actualAddress, logicalURL string, roots *x509.CertPool, spec scenarioSpec, payload []byte, payloads [][]byte) (operationResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), operationTimeout)
 	defer cancel()
 	tlsConfig := &tls.Config{RootCAs: roots, ServerName: authority, MinVersion: tls.VersionTLS13}
@@ -203,48 +239,90 @@ func runOperation(actualAddress, logicalURL string, roots *x509.CertPool, payloa
 		return operationResult{}, errors.New("certificate identity mismatch")
 	}
 
-	streamStarted := time.Now()
-	stream, err := session.OpenStreamSync(ctx)
-	if err != nil {
-		return operationResult{}, err
-	}
-	_ = stream.SetDeadline(time.Now().Add(operationTimeout))
-	if _, err = stream.Write(payload); err != nil {
-		return operationResult{}, err
-	}
-	if err = stream.Close(); err != nil {
-		return operationResult{}, err
-	}
-	echoed, err := io.ReadAll(io.LimitReader(stream, payloadBytes+1))
-	if err != nil {
-		return operationResult{}, err
-	}
-	streamLatency := time.Since(streamStarted)
-	if len(echoed) != payloadBytes || !bytes.Equal(payload, echoed) || hash(echoed) != payloadSHA256 {
-		return operationResult{}, errors.New("echoed payload identity mismatch")
-	}
-	if err = session.CloseWithError(0, ""); err != nil {
-		return operationResult{}, err
-	}
 	proof := protocolProof{
 		Protocol: "webtransport", ProtocolVersion: "draft-ietf-webtrans-http3", ProtocolVariant: protocolVariant,
 		TLSVersion: "TLS 1.3", ALPN: "h3", DidResume: state.ConnectionState.TLS.DidResume,
 		CertificateDERSHA256: certificateDERSHA256, CertificateSPKISHA256: certificateSPKISHA256,
 		RequestMethod: "CONNECT", RequestProtocol: "webtransport", RequestScheme: "https", RequestAuthority: authority, RequestPath: pathValue,
-		ResponseStatus: 200, DatagramsEnabled: true, SessionEstablished: true, ClientInitiatedBidirectional: true,
-		SessionCount: 1, BidirectionalStreamCount: 1, PayloadBytes: payloadBytes, PayloadSHA256: payloadSHA256,
-		EchoedBytes: len(echoed), EchoedSHA256: hash(echoed), SessionCloseCode: 0, CleanCompletion: true,
-		ConfiguredSessions: 1, ConfiguredConcurrency: 1, ConfiguredStreamsPerSession: 1,
-		ObservedActiveSessions: 1, ObservedActiveStreams: 1, EffectiveConcurrency: 1,
+		ResponseStatus: 200, DatagramsEnabled: true, SessionEstablished: true,
+		SessionCount: 1, SessionCloseCode: 0, CleanCompletion: true,
+		ConfiguredSessions: 1, ConfiguredConcurrency: 1, ObservedActiveSessions: 1, EffectiveConcurrency: 1,
 	}
-	return operationResult{Proof: proof, SessionLatencyMS: durationMS(sessionLatency), StreamLatencyMS: durationMS(streamLatency), TransferredBytes: payloadBytes * 2}, nil
+	if !spec.Datagram {
+		streamStarted := time.Now()
+		stream, openErr := session.OpenStreamSync(ctx)
+		if openErr != nil {
+			return operationResult{}, openErr
+		}
+		_ = stream.SetDeadline(time.Now().Add(operationTimeout))
+		if _, err = stream.Write(payload); err != nil {
+			return operationResult{}, err
+		}
+		if err = stream.Close(); err != nil {
+			return operationResult{}, err
+		}
+		echoed, readErr := io.ReadAll(io.LimitReader(stream, payloadBytes+1))
+		if readErr != nil {
+			return operationResult{}, readErr
+		}
+		streamLatency := time.Since(streamStarted)
+		if len(echoed) != payloadBytes || !bytes.Equal(payload, echoed) || hash(echoed) != payloadSHA256 {
+			return operationResult{}, errors.New("echoed payload identity mismatch")
+		}
+		proof.ClientInitiatedBidirectional = true
+		proof.BidirectionalStreamCount = 1
+		proof.PayloadBytes = payloadBytes
+		proof.PayloadSHA256 = payloadSHA256
+		proof.EchoedBytes = len(echoed)
+		proof.EchoedSHA256 = hash(echoed)
+		proof.ConfiguredStreamsPerSession = 1
+		proof.ObservedActiveStreams = 1
+		if err = session.CloseWithError(0, ""); err != nil {
+			return operationResult{}, err
+		}
+		return operationResult{Proof: proof, SessionLatencyMS: durationMS(sessionLatency), StreamLatencyMS: durationMS(streamLatency), TransferredBytes: payloadBytes * 2}, nil
+	}
+
+	latencies := make([]float64, 0, len(payloads))
+	receivedPayloads := make([][]byte, 0, len(payloads))
+	for index, datagram := range payloads {
+		started := time.Now()
+		if err = session.SendDatagram(datagram); err != nil {
+			return operationResult{}, fmt.Errorf("datagram %d write failed: %w", index, err)
+		}
+		echoed, receiveErr := session.ReceiveDatagram(ctx)
+		latencies = append(latencies, durationMS(time.Since(started)))
+		if receiveErr != nil {
+			return operationResult{}, fmt.Errorf("datagram %d read failed: %w", index, receiveErr)
+		}
+		if !bytes.Equal(datagram, echoed) {
+			return operationResult{}, fmt.Errorf("datagram %d exact echo mismatch", index)
+		}
+		receivedPayloads = append(receivedPayloads, echoed)
+	}
+	observedHash := hashPayloadSet(receivedPayloads)
+	if observedHash != payloadSetSHA256 {
+		return operationResult{}, errors.New("echoed datagram payload-set hash mismatch")
+	}
+	proof.DatagramCount = len(payloads)
+	proof.PayloadBytesPerDatagram = payloadBytesPerDatagram
+	proof.PayloadGenerator = "datagram-index-plus-octet-mod-251"
+	proof.PayloadSetSHA256 = payloadSetSHA256
+	proof.EchoedDatagramCount = len(receivedPayloads)
+	proof.EchoedPayloadSetSHA256 = observedHash
+	proof.OrderedDatagramEcho = true
+	proof.LostDatagrams = 0
+	if err = session.CloseWithError(0, ""); err != nil {
+		return operationResult{}, err
+	}
+	return operationResult{Proof: proof, SessionLatencyMS: durationMS(sessionLatency), DatagramLatenciesMS: latencies, TransferredBytes: len(payloads) * payloadBytesPerDatagram * 2}, nil
 }
 
-func runFor(actualAddress, logicalURL string, roots *x509.CertPool, payload []byte, duration time.Duration) summary {
+func runFor(actualAddress, logicalURL string, roots *x509.CertPool, spec scenarioSpec, payload []byte, payloads [][]byte, duration time.Duration) summary {
 	s := summary{Errors: map[string]int{}}
 	started := time.Now()
 	for time.Since(started) < duration {
-		op, err := runOperation(actualAddress, logicalURL, roots, payload)
+		op, err := runOperation(actualAddress, logicalURL, roots, spec, payload, payloads)
 		if err != nil {
 			var timeout net.Error
 			if errors.Is(err, context.DeadlineExceeded) || (errors.As(err, &timeout) && timeout.Timeout()) {
@@ -259,6 +337,11 @@ func runFor(actualAddress, logicalURL string, roots *x509.CertPool, payload []by
 		s.TotalTransferredBytes += int64(op.TransferredBytes)
 		s.SessionLatencies = append(s.SessionLatencies, op.SessionLatencyMS)
 		s.StreamLatencies = append(s.StreamLatencies, op.StreamLatencyMS)
+		s.DatagramLatencies = append(s.DatagramLatencies, op.DatagramLatenciesMS...)
+		if spec.Datagram {
+			s.SentDatagrams += datagramCount
+			s.ReceivedDatagrams += op.Proof.EchoedDatagramCount
+		}
 		s.Last = &op
 	}
 	s.DurationSeconds = time.Since(started).Seconds()
@@ -266,22 +349,61 @@ func runFor(actualAddress, logicalURL string, roots *x509.CertPool, payload []by
 }
 
 func summaryFromOperation(op operationResult) summary {
-	duration := op.StreamLatencyMS / 1000
+	duration := (op.StreamLatencyMS + sum(op.DatagramLatenciesMS)) / 1000
 	if duration <= 0 {
 		duration = .001
 	}
-	return summary{DurationSeconds: duration, CompletedOperations: 1, TotalTransferredBytes: int64(op.TransferredBytes), SessionLatencies: []float64{op.SessionLatencyMS}, StreamLatencies: []float64{op.StreamLatencyMS}, Last: &op, Errors: map[string]int{}}
+	value := summary{DurationSeconds: duration, CompletedOperations: 1, TotalTransferredBytes: int64(op.TransferredBytes), SessionLatencies: []float64{op.SessionLatencyMS}, StreamLatencies: []float64{op.StreamLatencyMS}, DatagramLatencies: op.DatagramLatenciesMS, Last: &op, Errors: map[string]int{}}
+	if op.Proof.DatagramCount > 0 {
+		value.SentDatagrams = op.Proof.DatagramCount
+		value.ReceivedDatagrams = op.Proof.EchoedDatagramCount
+	}
+	return value
 }
 
-func writeProofArtifacts(dir string, op operationResult) {
-	checks := []string{"protocol:webtransport-over-h3", "tls:1.3", "alpn:h3", "no-fallback", "extended-connect", "pseudo-protocol:webtransport", "response-status:200", "session-established", "client-initiated-bidirectional-stream", "stream-count:1", "payload-bytes:65536", "payload-sha256", "ordered-echo", "session-close-code:0", "zero-unexpected-failures", "zero-timeouts"}
-	writeJSON(dir, "validation.json", map[string]any{"schemaVersion": "protocol-lab.validation.v1", "scenarioId": scenarioID, "status": "passed", "checks": checks})
+func writeProofArtifacts(dir string, spec scenarioSpec, op operationResult) {
+	checks := []string{"protocol:webtransport-over-h3", "tls:1.3", "alpn:h3", "no-fallback", "extended-connect", "pseudo-protocol:webtransport", "response-status:200", "session-established"}
+	if spec.Datagram {
+		checks = append(checks, "webtransport-datagrams-negotiated", "datagram-count:32", "datagram-bytes:256", "datagram-payload-set-sha256", "ordered-datagram-echo", "session-close-code:0", "zero-lost-datagrams", "zero-unexpected-failures", "zero-timeouts")
+	} else {
+		checks = append(checks, "client-initiated-bidirectional-stream", "stream-count:1", "payload-bytes:65536", "payload-sha256", "ordered-echo", "session-close-code:0", "zero-unexpected-failures", "zero-timeouts")
+	}
+	writeJSON(dir, "validation.json", map[string]any{"schemaVersion": "protocol-lab.validation.v1", "scenarioId": spec.ID, "status": "passed", "checks": checks})
 	writeJSON(dir, "protocol-proof.json", op.Proof)
 	writeJSON(dir, "webtransport-summary.json", op)
-	writeJSON(dir, "payload-hash.json", map[string]any{"algorithm": "sha256", "payloadBytes": payloadBytes, "expected": payloadSHA256, "observed": op.Proof.EchoedSHA256})
+	if spec.Datagram {
+		writeJSON(dir, "payload-hash.json", map[string]any{"algorithm": "sha256", "datagramCount": datagramCount, "payloadBytesPerDatagram": payloadBytesPerDatagram, "expected": payloadSetSHA256, "observed": op.Proof.EchoedPayloadSetSHA256})
+	} else {
+		writeJSON(dir, "payload-hash.json", map[string]any{"algorithm": "sha256", "payloadBytes": payloadBytes, "expected": payloadSHA256, "observed": op.Proof.EchoedSHA256})
+	}
 }
 
-func writeResult(dir string, s summary) {
+func writeResult(dir string, spec scenarioSpec, s summary) {
+	metrics := metricsForSummary(spec, s)
+	requestedLoad := map[string]any{"profileId": spec.ProfileID, "sessions": 1, "concurrency": 1, "durationSeconds": 5, "warmupSeconds": 1, "repetitions": 1, "operationTimeoutMilliseconds": 10000}
+	effectiveLoad := map[string]any{"sessions": 1, "concurrency": 1, "observed": map[string]int{"activeSessions": 1, "effectiveConcurrency": 1}}
+	if spec.Datagram {
+		requestedLoad["datagramsPerSession"] = datagramCount
+		effectiveLoad["datagramsPerSession"] = datagramCount
+	} else {
+		requestedLoad["bidirectionalStreamsPerSession"] = 1
+		effectiveLoad["streams"] = 1
+		effectiveLoad["observed"].(map[string]int)["activeStreams"] = 1
+	}
+	result := map[string]any{
+		"schemaVersion": "protocol-lab.webtransport-executor-result.v1", "scenarioId": spec.ID, "authorityCommit": authorityCommit,
+		"executor":      map[string]string{"id": executorID, "version": executorVersion},
+		"loadGenerator": map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion, "engineModule": engineModule, "engineModuleVersion": engineModuleVersion},
+		"validation":    map[string]string{"status": "passed"}, "protocolProof": s.Last.Proof,
+		"requestedLoad": requestedLoad, "effectiveLoad": effectiveLoad,
+		"metrics": metrics, "warnings": []string{"Single-host WebTransport smoke evidence is diagnostic and non-rankable."},
+	}
+	writeJSON(dir, "webtransport-load-summary.json", s)
+	writeJSON(dir, "webtransport-executor-result.json", result)
+	writeJSON(dir, "result.json", result)
+}
+
+func metricsForSummary(spec scenarioSpec, s summary) map[string]any {
 	d := s.DurationSeconds
 	if d <= 0 {
 		d = 1
@@ -289,22 +411,33 @@ func writeResult(dir string, s summary) {
 	metrics := map[string]any{
 		"sessionsPerSecond": float64(s.CompletedOperations) / d, "bytesPerSecond": float64(s.TotalTransferredBytes) / d,
 		"sessionLatencyMean": mean(s.SessionLatencies), "sessionLatencyP50": percentile(s.SessionLatencies, .5), "sessionLatencyP95": percentile(s.SessionLatencies, .95), "sessionLatencyP99": percentile(s.SessionLatencies, .99),
-		"streamLatencyMean": mean(s.StreamLatencies), "streamLatencyP50": percentile(s.StreamLatencies, .5), "streamLatencyP75": percentile(s.StreamLatencies, .75), "streamLatencyP90": percentile(s.StreamLatencies, .9), "streamLatencyP95": percentile(s.StreamLatencies, .95), "streamLatencyP99": percentile(s.StreamLatencies, .99),
 		"completedOperations": s.CompletedOperations, "failedOperations": s.FailedOperations, "timedOutOperations": s.TimedOutOperations, "totalTransferredBytes": s.TotalTransferredBytes,
-		"configuredSessions": 1, "configuredConcurrency": 1, "configuredStreamsPerSession": 1, "observedActiveSessions": 1, "observedActiveStreams": 1, "effectiveConcurrency": 1, "effectiveStreams": 1,
+		"configuredSessions": 1, "configuredConcurrency": 1, "observedActiveSessions": 1, "effectiveConcurrency": 1, "effectiveSessions": 1,
 	}
-	result := map[string]any{
-		"schemaVersion": "protocol-lab.webtransport-executor-result.v1", "scenarioId": scenarioID, "authorityCommit": authorityCommit,
-		"executor":      map[string]string{"id": executorID, "version": executorVersion},
-		"loadGenerator": map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion, "engineModule": engineModule, "engineModuleVersion": engineModuleVersion},
-		"validation":    map[string]string{"status": "passed"}, "protocolProof": s.Last.Proof,
-		"requestedLoad": map[string]any{"profileId": profileID, "sessions": 1, "concurrency": 1, "bidirectionalStreamsPerSession": 1, "durationSeconds": 5, "warmupSeconds": 1, "repetitions": 1, "operationTimeoutMilliseconds": 10000},
-		"effectiveLoad": map[string]any{"sessions": 1, "concurrency": 1, "streams": 1, "observed": map[string]int{"activeSessions": 1, "activeStreams": 1, "effectiveConcurrency": 1}},
-		"metrics":       metrics, "warnings": []string{"Single-host WebTransport smoke evidence is diagnostic and non-rankable."},
+	if spec.Datagram {
+		metrics["datagramsPerSecond"] = float64(s.ReceivedDatagrams) / d
+		metrics["datagramLatencyMean"] = mean(s.DatagramLatencies)
+		metrics["datagramLatencyP50"] = percentile(s.DatagramLatencies, .5)
+		metrics["datagramLatencyP75"] = percentile(s.DatagramLatencies, .75)
+		metrics["datagramLatencyP90"] = percentile(s.DatagramLatencies, .9)
+		metrics["datagramLatencyP95"] = percentile(s.DatagramLatencies, .95)
+		metrics["datagramLatencyP99"] = percentile(s.DatagramLatencies, .99)
+		metrics["sentDatagrams"] = s.SentDatagrams
+		metrics["receivedDatagrams"] = s.ReceivedDatagrams
+		metrics["lostDatagrams"] = s.SentDatagrams - s.ReceivedDatagrams
+		metrics["configuredDatagramsPerSession"] = datagramCount
+	} else {
+		metrics["streamLatencyMean"] = mean(s.StreamLatencies)
+		metrics["streamLatencyP50"] = percentile(s.StreamLatencies, .5)
+		metrics["streamLatencyP75"] = percentile(s.StreamLatencies, .75)
+		metrics["streamLatencyP90"] = percentile(s.StreamLatencies, .9)
+		metrics["streamLatencyP95"] = percentile(s.StreamLatencies, .95)
+		metrics["streamLatencyP99"] = percentile(s.StreamLatencies, .99)
+		metrics["configuredStreamsPerSession"] = 1
+		metrics["observedActiveStreams"] = 1
+		metrics["effectiveStreams"] = 1
 	}
-	writeJSON(dir, "webtransport-load-summary.json", s)
-	writeJSON(dir, "webtransport-executor-result.json", result)
-	writeJSON(dir, "result.json", result)
+	return metrics
 }
 
 func makePayload() []byte {
@@ -313,6 +446,26 @@ func makePayload() []byte {
 		data[i] = byte(i % 251)
 	}
 	return data
+}
+
+func makeDatagramPayloadSet() [][]byte {
+	payloads := make([][]byte, datagramCount)
+	for datagramIndex := range payloads {
+		payload := make([]byte, payloadBytesPerDatagram)
+		for octetIndex := range payload {
+			payload[octetIndex] = byte((datagramIndex + octetIndex) % 251)
+		}
+		payloads[datagramIndex] = payload
+	}
+	return payloads
+}
+
+func hashPayloadSet(payloads [][]byte) string {
+	hasher := sha256.New()
+	for _, payload := range payloads {
+		_, _ = hasher.Write(payload)
+	}
+	return hex.EncodeToString(hasher.Sum(nil))
 }
 func normalizeTarget(value string) (string, string, error) {
 	value = strings.TrimSpace(value)
@@ -386,6 +539,13 @@ func mean(values []float64) float64 {
 	}
 	return sum / float64(len(values))
 }
+func sum(values []float64) float64 {
+	var total float64
+	for _, value := range values {
+		total += value
+	}
+	return total
+}
 func percentile(values []float64, q float64) float64 {
 	if len(values) == 0 {
 		return 0
@@ -402,19 +562,23 @@ func percentile(values []float64, q float64) float64 {
 	return v[i]
 }
 func writeIdentity(dir string) {
-	writeJSON(dir, "executor-identity.json", map[string]any{"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedProtocols": []string{"webtransport", "h3"}, "supportedScenarios": []string{scenarioID}, "supportedLoadProfiles": []string{profileID}})
+	writeJSON(dir, "executor-identity.json", map[string]any{"id": executorID, "version": executorVersion, "role": "client-test-executor", "supportedProtocols": []string{"webtransport", "h3"}, "supportedScenarios": []string{streamScenarioID, datagramScenarioID}, "supportedLoadProfiles": []string{streamProfileID, datagramProfileID}})
 	writeJSON(dir, "load-generator-identity.json", map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion, "engineModule": engineModule, "engineModuleVersion": engineModuleVersion})
 }
 func writeFailure(dir string, err error) {
 	_ = os.MkdirAll(dir, 0o755)
-	value := map[string]any{"schemaVersion": "protocol-lab.validation.v1", "status": "failed", "scenarioId": scenarioID, "message": err.Error()}
+	scenario := strings.TrimSpace(os.Getenv("PLAB_SCENARIO_ID"))
+	if scenario == "" {
+		scenario = streamScenarioID
+	}
+	value := map[string]any{"schemaVersion": "protocol-lab.validation.v1", "status": "failed", "scenarioId": scenario, "message": err.Error()}
 	writeJSON(dir, "validation.json", value)
 	writeJSON(dir, "result.json", value)
 	writeIdentity(dir)
 }
 func emitUnsupported(dir, id string) {
 	_ = os.MkdirAll(dir, 0o755)
-	value := map[string]any{"schemaVersion": "protocol-lab.unsupported.v1", "status": "unsupported", "scenarioId": id, "reasonCode": "scenario-not-implemented", "authorityCommit": authorityCommit, "executor": map[string]string{"id": executorID, "version": executorVersion}, "loadGenerator": map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, "supportedScenarios": []string{scenarioID}}
+	value := map[string]any{"schemaVersion": "protocol-lab.unsupported.v1", "status": "unsupported", "scenarioId": id, "reasonCode": "scenario-not-implemented", "authorityCommit": authorityCommit, "executor": map[string]string{"id": executorID, "version": executorVersion}, "loadGenerator": map[string]string{"id": loadGeneratorID, "version": loadGeneratorVersion}, "supportedScenarios": []string{streamScenarioID, datagramScenarioID}}
 	writeJSON(dir, "unsupported.json", value)
 	writeJSON(dir, "result.json", value)
 	writeIdentity(dir)

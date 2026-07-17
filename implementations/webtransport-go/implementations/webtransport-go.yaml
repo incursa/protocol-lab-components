@@ -1,7 +1,7 @@
 schemaVersion: "1.0"
 id: webtransport-go
 name: webtransport-go
-description: webtransport-go v0.11.1 server for the deterministic ProtocolLab WebTransport bidirectional-stream echo lane.
+description: webtransport-go v0.11.1 server for the deterministic ProtocolLab WebTransport bidirectional-stream and datagram echo lanes.
 family: webtransport-go
 role: server
 targetKind: process
@@ -9,7 +9,7 @@ targetContract: process
 executable: bash
 workingDirectory: .
 commandArguments: [run.sh]
-image: incursa-protocol-lab-webtransport-go:0.1.1
+image: incursa-protocol-lab-webtransport-go:0.1.2
 dockerfile: docker/Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
@@ -23,19 +23,20 @@ protocols: [webtransport, h3]
 supportedProtocols: [webtransport, h3]
 supportedWorkloadFamilies: [webtransport]
 supportedProtocolVersions: [webtransport-over-http3, http/3, quic-v1, tls1.3]
-supportedScenarios: [webtransport.session-bidi-echo]
-supportedTestCaseIds: [webtransport.session-bidi-echo]
+supportedScenarios: [webtransport.session-bidi-echo, webtransport.session-datagram-echo]
+supportedTestCaseIds: [webtransport.session-bidi-echo, webtransport.session-datagram-echo]
 scenarioCoverage:
   webtransport.session-bidi-echo: {status: supported, endpoint: /webtransport/echo, behavior: one-session-one-client-initiated-bidirectional-stream-65536-byte-exact-echo}
+  webtransport.session-datagram-echo: {status: supported, endpoint: /webtransport/echo, behavior: one-session-32x256-byte-exact-datagram-echo}
   webtransport.session-open: {status: unsupported, reason: The session-open placeholder is not an independently measured package lane.}
 ports: [{name: webtransport, protocol: udp, default: 5461, hostPort: 5461, containerPort: 4433}]
 startup:
   port: {name: webtransport, environmentVariable: PLAB_TARGET_PORT, default: 5461}
 readinessCheck: {type: processStarted, timeoutSeconds: 120, startupDelayMilliseconds: 30000}
-capabilities: [webtransport.server, webtransport.bidi-streams, h3.server, quic.server, tls1.3]
+capabilities: [webtransport.server, webtransport.bidi-streams, webtransport.datagrams, h3.server, quic.server, tls1.3]
 endpoints:
   echo: {method: CONNECT, protocol: webtransport, path: /webtransport/echo, authority: webtransport.plab.test}
-unsupportedKnownCases: [webtransport-datagrams, multiple-bidirectional-streams, unidirectional-streams, websocket, masque]
+unsupportedKnownCases: [multiple-bidirectional-streams, unidirectional-streams, websocket, masque]
 artifactExports: [stdout.txt, stderr.txt, target-proof.json]
 qlogSupport: false
 sslKeyLogSupport: false

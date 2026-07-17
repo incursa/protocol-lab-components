@@ -1,15 +1,20 @@
-executorIdentity: {id: go-webtransport-executor, name: Go WebTransport Test Executor, version: 0.1.0, vendor: Incursa}
-versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.1.0}
+executorIdentity: {id: go-webtransport-executor, name: Go WebTransport Test Executor, version: 0.2.0, vendor: Incursa}
+versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.2.0}
 claimedCapabilities:
   - {id: webtransport.session-bidi-echo, status: supported}
+  - {id: webtransport.session-datagram-echo, status: supported}
   - {id: webtransport-over-http3-proof, status: supported}
   - {id: exact-tls1.3-alpn-h3-proof, status: supported}
   - {id: one-client-initiated-bidirectional-stream, status: supported}
   - {id: deterministic-65536-byte-sha256-echo, status: supported}
-  - {id: webtransport-datagrams, status: unsupported}
+  - {id: deterministic-32x256-byte-datagram-echo, status: supported}
   - {id: masque, status: unsupported}
-supportedTestSelectors: [{selectorType: test-id, expression: webtransport.session-bidi-echo}]
-supportedScenarioSelectors: [{selectorType: scenario-id, expression: webtransport.session-bidi-echo}]
+supportedTestSelectors:
+  - {selectorType: test-id, expression: webtransport.session-bidi-echo}
+  - {selectorType: test-id, expression: webtransport.session-datagram-echo}
+supportedScenarioSelectors:
+  - {selectorType: scenario-id, expression: webtransport.session-bidi-echo}
+  - {selectorType: scenario-id, expression: webtransport.session-datagram-echo}
 supportedProtocolFamilies: [webtransport, h3, quic, tls]
 supportedExecutionModes: [single-cell, process]
 requiredTargetEndpointBindings: [{bindingId: primary, purpose: webtransport-h3-endpoint, endpointType: https, protocols: [webtransport, h3]}]
@@ -27,6 +32,6 @@ supportedArtifactTypes:
   - {type: load.stdout.log, producedByStates: [stopped, failed]}
   - {type: load.stderr.log, producedByStates: [stopped, failed]}
   - {type: unsupported.json, producedByStates: [failed]}
-metricsAvailability: {available: true, availableKinds: [validation, sessions-per-second, bytes-per-second, latency-percentiles, operation-outcomes, effective-streams]}
+metricsAvailability: {available: true, availableKinds: [validation, sessions-per-second, datagrams-per-second, bytes-per-second, stream-latency-percentiles, datagram-latency-percentiles, operation-outcomes, effective-streams, effective-sessions]}
 parser: {id: protocol-lab-webtransport-json, type: protocol-lab-webtransport-json, preservesRawOutput: true}
 telemetry: {supported: true, supported_contract_versions: [telemetry-bundle-v1], supported_scopes: [test-executor, load-generator], supported_artifact_kinds: [summary, metrics, stdout, stderr, raw], export_modes: [inline, artifact-bundle]}
