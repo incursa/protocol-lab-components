@@ -358,7 +358,17 @@ repetition and the target/load VMs share physical host `r920`.
 
 - [ ] Bring Kestrel, Incursa HTTP/3, Caddy, nginx, quic-go, and aioquic onto a
   common plaintext, JSON, 1 KiB, and 64 KiB support matrix where their exact
-  semantics permit it.
+  semantics permit it. Current-head Docker campaign
+  `job-9cc5c3e0f7d34a9db22206bde72ed158` retained accepted status/1 KiB/64 KiB
+  rows for aioquic `0.3.4`, Caddy `0.1.9`, and quic-go `0.1.8`; it correctly
+  marked Kestrel unsupported because Kestrel is process-backed, and exposed an
+  nginx Alt-Svc port defect. nginx `0.1.10` removes that container-internal
+  advertisement and passed all three rows in
+  `job-ec03c0e05e42499e89f3ab48f9c63cab`, published as
+  `pub_d30509f655664bd3b590e6d4780e6778` at
+  `https://lab.incursa.com/reports/rack-lab-nginx-http3-v0110-common-core-h3-local-v1-cell-1-matrix`.
+  Remaining work is an exact process-mode Kestrel run and the separate
+  implementation-owned Incursa package, not a Docker substitution.
 - [x] Re-run the current immutable quic-go and aioquic package heads so live
   evidence matches the cataloged package versions. aioquic `0.3.3` and
   quic-go `0.1.8` now have current package-backed h3spec/QPACK proof.
