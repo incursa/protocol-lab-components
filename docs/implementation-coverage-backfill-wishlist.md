@@ -384,8 +384,9 @@ repetition and the target/load VMs share physical host `r920`.
   exact 1 KiB and 64 KiB current-version proof for each of those package heads
   and bring remaining compatible implementations into the full four-row
   matrix. nginx `0.1.11` now also passed exact plaintext and JSON rows in
-  `job-81002d42e22d4721ba09ea0c260cc614`. Do not substitute a Docker target
-  for Incursa's required process path.
+  `job-81002d42e22d4721ba09ea0c260cc614`; Kestrel `0.1.9` passed the same
+  rows on its required process path in `job-02382e65bf2747bb8b336833acac22c2`.
+  Do not substitute a Docker target for Incursa's required process path.
 - [x] Re-run the current immutable quic-go and aioquic package heads so live
   evidence matches the cataloged package versions. aioquic `0.3.3` and
   quic-go `0.1.8` now have current package-backed h3spec/QPACK proof.
@@ -416,6 +417,7 @@ repetition and the target/load VMs share physical host `r920`.
 | quic-go | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
 | Kestrel | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-6c8c02669dbf423fbcc7a12a5d364741` |
 | Kestrel | 0.1.8 | current common status, 1 KiB, and 64 KiB process-target rows; validation, explicit H3 proof, and measurement passed | `job-a343d8457bb64184be02ac3071fbb4d0` |
+| Kestrel | 0.1.9 | current exact plaintext and JSON process-target rows; both validations and accepted measurements passed | `job-02382e65bf2747bb8b336833acac22c2` |
 | Incursa.Quic | dev-20260717T203500Z-incursa-h3-availability | implementation-owned 1 KiB and 64 KiB process-target rows; validation, explicit H3 proof, and measurement passed | `job-f99e3769217a420fa60ff9321ddd38c6` |
 | Incursa.Quic | dev-20260717T203500Z-incursa-h3-availability | implementation-owned 1 MiB process-target row; validation, explicit H3 proof, and measurement passed | `job-f3e5e0a7233d41698761ac3126a78237` |
 | Incursa.Quic | dev-20260717T203500Z-incursa-h3-availability | implementation-owned 100x16 KiB streaming process-target row; validation, explicit H3 proof, and measurement passed | `job-f5e514cec44d4c8a8f8db9fdf8d33bf5` |
@@ -482,7 +484,11 @@ nginx `0.1.11` passed the same two Docker-target cells in
 `job-81002d42e22d4721ba09ea0c260cc614`, published as
 `pub_8bfccab8e001441691600ae30a58b7ff` at
 `https://lab.incursa.com/reports/rack-lab-nginx-http3-v0111-common-core-docker-h3-local-v1-cell-1-matrix`.
-All four public reports were visually verified and remain diagnostic/unranked
+Kestrel `0.1.9` passed the same two process-target cells in
+`job-02382e65bf2747bb8b336833acac22c2`, published as
+`pub_245840d5ee4d4146aeaf4685d9eb1e4f` at
+`https://lab.incursa.com/reports/rack-lab-kestrel-http3-v019-common-core-process-h3-local-v1-cell-1-matrix`.
+All five public reports were visually verified and remain diagnostic/unranked
 because they use one repetition on the shared-host local lab.
 The initial default HTTP/3 package pair did not advertise
 `http3.payload.stream.100x16kb`, so the controller correctly preview-blocked
