@@ -440,8 +440,8 @@ host and therefore do not satisfy the decision-ready topology requirement.
 - [x] Keep TLS 1.2, mTLS, resumption, early data, cipher-specific, record, and
   KeyUpdate rows as separate capability cohorts rather than shrinking the
   common TLS 1.3 denominator.
-- [ ] Live-run all supported TLS packages, meet the breadth floor, and produce
-  a four-runtime decision-ready TLS 1.3 full-handshake cohort.
+- [x] Live-run all supported TLS packages and meet the live breadth floor.
+- [ ] Produce a four-runtime decision-ready TLS 1.3 full-handshake cohort.
 
 The full-handshake live breadth is now seven independent rows. Process-mode
 job `job-e1f3ba3ec03e4d6d9fe87535627d7f1b` retained three accepted repetitions
@@ -455,6 +455,23 @@ the import queue accepted both, and both report routes were verified live.
 These rows exceed the live breadth floor and are real repeated measurements,
 but remain diagnostic/unranked because target and load execution share worker
 and physical host `r920`; they do not satisfy the decision-ready topology gate.
+
+The remaining current TLS capability packages are also live-proven. TLS 1.2
+job `job-214ce069c84a41e59aa062b73960999e`, ChaCha20 job
+`job-a3237b05c0cc4befa0c83c0cabd4bc23`, and mTLS job
+`job-24880b7e85f7434abf0bafee45740278` each retained one accepted cell and
+were published as `pub_f64d3b36d3214d4a95514638b70161fe`,
+`pub_4bf88ed0716e48909c1a6c25fc6a5005`, and
+`pub_05e1efe8d2bf4b2f8275d2736f0d5e06`. Early-data job
+`job-0fa4d48ac8ee4a50b710f00d22b08ade` retained 124 artifacts and accepted
+both the offered-and-accepted and offered-and-rejected rows; publication
+`pub_7b4dcf119cca4869b92a60db292658ae` uploaded and verified 10 objects.
+KeyUpdate job `job-aaf2d631f99b42b59621937cf92a407f` retained 69 artifacts and
+one accepted diagnostic row; publication
+`pub_4479dbc3784a416196619863e2f9494d` uploaded and verified 10 objects.
+All five publication imports were enqueued. These capability rows are real
+measurements, but are intentionally separate from the full-handshake cohort
+and remain diagnostic/unranked under the shared-worker/shared-host topology.
 
 ## Workstream F - gRPC and WebSocket breadth
 
