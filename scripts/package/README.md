@@ -36,6 +36,13 @@ Package production fails unless every package has exactly one valid,
 parity-eligible clean-source build attestation. The package index and validation
 summary record each attestation artifact, its SHA-256, and source commit.
 
+The package-production workflow builds and tests the Rustls `win-x64` package
+on Windows, transfers that package and attestation to the Ubuntu aggregation
+job, and builds the Rustls `linux-x64` package natively on Linux. The aggregator
+uses `-ImportedPackageBuildKey` to verify the transferred artifact belongs to
+the same commit, rebase its local attestation paths, and include it in the same
+index, checksum manifest, and validation summary as every other package.
+
 Use the component-specific wrappers when iterating on one package:
 
 ```powershell

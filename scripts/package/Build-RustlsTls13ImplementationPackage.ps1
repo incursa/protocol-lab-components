@@ -3,32 +3,25 @@ param(
     [ValidateSet('win-x64','linux-x64')][string]$RuntimeIdentifier='win-x64',
     [string]$Root=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,
     [string]$OutputRoot=(Join-Path $Root 'artifacts/packages'),
-    [string]$Toolchain='stable-x86_64-pc-windows-gnu',
+    [string]$Toolchain='',
     [switch]$AllowDirtySource
 )
 
 $ErrorActionPreference='Stop'
 $Root=[IO.Path]::GetFullPath($Root);$OutputRoot=[IO.Path]::GetFullPath($OutputRoot)
 $componentName='rustls-tls13';$componentRoot=Join-Path $Root "implementations/$componentName";$sourceRoot=Join-Path $componentRoot 'source'
+if($RuntimeIdentifier-eq'win-x64'-and-not$IsWindows){throw 'The win-x64 rustls package must be built and tested on Windows.'}
+if($RuntimeIdentifier-eq'linux-x64'-and-not$IsLinux){throw 'The linux-x64 rustls package must be built and tested on Linux.'}
+if([string]::IsNullOrWhiteSpace($Toolchain)){$Toolchain=if($IsWindows){'stable-x86_64-pc-windows-gnu'}else{'stable'}}
 & cargo "+$Toolchain" test --locked --manifest-path (Join-Path $sourceRoot 'Cargo.toml')
 if($LASTEXITCODE-ne 0){throw 'rustls TLS 1.3 target tests failed.'}
 $rid=switch($RuntimeIdentifier){
     'win-x64'{@{os='windows';arch='x64';target=$null;name='rustls-tls13.exe';source='target/release/protocol-lab-rustls-tls13-target.exe'}}
-    'linux-x64'{@{os='linux';arch='x64';target='x86_64-unknown-linux-musl';name='rustls-tls13';source='target/x86_64-unknown-linux-musl/release/protocol-lab-rustls-tls13-target'}}
+    'linux-x64'{@{os='linux';arch='x64';target=$null;name='rustls-tls13';source='target/release/protocol-lab-rustls-tls13-target'}}
 }
 $buildArgs=@("+$Toolchain",'build','--locked','--release','--manifest-path',(Join-Path $sourceRoot 'Cargo.toml'))
-if($rid.target){$buildArgs+=@('--target',$rid.target)}
-$savedLinker=$env:CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER
-try{
-    if($RuntimeIdentifier-eq'linux-x64'-and$IsWindows){
-        $sysroot=& rustc "+$Toolchain" --print sysroot
-        if($LASTEXITCODE-ne 0){throw 'Unable to resolve the pinned Rust sysroot.'}
-        $env:CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=Join-Path $sysroot 'lib/rustlib/x86_64-pc-windows-gnu/bin/rust-lld.exe'
-        if(-not(Test-Path $env:CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER)){throw 'rust-lld is unavailable for the Linux musl package build.'}
-    }
-    & cargo @buildArgs
-    if($LASTEXITCODE-ne 0){throw "rustls TLS 1.3 target build failed for $RuntimeIdentifier."}
-}finally{$env:CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=$savedLinker}
+& cargo @buildArgs
+if($LASTEXITCODE-ne 0){throw "rustls TLS 1.3 target build failed for $RuntimeIdentifier."}
 $staging=Join-Path $OutputRoot "$componentName/$RuntimeIdentifier";$packageRoot=Join-Path $staging 'package'
 Remove-Item -LiteralPath $staging -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force (Join-Path $packageRoot "bin/$RuntimeIdentifier"),(Join-Path $packageRoot 'implementations'),(Join-Path $packageRoot 'certs')|Out-Null

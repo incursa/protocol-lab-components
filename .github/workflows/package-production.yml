@@ -11,8 +11,30 @@ permissions:
   contents: read
 
 jobs:
+  build-rustls-windows:
+    name: Build Rustls package (win-x64)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and test Rustls win-x64 package
+        shell: pwsh
+        run: ./scripts/package/Build-RustlsTls13ImplementationPackage.ps1 -RuntimeIdentifier win-x64
+
+      - name: Upload Rustls win-x64 package
+        uses: actions/upload-artifact@v4
+        with:
+          name: rustls-tls13-win-x64
+          if-no-files-found: error
+          path: |
+            artifacts/packages/*rustls-tls13*.win-x64.plabpkg
+            artifacts/packages/*rustls-tls13*.win-x64.plabpkg.build-attestation.json
+
   build-packages:
     name: Build package artifacts
+    needs: build-rustls-windows
     runs-on: ubuntu-latest
 
     steps:
@@ -32,9 +54,15 @@ jobs:
             implementations/quic-go-http3/go.sum
             executors/quic-go-raw-load/source/go.sum
 
+      - name: Download Rustls win-x64 package
+        uses: actions/download-artifact@v4
+        with:
+          name: rustls-tls13-win-x64
+          path: artifacts/packages
+
       - name: Build all ProtocolLab component packages
         shell: pwsh
-        run: ./scripts/package/Build-AllProtocolLabComponentPackages.ps1 -Clean
+        run: ./scripts/package/Build-AllProtocolLabComponentPackages.ps1 -ImportedPackageBuildKey 'implementations/rustls-tls13|win-x64'
 
       - name: Upload package production artifacts
         uses: actions/upload-artifact@v4
