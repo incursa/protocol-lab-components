@@ -376,9 +376,15 @@ repetition and the target/load VMs share physical host `r920`.
   The implementation-owned Incursa package now covers the exact common
   plaintext and JSON variants through source-owned declarations and a neutral
   HTTP/3 scenario package, in addition to its advertised payload rows. The
-  remaining work is to bring the other exact compatible implementations onto
-  all four common variants, not to substitute a Docker target for Incursa's
-  required process path.
+  corrected Caddy `0.1.11` and aioquic `0.3.6` packages then passed the exact
+  plaintext and JSON rows in Docker mode in
+  `job-cf8f74dfcfb149de96eae8bc882c4dde`, while quic-go `0.1.10` passed the
+  same rows on its required process path in
+  `job-f145fe26b17b45b29672c83495a0fbdd`. The remaining work is to add the
+  exact 1 KiB and 64 KiB current-version proof for each of those package heads
+  and bring remaining compatible implementations into the full four-row
+  matrix; do not substitute a Docker target for Incursa's required process
+  path.
 - [x] Re-run the current immutable quic-go and aioquic package heads so live
   evidence matches the cataloged package versions. aioquic `0.3.3` and
   quic-go `0.1.8` now have current package-backed h3spec/QPACK proof.
@@ -398,9 +404,12 @@ repetition and the target/load VMs share physical host `r920`.
 | aioquic | 0.3.2 | historical canonical JSON status and 1 KiB payload; validation and measurement passed | `job-0d08b2ace1704d609ec9803e6e7119c7` |
 | aioquic | 0.3.3 | h3spec status, response-header, and QPACK diagnostics; all 15 requests succeeded in each cell | `job-a3c8b35637e14c49b86332a928c5b15d` |
 | aioquic | 0.3.4 | canonical 64 KiB payload; validation and measurement passed with 72 retained controller artifacts | `job-80f48baab27248509a0513a80860f0d0` |
+| aioquic | 0.3.6 | current exact plaintext and JSON Docker-target rows; both validations and accepted measurements passed | `job-cf8f74dfcfb149de96eae8bc882c4dde` |
 | quic-go | 0.1.6 | canonical JSON status, 1 KiB, and 64 KiB payloads; validation and measurement passed | `job-610e9f2d38364cfc95b238ea6e012446` |
+| quic-go | 0.1.10 | current exact plaintext and JSON process-target rows; both validations and accepted measurements passed | `job-f145fe26b17b45b29672c83495a0fbdd` |
 | Kestrel | 0.1.6 | canonical JSON status, 1 KiB, and 64 KiB payloads; validation and measurement passed | `job-fb08e6a527b94ee1a922055a9401feee` |
 | Caddy | 0.1.9 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
+| Caddy | 0.1.11 | current exact plaintext and JSON Docker-target rows; both validations and accepted measurements passed | `job-cf8f74dfcfb149de96eae8bc882c4dde` |
 | nginx | 0.1.9 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
 | quic-go | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
 | Kestrel | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-6c8c02669dbf423fbcc7a12a5d364741` |
@@ -455,6 +464,20 @@ scenario and executor packages
 measurements passed; the object-verified diagnostic publication
 `pub_750fdff1b408451696347c48fccf6a67` is visible at
 `https://lab.incursa.com/reports/rack-lab-incursa-quic-http3-v20260717-common-core-process-h3-local-v1-cell-1-matrix`.
+Caddy `0.1.11` and aioquic `0.3.6` initially previewed as runnable but their
+first retained job (`job-4812ff04a8f7420fa9ad7a4ae425dfb5`) correctly marked
+the four cells unsupported because the executor capability flags were absent.
+Commit `a2608dd` added the explicit `httpPlaintext` and `httpJson` flags;
+fresh clean-source packages then passed all four rows in
+`job-cf8f74dfcfb149de96eae8bc882c4dde`, published as
+`pub_e7abe13d566b42638a86726316993d95` at
+`https://lab.incursa.com/reports/rack-lab-h3-common-core-v20260717-docker-r2-h3-local-v1-cell-1-matrix`.
+The same corrected commit produced quic-go `0.1.10`, whose process-target
+plaintext and JSON rows passed in `job-f145fe26b17b45b29672c83495a0fbdd` and
+were published as `pub_79020034d8fd4c32a3e8ec65c8b11364` at
+`https://lab.incursa.com/reports/rack-lab-quic-go-http3-v0110-common-core-process-h3-local-v1-cell-1-matrix`.
+All three public reports were visually verified and remain diagnostic/unranked
+because they use one repetition on the shared-host local lab.
 The initial default HTTP/3 package pair did not advertise
 `http3.payload.stream.100x16kb`, so the controller correctly preview-blocked
 that cell. Regenerating the existing current-source package builder with the
