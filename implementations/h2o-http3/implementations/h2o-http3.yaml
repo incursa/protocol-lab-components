@@ -1,0 +1,132 @@
+schemaVersion: "1.0"
+id: h2o-http3
+name: H2O Experimental HTTP/3
+description: Experimental H2O HTTP/3 origin built from a pinned upstream commit and limited to canonical fixed-response endpoints.
+family: h2o
+role: server
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-h2o-http3:0.1.0
+dockerfile: docker/H2O.Dockerfile
+buildContext: docker
+dockerNetworkMode: published-port
+baseUrl: https://localhost:5448
+dockerBaseUrl: https://localhost:5448
+protocolBaseUrls:
+  h3: https://localhost:5448
+dockerProtocolBaseUrls:
+  h3: https://localhost:5448
+certificateMode: h2o-self-signed-localhost-loopback-certificate
+roles:
+  - server
+protocols:
+  - h3
+supportedProtocols:
+  - h3
+supportedWorkloadFamilies:
+  - http.application
+supportedProtocolVersions:
+  - http/3
+supportedScenarios:
+  - http3.core.status
+  - http3.payload.bytes.1kb
+  - http3.payload.bytes.64kb
+supportedTestCaseIds:
+  - http3.core.status
+  - http3.payload.bytes.1kb
+  - http3.payload.bytes.64kb
+scenarioCoverage:
+  http3.core.status:
+    status: supported
+    scenarioId: http3.core.status
+    endpoint: /status
+  http3.payload.bytes.1kb:
+    status: supported
+    scenarioId: http3.payload.bytes.1kb
+    endpoint: /bytes/1024
+  http3.payload.bytes.64kb:
+    status: supported
+    scenarioId: http3.payload.bytes.64kb
+    endpoint: /bytes/65536
+  http3.headers.response-headers-50x32:
+    status: unsupported
+    reason: Package does not claim a fixed canonical high-cardinality response-header fixture.
+  http3.protocol.qpack-repeated-headers:
+    status: unsupported
+    reason: Package does not claim QPACK stress evidence from its experimental HTTP/3 implementation.
+  http3.headers.inspect-request:
+    status: unsupported
+    reason: Package does not expose a request-header inspection fixture.
+  http3.upload.echo.64kb:
+    status: unsupported
+    reason: Package does not expose an upload sink or hash echo fixture.
+  http3.payload.stream.100x16kb:
+    status: unsupported
+    reason: Package does not expose a deterministic streaming-response fixture.
+  http3.websocket.rfc9220.extended-connect:
+    status: unsupported
+    reason: Package does not configure WebSocket-over-HTTP/3 support.
+ports:
+  - name: h3
+    protocol: tcp+udp
+    default: 5448
+    hostPort: 5448
+    containerPort: 8443
+environment:
+  PLAB_HTTP_PORT: "5448"
+startup:
+  port:
+    name: h3
+    environmentVariable: PLAB_HTTP_PORT
+    default: 5448
+  readiness:
+    protocol: https
+    path: /status
+    expectedStatus: 200
+    certificateValidation: disabled-for-local-h2o-self-signed-certificate
+readinessCheck:
+  type: http
+  url: /status
+  timeoutSeconds: 30
+targetCapabilityProof:
+  id: h2o-version
+  required: true
+  dockerExecArguments:
+    - h2o
+    - -v
+  expectedOutputContains: h2o
+capabilities:
+  - http.server
+  - httpStatus
+  - httpBytes
+  - h3.server
+  - quic.server
+  - h3Experimental
+entrypoint:
+  kind: pwsh
+  path: run.ps1
+  arguments: []
+  workingDirectory: .
+endpoints:
+  status:
+    method: GET
+    path: /status
+  bytes1kb:
+    method: GET
+    path: /bytes/1024
+  bytes64kb:
+    method: GET
+    path: /bytes/65536
+shutdownBehavior: process
+artifactExports:
+  - command.txt
+  - h2o-version.txt
+  - stdout.txt
+  - stderr.txt
+  - result.json
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata:
+  manifest: protocol-lab.internal.json
+  evidenceClass: experimental-origin-local
+  upstreamHttp3Status: experimental
