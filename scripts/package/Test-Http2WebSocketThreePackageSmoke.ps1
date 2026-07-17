@@ -38,7 +38,7 @@ function Convert-ToWslPath([string]$Path) {
 if (Test-Path $ArtifactRoot) { Remove-Item -LiteralPath $ArtifactRoot -Recurse -Force }
 New-Item -ItemType Directory -Force $ArtifactRoot | Out-Null
 
-$scenarioArchive = Resolve-One 'org.protocol-lab.components.scenario.http2-websocket-performance.0.1.1.plabpkg'
+$scenarioArchive = Resolve-One 'org.protocol-lab.components.scenario.http2-websocket-performance.0.1.2.plabpkg'
 $executorArchive = Resolve-One "org.protocol-lab.components.executor.go-http2-websocket-executor.0.2.0.$RuntimeIdentifier.plabpkg"
 $targetArchive = Resolve-One "org.protocol-lab.components.implementation.kestrel-http2-websocket.0.1.1.$RuntimeIdentifier.plabpkg"
 $scenarioRoot = Join-Path $ArtifactRoot 'scenario'
@@ -50,9 +50,10 @@ $targetManifest = Expand-One $targetArchive $targetRoot
 
 $authority = Get-Content (Join-Path $scenarioRoot 'authority-lock.json') -Raw | ConvertFrom-Json
 if ($authority.commit -ne '8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574') { throw 'authority commit mismatch' }
-if ($scenarioManifest.packageVersion -ne '0.1.1' -or $executorManifest.packageVersion -ne '0.2.0' -or $targetManifest.packageVersion -ne '0.1.1') { throw 'immutable package version mismatch' }
+if ($scenarioManifest.packageVersion -ne '0.1.2' -or $executorManifest.packageVersion -ne '0.2.0' -or $targetManifest.packageVersion -ne '0.1.1') { throw 'immutable package version mismatch' }
 if ($scenarioManifest.providedScenarios.Count -ne 6 -or $executorManifest.providedTestExecutors[0].scenarios.Count -ne 6 -or $targetManifest.providedImplementations[0].scenarios.Count -ne 6) { throw 'six-ID package claim mismatch' }
-if ((@($scenarioManifest.providedLoadProfiles.loadProfileId) -join ',') -ne 'websocket-smoke,websocket-comparison,diagnostic') { throw 'scenario load-profile claim mismatch' }
+$loadProfileEntries = @($scenarioManifest.entryManifests | Where-Object { $_ -like 'load-profiles/*' } | Sort-Object)
+if (($loadProfileEntries -join ',') -ne 'load-profiles/diagnostic.yaml,load-profiles/websocket-comparison.yaml,load-profiles/websocket-smoke.yaml') { throw 'scenario load-profile entry mismatch' }
 foreach ($license in @('golang-x-net-LICENSE.txt', 'golang-x-text-LICENSE.txt')) {
     if (-not (Test-Path (Join-Path $executorRoot "third-party/$license"))) { throw "missing $license" }
 }
@@ -99,7 +100,7 @@ try {
     }
 
     $ready = $false
-    for ($index = 0; $index -lt 150; $index++) {
+    for ($index = 0; $index -lt 600; $index++) {
         if ((Test-Path $targetOut) -and ((Get-Content $targetOut -Raw) -match '"eventName":"ready"')) { $ready = $true; break }
         Start-Sleep -Milliseconds 100
     }
