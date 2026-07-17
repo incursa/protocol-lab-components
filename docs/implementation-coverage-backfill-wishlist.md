@@ -151,6 +151,8 @@ no recursive upstream dependency.
 | Authoritative product | Classic DNS/TCP | BIND 9 | 0.1.0 | `job-799e5c5f78f44fb4805a23a2ff6a8744` |
 | Authoritative product | Classic DNS/UDP | Technitium DNS Server | 0.1.1 | `job-080eac8e1a4542fe9853023404077792` |
 | Authoritative product | Classic DNS/TCP | Technitium DNS Server | 0.1.1 | `job-0ada77e3fbad47928dec7cc74b3150ef` |
+| Authoritative fixture | Classic DNS/UDP | Go DNS authority | 0.1.0 | `job-1c67f1bf27f14fdf82dbf3368fbd6cc9` |
+| Authoritative fixture | Classic DNS/TCP | Go DNS authority | 0.1.0 | `job-8ad06d8b74e44c1483a38cd87020865b` |
 | Recursive resolver | DoT | BIND 9 | 0.1.2 | `job-b24f3e383cca482483e8ec6115147afd` |
 | Recursive resolver | DoH2 | Unbound | 0.1.2 | `job-211960ceb67d47ff8b9becb6da92f533` |
 | Recursive resolver | DoT | Knot Resolver | 0.1.5 | `job-2312532e03364be7b28802d5743531da` |
@@ -164,7 +166,11 @@ not ranked or decision-ready. The BIND, Unbound, and Knot Resolver rows addition
 retain cache-flush and local-only upstream proof and are visible on
 `lab.incursa.com` as measured validation. They remain diagnostic/unranked
 because they use one repetition and shared target/load worker placement. The
-secure-DNS set now satisfies the two-resolver live breadth floor for DoT and
+Go classic-authority jobs retained 110 UDP and 62 TCP artifacts; publications
+`pub_6a0eab80f1504b5cad4a798c4c0d9d89` and
+`pub_6b456f1c49e847aebf9d17c6c4990983` uploaded, verified, and indexed both
+reports, which were verified live with accepted results and artifact links.
+The secure-DNS set now satisfies the two-resolver live breadth floor for DoT and
 DoH2, but does not yet satisfy the repeated-run, variance/saturation,
 DoH3/DoQ second-ecosystem, or decision-ready gates below.
 
@@ -489,14 +495,23 @@ and remain diagnostic/unranked under the shared-worker/shared-host topology.
 - [ ] Produce a four-runtime decision-ready unary cohort and comparable
   observations for streaming and terminal behavior.
 
-The five-runtime live breadth floor is met. Go job
-`job-03c572e3844d4ec2a054517909daa98a` retained four accepted core cells;
-grpc-dotnet/grpc-js job `job-037f36ec1657451a9af8c6052350b019`
-retained eight; and current grpc-java/Netty plus grpc-cpp job
-`job-16f7fdb757e8476aac823d8ed4ab7a78` retained eight. All three reports were
-published and verified on `lab.incursa.com`. They are real comparable
-observations but remain diagnostic/unranked because the target and load VMs
-share physical host `r920` and each current cohort has one repetition.
+The five-runtime live breadth floor is met. Current Go implementation package
+`0.4.0` now has accepted proof for all 12 committed identities under their
+correct load profiles: four core rows in
+`job-2e13b8720b7741b4be9e489af4fe92f1` (234 artifacts), four unary-feature
+rows in `job-ecd37366b11f4c289c9a6c672f9e8619` (234 artifacts), three terminal
+rows in `job-41e0093d7722480b8df99f3e207af7b8` (179 artifacts), and the
+new-channel row in `job-c68a70d1b78a489a99130e89807e67b6` (69 artifacts).
+Publications `pub_f5e04fd95621448d85c04ade687c3520`,
+`pub_1d7961facc0e4df1b2982520c0c0a783`,
+`pub_c27e58574f9142208fc1acecf09078ab`, and
+`pub_a6161109658a48b29189c04179b8bf80` uploaded, verified, and indexed those
+reports; all four live routes show passed, accepted rows and raw artifact
+links. grpc-dotnet/grpc-js job `job-037f36ec1657451a9af8c6052350b019`
+retained eight core cells, and current grpc-java/Netty plus grpc-cpp job
+`job-16f7fdb757e8476aac823d8ed4ab7a78` retained eight. These are real
+comparable observations but remain diagnostic/unranked because the target and
+load VMs share physical host `r920` and each current cohort has one repetition.
 
 ### WebSocket
 
@@ -508,6 +523,14 @@ share physical host `r920` and each current cohort has one repetition.
   preferring ngtcp2/nghttp3 or another cataloged stack with explicit support.
 - [ ] Keep cleartext, TLS, RFC 8441, and RFC 9220 as separate transport cohorts
   and meet each applicable breadth/evidence floor.
+
+Go HTTP/1.1 WebSocket-over-TLS job
+`job-a966072af013436fb79945f306749c26` retained 399 artifacts and seven
+accepted TLS, Upgrade, echo, control-frame, close, subprotocol, and
+permessage-deflate rows. Publication `pub_da1afe38f14c45a0bb3c3322e963b794`
+uploaded and verified 10 public objects, and the report route was verified live
+with accepted measurements and artifact links. It remains a separate
+single-repetition TLS cohort and is diagnostic/unranked.
 
 Jetty job `job-91f2efe974f84663b917dea296b63fa9` and Kestrel job
 `job-821d1cb02d724ce3848a17541ef5914c` each retained five accepted RFC 8441
@@ -568,13 +591,13 @@ host `r920` and only one outer repetition was retained.
 - [ ] Require physically separated target/load roles, controlled network/CPU
   conditions, source/image parity, variance within policy, and non-saturation
   evidence before a result is decision-ready.
-- [ ] Publish accepted reports through the normal report-import pipeline and
+- [x] Publish accepted reports through the normal report-import pipeline and
   verify their protocol, implementation, workload, run, artifact, and
   comparison pages on `lab.incursa.com`.
 - [x] Replace ambiguous top-level public labels with the four-state vocabulary
   in this document while preserving technical claim level, publishability,
   evidence class, topology, validation, and exclusion details in disclosures.
-- [ ] Show tested/admitted/cataloged denominators on every protocol hub and an
+- [x] Show tested/admitted/cataloged denominators on every protocol hub and an
   explicit reason for every catalog-only or non-ranked implementation.
 
 ## Delivery order
