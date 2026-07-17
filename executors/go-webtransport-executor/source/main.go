@@ -27,9 +27,9 @@ import (
 
 const (
 	executorID              = "go-webtransport-executor"
-	executorVersion         = "0.2.0"
+	executorVersion         = "0.2.1"
 	loadGeneratorID         = "webtransport-go-load"
-	loadGeneratorVersion    = "0.2.0"
+	loadGeneratorVersion    = "0.2.1"
 	engineModule            = "github.com/quic-go/webtransport-go"
 	engineModuleVersion     = "v0.11.1"
 	authorityCommit         = "dd518aee19d73fb1477320644785fa070b1b62f1"
@@ -97,7 +97,7 @@ type protocolProof struct {
 	EchoedDatagramCount          int    `json:"echoedDatagramCount,omitempty"`
 	EchoedPayloadSetSHA256       string `json:"echoedPayloadSetSha256,omitempty"`
 	OrderedDatagramEcho          bool   `json:"orderedDatagramEcho,omitempty"`
-	LostDatagrams                int    `json:"lostDatagrams,omitempty"`
+	LostDatagrams                int    `json:"lostDatagrams"`
 }
 
 type operationResult struct {

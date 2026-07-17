@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"encoding/json"
+	"strings"
+	"testing"
+)
 
 func TestPayloadIdentity(t *testing.T) {
 	payload := makePayload()
@@ -24,6 +28,16 @@ func TestDatagramPayloadSetIdentity(t *testing.T) {
 	}
 	if got := hashPayloadSet(payloads); got != payloadSetSHA256 {
 		t.Fatalf("payload set hash = %s", got)
+	}
+}
+
+func TestProtocolProofRetainsZeroDatagramLoss(t *testing.T) {
+	encoded, err := json.Marshal(protocolProof{LostDatagrams: 0})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(encoded), `"lostDatagrams":0`) {
+		t.Fatalf("zero datagram loss was omitted: %s", encoded)
 	}
 }
 

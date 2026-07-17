@@ -1,5 +1,5 @@
-executorIdentity: {id: go-webtransport-executor, name: Go WebTransport Test Executor, version: 0.2.0, vendor: Incursa}
-versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.2.0}
+executorIdentity: {id: go-webtransport-executor, name: Go WebTransport Test Executor, version: 0.2.1, vendor: Incursa}
+versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.2.1}
 claimedCapabilities:
   - {id: webtransport.session-bidi-echo, status: supported}
   - {id: webtransport.session-datagram-echo, status: supported}

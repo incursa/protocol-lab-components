@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.executor.go-webtransport-executor",
-  "packageVersion": "0.2.0",
+  "packageVersion": "0.2.1",
   "kind": "test-executor",
   "displayName": "Go WebTransport Test Executor",
   "entryManifests": ["test-executors/go-webtransport-executor.yaml"],
