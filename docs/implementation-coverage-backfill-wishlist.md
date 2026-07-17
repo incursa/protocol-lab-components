@@ -572,10 +572,26 @@ accepted values are real observed measurements, not decision-ready rankings.
   `ws`, Jetty, uWebSockets, and websocat, preserving websocat's diagnostic-only
   limitations.
 - [x] Add a second RFC 8441 implementation alongside Kestrel HTTP/2 WebSocket.
-- [ ] Add a second RFC 9220 implementation alongside aioquic HTTP/3 WebSocket,
-  preferring ngtcp2/nghttp3 or another cataloged stack with explicit support.
+- [x] Add a second RFC 9220 implementation alongside aioquic HTTP/3 WebSocket.
+  The role-correct second implementation is immutable package
+  `org.protocol-lab.components.implementation.nghttpx-rfc9220-gateway@0.1.1`:
+  nghttpx/nghttp3 is an HTTP/3 RFC 9220 gateway in front of a deterministic
+  package-owned WebSocket backend, never an origin row. Core job
+  `job-cebd0cd04b8840eda9d2168298659587` retained five accepted RFC 9220
+  scenarios; fragmentation job `job-eafc60447e5943a9b403218d3982fc69`
+  retained the fragmented-binary scenario. Publications
+  `pub_91af140b9a47456c8bbba97866c7b5df` and
+  `pub_f9131514592c4baebbe485429cd5e7e4` uploaded and were verified live at
+  `/reports/rack-lab-nghttpx-rfc9220-v011-core-aioquic-rfc9220-websocket-proof-cell-1-matrix`
+  and
+  `/reports/rack-lab-nghttpx-rfc9220-v011-fragmentation-aioquic-rfc9220-websocket-fragmentation-diagnostic-cell-1`.
 - [ ] Keep cleartext, TLS, RFC 8441, and RFC 9220 as separate transport cohorts
   and meet each applicable breadth/evidence floor.
+
+  The nghttpx RFC 9220 gateway results are now a separate `role: proxy`,
+  `external-reference-local` diagnostic cohort. They do not join the aioquic
+  origin, cleartext, TLS, or RFC 8441 rows, and they do not close the remaining
+  multi-role, repeated, physically isolated evidence floors.
 
 Go HTTP/1.1 WebSocket-over-TLS job
 `job-a966072af013436fb79945f306749c26` retained 399 artifacts and seven
