@@ -380,10 +380,12 @@ repetition and the target/load VMs share physical host `r920`.
   plaintext and JSON rows in Docker mode in
   `job-cf8f74dfcfb149de96eae8bc882c4dde`, while quic-go `0.1.10` passed the
   same rows on its required process path in
-  `job-f145fe26b17b45b29672c83495a0fbdd`. The remaining work is to add the
-  exact 1 KiB and 64 KiB current-version proof for each of those package heads
-  and bring remaining compatible implementations into the full four-row
-  matrix. nginx `0.1.11` now also passed exact plaintext and JSON rows in
+`job-f145fe26b17b45b29672c83495a0fbdd`. The remaining work is to add the
+  exact 1 KiB and 64 KiB current-version proof for the process-backed package
+  heads and bring remaining compatible implementations into the full four-row
+  matrix. Current Caddy `0.1.11`, aioquic `0.3.6`, and nginx `0.1.11` package
+  heads passed both payload rows together in
+  `job-fe8a381ddc5b4ff69477059464a1a4c8`. nginx `0.1.11` also passed exact plaintext and JSON rows in
   `job-81002d42e22d4721ba09ea0c260cc614`; Kestrel `0.1.9` passed the same
   rows on its required process path in `job-02382e65bf2747bb8b336833acac22c2`.
   Do not substitute a Docker target for Incursa's required process path.
@@ -488,7 +490,11 @@ Kestrel `0.1.9` passed the same two process-target cells in
 `job-02382e65bf2747bb8b336833acac22c2`, published as
 `pub_245840d5ee4d4146aeaf4685d9eb1e4f` at
 `https://lab.incursa.com/reports/rack-lab-kestrel-http3-v019-common-core-process-h3-local-v1-cell-1-matrix`.
-All five public reports were visually verified and remain diagnostic/unranked
+The current Caddy/aioquic/nginx payload cohort passed all six cells in
+`job-fe8a381ddc5b4ff69477059464a1a4c8`, published as
+`pub_30852441a8344751ac8fb3105b2aa9f7` at
+`https://lab.incursa.com/reports/rack-lab-h3-current-payload-v20260717-docker-h3-local-v1-cell-1-matrix`.
+All six public reports were visually verified and remain diagnostic/unranked
 because they use one repetition on the shared-host local lab.
 The initial default HTTP/3 package pair did not advertise
 `http3.payload.stream.100x16kb`, so the controller correctly preview-blocked
