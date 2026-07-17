@@ -198,8 +198,11 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
   - Dated digests, command surfaces, canonical executor probes, and re-entry
     conditions for all four decisions are retained in
     `docs/raw-quic-interop-image-feasibility-2026-07-16.md`.
-- [ ] Record client/server role and supported QUIC interop testcases for every
-  package; do not treat an HTTP/3 origin as a raw QUIC target.
+- [x] Record client/server role and supported QUIC interop testcases for every
+  package; do not treat an HTTP/3 origin as a raw QUIC target. The six
+  component-owned raw packages and the implementation-owned Incursa and
+  MSQuic/.NET adapters now declare server-only role plus exact supported
+  test-case IDs; no client role is inferred.
 - [ ] Live-run all supported raw packages and meet the raw QUIC coverage floor
   with a three-ecosystem decision-ready common cohort.
 
