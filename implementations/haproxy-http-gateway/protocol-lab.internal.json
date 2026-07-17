@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {"os": "linux", "arch": "x64", "entrypoint": {"kind": "bash", "path": "run.sh", "arguments": [], "workingDirectory": "."}}
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": false,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [
+      {"name": "docker", "value": "true"},
+      {"name": "linux-containers", "value": "true"}
+    ],
+    "runtimeImages": [
+      {"name": "haproxy", "version": "3.2.21", "reference": "haproxy@sha256:e271912a69f3114b12aeea3362e32ae02bc8d1e330d748e06da3ae6c0522f73c"},
+      {"name": "busybox", "version": "1.37.0-glibc", "reference": "busybox@sha256:4279d9b47df4c1b02d80efd8d02cd59b3a8182c1e785a4ff3f6983bee19dc8b0"}
+    ]
+  }
+}

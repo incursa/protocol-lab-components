@@ -17,8 +17,8 @@
   },
   "summary": {
     "implementationCount": 19,
-    "packageableNowCount": 16,
-    "blockedOrDesignFirstCount": 3,
+    "packageableNowCount": 17,
+    "blockedOrDesignFirstCount": 2,
     "topNextPackageSlices": [
       "Broader raw QUIC ecosystem targets after quic-go raw stream-throughput, multiplex, and duplex package proof remains stable.",
       "Caddy and nginx large-body/header-heavy fixture expansion after current package proofs remain stable.",
@@ -255,17 +255,17 @@
       "id": "haproxy",
       "displayName": "HAProxy QUIC/HTTP/3",
       "upstream": "https://github.com/haproxy/haproxy",
-      "license": "GPL-2.0-or-later for HAProxy, LGPL-2.1 for headers; prefer external image execution unless redistribution review is complete.",
-      "packageFeasibility": "planned",
-      "dockerImageAvailability": "QUIC interop runner lists haproxytech/haproxy-qns:latest.",
-      "roles": ["server"],
-      "quicRawSupport": "no; proxy/server endpoint.",
-      "http3Support": "yes for server/proxy use, but ProtocolLab route contract needs explicit fixture.",
+      "license": "GPL-2.0-or-later for HAProxy, LGPL-2.1 for headers; ProtocolLab consumes the unmodified official digest-pinned image and adds repository-owned configuration and fixtures.",
+      "packageFeasibility": "packaged",
+      "dockerImageAvailability": "Official haproxy:3.2.21 image is pinned by digest and reports USE_QUIC=1.",
+      "roles": ["proxy"],
+      "quicRawSupport": "no; proxy endpoint only.",
+      "http3Support": "packaged as a QUIC-enabled HTTP/3 reverse-proxy listener with a separate loopback fixture backend.",
       "webSocketOverH3Support": "not packaged.",
-      "benchmarkSuitability": "useful for proxy-focused HTTP/3 later; less direct for implementation server baselines.",
-      "protocolLabComponentStatus": "not packaged; site stub external/planned.",
-      "nextPackageSlice": "License-review external image wrapper, then define a proxy-target scenario instead of treating it as an origin server.",
-      "sourceRefs": ["https://github.com/haproxy/haproxy", "https://raw.githubusercontent.com/quic-interop/quic-interop-runner/master/implementations_quic.json"]
+      "benchmarkSuitability": "gateway cohort only; must remain separate from origin-server comparisons.",
+      "protocolLabComponentStatus": "Packaged as org.protocol-lab.components.implementation.haproxy-http-gateway with separate h1, h2, and h3 proxy identities.",
+      "nextPackageSlice": "Run the exact package through the real controller and publish gateway-cohort evidence.",
+      "sourceRefs": ["https://github.com/haproxy/haproxy", "https://hub.docker.com/_/haproxy"]
     },
     {
       "id": "neqo",

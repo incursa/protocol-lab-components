@@ -1,0 +1,51 @@
+schemaVersion: "1.0"
+id: haproxy-http2-gateway
+name: HAProxy HTTP/2 Gateway
+description: HAProxy 3.2 reverse proxy receiving h2c prior-knowledge requests and forwarding them to an HTTP/1 fixture backend.
+family: haproxy
+role: proxy
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-haproxy-http-gateway:0.1.0
+dockerfile: Dockerfile
+buildContext: .
+baseUrl: http://127.0.0.1:8092
+dockerBaseUrl: http://127.0.0.1:8092
+protocolBaseUrls: {h2: http://127.0.0.1:8092}
+dockerProtocolBaseUrls: {h2: http://127.0.0.1:8092}
+dockerNetworkMode: published-port
+certificateMode: none
+roles: [proxy]
+protocols: [h2]
+supportedProtocols: [h2]
+supportedWorkloadFamilies: [http.application]
+supportedProtocolVersions: [h2c-prior-knowledge]
+ports:
+  - {name: h2, protocol: tcp, default: 8092, hostPort: 8092, containerPort: 8082}
+readinessCheck: {type: processStarted, timeoutSeconds: 60, startupDelayMilliseconds: 750}
+capabilities: [http.proxy, httpPlaintext, httpJson, http2.h2cPriorKnowledge]
+supportedTestCaseIds: [http2.core.plaintext, http2.core.json]
+supportedScenarios: [http2.core.plaintext, http2.core.json]
+scenarioCoverage:
+  http2.core.plaintext: {status: supported, executorId: go-http2-executor, transportVariant: h2c-prior-knowledge, endpoint: /plaintext}
+  http2.core.json: {status: supported, executorId: go-http2-executor, transportVariant: h2c-prior-knowledge, endpoint: /json}
+unsupportedKnownCases: [origin-server-cohort, h1, h3, tls-alpn, websocket, server-sent-events]
+requiredExternalTools: [docker]
+targetCapabilityProof:
+  id: haproxy-http2
+  required: true
+  dockerExecArguments: [haproxy, -vv]
+  expectedOutputContains: HAProxy version 3.2.21
+runtime:
+  upstreamProgram: HAProxy
+  upstreamProgramModified: false
+  haproxyVersion: 3.2.21
+  imageReference: haproxy@sha256:e271912a69f3114b12aeea3362e32ae02bc8d1e330d748e06da3ae6c0522f73c
+endpoints:
+  plaintext: {method: GET, path: /plaintext}
+  json: {method: GET, path: /json}
+shutdownBehavior: runner-owned-docker-container
+artifactExports: [haproxy-http2-gateway.log]
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Gateway/proxy cohort only; TLS/ALPN HTTP/2 is not claimed.

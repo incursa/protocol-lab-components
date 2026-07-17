@@ -1,0 +1,57 @@
+schemaVersion: "1.0"
+id: haproxy-http3-gateway
+name: HAProxy HTTP/3 Gateway
+description: HAProxy 3.2 QUIC-enabled reverse proxy receiving HTTP/3 requests and forwarding them to an HTTP/1 fixture backend.
+family: haproxy
+role: proxy
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-haproxy-http-gateway:0.1.0
+dockerfile: Dockerfile
+buildContext: .
+baseUrl: https://localhost:5447
+dockerBaseUrl: https://localhost:5447
+protocolBaseUrls: {h3: https://localhost:5447}
+dockerProtocolBaseUrls: {h3: https://localhost:5447}
+dockerNetworkMode: published-port
+certificateMode: repository-test-certificate
+roles: [proxy]
+protocols: [h3]
+supportedProtocols: [h3]
+supportedWorkloadFamilies: [http.application]
+supportedProtocolVersions: [http/3]
+ports:
+  - {name: h3, protocol: tcp+udp, default: 5447, hostPort: 5447, containerPort: 8443}
+readinessCheck: {type: processStarted, timeoutSeconds: 60, startupDelayMilliseconds: 750}
+capabilities: [http.proxy, httpStatus, httpBytes, h3.server, quic.server, h3Protocol]
+supportedTestCaseIds: [http3.core.status, http3.payload.bytes.1kb, http3.payload.bytes.64kb]
+supportedScenarios: [http3.core.status, http3.payload.bytes.1kb, http3.payload.bytes.64kb]
+scenarioCoverage:
+  http3.core.status: {status: supported, endpoint: /status}
+  http3.payload.bytes.1kb: {status: supported, endpoint: /bytes/1024}
+  http3.payload.bytes.64kb: {status: supported, endpoint: /bytes/65536}
+  websocket-over-h3:
+    status: unsupported
+    scenarioId: http3.websocket.rfc9220.extended-connect
+    reason: HAProxy 3.2 does not expose a packaged RFC 9220 application endpoint here.
+unsupportedKnownCases: [origin-server-cohort, h1, h2, raw-quic, websocket, upload, streaming]
+requiredExternalTools: [docker]
+targetCapabilityProof:
+  id: haproxy-http3-quic
+  required: true
+  dockerExecArguments: [haproxy, -vv]
+  expectedOutputContains: QUIC
+runtime:
+  upstreamProgram: HAProxy
+  upstreamProgramModified: false
+  haproxyVersion: 3.2.21
+  imageReference: haproxy@sha256:e271912a69f3114b12aeea3362e32ae02bc8d1e330d748e06da3ae6c0522f73c
+endpoints:
+  status: {method: GET, path: /status}
+  bytes1kb: {method: GET, path: /bytes/1024}
+  bytes64kb: {method: GET, path: /bytes/65536}
+shutdownBehavior: runner-owned-docker-container
+artifactExports: [haproxy-http3-gateway.log]
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Gateway/proxy cohort only; HAProxy terminates HTTP/3 and forwards to a separate loopback HTTP/1 fixture backend.

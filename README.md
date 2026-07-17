@@ -38,6 +38,7 @@ implementations/
   caddy-http3/
   nginx-http1/
   nginx-http2/
+  haproxy-http-gateway/
   apache-http1/
   apache-http2/
   nginx-http3/
@@ -130,6 +131,7 @@ Implementation packages:
 - `org.protocol-lab.components.implementation.caddy-http3`
 - `org.protocol-lab.components.implementation.nginx-http1`
 - `org.protocol-lab.components.implementation.nginx-http2`
+- `org.protocol-lab.components.implementation.haproxy-http-gateway`
 - `org.protocol-lab.components.implementation.apache-http1`
 - `org.protocol-lab.components.implementation.apache-http2`
 - `org.protocol-lab.components.implementation.nginx-http3`
@@ -173,6 +175,10 @@ nginx packages follow the same lane split. `nginx-http1`, `nginx-http2`, and
 `nginx-http3` are separate packages. `nginx-http2` proves
 `--with-http_v2_module` and exercises h2c prior knowledge; `nginx-http3` proves
 `--with-http_v3_module` before serving.
+
+The `haproxy-http-gateway` package exposes separate HTTP/1.1, h2c, and HTTP/3
+proxy identities backed by one digest-pinned HAProxy image. Those rows belong
+to a gateway cohort and must never be presented as origin-server results.
 
 Apache packages are lane scoped as `apache-http1` and `apache-http2`. They use
 an unmodified digest-pinned upstream container with config/static fixtures;

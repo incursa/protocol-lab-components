@@ -1,0 +1,51 @@
+schemaVersion: "1.0"
+id: haproxy-http1-gateway
+name: HAProxy HTTP/1.1 Gateway
+description: HAProxy 3.2 reverse proxy receiving canonical HTTP/1.1 requests and forwarding them to an HTTP/1 fixture backend.
+family: haproxy
+role: proxy
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-haproxy-http-gateway:0.1.0
+dockerfile: Dockerfile
+buildContext: .
+baseUrl: http://127.0.0.1:8091
+dockerBaseUrl: http://127.0.0.1:8091
+protocolBaseUrls: {h1: http://127.0.0.1:8091}
+dockerProtocolBaseUrls: {h1: http://127.0.0.1:8091}
+dockerNetworkMode: published-port
+certificateMode: none
+roles: [proxy]
+protocols: [h1]
+supportedProtocols: [h1]
+supportedWorkloadFamilies: [http.application]
+supportedProtocolVersions: [http/1.1]
+ports:
+  - {name: http, protocol: tcp, default: 8091, hostPort: 8091, containerPort: 8080}
+readinessCheck: {type: http, url: /plaintext, timeoutSeconds: 60}
+capabilities: [http.proxy, httpPlaintext, httpJson]
+supportedTestCaseIds: [http1.core.plaintext, http1.core.json]
+supportedScenarios: [http1.core.plaintext, http1.core.json]
+scenarioCoverage:
+  http1.core.plaintext: {status: supported, executorId: go-http1-executor, endpoint: /plaintext}
+  http1.core.json: {status: supported, executorId: go-http1-executor, endpoint: /json}
+unsupportedKnownCases: [origin-server-cohort, h2, h3, https, websocket, server-sent-events]
+requiredExternalTools: [docker]
+targetCapabilityProof:
+  id: haproxy-http1
+  required: true
+  dockerExecArguments: [haproxy, -vv]
+  expectedOutputContains: HAProxy version 3.2.21
+runtime:
+  upstreamProgram: HAProxy
+  upstreamProgramModified: false
+  haproxyVersion: 3.2.21
+  imageReference: haproxy@sha256:e271912a69f3114b12aeea3362e32ae02bc8d1e330d748e06da3ae6c0522f73c
+endpoints:
+  plaintext: {method: GET, path: /plaintext}
+  json: {method: GET, path: /json}
+shutdownBehavior: runner-owned-docker-container
+artifactExports: [haproxy-http1-gateway.log]
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Gateway/proxy cohort only; the loopback fixture backend is not a separately measured implementation.
