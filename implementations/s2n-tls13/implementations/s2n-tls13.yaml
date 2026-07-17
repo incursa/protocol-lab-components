@@ -1,0 +1,51 @@
+schemaVersion: "1.0"
+id: s2n-tls13
+name: s2n-tls TLS 1.3
+description: Source-built s2n-tls library with a minimal canonical full-handshake adapter.
+family: s2n-tls
+role: library-backed-target
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-s2n-tls13:0.1.0
+dockerfile: docker/Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+workingDirectory: .
+baseUrl: tls://127.0.0.1:18448
+dockerBaseUrl: tls://127.0.0.1:18448
+protocolBaseUrls: {tls: tls://127.0.0.1:18448}
+dockerProtocolBaseUrls: {tls: tls://127.0.0.1:18448}
+certificateMode: plab-single-leaf-p256-v1
+roles: [server, library-backed-target]
+protocols: [tls]
+supportedProtocols: [tls]
+supportedProtocolVersions: [TLS1.3]
+supportedWorkloadFamilies: [tls, tls.lifecycle]
+supportedScenarios: [tls.handshake.full]
+supportedTestCaseIds: [tls.handshake.full]
+scenarioCoverage:
+  tls.handshake.full: {status: supported, behavior: exact fresh TLS 1.3 handshake with AES-128-GCM-SHA256, X25519, canonical ECDSA leaf, protocol-lab-tls ALPN, exact SNI, tickets disabled, and no application data}
+  tls.handshake.resumed: {status: unsupported, reason: Session tickets are disabled in this full-handshake-only adapter.}
+  tls.handshake.full.tls12: {status: unsupported, reason: The default_tls13 s2n-tls security policy admits TLS 1.3 only.}
+  tls.handshake.full.chacha20: {status: unsupported, reason: The canonical executor and post-handshake target proof require TLS_AES_128_GCM_SHA256.}
+  tls.handshake.mutual-auth: {status: unsupported, reason: Client authentication is not implemented.}
+  tls.early-data.accepted: {status: unsupported, reason: Session tickets and early data are disabled.}
+  tls.early-data.rejected: {status: unsupported, reason: Session tickets and early data are disabled.}
+  tls.key-update.diagnostic: {status: unsupported, reason: KeyUpdate diagnostics are not implemented.}
+  tls.record.coverage: {status: unsupported, reason: The PLABTLS1 record command protocol is not implemented.}
+  tls.record.throughput: {status: unsupported, reason: The PLABTLS1 record command protocol is not implemented.}
+unsupportedKnownCases: [tls.handshake.resumed, tls.handshake.full.tls12, tls.handshake.full.chacha20, tls.handshake.mutual-auth, tls.early-data.accepted, tls.early-data.rejected, tls.key-update.diagnostic, tls.record.coverage, tls.record.throughput]
+ports: [{name: tls, protocol: tcp, default: 18448, hostPort: 18448, containerPort: 8443}]
+environment: {PLAB_SCENARIO_ID: tls.handshake.full, PLAB_TLS_PORT: "8443"}
+startup: {port: {name: tls, environmentVariable: PLAB_TLS_PORT, default: 18448}, readiness: {protocol: tcp, timeoutSeconds: 10}}
+readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 250}
+capabilities: [tls.server, tls13, tlsX25519, tlsFullHandshake, tlsNoResumption, tlsZeroApplicationData, scenario.tls.handshake.full]
+comparisonCohort: tls13-full-handshake-runtime
+rankingEligibility: comparable
+entrypoint: {kind: bash, path: run.sh, arguments: [], workingDirectory: .}
+shutdownBehavior: docker-container
+artifactExports: []
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata: {manifest: protocol-lab.internal.json}
+notes: This is a minimal adapter linked directly to the source-built s2n-tls library; it is not the upstream s2nd testing utility.

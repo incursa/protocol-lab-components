@@ -1,0 +1,16 @@
+{
+  "implementation": {
+    "id": "s2n-tls13",
+    "version": "0.1.0",
+    "upstreamVersion": "1.7.5",
+    "upstreamTag": "v1.7.5",
+    "upstreamCommit": "f5f6c6c2ce2370de1aa3ade6899a7321d1127bb8",
+    "sourceArchiveSha256": "841f67cb1eb4ce71c829fa12ce940ae33556429c7e137be5c16461999bb7f666",
+    "language": "c",
+    "engineModule": "s2n-tls",
+    "license": "Apache-2.0",
+    "binaryBundled": false,
+    "acquisitionMode": "docker-source-build-exact-version",
+    "source": "https://github.com/aws/s2n-tls"
+  }
+}
