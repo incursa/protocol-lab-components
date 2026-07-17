@@ -469,8 +469,14 @@ The live breadth floors are met; the combined completion gate below remains
 open because the workers used for the new comparison rows share one physical
 host and therefore do not satisfy the decision-ready topology requirement.
 
-- [ ] Keep Kestrel, Caddy, nginx, and Apache packages aligned across their
-  exact supported HTTP/1.1 and HTTP/2 origin semantics.
+- [x] Keep Kestrel, Caddy, nginx, and Apache packages aligned across their
+  exact supported HTTP/1.1 and HTTP/2 origin semantics. Kestrel, Caddy, and
+  nginx retain separate HTTP/1.1 and h2c-prior-knowledge identities with only
+  the core plaintext/JSON rows they advertise. Apache retains separate HTTP/1
+  and HTTP/2 identities; its h2c row is executor-backed while its TLS/ALPN
+  variant is declared separately as validation-unavailable rather than being
+  attributed to h2c evidence. No package claims an HTTP/1, h2c, or TLS/ALPN
+  result from a different variant.
 - [x] Add Go `net/http` HTTP/1.1 and HTTP/2 origin packages.
 - [x] Add Node.js `node:http` and `node:http2` origin packages.
 - [x] Add Rust hyper HTTP/1.1 and HTTP/2 origin packages.
