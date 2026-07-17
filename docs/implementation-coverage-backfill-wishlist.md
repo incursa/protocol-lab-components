@@ -431,7 +431,15 @@ conformance failures instead of presenting executor completion as acceptance.
   satisfies the origin contract; keep raw mvfst evidence separate.
 - [ ] Add H2O as an experimental HTTP/3 origin with that status visible in
   metadata and public presentation.
-- [ ] Add HAProxy as a gateway/proxy cohort, never as an origin-server row.
+- [x] Add HAProxy as a gateway/proxy cohort, never as an origin-server row.
+  `org.protocol-lab.components.implementation.haproxy-http-gateway@0.1.3`
+  provides separate HTTP/1.1, h2c-prior-knowledge, and exact HTTP/3 proxy
+  identities. Current live jobs `job-ab7484669ef348f3b1beadebd76b4715`,
+  `job-ce82d914beb94454a1da82256c6fa3fa`, and
+  `job-63e72fa5845e4096a2edb333f53c1b7a` retained 130, 126, and 188
+  artifacts and were published as diagnostic reports. Every retained result
+  says `role: proxy`; the public catalog uses three gateway IDs and does not
+  place HAProxy in an origin cohort.
 - [x] Reconcile every HTTP/3 public catalog entry to one of: current
   live-proven package, current catalog-only candidate with exact blocker, or
   role-correct removal from the HTTP/3 origin cohort.
@@ -455,8 +463,12 @@ host and therefore do not satisfy the decision-ready topology requirement.
   variants; neither mode may provide evidence for the other. The Node, Jetty,
   and Rust comparison rows are explicitly h2c-only, and their public catalog
   copy does not claim TLS/ALPN coverage.
-- [ ] Keep gateways/proxies in a separate cohort and add HAProxy HTTP/1.1 and
+- [x] Keep gateways/proxies in a separate cohort and add HAProxy HTTP/1.1 and
   HTTP/2 gateway packages only after that cohort is represented publicly.
+  The live public entries `haproxy-http1-gateway` and
+  `haproxy-http2-gateway` link directly to the current-version physical-lab
+  reports and explicitly state that they are reverse-proxy results, not
+  origin-server benchmark rows.
 - [ ] Meet both HTTP origin coverage floors and publish decision-ready common
   cohorts without implying cross-protocol rankings.
 
