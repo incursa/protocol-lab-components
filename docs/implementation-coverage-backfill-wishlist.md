@@ -444,9 +444,13 @@ conformance failures instead of presenting executor completion as acceptance.
   `pub_d6511adc91c6470dbc2af8cd457404d3` is visible at
   `https://lab.incursa.com/reports/rack-lab-h2o-http3-v011-experimental-h3-local-v1-cell-1-matrix`
   and in the H2O catalog row as validation-only, not publishable evidence.
-  It remains an experimental origin and a single same-worker/same-host,
-  one-repetition diagnostic observation; it does not close the four-origin
-  decision-ready cohort floor below.
+  Follow-up job `job-cbc7e5f8eaaa48309ade60ab578ae8ec` retained three clean
+  repetitions of all three cells (nine passed validations/protocol proofs) and
+  is live at `https://lab.incursa.com/reports/rack-lab-h2o-http3-v011-experimental-r3-h3-local-v1-cell-1-matrix`
+  as publication `pub_dc4644395a8b416d838cbc951a7ac368`. It remains an
+  experimental same-worker/same-host diagnostic observation: its 11–18%
+  relative variance exceeds the 5% publishability threshold, so it does not
+  close the four-origin decision-ready cohort floor below.
 - [x] Add HAProxy as a gateway/proxy cohort, never as an origin-server row.
   `org.protocol-lab.components.implementation.haproxy-http-gateway@0.1.3`
   provides separate HTTP/1.1, h2c-prior-knowledge, and exact HTTP/3 proxy
