@@ -32,9 +32,9 @@ import (
 
 const (
 	executorID                  = "go-grpc-h2-executor"
-	executorVersion             = "0.4.1"
+	executorVersion             = "0.4.2"
 	loadGeneratorID             = "go-x-net-http2-grpc-load"
-	loadGeneratorVersion        = "0.4.1"
+	loadGeneratorVersion        = "0.4.2"
 	loadProfileSmoke            = "grpc-h2-smoke"
 	loadProfileDiagnostic       = "grpc-h2-diagnostic"
 	loadProfileChannelChurn     = "grpc-h2-channel-churn"
@@ -525,7 +525,7 @@ func invokeTerminal(parent context.Context, channel roundTripper, parsed *url.UR
 	r.TrailersOnly = r.GRPCStatus != "" && len(body) == 0
 	r.TrailersPresent = r.TrailersOnly
 	r.NoResponseData = len(body) == 0
-	r.ExpectedTerminalOutcome = readErr == nil && resp.ProtoMajor == 2 && resp.StatusCode == http.StatusOK && strings.EqualFold(strings.TrimSpace(strings.SplitN(r.ContentType, ";", 2)[0]), "application/grpc+proto") && r.GRPCStatus == spec.expectedStatus && r.GRPCMessage == spec.expectedMessage && r.TrailersOnly
+	r.ExpectedTerminalOutcome = readErr == nil && resp.ProtoMajor == 2 && resp.StatusCode == http.StatusOK && isGRPCContentType(r.ContentType) && r.GRPCStatus == spec.expectedStatus && r.GRPCMessage == spec.expectedMessage && r.TrailersOnly
 	r.Passed = r.ExpectedTerminalOutcome
 	if !r.Passed {
 		r.Error = fmt.Sprintf("trailers-only outcome mismatch: status=%q message=%q bytes=%d err=%v", r.GRPCStatus, r.GRPCMessage, len(body), readErr)
@@ -656,7 +656,7 @@ func invoke(parent context.Context, channel roundTripper, parsed *url.URL, reque
 	if resp.StatusCode != http.StatusOK {
 		problems = append(problems, fmt.Sprintf("expected HTTP 200, observed %d", resp.StatusCode))
 	}
-	if !strings.EqualFold(strings.TrimSpace(strings.SplitN(r.ContentType, ";", 2)[0]), "application/grpc+proto") {
+	if !isGRPCContentType(r.ContentType) {
 		problems = append(problems, "unexpected response content type")
 	}
 	if r.GRPCStatus != "0" || !r.TrailersPresent {
@@ -831,7 +831,7 @@ func baseResult(spec scenarioSpec, loadProfileID string) executionResult {
 	return executionResult{SchemaVersion: "protocol-lab.grpc-h2-executor-result.v1", ExecutorID: executorID, ExecutorVersion: executorVersion, LoadGeneratorID: loadGeneratorID, LoadGeneratorVersion: loadGeneratorVersion, ScenarioID: spec.id, LoadProfileID: loadProfileID, ServiceContractSha256: serviceContractDigest, Request: request, RequestedLoad: map[string]any{"connections": 1, "concurrency": 1, "streamsPerConnection": 1, "durationSeconds": duration, "warmupSeconds": warmup, "repetition": repetition, "totalRpcs": totalRpcs}, EffectiveLoad: map[string]any{"connections": 1, "activeConnections": 1, "concurrency": 1, "streamsPerConnection": 1, "activeStreams": 1, "durationSeconds": duration, "warmupSeconds": warmup, "repetition": repetition, "totalRpcs": totalRpcs}, Response: map[string]any{}, Metrics: map[string]any{"completedOperations": 0, "failedOperations": 1, "deadlineExceededOperations": 0, "cancelledOperations": 0, "timedOutOperations": 0}, Validation: map[string]any{"passed": false}, Artifacts: []string{"validation.json", "protocol-proof.json", "grpc-summary.json", "tls-negotiation.json", "result.json", "executor-identity.json", "load-generator-identity.json", "grpc-request-frame.bin", "grpc-response-frame.bin", "tls-peer-certificate.der", "gzip-encoder-provenance.json"}}
 }
 func validationChecks(s scenarioSpec) []string {
-	checks := []string{"tls-version:1.3", "alpn:h2", "no-fallback", "pre-established-channel", "channel-reused", fmt.Sprintf("request-count:%d", s.requestCount), fmt.Sprintf("response-count:%d", s.responseCount), "payload-sha256", "protobuf-sha256", "http-status:200", "content-type:application/grpc+proto", "trailers-present", "grpc-status:0", "zero-failures", "zero-deadlines", "zero-cancellations", "zero-timeouts"}
+	checks := []string{"tls-version:1.3", "alpn:h2", "no-fallback", "pre-established-channel", "channel-reused", fmt.Sprintf("request-count:%d", s.requestCount), fmt.Sprintf("response-count:%d", s.responseCount), "payload-sha256", "protobuf-sha256", "http-status:200", "content-type:application/grpc", "trailers-present", "grpc-status:0", "zero-failures", "zero-deadlines", "zero-cancellations", "zero-timeouts"}
 	if s.compression == "gzip" {
 		checks = append(checks, "grpc-encoding:gzip", "compressed-flag:1", "decompress-success", "gzip-encoder-provenance")
 	} else {
@@ -850,6 +850,11 @@ func validationChecks(s scenarioSpec) []string {
 		checks = append(checks, "ordered-one-to-one-echo")
 	}
 	return checks
+}
+
+func isGRPCContentType(value string) bool {
+	mediaType := strings.ToLower(strings.TrimSpace(strings.SplitN(value, ";", 2)[0]))
+	return mediaType == "application/grpc" || mediaType == "application/grpc+proto"
 }
 
 func writeArtifacts(dir string, result executionResult, request, response, peer []byte) error {

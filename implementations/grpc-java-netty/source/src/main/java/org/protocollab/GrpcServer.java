@@ -22,7 +22,7 @@ public final class GrpcServer {
   public static void main(String[] args) throws Exception {
     var ssl=GrpcSslContexts.forServer(new File("/app/certs/leaf.pem"),new File("/app/certs/leaf-key-pkcs8.pem")).protocols("TLSv1.3").build();
     var server=NettyServerBuilder.forPort(18444).sslContext(ssl).addService(ServerInterceptors.intercept(new Service(),new MetadataInterceptor())).build().start();
-    System.out.println("{\"implementationId\":\"grpc-java-netty\",\"implementationVersion\":\"0.1.0\",\"protocol\":\"grpc-over-h2\"}");
+    System.out.println("{\"implementationId\":\"grpc-java-netty\",\"implementationVersion\":\"0.1.2\",\"protocol\":\"grpc-over-h2\"}");
     server.awaitTermination();
   }
 

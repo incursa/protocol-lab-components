@@ -34,6 +34,7 @@ grpc:
   measuredWindow: rpc-operation
   requestContentType: application/grpc+proto
   responseContentType: application/grpc+proto
+  acceptedResponseContentTypes: [application/grpc, application/grpc+proto]
   te: trailers
   trailersRequired: true
   expectedGrpcStatus: 0
@@ -50,7 +51,7 @@ grpc:
 executionProfile: {transportSecurity: tls, protocolVariant: grpc-over-h2-tls-alpn, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
 validation:
   required: true
-  checks: [protocol:h2, alpn:h2, no-fallback, endpoint, http-status:200, content-type:application/grpc+proto, grpc-status:0, trailers-present, request-count:100, response-count:100, payload-sha256, protobuf-sha256, grpc-frame-sha256, ordered-echo, stream-complete, zero-unexpected-failures, zero-deadline-exceeded, zero-cancellations, zero-timeouts]
+  checks: [protocol:h2, alpn:h2, no-fallback, endpoint, http-status:200, content-type:accepted-protobuf-grpc, grpc-status:0, trailers-present, request-count:100, response-count:100, payload-sha256, protobuf-sha256, grpc-frame-sha256, ordered-echo, stream-complete, zero-unexpected-failures, zero-deadline-exceeded, zero-cancellations, zero-timeouts]
   protocol: {requested: grpc-over-h2, expectedObserved: grpc-over-h2, fallbackAllowed: false}
 benchmarkCompat: {compatibleLoadShapes: [smoke, diagnostic, regression, comparison, sustained-duplex], primaryMetrics: [messagesPerSecond, bytesPerSecond, messageLatencyP95, failedOperations, timedOutOperations]}
 requiredMetrics: [messagesPerSecond, bytesPerSecond, messageLatencyMean, messageLatencyP50, messageLatencyP75, messageLatencyP90, messageLatencyP95, messageLatencyP99, completedOperations, failedOperations, deadlineExceededOperations, cancelledOperations, timedOutOperations, totalTransferredBytes, effectiveConcurrency, effectiveStreams]

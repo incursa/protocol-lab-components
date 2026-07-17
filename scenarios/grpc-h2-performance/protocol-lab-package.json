@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.grpc-h2-performance",
-  "packageVersion": "0.4.1",
+  "packageVersion": "0.4.2",
   "kind": "scenario-pack",
   "displayName": "gRPC over HTTP/2 Performance Scenario Pack",
   "entryManifests": [

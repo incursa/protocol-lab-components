@@ -35,6 +35,7 @@ grpc:
   measuredWindow: rpc-operation
   requestContentType: application/grpc+proto
   responseContentType: application/grpc+proto
+  acceptedResponseContentTypes: [application/grpc, application/grpc+proto]
   te: trailers
   trailersRequired: false
   expectedGrpcStatus: 4

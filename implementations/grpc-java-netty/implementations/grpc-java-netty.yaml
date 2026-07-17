@@ -6,7 +6,7 @@ family: grpc-java-netty
 role: server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-grpc-java-netty:0.1.1
+image: incursa-protocol-lab-grpc-java-netty:0.1.2
 dockerfile: docker/Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
@@ -20,30 +20,30 @@ protocols: [h2]
 supportedProtocols: [h2]
 supportedProtocolVersions: [HTTP/2.0]
 supportedWorkloadFamilies: [grpc]
-supportedScenarios: &scenarios [grpc.h2.deadline-exceeded, grpc.h2.client-cancellation]
+supportedScenarios: &scenarios [grpc.h2.unary.echo, grpc.h2.server-streaming.echo, grpc.h2.client-streaming.echo, grpc.h2.bidi-streaming.echo, grpc.h2.deadline-exceeded, grpc.h2.client-cancellation]
 supportedTestCaseIds: *scenarios
 scenarioCoverage:
-  grpc.h2.unary.echo: {status: unsupported, reason: gRPC Java emits application/grpc while the current executor requires application/grpc+proto}
-  grpc.h2.unary.empty: {status: unsupported, reason: blocked by exact response content-type gate}
-  grpc.h2.unary.fixed-metadata: {status: unsupported, reason: blocked by exact response content-type gate}
-  grpc.h2.unary.gzip: {status: unsupported, reason: blocked by exact response content-type gate}
-  grpc.h2.unary.large: {status: unsupported, reason: blocked by exact response content-type gate}
-  grpc.h2.server-streaming.echo: {status: unsupported, reason: blocked by exact response content-type gate}
-  grpc.h2.client-streaming.echo: {status: unsupported, reason: blocked by exact response content-type gate}
-  grpc.h2.bidi-streaming.echo: {status: unsupported, reason: blocked by exact response content-type gate}
+  grpc.h2.unary.echo: {status: supported, behavior: canonical unary protobuf echo over authenticated TLS 1.3 and ALPN h2}
+  grpc.h2.unary.empty: {status: unsupported, reason: exact package row is not yet live-proven}
+  grpc.h2.unary.fixed-metadata: {status: unsupported, reason: exact package row is not yet live-proven}
+  grpc.h2.unary.gzip: {status: unsupported, reason: exact package row is not yet live-proven}
+  grpc.h2.unary.large: {status: unsupported, reason: exact package row is not yet live-proven}
+  grpc.h2.server-streaming.echo: {status: supported, behavior: one request and exactly 100 ordered responses}
+  grpc.h2.client-streaming.echo: {status: supported, behavior: exactly 100 requests, client half-close, and one response}
+  grpc.h2.bidi-streaming.echo: {status: supported, behavior: exactly 100 ordered one-to-one request and response messages}
   grpc.h2.trailers-only-status: {status: unsupported, reason: framework percent-encodes grpc-message while the executor requires the literal value}
   grpc.h2.deadline-exceeded: {status: supported, behavior: response withheld beyond deadline}
   grpc.h2.client-cancellation: {status: supported, behavior: ready metadata then cancellation}
-  grpc.h2.unary.echo-new-channel: {status: unsupported, reason: blocked by exact response content-type gate}
+  grpc.h2.unary.echo-new-channel: {status: unsupported, reason: exact package row is not yet live-proven}
 unsupportedKnownCases: [grpc-web, grpc-over-h3, h1, h2c, retries, hedging]
 ports: [{name: grpc-h2, protocol: tcp, default: 18444, hostPort: 18444, containerPort: 18444}]
 environment: {PLAB_TARGET_PORT: "18444"}
 startup: {port: {name: grpc-h2, environmentVariable: PLAB_TARGET_PORT, default: 18444}, readiness: {protocol: process, timeoutSeconds: 45}}
 readinessCheck: {type: processStarted, timeoutSeconds: 45, startupDelayMilliseconds: 2000}
-capabilities: [scenario.grpc.h2.deadline-exceeded, scenario.grpc.h2.client-cancellation, grpc.h2, grpc.terminal-outcomes, tls13, alpn.h2]
+capabilities: [scenario.grpc.h2.unary.echo, scenario.grpc.h2.server-streaming.echo, scenario.grpc.h2.client-streaming.echo, scenario.grpc.h2.bidi-streaming.echo, scenario.grpc.h2.deadline-exceeded, scenario.grpc.h2.client-cancellation, grpc.h2, grpc.unary, grpc.streaming, grpc.terminal-outcomes, tls13, alpn.h2]
 entrypoint: {kind: pwsh, path: run.ps1, arguments: [], workingDirectory: .}
 shutdownBehavior: process
 artifactExports: [command.txt, stdout.txt, stderr.txt, result.json]
 qlogSupport: false
 sslKeyLogSupport: false
-notes: Deadline and client-cancellation rows pass the exact executor. Other implemented service methods remain unclaimed because standard gRPC Java response metadata differs from the current executor contract.
+notes: Unary, server-streaming, client-streaming, bidirectional-streaming, deadline, and client-cancellation rows use the standard application/grpc response media type admitted by executor generation 0.4.2. Other implemented service methods remain explicitly unclaimed until separately live-proven.

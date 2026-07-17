@@ -34,6 +34,7 @@ grpc:
   measuredWindow: channel-establishment-and-rpc
   requestContentType: application/grpc+proto
   responseContentType: application/grpc+proto
+  acceptedResponseContentTypes: [application/grpc, application/grpc+proto]
   te: trailers
   trailersRequired: true
   expectedGrpcStatus: 0

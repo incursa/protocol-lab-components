@@ -11,8 +11,8 @@ $Root = [IO.Path]::GetFullPath($Root)
 $PackageDirectory = [IO.Path]::GetFullPath($PackageDirectory)
 $OutputRoot = [IO.Path]::GetFullPath($OutputRoot)
 $packages = [ordered]@{
-    scenario = Join-Path $PackageDirectory 'org.protocol-lab.components.scenario.grpc-h2-performance.0.4.1.plabpkg'
-    executor = Join-Path $PackageDirectory 'org.protocol-lab.components.executor.go-grpc-h2-executor.0.4.1.win-x64.plabpkg'
+    scenario = Join-Path $PackageDirectory 'org.protocol-lab.components.scenario.grpc-h2-performance.0.4.2.plabpkg'
+    executor = Join-Path $PackageDirectory 'org.protocol-lab.components.executor.go-grpc-h2-executor.0.4.2.win-x64.plabpkg'
     target = Join-Path $PackageDirectory 'org.protocol-lab.components.implementation.go-grpc-h2.0.4.0.win-x64.plabpkg'
 }
 foreach ($entry in $packages.GetEnumerator()) {
@@ -42,9 +42,9 @@ try {
     )
     foreach ($scenario in $scenarios) {
         $env:PLAB_EXECUTOR_ID = 'go-grpc-h2-executor'
-        $env:PLAB_EXECUTOR_VERSION = '0.4.1'
+        $env:PLAB_EXECUTOR_VERSION = '0.4.2'
         $env:PLAB_LOAD_GENERATOR_ID = 'go-x-net-http2-grpc-load'
-        $env:PLAB_LOAD_GENERATOR_VERSION = '0.4.1'
+        $env:PLAB_LOAD_GENERATOR_VERSION = '0.4.2'
         $env:PLAB_SCENARIO_ID = $scenario.id
         $env:PLAB_LOAD_PROFILE_ID = $scenario.profile
         $env:PLAB_PROTOCOL = 'h2'
@@ -67,8 +67,8 @@ try {
         if ($result.passed -ne $true -or $result.scenarioId -ne $scenario.id -or $result.metrics.failedOperations -ne 0 -or $result.metrics.timedOutOperations -ne 0) {
             throw "$($scenario.id) extracted-package evidence failed the common outcome gate."
         }
-        if ($result.executorId -ne 'go-grpc-h2-executor' -or $result.executorVersion -ne '0.4.1' -or
-            $result.loadGeneratorId -ne 'go-x-net-http2-grpc-load' -or $result.loadGeneratorVersion -ne '0.4.1') {
+        if ($result.executorId -ne 'go-grpc-h2-executor' -or $result.executorVersion -ne '0.4.2' -or
+            $result.loadGeneratorId -ne 'go-x-net-http2-grpc-load' -or $result.loadGeneratorVersion -ne '0.4.2') {
             throw "$($scenario.id) substituted the executor or load-generator identity."
         }
         if ($result.protocol.tlsVersion -ne 'TLS1.3' -or $result.protocol.alpn -ne 'h2' -or

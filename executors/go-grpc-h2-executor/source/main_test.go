@@ -110,6 +110,19 @@ func TestEveryCommittedGRPCIdentityIsImplemented(t *testing.T) {
 		t.Fatal("unknown classified as known")
 	}
 }
+
+func TestGRPCContentTypeAcceptsBaseAndRegisteredSubtypeForms(t *testing.T) {
+	for _, value := range []string{"application/grpc", "application/grpc+proto", "APPLICATION/GRPC+PROTO; charset=utf-8"} {
+		if !isGRPCContentType(value) {
+			t.Fatalf("valid gRPC content type rejected: %q", value)
+		}
+	}
+	for _, value := range []string{"application/grpc+json", "application/grpc-web", "application/json", "text/plain", ""} {
+		if isGRPCContentType(value) {
+			t.Fatalf("non-gRPC content type accepted: %q", value)
+		}
+	}
+}
 func setSelection(t *testing.T, scenario, profile string) {
 	t.Helper()
 	duration, warmup, repetition, variant := "5", "1", "1", protocolVariant
