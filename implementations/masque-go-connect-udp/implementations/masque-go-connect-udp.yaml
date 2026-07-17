@@ -1,0 +1,45 @@
+schemaVersion: "1.0"
+id: masque-go-connect-udp
+name: masque-go CONNECT-UDP
+description: masque-go v0.4.0 RFC 9298 proxy with a separately logged deterministic UDP echo-target role.
+family: masque-go
+role: proxy
+targetKind: process
+targetContract: process
+executable: bash
+workingDirectory: .
+commandArguments: [run.sh]
+image: incursa-protocol-lab-masque-go-connect-udp:0.1.0
+dockerfile: docker/Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+baseUrl: https://127.0.0.1:5471
+dockerBaseUrl: https://127.0.0.1:5471
+protocolBaseUrls: {masque: https://127.0.0.1:5471, h3: https://127.0.0.1:5471}
+dockerProtocolBaseUrls: {masque: https://127.0.0.1:5471, h3: https://127.0.0.1:5471}
+certificateMode: committed-self-signed-masque-proxy-plab-test
+roles: [proxy, udp-target]
+protocols: [masque, h3, udp]
+supportedProtocols: [masque, h3, udp]
+supportedWorkloadFamilies: [masque-connect-udp]
+supportedProtocolVersions: [rfc9298, rfc9297, http/3, quic-v1, tls1.3]
+supportedScenarios: [masque.connect-udp-tunnel]
+supportedTestCaseIds: [masque.connect-udp-tunnel]
+scenarioCoverage:
+  masque.connect-udp-tunnel: {status: supported, endpoint: "/.well-known/masque/udp/{target_host}/{target_port}/", behavior: one-connect-udp-tunnel-to-explicit-udp-target-32x256-byte-exact-echo}
+  masque.connect-udp: {status: unsupported, reason: The setup-only placeholder is not an independently measured package lane.}
+  masque.connect-ip-tunnel: {status: unsupported, reason: CONNECT-IP is a separate deferred protocol and cannot substitute for CONNECT-UDP.}
+ports: [{name: masque, protocol: udp, default: 5471, hostPort: 5471, containerPort: 4443}]
+startup:
+  port: {name: masque, environmentVariable: PLAB_TARGET_PORT, default: 5471}
+readinessCheck: {type: processStarted, timeoutSeconds: 30}
+capabilities: [masque.proxy, masque.connect-udp, h3.server, http-datagram, quic.server, tls1.3, udp.echo-target]
+endpoints:
+  proxy: {method: CONNECT, protocol: connect-udp, pathTemplate: "/.well-known/masque/udp/{target_host}/{target_port}/", authority: masque-proxy.plab.test}
+  target: {protocol: udp, host: masque-echo.plab.test, port: 4433, behavior: exact-echo}
+unsupportedKnownCases: [connect-ip, ordinary-http-connect, ordinary-http-forward-proxy, arbitrary-external-target, multiple-tunnels, rankable-topology]
+artifactExports: [stdout.txt, stderr.txt, proxy-proof.json, udp-target-proof.json]
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata: {manifest: protocol-lab.internal.json}
+notes: Exact masque-go v0.4.0 package. Proxy and UDP target roles are logically distinct and separately logged but co-located in one diagnostic container.

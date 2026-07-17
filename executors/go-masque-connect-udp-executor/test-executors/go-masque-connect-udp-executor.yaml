@@ -1,0 +1,33 @@
+executorIdentity: {id: go-masque-connect-udp-executor, name: Go MASQUE CONNECT-UDP Test Executor, version: 0.1.0, vendor: Incursa}
+versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.1.0}
+claimedCapabilities:
+  - {id: masque.connect-udp-tunnel, status: supported}
+  - {id: rfc9298-connect-udp-over-http3-proof, status: supported}
+  - {id: http-datagram-context-id-zero-proof, status: supported}
+  - {id: explicit-client-proxy-udp-target-proof, status: supported}
+  - {id: deterministic-32x256-byte-sha256-echo, status: supported}
+  - {id: ordinary-http-proxy, status: unsupported}
+  - {id: masque.connect-ip-tunnel, status: unsupported}
+supportedTestSelectors: [{selectorType: test-id, expression: masque.connect-udp-tunnel}]
+supportedScenarioSelectors: [{selectorType: scenario-id, expression: masque.connect-udp-tunnel}]
+supportedProtocolFamilies: [masque, h3, quic, tls, udp]
+supportedExecutionModes: [single-cell, process]
+requiredTargetEndpointBindings: [{bindingId: primary, purpose: masque-connect-udp-h3-proxy, endpointType: https, protocols: [masque, h3]}]
+supportedArtifactTypes:
+  - {type: validation.json, producedByStates: [stopped, failed]}
+  - {type: protocol-proof.json, producedByStates: [stopped, failed]}
+  - {type: masque-summary.json, producedByStates: [stopped, failed]}
+  - {type: datagram-hash.json, producedByStates: [stopped, failed]}
+  - {type: result.json, producedByStates: [stopped, failed]}
+  - {type: masque-executor-result.json, producedByStates: [stopped, failed]}
+  - {type: masque-load-summary.json, producedByStates: [stopped, failed]}
+  - {type: masque-warmup-summary.json, producedByStates: [stopped, failed]}
+  - {type: masque-repetitions.json, producedByStates: [stopped, failed]}
+  - {type: executor-identity.json, producedByStates: [stopped, failed]}
+  - {type: load-generator-identity.json, producedByStates: [stopped, failed]}
+  - {type: load.stdout.log, producedByStates: [stopped, failed]}
+  - {type: load.stderr.log, producedByStates: [stopped, failed]}
+  - {type: unsupported.json, producedByStates: [failed]}
+metricsAvailability: {available: true, availableKinds: [validation, tunnels-per-second, datagrams-per-second, datagram-latency-percentiles, operation-outcomes, effective-tunnels]}
+parser: {id: protocol-lab-masque-json, type: protocol-lab-masque-json, preservesRawOutput: true}
+telemetry: {supported: true, supported_contract_versions: [telemetry-bundle-v1], supported_scopes: [test-executor, load-generator], supported_artifact_kinds: [summary, metrics, stdout, stderr, raw], export_modes: [inline, artifact-bundle]}

@@ -1,0 +1,10 @@
+id: masque-connect-udp-performance-comparison
+name: MASQUE CONNECT-UDP performance comparison candidate suite
+description: Matched three-repetition selection for RFC 9298 CONNECT-UDP proxy observations against the package-backed UDP echo target.
+purpose: benchmark
+resultKind: benchmark
+loadProfileId: masque-connect-udp-comparison
+scenarios: [masque.connect-udp-tunnel]
+protocol: masque
+notes: Results are comparable observations only; the lane is non-rankable until ProtocolLab defines and satisfies meaningful multi-host proxy, target, and load topology controls.
+tags: [masque, connect-udp, h3, http-datagram, comparison, non-rankable]

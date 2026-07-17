@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.scenario.masque-connect-udp-performance",
+  "packageVersion": "0.1.0",
+  "kind": "scenario-pack",
+  "displayName": "MASQUE CONNECT-UDP Performance Scenario Pack",
+  "entryManifests": [
+    "scenarios/masque/connect-udp-tunnel.yaml",
+    "suites/masque-connect-udp-performance-comparison.yaml",
+    "load-profiles/masque-connect-udp-comparison.yaml"
+  ],
+  "providedScenarios": [{"scenarioId": "masque.connect-udp-tunnel", "displayName": "MASQUE CONNECT-UDP Datagram Echo Tunnel", "protocols": ["masque", "h3", "udp"]}],
+  "providedSuites": [{"suiteId": "masque-connect-udp-performance-comparison", "displayName": "MASQUE CONNECT-UDP Performance Comparison Candidate", "purpose": "benchmark", "resultKind": "benchmark", "protocols": ["masque", "h3", "udp"], "testExecutors": ["go-masque-connect-udp-executor"]}],
+  "providedLoadProfiles": [{"loadProfileId": "masque-connect-udp-comparison", "displayName": "MASQUE CONNECT-UDP Comparison Candidate", "protocols": ["masque", "h3", "udp"]}]
+}

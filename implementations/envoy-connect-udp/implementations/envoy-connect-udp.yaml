@@ -1,0 +1,45 @@
+schemaVersion: "1.0"
+id: envoy-connect-udp
+name: Envoy CONNECT-UDP
+description: Envoy v1.38.3 HTTP/3 CONNECT-UDP termination with a separately logged deterministic UDP echo-target role.
+family: envoy
+role: proxy
+targetKind: process
+targetContract: process
+executable: bash
+workingDirectory: .
+commandArguments: [run.sh]
+image: incursa-protocol-lab-envoy-connect-udp:0.1.0
+dockerfile: docker/Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+baseUrl: https://127.0.0.1:5472
+dockerBaseUrl: https://127.0.0.1:5472
+protocolBaseUrls: {masque: https://127.0.0.1:5472, h3: https://127.0.0.1:5472}
+dockerProtocolBaseUrls: {masque: https://127.0.0.1:5472, h3: https://127.0.0.1:5472}
+certificateMode: committed-self-signed-masque-proxy-plab-test
+roles: [proxy, udp-target]
+protocols: [masque, h3, udp]
+supportedProtocols: [masque, h3, udp]
+supportedWorkloadFamilies: [masque-connect-udp]
+supportedProtocolVersions: [rfc9298-alpha, rfc9297, http/3, quic-v1, tls1.3]
+supportedScenarios: [masque.connect-udp-tunnel]
+supportedTestCaseIds: [masque.connect-udp-tunnel]
+scenarioCoverage:
+  masque.connect-udp-tunnel: {status: supported, endpoint: "/.well-known/masque/udp/{target_host}/{target_port}/", behavior: one-connect-udp-tunnel-to-static-package-backed-udp-target-32x256-byte-exact-echo}
+  masque.connect-udp: {status: unsupported, reason: The setup-only placeholder is not an independently measured package lane.}
+  masque.connect-ip-tunnel: {status: unsupported, reason: CONNECT-IP is a separate deferred protocol and cannot substitute for CONNECT-UDP.}
+ports: [{name: masque, protocol: udp, default: 5472, hostPort: 5472, containerPort: 4443}]
+startup:
+  port: {name: masque, environmentVariable: PLAB_TARGET_PORT, default: 5472}
+readinessCheck: {type: processStarted, timeoutSeconds: 30}
+capabilities: [masque.proxy, masque.connect-udp, h3.server, http-datagram, quic.server, tls1.3, udp.echo-target]
+endpoints:
+  proxy: {method: CONNECT, protocol: connect-udp, pathTemplate: "/.well-known/masque/udp/{target_host}/{target_port}/", authority: masque-proxy.plab.test}
+  target: {protocol: udp, host: masque-echo.plab.test, port: 4433, behavior: exact-echo, routing: static-package-backed-cluster}
+unsupportedKnownCases: [connect-ip, ordinary-http-connect, ordinary-http-forward-proxy, dynamic-arbitrary-target, multiple-tunnels, rankable-topology]
+artifactExports: [stdout.txt, stderr.txt, proxy-proof.json, udp-target-proof.json]
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata: {manifest: protocol-lab.internal.json}
+notes: Exact Envoy v1.38.3 image. CONNECT-UDP is alpha upstream; proxy and target roles are separately logged but co-located in one diagnostic container.

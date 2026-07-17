@@ -1,0 +1,5 @@
+{
+  "executor": {"language": "go", "module": "org.protocol-lab.components.executor.go-masque-connect-udp-executor", "version": "0.1.0", "buildFlags": ["-buildvcs=false", "-trimpath"]},
+  "loadGenerator": {"id": "masque-go-load", "version": "0.1.0", "engineModule": "github.com/quic-go/masque-go", "engineModuleVersion": "v0.4.0", "license": "MIT", "source": "https://github.com/quic-go/masque-go", "sourceTagCommit": "03179c5407a332f0509fa8e165244e6410ac165a", "thirdPartyLicenseFiles": ["third-party/masque-go-LICENSE.txt", "third-party/quic-go-LICENSE.txt", "third-party/httpsfv-LICENSE.txt", "third-party/qpack-LICENSE.md", "third-party/uritemplate-LICENSE.txt"]},
+  "authority": {"repository": "https://github.com/incursa/protocol-lab", "commit": "d8082f5ae7d872e9e556f9696177079929483c58"}
+}

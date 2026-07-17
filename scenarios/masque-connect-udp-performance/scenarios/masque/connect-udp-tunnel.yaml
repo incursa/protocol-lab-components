@@ -1,0 +1,44 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: masque.connect-udp-tunnel
+title: MASQUE CONNECT-UDP Datagram Echo Tunnel
+description: Establish one authenticated RFC 9298 CONNECT-UDP tunnel through an HTTP/3 proxy to the package-backed UDP echo target and verify 32 deterministic echoed datagrams.
+status: experimental
+kind: workload
+layer: application
+protocol: masque
+family: masque
+semanticTemplateId: masque.connect-udp.datagram-echo-32x256b
+protocolStack: [masque-connect-udp, http-datagram, h3, quic, tls1.3, udp]
+upstreamStandards: [https://www.rfc-editor.org/rfc/rfc9298, https://www.rfc-editor.org/rfc/rfc9297, https://www.rfc-editor.org/rfc/rfc9221, https://www.rfc-editor.org/rfc/rfc9114]
+roles: [client, proxy, udp-target]
+requires: {capabilities: [masque.client, masque.proxy, masque.connect-udp, udp.echo-target], protocols: [masque, h3, udp], roles: [client, proxy, udp-target]}
+trafficShape: datagram
+executionProfile: {transportSecurity: tls, protocolVariant: masque-connect-udp-over-h3, implementationRole: proxy, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+masqueConnectUdp:
+  binding: connect-udp-over-http3
+  proxyAuthority: masque-proxy.plab.test
+  uriTemplate: "/.well-known/masque/udp/{target_host}/{target_port}/"
+  targetHost: masque-echo.plab.test
+  targetPort: 4433
+  operation: connect-udp-datagram-echo
+  tunnelCount: 1
+  datagramCount: 32
+  payloadBytesPerDatagram: 256
+  payloadGenerator: datagram-index-plus-octet-mod-251
+  payloadSetSha256: 2e975a37b4bff0a8022c0f89ab19e9a8e2599300e557e9b8ce3eff364cd33e8b
+  payloadDirection: client-to-target-then-target-to-client-via-proxy
+  contextId: 0
+  connectionLifecycle: new-tunnel-per-operation
+  measuredWindow: connect-udp-establishment-and-datagram-round-trips
+  handshake: {method: CONNECT, protocol: connect-udp, scheme: https, authority: masque-proxy.plab.test, pathTemplate: "/.well-known/masque/udp/{target_host}/{target_port}/", responseStatus: 200, datagramsEnabled: true}
+validation:
+  required: true
+  checks: [protocol:masque-connect-udp-over-h3, tls:1.3, alpn:h3, no-fallback, extended-connect, pseudo-protocol:connect-udp, response-status:200, http-datagrams-enabled, context-id:0, explicit-proxy-role, explicit-udp-target-role, tunnel-established, datagram-count:32, payload-bytes-per-datagram:256, payload-set-sha256, ordered-echo, zero-datagram-loss, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: masque-connect-udp-over-h3, expectedObserved: masque-connect-udp-over-h3, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke, comparison], primaryMetrics: [tunnelsPerSecond, datagramsPerSecond, datagramLatencyP95, datagramLatencyP99, failedOperations, timedOutOperations]}
+requiredMetrics: [tunnelsPerSecond, datagramsPerSecond, datagramLatencyMean, datagramLatencyP50, datagramLatencyP75, datagramLatencyP90, datagramLatencyP95, datagramLatencyP99, completedOperations, failedOperations, timedOutOperations, sentDatagrams, receivedDatagrams, totalTransferredBytes, effectiveTunnels]
+artifacts: {required: [validation.json, protocol-proof.json, masque-summary.json, datagram-hash.json, result.json, load.stdout.log, load.stderr.log, target.stdout.log, target.stderr.log], optional: [qlog, tls-key-log, target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [ordinary-http-connect-substitution, ordinary-http-forward-proxy-substitution, connect-ip-substitution, origin-server-role, external-uncontrolled-udp-target, missing-http-datagram-proof, missing-target-echo-proof]}
+networkProfile: clean
+tags: [masque, connect-udp, h3, quic, http-datagram, udp, echo, experimental]

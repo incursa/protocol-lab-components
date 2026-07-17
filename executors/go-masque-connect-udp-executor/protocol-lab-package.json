@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.go-masque-connect-udp-executor",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "Go MASQUE CONNECT-UDP Test Executor",
+  "entryManifests": ["test-executors/go-masque-connect-udp-executor.yaml"],
+  "providedTestExecutors": [{
+    "testExecutorId": "go-masque-connect-udp-executor",
+    "displayName": "Go MASQUE CONNECT-UDP Test Executor",
+    "protocols": ["masque", "h3", "udp"],
+    "scenarios": ["masque.connect-udp-tunnel"],
+    "tests": ["masque.connect-udp-tunnel"]
+  }],
+  "dependencies": {}
+}

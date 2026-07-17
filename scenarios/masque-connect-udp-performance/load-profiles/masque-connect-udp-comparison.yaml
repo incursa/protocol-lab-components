@@ -1,0 +1,14 @@
+schemaVersion: protocol-lab.load-profile.v2
+version: 2.0.0
+id: masque-connect-udp-comparison
+title: MASQUE CONNECT-UDP Comparison Candidate
+status: experimental
+purpose: comparison
+description: Three-repetition non-rankable comparison profile for one fresh CONNECT-UDP tunnel and 32 deterministic UDP echo datagrams per operation.
+durationSeconds: 15
+warmupSeconds: 3
+cooldownSeconds: 3
+repetitions: 3
+masque: {tunnels: 1, concurrency: 1, datagramsPerTunnel: 32, totalOperations: null, operationRateLimitPerSecond: null, operationTimeoutMilliseconds: 15000}
+evidence: {minimumTier: comparison, publishable: false}
+artifacts: {required: [load.stdout.log, load.stderr.log, validation.json, protocol-proof.json, masque-summary.json, datagram-hash.json, result.json, target.stdout.log, target.stderr.log], optional: [qlog, target-telemetry.json, load-generator-telemetry.json]}

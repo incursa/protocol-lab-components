@@ -348,6 +348,8 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'implementations/aioquic-http3'; script = 'Build-AioquicHttp3Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/webtransport-go'; script = 'Build-WebtransportGoPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/aioquic-webtransport'; script = 'Build-AioquicWebtransportPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/masque-go-connect-udp'; script = 'Build-MasqueGoConnectUdpPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/envoy-connect-udp'; script = 'Build-EnvoyConnectUdpPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/quiche-http3'; script = 'Build-QuicheHttp3Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/ngtcp2-http3'; script = 'Build-Ngtcp2Http3Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/lsquic-http3'; script = 'Build-LsquicHttp3Package.ps1'; arguments = @() },
@@ -363,6 +365,8 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'executors/go-http2-websocket-executor'; script = 'Build-GoHttp2WebSocketExecutorPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'executors/go-webtransport-executor'; script = 'Build-GoWebtransportExecutorPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'executors/go-webtransport-executor'; script = 'Build-GoWebtransportExecutorPackage.ps1'; arguments = @('linux-x64') },
+    [pscustomobject]@{ componentPath = 'executors/go-masque-connect-udp-executor'; script = 'Build-GoMasqueConnectUdpExecutorPackage.ps1'; arguments = @('win-x64') },
+    [pscustomobject]@{ componentPath = 'executors/go-masque-connect-udp-executor'; script = 'Build-GoMasqueConnectUdpExecutorPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'executors/go-tls13-executor'; script = 'Build-GoTls13ExecutorPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'executors/go-tls13-executor'; script = 'Build-GoTls13ExecutorPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'executors/go-tls13-mtls-executor'; script = 'Build-GoTls13MtlsExecutorPackage.ps1'; arguments = @('win-x64') },
@@ -408,7 +412,8 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'executors/quic-go-raw-load'; script = 'Build-QuicGoRawLoadPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'executors/quic-go-raw-load'; script = 'Build-QuicGoRawLoadPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'scenarios/raw-quic-transport'; script = 'Build-RawQuicScenarioPackage.ps1'; arguments = @() },
-    [pscustomobject]@{ componentPath = 'scenarios/webtransport-performance'; script = 'Build-WebtransportScenarioPackage.ps1'; arguments = @() }
+    [pscustomobject]@{ componentPath = 'scenarios/webtransport-performance'; script = 'Build-WebtransportScenarioPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'scenarios/masque-connect-udp-performance'; script = 'Build-MasqueConnectUdpScenarioPackage.ps1'; arguments = @() }
 )
 
 $builderResults = [System.Collections.Generic.List[object]]::new()

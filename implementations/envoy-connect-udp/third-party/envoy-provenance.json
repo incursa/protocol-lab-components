@@ -1,0 +1,10 @@
+{
+  "name": "Envoy Proxy",
+  "repository": "https://github.com/envoyproxy/envoy",
+  "version": "v1.38.3",
+  "tagCommit": "0ebfcfe5b0484b89ca85b761da9e05ce75dbda8d",
+  "containerImage": "envoyproxy/envoy:v1.38.3",
+  "containerImageLinuxAmd64Digest": "sha256:5f7c43e1147412fdb3af578c651c67478a3df818eae89d2261e707e06c209cdb",
+  "license": "Apache-2.0",
+  "upstreamStatus": "CONNECT-UDP is alpha"
+}

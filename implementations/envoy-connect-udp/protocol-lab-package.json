@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.envoy-connect-udp",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "Envoy CONNECT-UDP Proxy",
+  "entryManifests": ["implementations/envoy-connect-udp.yaml"],
+  "providedImplementations": [{
+    "implementationId": "envoy-connect-udp",
+    "displayName": "Envoy CONNECT-UDP",
+    "protocols": ["masque", "h3", "udp"],
+    "scenarios": ["masque.connect-udp-tunnel"]
+  }],
+  "dependencies": {"requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "http3-runtime", "value": "true"}]}
+}

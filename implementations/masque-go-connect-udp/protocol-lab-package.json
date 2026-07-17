@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.masque-go-connect-udp",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "masque-go CONNECT-UDP Proxy",
+  "entryManifests": ["implementations/masque-go-connect-udp.yaml"],
+  "providedImplementations": [{
+    "implementationId": "masque-go-connect-udp",
+    "displayName": "masque-go CONNECT-UDP",
+    "protocols": ["masque", "h3", "udp"],
+    "scenarios": ["masque.connect-udp-tunnel"]
+  }],
+  "dependencies": {"requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "http3-runtime", "value": "true"}]}
+}

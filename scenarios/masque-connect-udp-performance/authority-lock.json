@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/incursa/protocol-lab",
+  "commit": "d8082f5ae7d872e9e556f9696177079929483c58",
+  "files": {
+    "scenarios/masque/connect-udp-tunnel.yaml": "9d4019cf6fa8624e4863b248ebd393c754db9f94e4e5ea167032dc4f9f4b6df4",
+    "load-profiles/masque-connect-udp-comparison.yaml": "5feb40a66cf6de70d744a96055968eba040b9458087445e866cbcd41780ad304",
+    "suites/masque-connect-udp-performance-comparison.yaml": "2e0f7ae0e46afe75cc797b5bad98af9abb9e58649493c75064cd388094b7ca4d"
+  }
+}

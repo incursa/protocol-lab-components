@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {"os": "windows", "arch": "x64", "entrypoint": {"kind": "pwsh", "path": "run.ps1", "arguments": [], "workingDirectory": "."}},
+    {"os": "linux", "arch": "x64", "entrypoint": {"kind": "bash", "path": "run.sh", "arguments": [], "workingDirectory": "."}}
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "http3-runtime", "value": "true"}],
+    "images": [{
+      "name": "masque-go-connect-udp",
+      "image": "incursa-protocol-lab-masque-go-connect-udp:0.1.0",
+      "baseImage": "golang:1.25-bookworm",
+      "sourceRuntime": "scratch",
+      "module": "github.com/quic-go/masque-go",
+      "moduleVersion": "v0.4.0",
+      "sourceRepository": "https://github.com/quic-go/masque-go",
+      "sourceTag": "v0.4.0",
+      "sourceTagCommit": "03179c5407a332f0509fa8e165244e6410ac165a"
+    }]
+  },
+  "commands": {
+    "buildTemplate": "docker build --pull -f docker/Dockerfile -t incursa-protocol-lab-masque-go-connect-udp:0.1.0 .",
+    "serverTemplate": "docker run --rm -p <port>:4443/udp incursa-protocol-lab-masque-go-connect-udp:0.1.0"
+  },
+  "knownLimitations": [
+    "The package exposes only masque.connect-udp-tunnel with a logically distinct but co-located UDP echo target.",
+    "The committed self-signed certificate is accepted only by the pinned test executor trust profile.",
+    "CONNECT-IP, ordinary HTTP proxying, arbitrary external UDP targets, and ranking claims are not supported."
+  ]
+}
