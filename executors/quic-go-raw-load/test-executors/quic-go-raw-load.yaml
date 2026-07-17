@@ -1,13 +1,13 @@
 executorIdentity:
   id: quic-go-raw-load
   name: quic-go Raw QUIC Load Executor
-  version: 0.1.16
+  version: 0.1.17
   vendor: Incursa
 versionCompatibility:
   contractVersion: test-executor-v1
   compatibleContractVersions:
     - test-executor-v1
-  executorVersion: 0.1.16
+  executorVersion: 0.1.17
 claimedCapabilities:
   - id: quic.transport.stream-throughput.64kb
     status: supported

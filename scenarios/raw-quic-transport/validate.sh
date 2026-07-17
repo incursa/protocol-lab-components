@@ -44,4 +44,10 @@ for relative_path in "${required_files[@]}"; do
   fi
 done
 
+if ! grep -Eq '^id: quic\.transport\.multiplex\.100x64kb$' "$package_root/scenarios/quic/transport/multiplex-100-streams.yaml" ||
+   ! grep -Eq '^  expectedBytes: 13107200$' "$package_root/scenarios/quic/transport/multiplex-100-streams.yaml"; then
+  echo "Raw QUIC multiplex 100x64KB scenario must declare the aggregate 13,107,200-byte expectedBytes contract." >&2
+  exit 1
+fi
+
 echo "Raw QUIC scenario package files are present."

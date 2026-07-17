@@ -48,4 +48,11 @@ foreach ($relativePath in $requiredFiles) {
     }
 }
 
+$multiplexScenario = Join-Path $packageRoot 'scenarios/quic/transport/multiplex-100-streams.yaml'
+$multiplexContent = Get-Content -LiteralPath $multiplexScenario -Raw
+if ($multiplexContent -notmatch '(?m)^id:\s*quic\.transport\.multiplex\.100x64kb$' -or
+    $multiplexContent -notmatch '(?m)^  expectedBytes:\s*13107200$') {
+    throw "Raw QUIC multiplex 100x64KB scenario must declare the aggregate 13,107,200-byte expectedBytes contract."
+}
+
 Write-Host "Raw QUIC scenario package files are present."

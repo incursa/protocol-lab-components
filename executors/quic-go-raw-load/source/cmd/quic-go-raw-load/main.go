@@ -69,7 +69,13 @@ type metricsOutput struct {
 	TimeoutRequests          int64   `json:"timeoutRequests"`
 	BytesSent                int64   `json:"bytesSent"`
 	BytesReceived            int64   `json:"bytesReceived"`
+	SentBytes                int64   `json:"sentBytes"`
+	ReceivedBytes            int64   `json:"receivedBytes"`
+	AggregateBytes           int64   `json:"aggregateBytes"`
 	ThroughputBytesPerSecond float64 `json:"throughputBytesPerSecond"`
+	SentBytesPerSecond       float64 `json:"sentBytesPerSecond"`
+	ReceivedBytesPerSecond   float64 `json:"receivedBytesPerSecond"`
+	AggregateBytesPerSecond  float64 `json:"aggregateBytesPerSecond"`
 	LatencyMinMs             float64 `json:"latencyMinMs"`
 	LatencyMeanMs            float64 `json:"latencyMeanMs"`
 	LatencyP50Ms             float64 `json:"latencyP50Ms"`
@@ -1047,9 +1053,12 @@ func buildMetrics(stats runStats, elapsed time.Duration) metricsOutput {
 	}
 
 	sort.Float64s(stats.latencies)
-	throughputBytes := stats.bytesReceived
-	if stats.bytesSent > throughputBytes {
-		throughputBytes = stats.bytesSent
+	sentBytes := stats.bytesSent
+	receivedBytes := stats.bytesReceived
+	aggregateBytes := sentBytes + receivedBytes
+	throughputBytes := receivedBytes
+	if sentBytes > throughputBytes {
+		throughputBytes = sentBytes
 	}
 
 	return metricsOutput{
@@ -1058,9 +1067,15 @@ func buildMetrics(stats runStats, elapsed time.Duration) metricsOutput {
 		SuccessfulRequests:       stats.successfulRequests,
 		FailedRequests:           stats.failedRequests,
 		TimeoutRequests:          stats.timeoutRequests,
-		BytesSent:                stats.bytesSent,
-		BytesReceived:            stats.bytesReceived,
+		BytesSent:                sentBytes,
+		BytesReceived:            receivedBytes,
+		SentBytes:                sentBytes,
+		ReceivedBytes:            receivedBytes,
+		AggregateBytes:           aggregateBytes,
 		ThroughputBytesPerSecond: float64(throughputBytes) / elapsedSeconds,
+		SentBytesPerSecond:       float64(sentBytes) / elapsedSeconds,
+		ReceivedBytesPerSecond:   float64(receivedBytes) / elapsedSeconds,
+		AggregateBytesPerSecond:  float64(aggregateBytes) / elapsedSeconds,
 		LatencyMinMs:             percentile(stats.latencies, 0),
 		LatencyMeanMs:            mean(stats.latencies),
 		LatencyP50Ms:             percentile(stats.latencies, 50),

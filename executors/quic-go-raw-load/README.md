@@ -37,7 +37,7 @@ pwsh ./scripts/package/Build-QuicGoRawLoadPackage.ps1 -RuntimeIdentifier linux-x
 The package artifact is written under `artifacts/packages/` as:
 
 ```text
-org.protocol-lab.components.executor.quic-go-raw-load.0.1.16.<rid>.plabpkg
+org.protocol-lab.components.executor.quic-go-raw-load.0.1.17.<rid>.plabpkg
 ```
 
 ## Local Wrapper
@@ -76,6 +76,7 @@ pwsh ./executors/quic-go-raw-load/execute.ps1 --sni localhost --alpn plab-raw-qu
 
 `quic.transport.cancellation.reset-stream` is declared by the scenario pack as pending. The current load executor does not yet drive reset/cancellation classification.
 
+Version `0.1.17` adds explicit duplex sent, received, and aggregate byte/throughput metrics while retaining `throughputBytesPerSecond` as the legacy larger-direction compatibility metric.
 Version `0.1.16` adds fixed-total 16MiB upload and download dispatch with exact 16,384x1KiB application-write shapes and strict scenario shape validation.
 Version `0.1.15` adds exact-content sustained 4,096x1KiB server-to-client download dispatch on one stable bidirectional stream.
 Version `0.1.14` adds exact round-robin mixed-size multiplexing across stable connections.

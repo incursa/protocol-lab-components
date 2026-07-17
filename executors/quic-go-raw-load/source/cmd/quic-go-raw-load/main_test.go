@@ -399,6 +399,21 @@ func TestBuildMetricsIncludesConnectTimeMean(t *testing.T) {
 	if metrics.ThroughputBytesPerSecond != 4 {
 		t.Fatalf("throughputBytesPerSecond = %f, want 4", metrics.ThroughputBytesPerSecond)
 	}
+	if metrics.SentBytes != 12 || metrics.ReceivedBytes != 9 {
+		t.Fatalf("sentBytes=%d receivedBytes=%d, want 12/9", metrics.SentBytes, metrics.ReceivedBytes)
+	}
+	if metrics.AggregateBytes != 21 {
+		t.Fatalf("aggregateBytes = %d, want 21", metrics.AggregateBytes)
+	}
+	if metrics.SentBytesPerSecond != 4 {
+		t.Fatalf("sentBytesPerSecond = %f, want 4", metrics.SentBytesPerSecond)
+	}
+	if metrics.ReceivedBytesPerSecond != 3 {
+		t.Fatalf("receivedBytesPerSecond = %f, want 3", metrics.ReceivedBytesPerSecond)
+	}
+	if metrics.AggregateBytesPerSecond != 7 {
+		t.Fatalf("aggregateBytesPerSecond = %f, want 7", metrics.AggregateBytesPerSecond)
+	}
 	if metrics.ConnectTimeMeanMs != 20 {
 		t.Fatalf("connectTimeMeanMs = %f, want 20", metrics.ConnectTimeMeanMs)
 	}
@@ -703,6 +718,15 @@ func TestRunLoadDispatchesRawQuicBehaviors(t *testing.T) {
 			if (metrics.BytesReceived > 0) != tt.wantBytesReceived {
 				t.Fatalf("bytesReceived = %d, want positive = %t", metrics.BytesReceived, tt.wantBytesReceived)
 			}
+			if metrics.SentBytes != metrics.BytesSent {
+				t.Fatalf("sentBytes = %d, want %d", metrics.SentBytes, metrics.BytesSent)
+			}
+			if metrics.ReceivedBytes != metrics.BytesReceived {
+				t.Fatalf("receivedBytes = %d, want %d", metrics.ReceivedBytes, metrics.BytesReceived)
+			}
+			if metrics.AggregateBytes != metrics.BytesSent+metrics.BytesReceived {
+				t.Fatalf("aggregateBytes = %d, want %d", metrics.AggregateBytes, metrics.BytesSent+metrics.BytesReceived)
+			}
 
 			if tt.opts.behavior == "flow-control-slow-reader-100ms" && metrics.LatencyMinMs < 100 {
 				t.Fatalf("latencyMinMs = %f, want >= 100ms", metrics.LatencyMinMs)
@@ -751,6 +775,12 @@ func TestRunLoadDuplexStreamsWithTightWindowsDoesNotDeadlock(t *testing.T) {
 	metrics := buildMetrics(stats, opts.duration)
 	if metrics.BytesSent == 0 || metrics.BytesReceived == 0 {
 		t.Fatalf("bytesSent=%d bytesReceived=%d, want both > 0", metrics.BytesSent, metrics.BytesReceived)
+	}
+	if metrics.AggregateBytes != metrics.BytesSent+metrics.BytesReceived {
+		t.Fatalf("aggregateBytes=%d, want %d", metrics.AggregateBytes, metrics.BytesSent+metrics.BytesReceived)
+	}
+	if metrics.AggregateBytesPerSecond <= metrics.ThroughputBytesPerSecond {
+		t.Fatalf("aggregateBytesPerSecond=%f, throughputBytesPerSecond=%f, want aggregate > compatibility throughput", metrics.AggregateBytesPerSecond, metrics.ThroughputBytesPerSecond)
 	}
 }
 

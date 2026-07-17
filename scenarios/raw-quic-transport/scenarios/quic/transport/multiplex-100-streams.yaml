@@ -31,7 +31,7 @@ quicTransport:
   payloadSizeBytes: 65536
   payloadDirection: bidirectional
   openPattern: concurrent
-  expectedBytes: 6553600
+  expectedBytes: 13107200
 validation:
   required: true
   checks:
