@@ -25,7 +25,7 @@ function Expand-One([string]$archive, [string]$destination) {
     return Get-Content (Join-Path $destination 'protocol-lab-package.json') -Raw | ConvertFrom-Json
 }
 
-$scenarioArchive = Resolve-One 'org.protocol-lab.components.scenario.http3-websocket-performance.0.2.2.plabpkg'
+$scenarioArchive = Resolve-One 'org.protocol-lab.components.scenario.http3-websocket-performance.0.2.3.plabpkg'
 $executorArchive = Resolve-One 'org.protocol-lab.components.executor.aioquic-rfc9220-websocket.0.3.0.plabpkg'
 $targetArchive = Resolve-One 'org.protocol-lab.components.implementation.aioquic-http3.0.3.2.plabpkg'
 $scenarioRoot = Join-Path $ArtifactRoot 'scenario'

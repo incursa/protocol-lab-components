@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.http3-websocket-performance",
-  "packageVersion": "0.2.2",
+  "packageVersion": "0.2.3",
   "kind": "scenario-pack",
   "displayName": "HTTP/3 RFC9220 WebSocket Performance Scenario Pack",
   "entryManifests": [

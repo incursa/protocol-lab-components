@@ -526,7 +526,7 @@ Status: the original five-ID `0.1.0` package and runner lane remains complete. C
 #### E8f — HTTP/3 RFC 9220 fragmented binary diagnostic
 
 The immutable authority pack is
-`org.protocol-lab.components.scenario.http3-websocket-performance@0.2.2`.
+`org.protocol-lab.components.scenario.http3-websocket-performance@0.2.3`.
 It locks all six exact public scenario files plus `websocket-smoke` and
 `diagnostic` byte-for-byte to public commit
 `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`. The corrected runtime packages are
@@ -662,7 +662,7 @@ are under `artifacts/audit-remediation-clean-fd6da99/packages`.
 
 `71e0d49` corrects package-local WebSocket routing without altering public
 authority. `org.protocol-lab.components.scenario.aioquic-rfc9220-websocket`
-is scenario-only `0.2.2`; executor and target remain `0.2.1`. It locks the six
+is scenario-only `0.2.3`; executor and target remain `0.2.1`. It locks the six
 v2 scenario files plus exact `websocket-smoke` SHA-256
 `f2005bfa254815f7d4975aefc39f0b9a6da79b0d2507178775cd4b0b3032c645`
 and exact `diagnostic` SHA-256
@@ -737,7 +737,7 @@ The final RFC 8441 component package checkpoint is components commit
 `c21701c`; its runner bridge is `fbce6be`. The final RFC 9220 component package
 checkpoint is components commit `c21701c`; its runner bridge was integrated as
 `6569bb2`. RFC 9220 final evidence used exact scenario package
-`org.protocol-lab.components.scenario.http3-websocket-performance@0.2.2`
+`org.protocol-lab.components.scenario.http3-websocket-performance@0.2.3`
 SHA-256 `dc052b415227dc30b42a14e5590de096e82f7a4dc7e15a9cce1bb5dda90ad28d`,
 executor package `org.protocol-lab.components.executor.aioquic-rfc9220-websocket@0.3.0`
 Windows SHA-256 `952f9c9bb9b6af72a4d7b38d5b2dceeb3b11a804a16edf851b0f56497ef79a6c`,

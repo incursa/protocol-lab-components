@@ -7,7 +7,7 @@ The pack is declarative. It does not provide a WebSocket server or the aioquic c
 ## Package
 
 - Package ID: `org.protocol-lab.components.scenario.http3-websocket-performance`
-- Package version: `0.2.2`
+- Package version: `0.2.3`
 - Suite ID: `aioquic-rfc9220-websocket-proof`
 - Scenarios: six exact RFC9220 v2 identities, each byte-locked to public commit `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`
 - Public authority: six scenario files plus `websocket-smoke` and `diagnostic` load profiles are byte-locked to `protocol-lab` commit `8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574`
