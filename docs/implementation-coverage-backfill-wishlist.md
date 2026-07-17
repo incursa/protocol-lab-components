@@ -361,8 +361,11 @@ repetition and the target/load VMs share physical host `r920`.
 - [x] Complete diagnostic peer-characterization evidence for quiche and
   ngtcp2, then add official payload rows only where status, content type,
   length, and payload bytes satisfy the canonical workload.
-- [ ] Exercise h3spec/QPACK against every compatible HTTP/3 target and retain
-  exact unsupported or failed requirements.
+- [x] Exercise h3spec/QPACK against every compatible HTTP/3 target and retain
+  exact unsupported or failed requirements. Current quiche `0.1.10` and
+  ngtcp2 `0.1.9` close the remaining compatible-target rows: ngtcp2 passed
+  15/15 cases, while quiche passed 13/15 and retained explicit RFC 9204
+  Section 4.1.3 and 4.4.3 failures.
 
 ### Current retained HTTP/3 evidence
 
@@ -376,15 +379,18 @@ repetition and the target/load VMs share physical host `r920`.
 | nginx | 0.1.9 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
 | quic-go | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
 | Kestrel | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-6c8c02669dbf423fbcc7a12a5d364741` |
-| quiche | 0.1.9 | external-peer characterization; HTTP/3 validation and curl executor succeeded; 69 artifacts retained | `job-264b0c16f0d8416bafe4c31d11d7ad34` |
-| ngtcp2/nghttp3 | 0.1.8 | external-peer characterization; HTTP/3 validation and curl executor succeeded; 69 artifacts retained | `job-0e3ba289ca7540fda07a072372282f2b` |
+| quiche | 0.1.10 | h3spec HTTP/3/QPACK diagnostic; target validation passed, 13/15 conformance cases passed, and RFC 9204 Sections 4.1.3 and 4.4.3 failed | `job-14c77c9f080840389da6a733c648c3f7` |
+| ngtcp2/nghttp3 | 0.1.9 | h3spec HTTP/3/QPACK diagnostic; target validation and all 15/15 conformance cases passed | `job-14c77c9f080840389da6a733c648c3f7` |
+| quiche | 0.1.9 | historical external-peer characterization; HTTP/3 validation and curl executor succeeded; 69 artifacts retained | `job-264b0c16f0d8416bafe4c31d11d7ad34` |
+| ngtcp2/nghttp3 | 0.1.8 | historical external-peer characterization; HTTP/3 validation and curl executor succeeded; 69 artifacts retained | `job-0e3ba289ca7540fda07a072372282f2b` |
 
 These runs used the package-backed managed HTTP/3 executor and retained
 the executor package identity, requested/effective load shapes, raw output,
 target-container telemetry, normalized metrics, and immutable target package
 provenance. They close current-head proof only for the rows shown. The current
-aioquic, Caddy, nginx, quic-go, and Kestrel heads now have published
-h3spec/QPACK proof. Their report pages are visible at `lab.incursa.com` with
+aioquic, Caddy, nginx, quic-go, Kestrel, quiche, and ngtcp2 heads now have
+published h3spec/QPACK proof. Their report pages are visible at
+`lab.incursa.com` with
 package provenance and retained artifact links. aioquic 64 KiB, current-head
 payload reruns for the newly bumped packages, Incursa HTTP/3, explicit
 official payload rows for quiche/ngtcp2, repeated comparison, and
@@ -394,7 +400,11 @@ object-verified, import-enqueued as corrected publications
 `pub_cb35429502384840938c11be0524a8f5`, and verified live at their exact
 report routes. Both reports explicitly show one passed validated run, zero
 accepted measurements, and no RPS/latency value; the successful request is not
-presented as a performance number.
+presented as a performance number. The current quiche/ngtcp2 QPACK report was
+uploaded and object-verified as
+`pub_d441ef838c9b4d7d831bfa8f71743702`; it has zero accepted performance
+measurements and preserves the exact ngtcp2 conformance pass and quiche
+conformance failures instead of presenting executor completion as acceptance.
 
 ### New catalog packages
 
