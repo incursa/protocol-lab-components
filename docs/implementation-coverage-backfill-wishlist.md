@@ -371,8 +371,9 @@ repetition and the target/load VMs share physical host `r920`.
 
 | Implementation | Immutable package version | Proven rows | Completed controller job |
 | --- | --- | --- | --- |
-| aioquic | 0.3.2 | canonical JSON status and 1 KiB payload; validation and measurement passed | `job-0d08b2ace1704d609ec9803e6e7119c7` |
+| aioquic | 0.3.2 | historical canonical JSON status and 1 KiB payload; validation and measurement passed | `job-0d08b2ace1704d609ec9803e6e7119c7` |
 | aioquic | 0.3.3 | h3spec status, response-header, and QPACK diagnostics; all 15 requests succeeded in each cell | `job-a3c8b35637e14c49b86332a928c5b15d` |
+| aioquic | 0.3.4 | canonical 64 KiB payload; validation and measurement passed with 72 retained controller artifacts | `job-80f48baab27248509a0513a80860f0d0` |
 | quic-go | 0.1.6 | canonical JSON status, 1 KiB, and 64 KiB payloads; validation and measurement passed | `job-610e9f2d38364cfc95b238ea6e012446` |
 | Kestrel | 0.1.6 | canonical JSON status, 1 KiB, and 64 KiB payloads; validation and measurement passed | `job-fb08e6a527b94ee1a922055a9401feee` |
 | Caddy | 0.1.9 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
@@ -391,8 +392,11 @@ provenance. They close current-head proof only for the rows shown. The current
 aioquic, Caddy, nginx, quic-go, Kestrel, quiche, and ngtcp2 heads now have
 published h3spec/QPACK proof. Their report pages are visible at
 `lab.incursa.com` with
-package provenance and retained artifact links. aioquic 64 KiB, current-head
-payload reruns for the newly bumped packages, Incursa HTTP/3, explicit
+package provenance and retained artifact links. aioquic `0.3.4` additionally
+has a current canonical 64 KiB observed measurement in
+`job-80f48baab27248509a0513a80860f0d0`, published and object-verified as
+`pub_8f8ae826bd3a437f88d2bd71afa535b5`. Current-head status and 1 KiB payload
+reruns for aioquic and the newly bumped packages, Incursa HTTP/3, explicit
 official payload rows for quiche/ngtcp2, repeated comparison, and
 decision-ready gates remain. Their diagnostic peer reports were uploaded,
 object-verified, import-enqueued as corrected publications
@@ -503,13 +507,21 @@ and remain diagnostic/unranked under the shared-worker/shared-host topology.
 
 - [x] Live-prove the existing Go gRPC/H2 target and add it to the public gRPC
   implementation cohort.
-- [ ] Bring grpc-dotnet, grpc-go, grpc-java/Netty, grpc-cpp, and grpc-js onto a
+- [x] Bring grpc-dotnet, grpc-go, grpc-java/Netty, grpc-cpp, and grpc-js onto a
   common unary/server-streaming/client-streaming/bidirectional matrix with
   terminal deadline and cancellation rows where supported.
   - [x] All five runtimes have accepted unary and three streaming rows on the
     shared package-backed core matrix.
-  - [ ] Complete the supported terminal deadline/cancellation matrix beyond
-    the retained grpc-java/Netty and grpc-cpp terminal rows.
+  - [x] Complete the supported terminal deadline/cancellation matrix beyond
+    the retained grpc-java/Netty and grpc-cpp terminal rows. Current immutable
+    grpc-dotnet and grpc-js packages passed all four advertised terminal cells
+    in `job-8c21f60e5ebd4e74b8a0c310a35238f4`; grpc-dotnet separately passed its
+    supported trailers-only row in `job-702d059ea1c94b8c8e474f2265c9f1a7`.
+    Current grpc-java/Netty and grpc-cpp `0.1.2` packages passed the four
+    deadline/cancellation cells in `job-e4ad73c7c0ba4a2a8ac84e6787518b11`.
+    grpc-js, grpc-java/Netty, and grpc-cpp continue to omit the literal
+    trailers-only row because their standard percent-encoded `grpc-message`
+    does not satisfy that exact fixture.
 - [ ] Produce a four-runtime decision-ready unary cohort and comparable
   observations for streaming and terminal behavior.
 
@@ -530,6 +542,13 @@ retained eight core cells, and current grpc-java/Netty plus grpc-cpp job
 `job-16f7fdb757e8476aac823d8ed4ab7a78` retained eight. These are real
 comparable observations but remain diagnostic/unranked because the target and
 load VMs share physical host `r920` and each current cohort has one repetition.
+The current terminal publications are
+`pub_79ea304c6cd84efe821687eb3c5f47d3` for grpc-dotnet/grpc-js,
+`pub_961cdebdc7ba4f54b565bde44bce5689` for grpc-dotnet trailers-only, and
+`pub_84fada3b2b3a4dc6b4af6c91dcadab00` for grpc-java/Netty and grpc-cpp.
+All three uploaded and object-verified ten public objects, were accepted by the
+site import queue, and were verified at their exact live report routes. Their
+accepted values are real observed measurements, not decision-ready rankings.
 
 ### WebSocket
 
