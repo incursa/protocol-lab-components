@@ -1,15 +1,17 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.http2-performance",
-  "packageVersion": "0.2.1",
+  "packageVersion": "0.2.2",
   "kind": "scenario-pack",
-  "displayName": "HTTP/2 Performance Smoke and Diagnostic Scenario Pack",
+  "displayName": "HTTP/2 Performance Scenario Pack",
   "entryManifests": [
     "scenarios/http2/core/plaintext.yaml",
     "scenarios/http2/core/json.yaml",
     "suites/http2-performance-smoke.yaml",
+    "suites/http2-comparison-benchmark.yaml",
     "load-profiles/http2-smoke.yaml",
-    "load-profiles/http2-diagnostic.yaml"
+    "load-profiles/http2-diagnostic.yaml",
+    "load-profiles/http2-comparison.yaml"
   ],
   "providedScenarios": [
     {
@@ -27,6 +29,11 @@
     {
       "suiteId": "http2-performance-smoke",
       "displayName": "HTTP/2 Implementation Performance Smoke",
+      "protocols": ["h2"]
+    },
+    {
+      "suiteId": "http2-comparison-benchmark",
+      "displayName": "ProtocolLab HTTP/2 Comparison Benchmark",
       "protocols": ["h2"]
     }
   ]

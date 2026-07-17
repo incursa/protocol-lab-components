@@ -1,0 +1,24 @@
+id: http2-comparison-benchmark
+name: ProtocolLab HTTP/2 comparison benchmark suite
+description: Profile-specific HTTP/2 application selector for the comparison load profile.
+purpose: benchmark
+resultKind: benchmark
+loadProfileId: http2-comparison
+scenarios:
+  - http2.core.plaintext
+  - http2.core.json
+protocol: h2
+defaults:
+  durationSeconds: 30
+  warmupSeconds: 10
+  repetitions: 3
+  connections: 16
+  streamsPerConnection: 8
+counterCapture:
+  enabledByDefault: false
+  tool: ""
+notes: This suite selects only the initially supported deterministic HTTP/2 response scenarios. The profile requests 128 globally concurrent operations across 16 established connections with a per-connection cap of 8 streams and balanced round-robin assignment; configured capacity remains distinct from observed active topology and does not imply executor, implementation, comparison, or publication support.
+tags:
+  - http2
+  - comparison
+  - benchmark

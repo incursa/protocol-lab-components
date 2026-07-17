@@ -48,10 +48,10 @@
     "localDecisionDirectoryCount": 5,
     "quicHttp3InventoryCount": 19,
     "publicAuthoredCatalogCount": 45,
-    "currentVersionLiveProvenCount": 44,
+    "currentVersionLiveProvenCount": 47,
     "historicalVersionLiveProofOnlyCount": 1,
     "attemptedNoCompletedEvidenceCount": 2,
-    "noLiveProofInReviewedSourcesCount": 16
+    "noLiveProofInReviewedSourcesCount": 13
   },
   "localImplementationPackages": [
     { "path": "implementations/aioquic-http3/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.aioquic-http3", "version": "0.3.3", "implementationIds": ["aioquic-http3"], "protocols": ["h3"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-a3c8b35637e14c49b86332a928c5b15d"], "blocker": "Current 0.3.3 h3spec status, response-header, and QPACK rows are live-proven; canonical status and 1 KiB payload proof remains retained on historical package 0.3.2, and 64 KiB remains unproven." },
@@ -135,13 +135,13 @@
     { "inventoryId": "caddy", "inventoryStatus": "internal-target", "localPackageIds": ["org.protocol-lab.components.implementation.caddy-http3"], "publicCatalogSlugs": ["caddy-http3"], "blocker": "Inventory status is stale: a live-proven component package now exists." },
     { "inventoryId": "kestrel", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.kestrel-http3"], "publicCatalogSlugs": ["kestrel-http3"], "blocker": "Version 0.1.8 h3spec/QPACK proof is current and published; 0.1.6 payload rows remain retained historical proof." },
     { "inventoryId": "nginx-quic", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.nginx-http3"], "publicCatalogSlugs": ["nginx-http3"], "blocker": "Public authored catalog status is stale even though current package evidence exists." },
-    { "inventoryId": "xquic", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.xquic-http3"], "publicCatalogSlugs": ["xquic"], "blocker": "Current package has accepted and published real-controller diagnostic HTTP/3 peer proof; canonical payload and rankable latency are not claimed." },
+    { "inventoryId": "xquic", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.xquic-http3"], "publicCatalogSlugs": ["xquic-http3"], "blocker": "Current package has accepted and published real-controller diagnostic HTTP/3 peer proof; canonical payload and rankable latency are not claimed." },
     { "inventoryId": "picoquic", "inventoryStatus": "interop-image", "localPackageIds": ["org.protocol-lab.components.implementation.picoquic-raw"], "publicCatalogSlugs": ["picoquic-raw"], "blocker": "Native raw package 0.1.0 is live-proven across five canonical workloads; the source inventory status still describes upstream acquisition." },
-    { "inventoryId": "lsquic", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.lsquic-http3"], "publicCatalogSlugs": ["lsquic"], "blocker": "Current package has accepted and published real-controller diagnostic HTTP/3 peer proof; canonical payload and rankable latency are not claimed." },
+    { "inventoryId": "lsquic", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.lsquic-http3"], "publicCatalogSlugs": ["lsquic-http3"], "blocker": "Current package has accepted and published real-controller diagnostic HTTP/3 peer proof; canonical payload and rankable latency are not claimed." },
     { "inventoryId": "mvfst-proxygen", "inventoryStatus": "planned", "localPackageIds": [], "publicCatalogSlugs": ["mvfst-proxygen"], "blocker": "Interop-only versus Proxygen HTTP/3 package boundary is undecided." },
     { "inventoryId": "h2o", "inventoryStatus": "planned", "localPackageIds": [], "publicCatalogSlugs": ["h2o-http3"], "blocker": "No maintained pinned HTTP/3 image has been selected." },
     { "inventoryId": "haproxy", "inventoryStatus": "planned", "localPackageIds": [], "publicCatalogSlugs": ["haproxy-http3"], "blocker": "Gateway role and external-image licensing must be resolved before packaging." },
-    { "inventoryId": "neqo", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.neqo-http3"], "publicCatalogSlugs": ["neqo"], "blocker": "Current package has accepted and published real-controller diagnostic HTTP/3 peer proof; canonical payload and rankable latency are not claimed." },
+    { "inventoryId": "neqo", "inventoryStatus": "packaged", "localPackageIds": ["org.protocol-lab.components.implementation.neqo-http3"], "publicCatalogSlugs": ["neqo-http3"], "blocker": "Current package has accepted and published real-controller diagnostic HTTP/3 peer proof; canonical payload and rankable latency are not claimed." },
     { "inventoryId": "quinn", "inventoryStatus": "interop-image", "localPackageIds": ["org.protocol-lab.components.implementation.quinn-raw"], "publicCatalogSlugs": ["quinn-raw"], "blocker": "Raw package 0.1.0 is live-proven across five canonical workloads; the source inventory status still describes upstream acquisition." },
     { "inventoryId": "s2n-quic", "inventoryStatus": "interop-image", "localPackageIds": ["org.protocol-lab.components.implementation.s2n-quic-raw"], "publicCatalogSlugs": ["s2n-quic-raw"], "blocker": "Raw package 0.1.0 is live-proven across five canonical workloads; the source inventory status still describes upstream acquisition." },
     { "inventoryId": "webtransport-go", "inventoryStatus": "interop-image", "localPackageIds": [], "publicCatalogSlugs": ["webtransport-go"], "blocker": "WebTransport contracts and scheduling are prerequisites." }
@@ -167,11 +167,11 @@
     { "slug": "kestrel-http2", "status": "public", "protocols": ["h2"], "localPackageIds": ["org.protocol-lab.components.implementation.kestrel-http2"] },
     { "slug": "kestrel-http3", "status": "reference", "protocols": ["h3"], "inventoryId": "kestrel", "localPackageIds": ["org.protocol-lab.components.implementation.kestrel-http3"] },
     { "slug": "knot-resolver-secure-dns-resolver", "status": "public", "protocols": ["dot", "doh2"], "localPackageIds": ["org.protocol-lab.components.implementation.knot-resolver-secure-dns-resolver"] },
-    { "slug": "lsquic", "status": "public", "protocols": ["quic", "h3"], "inventoryId": "lsquic", "localPackageIds": ["org.protocol-lab.components.implementation.lsquic-http3"] },
+    { "slug": "lsquic-http3", "status": "public", "protocols": ["h3"], "inventoryId": "lsquic", "localPackageIds": ["org.protocol-lab.components.implementation.lsquic-http3"] },
     { "slug": "msquic-dotnet", "status": "external", "protocols": ["quic"], "inventoryId": "msquic", "localPackageIds": [] },
     { "slug": "msquic-dotnet-raw-adapter-v1", "status": "public", "protocols": ["quic"], "inventoryId": "msquic", "localPackageIds": [] },
     { "slug": "mvfst-proxygen", "status": "planned", "protocols": ["quic", "h3"], "inventoryId": "mvfst-proxygen", "localPackageIds": [] },
-    { "slug": "neqo", "status": "public", "protocols": ["quic", "h3"], "inventoryId": "neqo", "localPackageIds": ["org.protocol-lab.components.implementation.neqo-http3"] },
+    { "slug": "neqo-http3", "status": "public", "protocols": ["h3"], "inventoryId": "neqo", "localPackageIds": ["org.protocol-lab.components.implementation.neqo-http3"] },
     { "slug": "nginx-http1", "status": "public", "protocols": ["h1"], "localPackageIds": ["org.protocol-lab.components.implementation.nginx-http1"] },
     { "slug": "nginx-http2", "status": "public", "protocols": ["h2"], "localPackageIds": ["org.protocol-lab.components.implementation.nginx-http2"] },
     { "slug": "nginx-http3", "status": "planned", "protocols": ["h3"], "inventoryId": "nginx-quic", "localPackageIds": ["org.protocol-lab.components.implementation.nginx-http3"] },
@@ -191,6 +191,6 @@
     { "slug": "technitium-classic-authority", "status": "reference", "protocols": ["dns-udp", "dns-tcp"], "localPackageIds": ["org.protocol-lab.components.implementation.technitium-classic-authority"] },
     { "slug": "unbound-doh2-resolver", "status": "public", "protocols": ["doh2"], "localPackageIds": ["org.protocol-lab.components.implementation.unbound-doh2-resolver"] },
     { "slug": "webtransport-go", "status": "planned", "protocols": ["h3", "webtransport"], "inventoryId": "webtransport-go", "localPackageIds": [] },
-    { "slug": "xquic", "status": "public", "protocols": ["quic", "h3"], "inventoryId": "xquic", "localPackageIds": ["org.protocol-lab.components.implementation.xquic-http3"] }
+    { "slug": "xquic-http3", "status": "public", "protocols": ["h3"], "inventoryId": "xquic", "localPackageIds": ["org.protocol-lab.components.implementation.xquic-http3"] }
   ]
 }
