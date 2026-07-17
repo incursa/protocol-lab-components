@@ -89,23 +89,5 @@
         "aioquic-rfc9220-websocket"
       ]
     }
-  ],
-  "providedLoadProfiles": [
-    {
-      "loadProfileId": "websocket-smoke",
-      "displayName": "WebSocket Contract Smoke",
-      "protocols": [
-        "h3",
-        "websocket"
-      ]
-    },
-    {
-      "loadProfileId": "diagnostic",
-      "displayName": "Diagnostic",
-      "protocols": [
-        "h3",
-        "websocket"
-      ]
-    }
   ]
 }

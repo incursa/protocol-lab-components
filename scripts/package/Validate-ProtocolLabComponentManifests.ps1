@@ -93,7 +93,6 @@ $publicAllowedProperties = @(
     'providedTestExecutors',
     'providedScenarios',
     'providedSuites',
-    'providedLoadProfiles',
     'providedSpecificationCoverage',
     'dependencies'
 )
@@ -306,23 +305,6 @@ foreach ($file in $publicManifestFiles) {
             }
         }
 
-        $providedLoadProfileEntries = if ($manifest.PSObject.Properties.Name.Contains('providedLoadProfiles')) { @($manifest.providedLoadProfiles) } else { @() }
-        foreach ($provided in $providedLoadProfileEntries) {
-            $providedId = [string]$provided.loadProfileId
-            Test-AllowedProperties `
-                -Value $provided `
-                -Allowed @('loadProfileId', 'displayName', 'protocols') `
-                -Context "$($file.FullName): providedLoadProfiles entry '$providedId'"
-
-            if (-not (Test-Token -Value $providedId)) {
-                $errors.Add("$($file.FullName): providedLoadProfiles entry is missing a valid loadProfileId.")
-            }
-
-            if (-not (Test-StringArray -Value $provided.protocols)) {
-                $errors.Add("$($file.FullName): provided load profile '$providedId' must declare one or more protocols.")
-            }
-        }
-
         $specificationCoverageEntries = if ($manifest.PSObject.Properties.Name.Contains('providedSpecificationCoverage')) {
             @($manifest.providedSpecificationCoverage)
         }
@@ -387,7 +369,6 @@ $internalPublicFields = @(
     'providedTestExecutors',
     'providedScenarios',
     'providedSuites',
-    'providedLoadProfiles',
     'providedSpecificationCoverage'
 )
 

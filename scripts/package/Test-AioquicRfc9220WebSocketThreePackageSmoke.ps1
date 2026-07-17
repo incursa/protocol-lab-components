@@ -35,7 +35,6 @@ $scenarioManifest = Expand-One $scenarioArchive $scenarioRoot
 $executorManifest = Expand-One $executorArchive $executorRoot
 $targetManifest = Expand-One $targetArchive $targetRoot
 if ($scenarioManifest.providedScenarios.Count -ne 6 -or $executorManifest.providedTestExecutors[0].scenarios.Count -ne 6) { throw 'Scenario or executor package does not claim exactly six RFC9220 identities.' }
-if ((@($scenarioManifest.providedLoadProfiles.loadProfileId) -join ',') -ne 'websocket-smoke,diagnostic') { throw 'Scenario package load-profile declarations mismatch.' }
 if ((@($scenarioManifest.providedSuites.suiteId) -join ',') -ne 'aioquic-rfc9220-websocket-proof,aioquic-rfc9220-websocket-fragmentation-diagnostic') { throw 'Scenario package suite declarations mismatch.' }
 if (@($targetManifest.providedImplementations[0].scenarios | Where-Object { $_ -like 'http3.websocket.rfc9220.*' }).Count -ne 6) { throw 'Target package does not claim exactly six RFC9220 identities.' }
 $authority = Get-Content (Join-Path $scenarioRoot 'authority-lock.json') -Raw | ConvertFrom-Json
