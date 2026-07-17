@@ -6,6 +6,8 @@ param(
     [switch]$AllowDirtySource
 )
 $ErrorActionPreference = 'Stop'
+$Root = [IO.Path]::GetFullPath($Root)
+$OutputRoot = [IO.Path]::GetFullPath($OutputRoot)
 $componentRoot = Join-Path $Root 'implementations/go-http1-websocket-tls'
 $sourceRoot = Join-Path $componentRoot 'source'
 & go -C $sourceRoot test -count=1 ./...
