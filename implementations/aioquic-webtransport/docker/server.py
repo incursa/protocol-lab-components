@@ -11,7 +11,7 @@ from aioquic.h3.events import HeadersReceived, WebTransportStreamDataReceived
 from aioquic.quic.configuration import QuicConfiguration
 
 IMPLEMENTATION_ID = "aioquic-webtransport"
-IMPLEMENTATION_VERSION = "0.1.1"
+IMPLEMENTATION_VERSION = "0.1.2"
 UPSTREAM_VERSION = "1.3.0"
 AUTHORITY = b"webtransport.plab.test"
 PATH = "/webtransport/echo"
@@ -111,6 +111,7 @@ def main():
     parser.add_argument("--cert", default="/certs/leaf.pem")
     parser.add_argument("--key", default="/certs/leaf-key.pem")
     parser.add_argument("--version", action="store_true")
+    parser.add_argument("runner_entrypoint", nargs="?", choices=["run.sh"], help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.version:
         print(f"{IMPLEMENTATION_ID} {IMPLEMENTATION_VERSION} aioquic {UPSTREAM_VERSION}")

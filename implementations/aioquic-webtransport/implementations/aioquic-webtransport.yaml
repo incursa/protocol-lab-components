@@ -9,7 +9,7 @@ targetContract: process
 executable: bash
 workingDirectory: .
 commandArguments: [run.sh]
-image: incursa-protocol-lab-aioquic-webtransport:0.1.1
+image: incursa-protocol-lab-aioquic-webtransport:0.1.2
 dockerfile: docker/Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
