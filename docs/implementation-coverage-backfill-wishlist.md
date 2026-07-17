@@ -486,25 +486,33 @@ share physical host `r920` and each current cohort has one repetition.
 - [x] Live-prove the existing Go HTTP/1.1 WebSocket target alongside Node
   `ws`, Jetty, uWebSockets, and websocat, preserving websocat's diagnostic-only
   limitations.
-- [ ] Add a second RFC 8441 implementation alongside Kestrel HTTP/2 WebSocket.
+- [x] Add a second RFC 8441 implementation alongside Kestrel HTTP/2 WebSocket.
 - [ ] Add a second RFC 9220 implementation alongside aioquic HTTP/3 WebSocket,
   preferring ngtcp2/nghttp3 or another cataloged stack with explicit support.
 - [ ] Keep cleartext, TLS, RFC 8441, and RFC 9220 as separate transport cohorts
   and meet each applicable breadth/evidence floor.
 
+Jetty job `job-91f2efe974f84663b917dea296b63fa9` and Kestrel job
+`job-821d1cb02d724ce3848a17541ef5914c` each retained five accepted RFC 8441
+measurements. Kestrel retained 299 artifacts at current package `0.1.2`;
+publication `pub_7d7506d4ee444e80a0dd7cb30ad50df9` uploaded and verified its
+public objects. Both report routes and implementation pages were verified live.
+The two-ecosystem breadth floor is met, but the one-repetition, single-host
+topology remains diagnostic and does not close the broader cohort gate.
+
 ## Workstream G - WebTransport and MASQUE
 
 - [x] Audit the existing WebTransport and MASQUE public contracts against the
   current component executor and scenario surfaces before adding packages.
-- [ ] Package webtransport-go plus one independent WebTransport ecosystem and
+- [x] Package webtransport-go plus one independent WebTransport ecosystem and
   live-prove the common session/stream/datagram contract.
   - [x] Package and live-prove webtransport-go and aioquic on the exact
     WebTransport-over-HTTP/3 session plus bidirectional-stream echo row.
-  - [ ] Add and live-prove the common WebTransport datagram row before closing
+  - [x] Add and live-prove the common WebTransport datagram row before closing
     the full contract item.
-- [ ] Package two independent MASQUE CONNECT-UDP implementations with explicit
+- [x] Package two independent MASQUE CONNECT-UDP implementations with explicit
   proxy and target roles and no ordinary HTTP proxy substitution.
-- [ ] Publish comparable observations for both protocols; decision-ready
+- [x] Publish comparable observations for both protocols; decision-ready
   ranking is deferred until the public comparison policy defines meaningful
   cohort and topology controls.
 
@@ -514,7 +522,23 @@ artifacts and two accepted measurements from immutable
 `pub_2f0b5c89a82544d8bd8978a52852436b` uploaded and verified the public
 objects, the import queue succeeded, and the report, protocol hub, and both
 implementation pages were verified live. This meets the two-ecosystem live
-session/stream floor, not the still-open datagram or decision-ready gates.
+session/stream floor.
+
+Datagram job `job-3dc15f515ab44ea6812413f3a9e805f6` retained 132 artifacts
+and accepted one exact 32-by-256-byte, zero-loss datagram measurement from
+each of `webtransport-go@0.1.2` and `aioquic-webtransport@0.1.3`, using
+`go-webtransport-executor@0.2.1`. Publication
+`pub_775344043ec44add8dcc6925ff74134d` uploaded and verified 10 objects and
+the live report route shows two passed and accepted cells.
+
+MASQUE job `job-14de8a5c07fd48c9ad0e33eb02cc94e0` retained 132 artifacts
+and accepted the exact CONNECT-UDP datagram workload for both
+`envoy-connect-udp@0.1.2` and `masque-go-connect-udp@0.1.2`. Publication
+`pub_789fde37b206464da4b314592984bf5b` uploaded and verified 10 objects and
+the live report route shows two passed and accepted cells. These are real
+comparable observations under a shared workload, but both protocols remain
+diagnostic/unranked because the target and load roles share worker and physical
+host `r920` and only one outer repetition was retained.
 
 ## Workstream H - evidence and public explanation
 
