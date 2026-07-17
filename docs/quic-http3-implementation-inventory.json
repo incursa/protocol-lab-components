@@ -224,16 +224,16 @@
       "displayName": "mvfst / Proxygen",
       "upstream": "https://github.com/facebook/mvfst",
       "license": "MIT for mvfst.",
-      "packageFeasibility": "planned",
+      "packageFeasibility": "blocked-origin-contract",
       "dockerImageAvailability": "QUIC interop runner lists ghcr.io/facebook/proxygen/mvfst-interop:latest.",
       "roles": ["client", "server"],
       "quicRawSupport": "yes; mvfst is a QUIC transport implementation.",
       "http3Support": "through Proxygen, not mvfst alone.",
       "webSocketOverH3Support": "not packaged.",
       "benchmarkSuitability": "strong transport peer, but build/dependency complexity makes it design-first.",
-      "protocolLabComponentStatus": "not packaged; site stub planned.",
-      "nextPackageSlice": "Decide whether to wrap the interop image only or build a Proxygen HTTP/3 target; avoid source builds as the first slice.",
-      "sourceRefs": ["https://github.com/facebook/mvfst", "https://raw.githubusercontent.com/quic-interop/quic-interop-runner/master/implementations_quic.json"]
+      "protocolLabComponentStatus": "not packaged as an HTTP/3 origin: the pinned Proxygen HQ static sample serves H3 but omits Content-Type on the required status and byte paths.",
+      "nextPackageSlice": "Re-open only for an immutable upstream typed-response surface or an explicitly approved, separately maintained native Proxygen application adapter.",
+      "sourceRefs": ["https://github.com/facebook/mvfst", "https://raw.githubusercontent.com/quic-interop/quic-interop-runner/master/implementations_quic.json", "docs/raw-quic-interop-image-feasibility-2026-07-16.md"]
     },
     {
       "id": "h2o",

@@ -428,7 +428,12 @@ conformance failures instead of presenting executor completion as acceptance.
   interoperability observations, not canonical payload or rankable latency
   results.
 - [ ] Package mvfst/Proxygen as an HTTP/3 origin only if the Proxygen layer
-  satisfies the origin contract; keep raw mvfst evidence separate.
+  satisfies the origin contract; keep raw mvfst evidence separate. The pinned
+  upstream `hq` sample was re-evaluated on 2026-07-17 and serves both status
+  and byte paths over H3 but emits no `Content-Type`; it therefore remains
+  ineligible for the typed JSON/octet-stream origin rows. The exact blocker
+  and re-entry condition are recorded in
+  `docs/raw-quic-interop-image-feasibility-2026-07-16.md`.
 - [x] Add H2O as an experimental HTTP/3 origin with that status visible in
   metadata and public presentation. `org.protocol-lab.components.implementation.h2o-http3@0.1.1`
   (upstream H2O commit `edd7a120bfc4af11ac0cbebce2a43cc1f93f9af1`) was

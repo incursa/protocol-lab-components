@@ -128,6 +128,23 @@ mvfst remains eligible for a separate transport adapter, and Proxygen remains
 eligible for the wishlist's HTTP/3-origin evaluation. Neither is satisfied by
 relabeling the upstream HQ sample.
 
+### HTTP/3 origin-contract evaluation (2026-07-17)
+
+The same pinned image was evaluated as a standalone `hq` H3 static origin,
+using `--protocol=h3` and `--httpversion=1.1` on its client and the sample
+server's `--static_root` option. The H3 client completed a request, and local
+HTTP/1.1 checks received `200` for both `/status` and `/bytes/1024`. The
+responses carried no `Content-Type` header. Consequently the sample cannot
+satisfy the current ProtocolLab origin contract, whose status and byte rows
+require typed JSON and `application/octet-stream` responses. It is not
+packaged as an HTTP/3 origin and is not evidence for the origin cohort.
+
+Re-open the HTTP/3-origin task only when an immutable upstream Proxygen
+surface emits the required typed responses, or when ProtocolLab explicitly
+approves ownership of a separately maintained native Proxygen application
+adapter. Adding headers outside the H3 handler would not make the upstream
+sample a contract-compliant origin.
+
 ## Re-entry conditions
 
 Re-open ngtcp2 raw packaging only if an immutable upstream binary exposes a
