@@ -194,6 +194,10 @@ class StaticHttp3ServerProtocol(QuicConnectionProtocol):
         self.transmit()
 
     def _resolve_response(self, path, query):
+        if path == "/plaintext":
+            return 200, b"Hello, World!", [(b"content-type", b"text/plain")]
+        if path == "/json":
+            return 200, b'{"message":"Hello, World!"}', [(b"content-type", b"application/json")]
         if path == "/status":
             body = json.dumps({
                 "protocol": "h3",

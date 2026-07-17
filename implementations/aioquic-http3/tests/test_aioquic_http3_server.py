@@ -67,6 +67,17 @@ class Http3OriginRegressionTests(unittest.TestCase):
         self.assertIn("utc", document)
         self.assertIn((b"content-type", b"application/json"), headers)
 
+    def test_plaintext_and_json_core_contracts_are_exact(self):
+        status, body, headers = self.server._resolve_response("/plaintext", {})
+        self.assertEqual(status, 200)
+        self.assertEqual(body, b"Hello, World!")
+        self.assertIn((b"content-type", b"text/plain"), headers)
+
+        status, body, headers = self.server._resolve_response("/json", {})
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body), {"message": "Hello, World!"})
+        self.assertIn((b"content-type", b"application/json"), headers)
+
     def test_one_kibibyte_payload_remains_deterministic(self):
         status, body, headers = self.server._resolve_response("/bytes/1024", {})
         self.assertEqual(status, 200)

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.aioquic-http3",
-  "packageVersion": "0.3.4",
+  "packageVersion": "0.3.5",
   "kind": "implementation",
   "displayName": "aioquic HTTP/3 Implementation Wrapper",
   "entryManifests": [
@@ -15,6 +15,8 @@
         "h3"
       ],
       "scenarios": [
+        "http3.core.plaintext",
+        "http3.core.json",
         "http3.core.status",
         "http3.payload.bytes.1kb",
         "http3.payload.bytes.64kb",

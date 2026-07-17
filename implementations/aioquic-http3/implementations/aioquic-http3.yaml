@@ -32,6 +32,8 @@ supportedWorkloadFamilies:
 supportedProtocolVersions:
   - http/3
 supportedScenarios:
+  - http3.core.plaintext
+  - http3.core.json
   - http3.core.status
   - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
@@ -44,6 +46,8 @@ supportedScenarios:
   - http3.websocket.rfc9220.close
   - http3.websocket.rfc9220.fragmented-binary-echo
 supportedTestCaseIds:
+  - http3.core.plaintext
+  - http3.core.json
   - http3.core.status
   - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
@@ -65,6 +69,12 @@ scenarioCoverage:
   http3.core.status:
     status: supported
     endpoint: /status
+  http3.core.plaintext:
+    status: supported
+    endpoint: /plaintext
+  http3.core.json:
+    status: supported
+    endpoint: /json
   http3.payload.bytes.1kb:
     status: supported
     scenarioId: http3.payload.bytes.1kb
@@ -161,6 +171,12 @@ capabilities:
   - rfc9220WebSocket
   - websocket.fragmentation
 endpoints:
+  plaintext:
+    method: GET
+    path: /plaintext
+  json:
+    method: GET
+    path: /json
   bytes1kb:
     method: GET
     path: /bytes/1024

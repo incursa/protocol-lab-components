@@ -84,6 +84,8 @@ func routes() http.Handler {
 			"protocolVersion":  "http/3",
 			"quicGoVersion":    quicGoVersion,
 			"supportedScenarios": []string{
+				"http3.core.plaintext",
+				"http3.core.json",
 				"http3.core.status",
 				"http3.payload.bytes.1kb",
 				"http3.payload.bytes.64kb",
