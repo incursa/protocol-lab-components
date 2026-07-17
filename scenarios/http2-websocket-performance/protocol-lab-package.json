@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.scenario.http2-websocket-performance",
-  "packageVersion": "0.1.1",
+  "packageVersion": "0.1.2",
   "kind": "scenario-pack",
   "displayName": "HTTP/2 RFC 8441 WebSocket Performance Scenario Pack",
   "entryManifests": [
@@ -30,10 +30,5 @@
     {"suiteId":"http2-websocket-performance-smoke","displayName":"HTTP/2 WebSocket Performance Smoke","protocols":["h2","tls"]},
     {"suiteId":"http2-websocket-performance-comparison","displayName":"HTTP/2 WebSocket Performance Comparison Candidate","protocols":["h2","tls"]},
     {"suiteId":"http2-websocket-multi-message-diagnostic","displayName":"HTTP/2 WebSocket Ordered Multi-Message Diagnostic","protocols":["h2","tls"]}
-  ],
-  "providedLoadProfiles": [
-    {"loadProfileId":"websocket-smoke","displayName":"WebSocket Contract Smoke","protocols":["h2","tls"]},
-    {"loadProfileId":"websocket-comparison","displayName":"WebSocket Comparison Candidate","protocols":["h2","tls"]},
-    {"loadProfileId":"diagnostic","displayName":"Diagnostic","protocols":["h2","tls"]}
   ]
 }
