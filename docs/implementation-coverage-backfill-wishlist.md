@@ -367,8 +367,16 @@ repetition and the target/load VMs share physical host `r920`.
   `job-ec03c0e05e42499e89f3ab48f9c63cab`, published as
   `pub_d30509f655664bd3b590e6d4780e6778` at
   `https://lab.incursa.com/reports/rack-lab-nginx-http3-v0110-common-core-h3-local-v1-cell-1-matrix`.
-  Remaining work is an exact process-mode Kestrel run and the separate
-  implementation-owned Incursa package, not a Docker substitution.
+  Kestrel `0.1.8` then ran through its required process-target path in
+  `job-a343d8457bb64184be02ac3071fbb4d0`: status, 1 KiB, and 64 KiB all
+  passed validation, explicit H3 proof, and the managed-executor benchmark.
+  Its diagnostic publication `pub_3c2bb946dc294069ad70a3acfd04268a` is live
+  at
+  `https://lab.incursa.com/reports/rack-lab-kestrel-http3-v018-common-core-process-h3-local-v1-cell-1-matrix`.
+  The implementation-owned Incursa package is now admitted and live-proven
+  for its advertised 1 KiB and 64 KiB rows; remaining work is its separately
+  owned status/JSON support and the exact missing common variants, not a
+  Docker substitution.
 - [x] Re-run the current immutable quic-go and aioquic package heads so live
   evidence matches the cataloged package versions. aioquic `0.3.3` and
   quic-go `0.1.8` now have current package-backed h3spec/QPACK proof.
@@ -394,6 +402,8 @@ repetition and the target/load VMs share physical host `r920`.
 | nginx | 0.1.9 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
 | quic-go | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
 | Kestrel | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-6c8c02669dbf423fbcc7a12a5d364741` |
+| Kestrel | 0.1.8 | current common status, 1 KiB, and 64 KiB process-target rows; validation, explicit H3 proof, and measurement passed | `job-a343d8457bb64184be02ac3071fbb4d0` |
+| Incursa.Quic | dev-20260717T203500Z-incursa-h3-availability | implementation-owned 1 KiB and 64 KiB process-target rows; validation, explicit H3 proof, and measurement passed | `job-f99e3769217a420fa60ff9321ddd38c6` |
 | quiche | 0.1.10 | h3spec HTTP/3/QPACK diagnostic; target validation passed, 13/15 conformance cases passed, and RFC 9204 Sections 4.1.3 and 4.4.3 failed | `job-14c77c9f080840389da6a733c648c3f7` |
 | ngtcp2/nghttp3 | 0.1.9 | h3spec HTTP/3/QPACK diagnostic; target validation and all 15/15 conformance cases passed | `job-14c77c9f080840389da6a733c648c3f7` |
 | quiche | 0.1.9 | historical external-peer characterization; HTTP/3 validation and curl executor succeeded; 69 artifacts retained | `job-264b0c16f0d8416bafe4c31d11d7ad34` |
@@ -410,8 +420,25 @@ package provenance and retained artifact links. aioquic `0.3.4` additionally
 has a current canonical 64 KiB observed measurement in
 `job-80f48baab27248509a0513a80860f0d0`, published and object-verified as
 `pub_8f8ae826bd3a437f88d2bd71afa535b5`. Current-head status and 1 KiB payload
-reruns for aioquic and the newly bumped packages, Incursa HTTP/3, explicit
-official payload rows for quiche/ngtcp2, repeated comparison, and
+runs for the newly bumped packages now include nginx `0.1.10` and Kestrel
+`0.1.8` on the common status/1 KiB/64 KiB rows. Kestrel's
+`job-a343d8457bb64184be02ac3071fbb4d0` was uploaded, object-verified, and
+imported as `pub_3c2bb946dc294069ad70a3acfd04268a`; the public report shows
+three passed validations and three accepted measurements while correctly
+remaining `publishable=false` for its single repetition and shared-host
+topology. The implementation-owned Incursa HTTP/3 package
+`quic-dotnet-dev@dev-20260717T203500Z-incursa-h3-availability`
+(`c2a29b048741...`) was built without modifying its pending source-tree
+changes, admitted by the controller, and ran its two declared payload rows in
+`job-f99e3769217a420fa60ff9321ddd38c6`. Both rows passed validation, explicit
+H3 proof, and measurement; publication `pub_a18c8e97de63444fb272a90e2165a7f9`
+is live at
+`https://lab.incursa.com/reports/rack-lab-incursa-quic-http3-v20260717-common-payload-process-h3-local-v1-cell-1-matrix`.
+It is diagnostic/unranked because it has one repetition, a shared host, and
+no published parity artifact. Its package intentionally declares payload rows
+only, so status/JSON support remains an implementation-owned expansion rather
+than an inferred capability. Explicit official payload rows for quiche/ngtcp2,
+the exact remaining common JSON/variant rows, repeated comparison, and
 decision-ready gates remain. Their diagnostic peer reports were uploaded,
 object-verified, import-enqueued as corrected publications
 `pub_5b1c4ebce0a64c1e899809282fbf83b7` and
