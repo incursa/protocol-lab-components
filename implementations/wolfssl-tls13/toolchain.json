@@ -1,0 +1,16 @@
+{
+  "implementation": {
+    "id": "wolfssl-tls13",
+    "version": "0.1.0",
+    "upstreamVersion": "5.9.2",
+    "upstreamTag": "v5.9.2-stable",
+    "upstreamCommit": "ac01707f552c611fbd135cc723b2682b3e7f80f2",
+    "sourceArchiveSha256": "2f4ef3d4fd387a9b3191d36a6316d69116c46ff69bb9583b6c82b36d7b8ca114",
+    "language": "c",
+    "engineModule": "wolfSSL",
+    "license": "GPL-3.0-or-later",
+    "binaryBundled": false,
+    "acquisitionMode": "docker-source-build-exact-version",
+    "source": "https://github.com/wolfSSL/wolfssl"
+  }
+}

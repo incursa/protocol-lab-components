@@ -60,6 +60,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | `go-tls13` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-tls13@0.2.0`; independent Go `crypto/tls` target for exact TLS 1.3 full/resumed handshakes and deterministic record transfers |
 | `rustls-tls13` | missing | comparable package `org.protocol-lab.components.implementation.rustls-tls13@0.1.0`; minimal rustls adapter for only the canonical TLS 1.3 full-handshake denominator, with tickets and application data disabled |
 | `s2n-tls13` | missing | comparable package `org.protocol-lab.components.implementation.s2n-tls13@0.1.0`; source-built s2n-tls 1.7.5 with a minimal canonical full-handshake adapter, exact post-handshake profile validation, and no application-data surface |
+| `wolfssl-tls13` | missing | comparable package `org.protocol-lab.components.implementation.wolfssl-tls13@0.1.0`; source-built wolfSSL 5.9.2 upstream server constrained to the canonical full-handshake controls, with the GPL-3.0 source and license retained through the Docker build |
 | `go-tls13-mtls` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-tls13-mtls@0.1.0`; independent narrow Go `crypto/tls` target requiring the canonical client trust chain and exact client leaf identity |
 | `go-tls13-chacha20` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-tls13-chacha20@0.1.0`; independent narrow Go `crypto/tls` target for the exact TLS 1.3 ChaCha20/X25519 full-handshake profile |
 | `go-tls12` | missing | local diagnostic package `org.protocol-lab.components.implementation.go-tls12@0.1.0`; independent narrow Go `crypto/tls` target for the exact TLS 1.2 ECDHE-ECDSA AES-128-GCM compatibility profile |
@@ -127,6 +128,7 @@ This matrix tracks reusable component package coverage for implementations and e
 | `org.protocol-lab.components.implementation.go-tls13` | `implementations/go-tls13` |
 | `org.protocol-lab.components.implementation.rustls-tls13` | `implementations/rustls-tls13` |
 | `org.protocol-lab.components.implementation.s2n-tls13` | `implementations/s2n-tls13` |
+| `org.protocol-lab.components.implementation.wolfssl-tls13` | `implementations/wolfssl-tls13` |
 | `org.protocol-lab.components.implementation.go-tls13-mtls` | `implementations/go-tls13-mtls` |
 | `org.protocol-lab.components.implementation.go-tls13-chacha20` | `implementations/go-tls13-chacha20` |
 | `org.protocol-lab.components.implementation.go-tls12` | `implementations/go-tls12` |

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {"os":"linux","arch":"x64","entrypoint":{"kind":"bash","path":"run.sh","arguments":[],"workingDirectory":"."}}
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": false,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [{"name":"docker","value":"true"},{"name":"linux-containers","value":"true"}],
+    "images": [{
+      "name": "wolfssl-tls13",
+      "image": "incursa-protocol-lab-wolfssl-tls13:0.1.0",
+      "baseImage": "debian:bookworm-slim",
+      "baseImageIndexDigest": "debian@sha256:7b140f374b289a7c2befc338f42ebe6441b7ea838a042bbd5acbfca6ec875818",
+      "baseImageLinuxAmd64Digest": "debian@sha256:7b140f374b289a7c2befc338f42ebe6441b7ea838a042bbd5acbfca6ec875818",
+      "sourceVersion": "5.9.2",
+      "sourceTag": "v5.9.2-stable",
+      "sourceCommit": "ac01707f552c611fbd135cc723b2682b3e7f80f2",
+      "sourceArchiveSha256": "2f4ef3d4fd387a9b3191d36a6316d69116c46ff69bb9583b6c82b36d7b8ca114",
+      "license": "GPL-3.0-or-later",
+      "capabilityProof": "docker run --rm incursa-protocol-lab-wolfssl-tls13:0.1.0 --version prints wolfSSL 5.9.2"
+    }]
+  },
+  "commands": {
+    "buildTemplate": "docker build --pull -f docker/Dockerfile -t incursa-protocol-lab-wolfssl-tls13:0.1.0 .",
+    "versionProofTemplate": "docker run --rm incursa-protocol-lab-wolfssl-tls13:0.1.0 --version",
+    "serverTemplate": "docker run --rm -p <port>:8443/tcp incursa-protocol-lab-wolfssl-tls13:0.1.0",
+    "planOnly": "./run.sh --plan-only",
+    "proofOnly": "PLAB_PROOF_ONLY=true ./run.sh"
+  },
+  "runtime": {
+    "acquisitionMode": "docker-source-build",
+    "executable": "wolfssl-server",
+    "requiredVersion": "5.9.2",
+    "upstreamTag": "v5.9.2-stable",
+    "upstreamCommit": "ac01707f552c611fbd135cc723b2682b3e7f80f2"
+  },
+  "knownLimitations": [
+    "Only Linux x64 Docker workers are admitted.",
+    "Only the exact TLS 1.3 full-handshake row is declared.",
+    "The endpoint is the upstream wolfSSL example server and exposes no ProtocolLab application-data contract."
+  ]
+}

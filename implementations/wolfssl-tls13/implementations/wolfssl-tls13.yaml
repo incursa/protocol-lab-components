@@ -1,0 +1,51 @@
+schemaVersion: "1.0"
+id: wolfssl-tls13
+name: wolfSSL TLS 1.3
+description: Source-built wolfSSL upstream example server constrained to the canonical full-handshake fixture.
+family: wolfSSL
+role: library-backed-target
+targetKind: docker
+targetContract: process
+image: incursa-protocol-lab-wolfssl-tls13:0.1.0
+dockerfile: docker/Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+workingDirectory: .
+baseUrl: tls://127.0.0.1:18449
+dockerBaseUrl: tls://127.0.0.1:18449
+protocolBaseUrls: {tls: tls://127.0.0.1:18449}
+dockerProtocolBaseUrls: {tls: tls://127.0.0.1:18449}
+certificateMode: plab-single-leaf-p256-v1
+roles: [server, library-backed-target]
+protocols: [tls]
+supportedProtocols: [tls]
+supportedProtocolVersions: [TLS1.3]
+supportedWorkloadFamilies: [tls, tls.lifecycle]
+supportedScenarios: [tls.handshake.full]
+supportedTestCaseIds: [tls.handshake.full]
+scenarioCoverage:
+  tls.handshake.full: {status: supported, behavior: exact fresh TLS 1.3 handshake with AES-128-GCM-SHA256, X25519, canonical ECDSA leaf, protocol-lab-tls ALPN, exact SNI, tickets disabled, and no application data}
+  tls.handshake.resumed: {status: unsupported, reason: Session tickets are disabled with the upstream server's -T control.}
+  tls.handshake.full.tls12: {status: unsupported, reason: The upstream server is launched with TLS 1.3-only method selection.}
+  tls.handshake.full.chacha20: {status: unsupported, reason: The upstream server is restricted to TLS13-AES128-GCM-SHA256.}
+  tls.handshake.mutual-auth: {status: unsupported, reason: Client authentication is disabled with the upstream server's -d control.}
+  tls.early-data.accepted: {status: unsupported, reason: Session tickets and early data are disabled.}
+  tls.early-data.rejected: {status: unsupported, reason: Session tickets and early data are disabled.}
+  tls.key-update.diagnostic: {status: unsupported, reason: KeyUpdate diagnostics are not implemented.}
+  tls.record.coverage: {status: unsupported, reason: The PLABTLS1 record command protocol is not implemented.}
+  tls.record.throughput: {status: unsupported, reason: The PLABTLS1 record command protocol is not implemented.}
+unsupportedKnownCases: [tls.handshake.resumed, tls.handshake.full.tls12, tls.handshake.full.chacha20, tls.handshake.mutual-auth, tls.early-data.accepted, tls.early-data.rejected, tls.key-update.diagnostic, tls.record.coverage, tls.record.throughput]
+ports: [{name: tls, protocol: tcp, default: 18449, hostPort: 18449, containerPort: 8443}]
+environment: {PLAB_SCENARIO_ID: tls.handshake.full, PLAB_TLS_PORT: "8443"}
+startup: {port: {name: tls, environmentVariable: PLAB_TLS_PORT, default: 18449}, readiness: {protocol: tcp, timeoutSeconds: 10}}
+readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 250}
+capabilities: [tls.server, tls13, tlsX25519, tlsFullHandshake, tlsNoResumption, tlsZeroApplicationData, scenario.tls.handshake.full]
+comparisonCohort: tls13-full-handshake-runtime
+rankingEligibility: comparable
+entrypoint: {kind: bash, path: run.sh, arguments: [], workingDirectory: .}
+shutdownBehavior: docker-container
+artifactExports: []
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata: {manifest: protocol-lab.internal.json}
+notes: This is the source-built upstream wolfSSL example server constrained by exact launch flags; its GPL-3.0 source and license are retained through the Docker build.
