@@ -430,18 +430,31 @@ host and therefore do not satisfy the decision-ready topology requirement.
 
 ## Workstream E - TLS implementation breadth
 
-- [ ] Retain OpenSSL `s_server` and GnuTLS `gnutls-serv` as diagnostic endpoint
+- [x] Retain OpenSSL `s_server` and GnuTLS `gnutls-serv` as diagnostic endpoint
   tools with their exact control limitations visible.
-- [ ] Promote .NET `SslStream`, Go `crypto/tls`, rustls, and s2n-tls into a
+- [x] Promote .NET `SslStream`, Go `crypto/tls`, rustls, and s2n-tls into a
   comparable TLS 1.3 full-handshake cohort using minimal protocol-library
   adapters where upstream utilities cannot host the canonical fixture.
-- [ ] Add a wolfSSL endpoint/runtime package if its license and reproducible
+- [x] Add a wolfSSL endpoint/runtime package if its license and reproducible
   build satisfy the package rules.
-- [ ] Keep TLS 1.2, mTLS, resumption, early data, cipher-specific, record, and
+- [x] Keep TLS 1.2, mTLS, resumption, early data, cipher-specific, record, and
   KeyUpdate rows as separate capability cohorts rather than shrinking the
   common TLS 1.3 denominator.
 - [ ] Live-run all supported TLS packages, meet the breadth floor, and produce
   a four-runtime decision-ready TLS 1.3 full-handshake cohort.
+
+The full-handshake live breadth is now seven independent rows. Process-mode
+job `job-e1f3ba3ec03e4d6d9fe87535627d7f1b` retained three accepted repetitions
+each for `go-tls13@0.2.0` and `rustls-tls13@0.1.0`. Docker-backed job
+`job-7915afc931f14457a79ff27917c3c030` retained three accepted repetitions each
+for `dotnet-sslstream-tls13@0.1.1`, `gnutls-serv@0.1.1`,
+`openssl-s-server@0.1.1`, `s2n-tls13@0.1.0`, and `wolfssl-tls13@0.1.0`.
+Publications `pub_32a7d075063b4f6f8d7ee7f2e81df25a` and
+`pub_83d8ad453134450393ef60752ebd5ea4` uploaded and verified the public objects,
+the import queue accepted both, and both report routes were verified live.
+These rows exceed the live breadth floor and are real repeated measurements,
+but remain diagnostic/unranked because target and load execution share worker
+and physical host `r920`; they do not satisfy the decision-ready topology gate.
 
 ## Workstream F - gRPC and WebSocket breadth
 
