@@ -209,8 +209,12 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
   component-owned raw packages and the implementation-owned Incursa and
   MSQuic/.NET adapters now declare server-only role plus exact supported
   test-case IDs; no client role is inferred.
-- [ ] Live-run all supported raw packages and meet the raw QUIC coverage floor
-  with a three-ecosystem decision-ready common cohort.
+- [x] Live-run all supported raw packages. All seven component-owned ecosystems
+  plus the two implementation-owned .NET adapters have retained current-package
+  controller proof for their advertised common rows.
+  - [ ] Meet the raw QUIC coverage floor with a three-ecosystem decision-ready
+    common cohort. The live breadth floor is met; physical-host separation,
+    seven clean repetitions, and the remaining decision-ready gates are not.
 
 ### Current retained raw QUIC evidence
 
@@ -619,9 +623,17 @@ host `r920` and only one outer repetition was retained.
 
 ## Workstream H - evidence and public explanation
 
-- [ ] For every named live package, retain a real-controller job ID, immutable
+- [x] For every named live package, retain a real-controller job ID, immutable
   package identity/version/hash, worker capability match, validation result,
   raw executor output, normalized measurements, and evidence bundle location.
+  A 2026-07-17 controller audit resolved all 71 baseline entries marked
+  `current-version-live-proven` to a completed job containing that exact package
+  ID and version. All 71 retained `run.json`, `aggregate-results.json`,
+  `evidence-bundle.json`, and `lab-package-provenance.json`; 57 recorded a
+  directly assigned worker and the remaining 14 recorded the explicit
+  `plab-worker-load-01 -> plab-worker-sut-01` cross-worker reservation and
+  capability-matched attempt nodes. The audit queried 92 unique cited jobs and
+  found no unmatched current package.
 - [ ] Run at least three clean repetitions for comparable observations and at
   least seven for decision-ready candidates unless the public evidence policy
   adopts a stricter requirement.
