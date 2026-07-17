@@ -6,7 +6,7 @@ family: nginx
 role: server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-nginx-http3:0.1.5
+image: incursa-protocol-lab-nginx-http3:0.1.10
 dockerfile: docker/nginx.Dockerfile
 buildContext: docker
 dockerNetworkMode: published-port

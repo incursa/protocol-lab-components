@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Image = 'incursa-protocol-lab-nginx-http3:0.1.5',
+    [string]$Image = 'incursa-protocol-lab-nginx-http3:0.1.10',
     [int]$Port = 5446,
     [switch]$SkipBuild,
     [switch]$PlanOnly,
@@ -42,8 +42,6 @@ try {
         "${Port}:8443/tcp",
         '-p',
         "${Port}:8443/udp",
-        '-e',
-        "PLAB_HTTP_PORT=$Port",
         $Image,
         'nginx',
         '-g',

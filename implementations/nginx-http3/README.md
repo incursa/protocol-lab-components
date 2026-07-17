@@ -5,14 +5,14 @@
 ## Package
 
 - Package ID: `org.protocol-lab.components.implementation.nginx-http3`
-- Package version: `0.1.9`
+- Package version: `0.1.10`
 - Implementation ID: `nginx-http3`
 - Public scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`
 - Package-local not-found fixture: `/not-found` returns 404 for external peer smoke.
 
 ## Pinned Build
 
-- Wrapper image tag: `incursa-protocol-lab-nginx-http3:0.1.5`
+- Wrapper image tag: `incursa-protocol-lab-nginx-http3:0.1.10`
 - Base image: `nginx:1.29.0-alpine`
 - Base image digest: `nginx@sha256:d67ea0d64d518b1bb04acde3b00f722ac3e9764b3209a9b0a98924ba35e4b779`
 - Linux amd64 manifest digest: `nginx@sha256:845b5424415de5f77dd5753cbb7c1be8bd8e44cc81f20f9705783a02f8848317`

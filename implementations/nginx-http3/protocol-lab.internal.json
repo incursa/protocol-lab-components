@@ -37,7 +37,7 @@
     "images": [
       {
         "name": "nginx-http3",
-        "image": "incursa-protocol-lab-nginx-http3:0.1.5",
+        "image": "incursa-protocol-lab-nginx-http3:0.1.10",
         "baseImage": "nginx:1.29.0-alpine",
         "baseImageDigest": "nginx@sha256:d67ea0d64d518b1bb04acde3b00f722ac3e9764b3209a9b0a98924ba35e4b779",
         "baseImageLinuxAmd64Digest": "nginx@sha256:845b5424415de5f77dd5753cbb7c1be8bd8e44cc81f20f9705783a02f8848317",
@@ -51,10 +51,10 @@
     ]
   },
   "commands": {
-    "buildTemplate": "docker build --pull -f docker/nginx.Dockerfile -t incursa-protocol-lab-nginx-http3:0.1.5 docker",
-    "moduleProofTemplate": "docker run --rm --entrypoint nginx incursa-protocol-lab-nginx-http3:0.1.5 -V",
-    "configTestTemplate": "docker run --rm incursa-protocol-lab-nginx-http3:0.1.5 nginx -t",
-    "serverTemplate": "docker run --rm -p <port>:8443/tcp -p <port>:8443/udp -e PLAB_HTTP_PORT=<port> incursa-protocol-lab-nginx-http3:0.1.5 nginx -g 'daemon off;'",
+    "buildTemplate": "docker build --pull -f docker/nginx.Dockerfile -t incursa-protocol-lab-nginx-http3:0.1.10 docker",
+    "moduleProofTemplate": "docker run --rm --entrypoint nginx incursa-protocol-lab-nginx-http3:0.1.10 -V",
+    "configTestTemplate": "docker run --rm incursa-protocol-lab-nginx-http3:0.1.10 nginx -t",
+    "serverTemplate": "docker run --rm -p <port>:8443/tcp -p <port>:8443/udp incursa-protocol-lab-nginx-http3:0.1.10 nginx -g 'daemon off;'",
     "planOnly": "pwsh ./run.ps1 -PlanOnly",
     "proofOnly": "pwsh ./run.ps1 -ProofOnly"
   },
