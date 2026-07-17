@@ -51,6 +51,8 @@ readinessCheck:
   timeoutSeconds: 10
 capabilities:
   - http.server
+  - httpPlaintext
+  - httpJson
   - httpStatus
   - httpBytes
   - httpHeaders
@@ -61,6 +63,8 @@ capabilities:
 supportedProtocolVersions:
   - http/3
 supportedTestCaseIds:
+  - http3.core.plaintext
+  - http3.core.json
   - http3.core.status
   - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
@@ -68,6 +72,8 @@ supportedTestCaseIds:
   - http3.headers.response-headers-50x32
   - http3.protocol.qpack-repeated-headers
 supportedScenarios:
+  - http3.core.plaintext
+  - http3.core.json
   - http3.core.status
   - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
@@ -84,6 +90,12 @@ scenarioCoverage:
   http3.core.status:
     status: supported
     endpoint: /status
+  http3.core.plaintext:
+    status: supported
+    endpoint: /plaintext
+  http3.core.json:
+    status: supported
+    endpoint: /json
   http3.payload.bytes.1kb:
     status: supported
     scenarioId: http3.payload.bytes.1kb
@@ -120,6 +132,12 @@ unsupportedKnownCases:
   - websocket
   - server-sent-events
 endpoints:
+  plaintext:
+    method: GET
+    path: /plaintext
+  json:
+    method: GET
+    path: /json
   status:
     method: GET
     path: /status

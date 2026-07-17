@@ -38,7 +38,7 @@ app.MapGet("/protocol-lab/metadata", () => Results.Json(new
     packageId = "org.protocol-lab.components.implementation.kestrel-http3",
     protocol = "h3",
     protocolVersion = "http/3",
-    supportedScenarios = new[] { "http3.core.status", "http3.payload.bytes.1kb", "http3.payload.bytes.64kb", "http3.payload.bytes.1mb", "http3.headers.response-headers-50x32", "http3.protocol.qpack-repeated-headers" },
+    supportedScenarios = new[] { "http3.core.plaintext", "http3.core.json", "http3.core.status", "http3.payload.bytes.1kb", "http3.payload.bytes.64kb", "http3.payload.bytes.1mb", "http3.headers.response-headers-50x32", "http3.protocol.qpack-repeated-headers" },
     unsupportedKnownCases = new[] { "h1", "h2", "h2c", "raw-quic", "websocket", "server-sent-events" }
 }));
 app.MapGet("/plaintext", () => Results.Text("Hello, World!", "text/plain"));

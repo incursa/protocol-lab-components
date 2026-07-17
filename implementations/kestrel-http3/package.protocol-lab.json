@@ -1,7 +1,7 @@
 {
   "packageId": "org.protocol-lab.components.implementation.kestrel-http3",
   "packageKind": "implementation",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "component": {
     "name": "kestrel-http3",
     "family": "kestrel",
@@ -31,12 +31,16 @@
       "http/3"
     ],
     "supportedTestCaseIds": [
+      "http3.core.plaintext",
+      "http3.core.json",
       "http3.core.status",
       "http3.payload.bytes.1kb",
       "http3.payload.bytes.64kb",
       "http3.payload.bytes.1mb"
     ],
     "supportedScenarios": [
+      "http3.core.plaintext",
+      "http3.core.json",
       "http3.core.status",
       "http3.payload.bytes.1kb",
       "http3.payload.bytes.64kb",
