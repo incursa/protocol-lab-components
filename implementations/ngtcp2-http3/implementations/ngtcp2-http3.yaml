@@ -25,6 +25,7 @@ supportedProtocols:
   - h3
 supportedWorkloadFamilies:
   - http.application
+  - http3.external
 supportedProtocolVersions:
   - http/3
 supportedScenarios:
