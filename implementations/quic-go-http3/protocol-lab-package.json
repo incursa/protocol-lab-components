@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.quic-go-http3",
-  "packageVersion": "0.1.9",
+  "packageVersion": "0.1.10",
   "kind": "implementation",
   "displayName": "quic-go HTTP/3 Implementation",
   "entryManifests": [

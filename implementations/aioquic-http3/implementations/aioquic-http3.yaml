@@ -162,6 +162,8 @@ capabilities:
   - quic.server
   - http.client
   - http.server
+  - httpPlaintext
+  - httpJson
   - httpStatus
   - httpBytes
   - httpHeaders

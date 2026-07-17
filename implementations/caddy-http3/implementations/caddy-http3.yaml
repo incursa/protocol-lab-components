@@ -118,6 +118,8 @@ readinessCheck:
   timeoutSeconds: 30
 capabilities:
   - http.server
+  - httpPlaintext
+  - httpJson
   - httpStatus
   - httpBytes
   - httpHeaders
