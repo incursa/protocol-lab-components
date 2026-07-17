@@ -1,6 +1,6 @@
 # Go TLS 1.3 Test Executor
 
-`go-tls13-executor@0.3.1` executes `tls.handshake.full`,
+`go-tls13-executor@0.3.2` executes `tls.handshake.full`,
 `tls.handshake.resumed`, `tls.record.throughput`, and `tls.record.coverage`.
 Every mode requires authenticated TLS 1.3, ALPN `protocol-lab-tls`, X25519,
 `TLS_AES_128_GCM_SHA256`, and the exact public certificate DER and SPKI hashes.

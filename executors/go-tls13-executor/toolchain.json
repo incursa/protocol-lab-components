@@ -1,4 +1,4 @@
 {
   "executor": {"language": "go", "module": "org.protocol-lab.components.executor.go-tls13-executor", "buildFlags": ["-buildvcs=false", "-trimpath"]},
-  "loadGenerator": {"id": "go-crypto-tls13-load", "version": "0.3.1", "engineModule": "crypto/tls", "engineModuleVersion": "go-standard-library", "license": "BSD-3-Clause", "source": "https://pkg.go.dev/crypto/tls"}
+  "loadGenerator": {"id": "go-crypto-tls13-load", "version": "0.3.2", "engineModule": "crypto/tls", "engineModuleVersion": "go-standard-library", "license": "BSD-3-Clause", "source": "https://pkg.go.dev/crypto/tls"}
 }

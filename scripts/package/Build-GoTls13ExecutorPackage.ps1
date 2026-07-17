@@ -9,7 +9,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $componentRoot = Join-Path $Root 'executors/go-tls13-executor'
 $sourceRoot = Join-Path $componentRoot 'source'
-$expectedVersion = '0.3.1'
+$expectedVersion = '0.3.2'
 $packageManifest = Get-Content (Join-Path $componentRoot 'protocol-lab-package.json') -Raw | ConvertFrom-Json
 $executorManifest = Get-Content (Join-Path $componentRoot 'test-executors/go-tls13-executor.yaml') -Raw
 $toolchain = Get-Content (Join-Path $componentRoot 'toolchain.json') -Raw | ConvertFrom-Json

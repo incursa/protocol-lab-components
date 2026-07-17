@@ -24,6 +24,15 @@ func TestTLSHandshakeSmokeConfigIsExact(t *testing.T) {
 	if config.Duration != 5*time.Second || config.ConnectionTimeout != 5*time.Second {
 		t.Fatalf("unexpected config: %+v", config)
 	}
+	t.Setenv("PLAB_REPETITION", "3")
+	if _, err := loadConfigFromEnvironment(); err != nil {
+		t.Fatalf("expected positive runner repetition ordinal to be accepted, got %v", err)
+	}
+	t.Setenv("PLAB_REPETITION", "0")
+	if _, err := loadConfigFromEnvironment(); err == nil || !strings.Contains(err.Error(), "repetition>=1") {
+		t.Fatalf("expected non-positive repetition rejection, got %v", err)
+	}
+	t.Setenv("PLAB_REPETITION", "1")
 	t.Setenv("PLAB_REQUEST_TIMEOUT_SECONDS", "6")
 	if _, err := loadConfigFromEnvironment(); err == nil || !strings.Contains(err.Error(), "operationTimeout=5s") {
 		t.Fatalf("expected operation-timeout rejection, got %v", err)

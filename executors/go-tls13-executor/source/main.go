@@ -27,9 +27,9 @@ import (
 
 const (
 	executorID                 = "go-tls13-executor"
-	executorVersion            = "0.3.1"
+	executorVersion            = "0.3.2"
 	loadGeneratorID            = "go-crypto-tls13-load"
-	loadGeneratorVersion       = "0.3.1"
+	loadGeneratorVersion       = "0.3.2"
 	fullScenarioID             = "tls.handshake.full"
 	resumedScenarioID          = "tls.handshake.resumed"
 	recordThroughputScenarioID = "tls.record.throughput"
@@ -333,18 +333,18 @@ func loadConfigFromEnvironment() (loadConfig, error) {
 	}
 	if scenario == recordCoverageScenarioID {
 		if profile == tlsSmokeProfileID {
-			if c.Connections != 1 || c.Concurrency != 1 || c.Duration != 5*time.Second || c.Warmup != time.Second || c.Repetition != 1 || c.ConnectionTimeout != 5*time.Second {
-				return c, fmt.Errorf("tls-smoke record coverage requires connections=1 concurrency=1 duration=5s warmup=1s repetition=1 operationTimeout=5s; observed %+v", c)
+			if c.Connections != 1 || c.Concurrency != 1 || c.Duration != 5*time.Second || c.Warmup != time.Second || c.Repetition < 1 || c.ConnectionTimeout != 5*time.Second {
+				return c, fmt.Errorf("tls-smoke record coverage requires connections=1 concurrency=1 duration=5s warmup=1s repetition>=1 operationTimeout=5s; observed %+v", c)
 			}
 			return c, nil
 		}
-		if profile != tlsDiagnosticProfileID || c.Connections != 1 || c.Concurrency != 1 || c.TotalOperations != 1 || c.Duration != 10*time.Second || c.Warmup != 0 || c.Repetition != 1 || c.ConnectionTimeout != 15*time.Second {
+		if profile != tlsDiagnosticProfileID || c.Connections != 1 || c.Concurrency != 1 || c.TotalOperations != 1 || c.Duration != 10*time.Second || c.Warmup != 0 || c.Repetition < 1 || c.ConnectionTimeout != 15*time.Second {
 			return c, fmt.Errorf("record coverage requires the exact tls-smoke or tls-diagnostic shape; observed %+v", c)
 		}
 		return c, nil
 	}
-	if profile != tlsSmokeProfileID || c.Connections != 1 || c.Concurrency != 1 || c.Duration != 5*time.Second || c.Warmup != time.Second || c.Repetition != 1 || c.ConnectionTimeout != 5*time.Second {
-		return c, fmt.Errorf("tls-smoke with %s requires connections=1 concurrency=1 duration=5s warmup=1s repetition=1 operationTimeout=5s; observed %+v", scenario, c)
+	if profile != tlsSmokeProfileID || c.Connections != 1 || c.Concurrency != 1 || c.Duration != 5*time.Second || c.Warmup != time.Second || c.Repetition < 1 || c.ConnectionTimeout != 5*time.Second {
+		return c, fmt.Errorf("tls-smoke with %s requires connections=1 concurrency=1 duration=5s warmup=1s repetition>=1 operationTimeout=5s; observed %+v", scenario, c)
 	}
 	return c, nil
 }
