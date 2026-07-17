@@ -23,7 +23,7 @@ import (
 
 const (
 	implementationID      = "webtransport-go"
-	implementationVersion = "0.1.0"
+	implementationVersion = "0.1.1"
 	upstreamVersion       = "v0.11.1"
 	pathValue             = "/webtransport/echo"
 	authority             = "webtransport.plab.test"

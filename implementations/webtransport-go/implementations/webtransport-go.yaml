@@ -9,7 +9,7 @@ targetContract: process
 executable: bash
 workingDirectory: .
 commandArguments: [run.sh]
-image: incursa-protocol-lab-webtransport-go:0.1.0
+image: incursa-protocol-lab-webtransport-go:0.1.1
 dockerfile: docker/Dockerfile
 buildContext: .
 dockerNetworkMode: published-port
@@ -31,7 +31,7 @@ scenarioCoverage:
 ports: [{name: webtransport, protocol: udp, default: 5461, hostPort: 5461, containerPort: 4433}]
 startup:
   port: {name: webtransport, environmentVariable: PLAB_TARGET_PORT, default: 5461}
-readinessCheck: {type: processStarted, timeoutSeconds: 30}
+readinessCheck: {type: processStarted, timeoutSeconds: 120, startupDelayMilliseconds: 30000}
 capabilities: [webtransport.server, webtransport.bidi-streams, h3.server, quic.server, tls1.3]
 endpoints:
   echo: {method: CONNECT, protocol: webtransport, path: /webtransport/echo, authority: webtransport.plab.test}

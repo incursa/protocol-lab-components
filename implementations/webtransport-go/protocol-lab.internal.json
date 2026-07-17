@@ -13,7 +13,7 @@
     "requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "http3-runtime", "value": "true"}],
     "images": [{
       "name": "webtransport-go",
-      "image": "incursa-protocol-lab-webtransport-go:0.1.0",
+      "image": "incursa-protocol-lab-webtransport-go:0.1.1",
       "baseImage": "golang:1.25-bookworm",
       "sourceRuntime": "scratch",
       "module": "github.com/quic-go/webtransport-go",
@@ -24,8 +24,8 @@
     }]
   },
   "commands": {
-    "buildTemplate": "docker build --pull -f docker/Dockerfile -t incursa-protocol-lab-webtransport-go:0.1.0 .",
-    "serverTemplate": "docker run --rm -p <port>:4433/udp incursa-protocol-lab-webtransport-go:0.1.0"
+    "buildTemplate": "docker build --pull -f docker/Dockerfile -t incursa-protocol-lab-webtransport-go:0.1.1 .",
+    "serverTemplate": "docker run --rm -p <port>:4433/udp incursa-protocol-lab-webtransport-go:0.1.1"
   },
   "knownLimitations": [
     "The package exposes only the exact webtransport.session-bidi-echo lane.",

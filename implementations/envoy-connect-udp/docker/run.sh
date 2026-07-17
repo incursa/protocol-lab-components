@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 if [ "${1:-}" = "--version" ]; then
-  printf 'envoy-connect-udp 0.1.0 envoy v1.38.3\n'
+  printf 'envoy-connect-udp 0.1.1 envoy v1.38.3\n'
   exit 0
 fi
 /usr/local/bin/udp-echo &

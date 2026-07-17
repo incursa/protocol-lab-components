@@ -11,7 +11,7 @@ from aioquic.h3.events import HeadersReceived, WebTransportStreamDataReceived
 from aioquic.quic.configuration import QuicConfiguration
 
 IMPLEMENTATION_ID = "aioquic-webtransport"
-IMPLEMENTATION_VERSION = "0.1.0"
+IMPLEMENTATION_VERSION = "0.1.1"
 UPSTREAM_VERSION = "1.3.0"
 AUTHORITY = b"webtransport.plab.test"
 PATH = "/webtransport/echo"

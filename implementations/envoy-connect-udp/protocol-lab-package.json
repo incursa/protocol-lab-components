@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.envoy-connect-udp",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "implementation",
   "displayName": "Envoy CONNECT-UDP Proxy",
   "entryManifests": ["implementations/envoy-connect-udp.yaml"],

@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	packageVersion  = "0.1.0"
+	packageVersion  = "0.1.1"
 	upstreamVersion = "v0.4.0"
 	proxyAuthority  = "masque-proxy.plab.test"
 	targetAuthority = "masque-echo.plab.test:4433"
