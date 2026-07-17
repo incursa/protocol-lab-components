@@ -383,8 +383,9 @@ repetition and the target/load VMs share physical host `r920`.
   `job-f145fe26b17b45b29672c83495a0fbdd`. The remaining work is to add the
   exact 1 KiB and 64 KiB current-version proof for each of those package heads
   and bring remaining compatible implementations into the full four-row
-  matrix; do not substitute a Docker target for Incursa's required process
-  path.
+  matrix. nginx `0.1.11` now also passed exact plaintext and JSON rows in
+  `job-81002d42e22d4721ba09ea0c260cc614`. Do not substitute a Docker target
+  for Incursa's required process path.
 - [x] Re-run the current immutable quic-go and aioquic package heads so live
   evidence matches the cataloged package versions. aioquic `0.3.3` and
   quic-go `0.1.8` now have current package-backed h3spec/QPACK proof.
@@ -411,6 +412,7 @@ repetition and the target/load VMs share physical host `r920`.
 | Caddy | 0.1.9 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
 | Caddy | 0.1.11 | current exact plaintext and JSON Docker-target rows; both validations and accepted measurements passed | `job-cf8f74dfcfb149de96eae8bc882c4dde` |
 | nginx | 0.1.9 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
+| nginx | 0.1.11 | current exact plaintext and JSON Docker-target rows; both validations and accepted measurements passed | `job-81002d42e22d4721ba09ea0c260cc614` |
 | quic-go | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-e05ec641965748f3830b5a006b3d8425` |
 | Kestrel | 0.1.8 | h3spec status, exact 50x32 response-header fixture, and QPACK diagnostics; validation and benchmark succeeded | `job-6c8c02669dbf423fbcc7a12a5d364741` |
 | Kestrel | 0.1.8 | current common status, 1 KiB, and 64 KiB process-target rows; validation, explicit H3 proof, and measurement passed | `job-a343d8457bb64184be02ac3071fbb4d0` |
@@ -476,7 +478,11 @@ The same corrected commit produced quic-go `0.1.10`, whose process-target
 plaintext and JSON rows passed in `job-f145fe26b17b45b29672c83495a0fbdd` and
 were published as `pub_79020034d8fd4c32a3e8ec65c8b11364` at
 `https://lab.incursa.com/reports/rack-lab-quic-go-http3-v0110-common-core-process-h3-local-v1-cell-1-matrix`.
-All three public reports were visually verified and remain diagnostic/unranked
+nginx `0.1.11` passed the same two Docker-target cells in
+`job-81002d42e22d4721ba09ea0c260cc614`, published as
+`pub_8bfccab8e001441691600ae30a58b7ff` at
+`https://lab.incursa.com/reports/rack-lab-nginx-http3-v0111-common-core-docker-h3-local-v1-cell-1-matrix`.
+All four public reports were visually verified and remain diagnostic/unranked
 because they use one repetition on the shared-host local lab.
 The initial default HTTP/3 package pair did not advertise
 `http3.payload.stream.100x16kb`, so the controller correctly preview-blocked
