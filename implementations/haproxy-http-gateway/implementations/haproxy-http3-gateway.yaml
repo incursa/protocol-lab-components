@@ -6,7 +6,7 @@ family: haproxy
 role: proxy
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-haproxy-http-gateway:0.1.2
+image: incursa-protocol-lab-haproxy-http-gateway:0.1.3
 dockerfile: Dockerfile
 buildContext: .
 baseUrl: https://localhost:5447
