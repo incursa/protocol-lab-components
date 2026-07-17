@@ -429,8 +429,19 @@ conformance failures instead of presenting executor completion as acceptance.
   results.
 - [ ] Package mvfst/Proxygen as an HTTP/3 origin only if the Proxygen layer
   satisfies the origin contract; keep raw mvfst evidence separate.
-- [ ] Add H2O as an experimental HTTP/3 origin with that status visible in
-  metadata and public presentation.
+- [x] Add H2O as an experimental HTTP/3 origin with that status visible in
+  metadata and public presentation. `org.protocol-lab.components.implementation.h2o-http3@0.1.1`
+  (upstream H2O commit `edd7a120bfc4af11ac0cbebce2a43cc1f93f9af1`) was
+  admitted and exercised by `job-a30d56d264684b0babab63cb788140ff` as a
+  Docker origin for `http3.core.status`, `http3.payload.bytes.1kb`, and
+  `http3.payload.bytes.64kb`; all three passed validation and explicit H3
+  protocol proof with zero failed requests. Publication
+  `pub_d6511adc91c6470dbc2af8cd457404d3` is visible at
+  `https://lab.incursa.com/reports/rack-lab-h2o-http3-v011-experimental-h3-local-v1-cell-1-matrix`
+  and in the H2O catalog row as validation-only, not publishable evidence.
+  It remains an experimental origin and a single same-worker/same-host,
+  one-repetition diagnostic observation; it does not close the four-origin
+  decision-ready cohort floor below.
 - [x] Add HAProxy as a gateway/proxy cohort, never as an origin-server row.
   `org.protocol-lab.components.implementation.haproxy-http-gateway@0.1.3`
   provides separate HTTP/1.1, h2c-prior-knowledge, and exact HTTP/3 proxy
