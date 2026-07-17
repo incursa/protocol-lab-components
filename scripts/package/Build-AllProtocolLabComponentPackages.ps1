@@ -290,6 +290,8 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'implementations/dotnet-sslstream-tls13'; script = 'Build-DotNetSslStreamTls13Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/go-tls13'; script = 'Build-GoTls13ImplementationPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-tls13'; script = 'Build-GoTls13ImplementationPackage.ps1'; arguments = @('linux-x64') },
+    [pscustomobject]@{ componentPath = 'implementations/rustls-tls13'; script = 'Build-RustlsTls13ImplementationPackage.ps1'; arguments = @('win-x64') },
+    [pscustomobject]@{ componentPath = 'implementations/rustls-tls13'; script = 'Build-RustlsTls13ImplementationPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-tls13-mtls'; script = 'Build-GoTls13MtlsImplementationPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-tls13-mtls'; script = 'Build-GoTls13MtlsImplementationPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-tls13-chacha20'; script = 'Build-GoTls13Chacha20ImplementationPackage.ps1'; arguments = @('win-x64') },

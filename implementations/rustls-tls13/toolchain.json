@@ -1,0 +1,12 @@
+{
+  "implementation": {
+    "id": "rustls-tls13",
+    "version": "0.1.0",
+    "language": "rust",
+    "engineModule": "rustls",
+    "engineModuleVersion": "0.23.35",
+    "cryptoProvider": "rustls-rustcrypto@0.0.2-alpha",
+    "license": "Apache-2.0 OR ISC OR MIT",
+    "source": "https://github.com/rustls/rustls"
+  }
+}

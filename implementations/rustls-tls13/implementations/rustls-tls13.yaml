@@ -1,0 +1,45 @@
+schemaVersion: "1.0"
+id: rustls-tls13
+name: rustls TLS 1.3
+description: Minimal rustls protocol-library adapter for the canonical TLS 1.3 full handshake.
+family: rustls-tls
+role: library-backed-target
+targetKind: process
+targetContract: process
+executable: bin/linux-x64/rustls-tls13
+workingDirectory: .
+baseUrl: tls://127.0.0.1:18447
+protocolBaseUrls: {tls: tls://127.0.0.1:18447}
+certificateMode: plab-single-leaf-p256-v1
+roles: [server, library-backed-target]
+protocols: [tls]
+supportedProtocols: [tls]
+supportedProtocolVersions: [TLS1.3]
+supportedWorkloadFamilies: [tls, tls.lifecycle]
+supportedScenarios: [tls.handshake.full]
+supportedTestCaseIds: [tls.handshake.full]
+scenarioCoverage:
+  tls.handshake.full: {status: supported, behavior: exact fresh TLS 1.3 handshake with AES-128-GCM-SHA256, X25519, canonical ECDSA leaf, protocol-lab-tls ALPN, tickets disabled, and no application data}
+  tls.handshake.resumed: {status: unsupported, reason: Session tickets are disabled in this full-handshake-only adapter.}
+  tls.handshake.full.tls12: {status: unsupported, reason: TLS 1.2 is disabled.}
+  tls.handshake.full.chacha20: {status: unsupported, reason: Only TLS_AES_128_GCM_SHA256 is enabled.}
+  tls.handshake.mutual-auth: {status: unsupported, reason: Client authentication is not implemented.}
+  tls.early-data.accepted: {status: unsupported, reason: The separate rustls early-data package owns this capability-specific row.}
+  tls.early-data.rejected: {status: unsupported, reason: The separate rustls early-data package owns this capability-specific row.}
+  tls.key-update.diagnostic: {status: unsupported, reason: KeyUpdate diagnostics are not implemented.}
+  tls.record.coverage: {status: unsupported, reason: The PLABTLS1 record command protocol is not implemented.}
+  tls.record.throughput: {status: unsupported, reason: The PLABTLS1 record command protocol is not implemented.}
+unsupportedKnownCases: [tls.handshake.resumed, tls.handshake.full.tls12, tls.handshake.full.chacha20, tls.handshake.mutual-auth, tls.early-data.accepted, tls.early-data.rejected, tls.key-update.diagnostic, tls.record.coverage, tls.record.throughput]
+ports: [{name: tls, protocol: tcp, default: 18447}]
+environment: {PLAB_LISTEN_ADDRESS: 127.0.0.1:18447}
+startup: {port: {name: tls, environmentVariable: PLAB_TARGET_PORT, default: 18447}, readiness: {protocol: process, timeoutSeconds: 10}}
+readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 250}
+capabilities: [tls.server, tls13, tlsX25519, tlsFullHandshake, tlsNoResumption, tlsZeroApplicationData, scenario.tls.handshake.full]
+comparisonCohort: tls13-full-handshake-runtime
+rankingEligibility: comparable
+entrypoint: {kind: process, path: bin/linux-x64/rustls-tls13, arguments: [], workingDirectory: .}
+shutdownBehavior: process
+artifactExports: []
+qlogSupport: false
+sslKeyLogSupport: false
+notes: This adapter exposes only the exact common full-handshake denominator; specialized rustls capability packages remain separate cohorts.
