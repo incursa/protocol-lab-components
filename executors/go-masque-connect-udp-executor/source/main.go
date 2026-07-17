@@ -28,12 +28,12 @@ import (
 
 const (
 	executorID              = "go-masque-connect-udp-executor"
-	executorVersion         = "0.1.0"
+	executorVersion         = "0.1.1"
 	loadGeneratorID         = "masque-go-load"
 	loadGeneratorVersion    = "0.1.0"
 	engineModule            = "github.com/quic-go/masque-go"
 	engineModuleVersion     = "v0.4.0"
-	authorityCommit         = "db6c24bdb940254e820276f1ddec89b09ffd516f"
+	authorityCommit         = "d8082f5ae7d872e9e556f9696177079929483c58"
 	scenarioID              = "masque.connect-udp-tunnel"
 	profileID               = "masque-connect-udp-comparison"
 	protocolVariant         = "masque-connect-udp-over-h3"

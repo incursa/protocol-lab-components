@@ -1,5 +1,5 @@
-executorIdentity: {id: go-masque-connect-udp-executor, name: Go MASQUE CONNECT-UDP Test Executor, version: 0.1.0, vendor: Incursa}
-versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.1.0}
+executorIdentity: {id: go-masque-connect-udp-executor, name: Go MASQUE CONNECT-UDP Test Executor, version: 0.1.1, vendor: Incursa}
+versionCompatibility: {contractVersion: test-executor-v1, compatibleContractVersions: [test-executor-v1], executorVersion: 0.1.1}
 claimedCapabilities:
   - {id: masque.connect-udp-tunnel, status: supported}
   - {id: rfc9298-connect-udp-over-http3-proof, status: supported}
