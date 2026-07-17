@@ -40,7 +40,7 @@ New-Item -ItemType Directory -Force $ArtifactRoot | Out-Null
 
 $scenarioArchive = Resolve-One 'org.protocol-lab.components.scenario.http2-websocket-performance.0.1.2.plabpkg'
 $executorArchive = Resolve-One "org.protocol-lab.components.executor.go-http2-websocket-executor.0.2.0.$RuntimeIdentifier.plabpkg"
-$targetArchive = Resolve-One "org.protocol-lab.components.implementation.kestrel-http2-websocket.0.1.1.$RuntimeIdentifier.plabpkg"
+$targetArchive = Resolve-One "org.protocol-lab.components.implementation.kestrel-http2-websocket.0.1.2.$RuntimeIdentifier.plabpkg"
 $scenarioRoot = Join-Path $ArtifactRoot 'scenario'
 $executorRoot = Join-Path $ArtifactRoot 'executor'
 $targetRoot = Join-Path $ArtifactRoot 'target'
@@ -50,7 +50,7 @@ $targetManifest = Expand-One $targetArchive $targetRoot
 
 $authority = Get-Content (Join-Path $scenarioRoot 'authority-lock.json') -Raw | ConvertFrom-Json
 if ($authority.commit -ne '8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574') { throw 'authority commit mismatch' }
-if ($scenarioManifest.packageVersion -ne '0.1.2' -or $executorManifest.packageVersion -ne '0.2.0' -or $targetManifest.packageVersion -ne '0.1.1') { throw 'immutable package version mismatch' }
+if ($scenarioManifest.packageVersion -ne '0.1.2' -or $executorManifest.packageVersion -ne '0.2.0' -or $targetManifest.packageVersion -ne '0.1.2') { throw 'immutable package version mismatch' }
 if ($scenarioManifest.providedScenarios.Count -ne 6 -or $executorManifest.providedTestExecutors[0].scenarios.Count -ne 6 -or $targetManifest.providedImplementations[0].scenarios.Count -ne 6) { throw 'six-ID package claim mismatch' }
 $loadProfileEntries = @($scenarioManifest.entryManifests | Where-Object { $_ -like 'load-profiles/*' } | Sort-Object)
 if (($loadProfileEntries -join ',') -ne 'load-profiles/diagnostic.yaml,load-profiles/websocket-comparison.yaml,load-profiles/websocket-smoke.yaml') { throw 'scenario load-profile entry mismatch' }
@@ -111,7 +111,7 @@ try {
         $linuxTargetPid = $targetPids[0]
     }
     $targetReady = ((Get-Content $targetOut) | Where-Object { $_ -like '*"eventName":"ready"*' } | Select-Object -First 1) | ConvertFrom-Json
-    if ($targetReady.implementationId -ne 'kestrel-http2-websocket' -or $targetReady.implementationVersion -ne '0.1.1' -or $targetReady.protocolVersion -ne 'HTTP/2' -or $targetReady.settingsEnableConnectProtocol -ne 1 -or $targetReady.alpn -ne 'h2' -or $targetReady.certificateDerSha256 -ne 'fe996190f39355e3cfc201cbb7e2cba962a701b94ed08ff49e68e830216d0109' -or $targetReady.certificateSpkiSha256 -ne 'c2440fbe955033f341ca625c1804e21b50066d952ab24a4b53007dc1cfbf410c') { throw 'target readiness mismatch' }
+    if ($targetReady.implementationId -ne 'kestrel-http2-websocket' -or $targetReady.implementationVersion -ne '0.1.2' -or $targetReady.protocolVersion -ne 'HTTP/2' -or $targetReady.settingsEnableConnectProtocol -ne 1 -or $targetReady.alpn -ne 'h2' -or $targetReady.certificateDerSha256 -ne 'fe996190f39355e3cfc201cbb7e2cba962a701b94ed08ff49e68e830216d0109' -or $targetReady.certificateSpkiSha256 -ne 'c2440fbe955033f341ca625c1804e21b50066d952ab24a4b53007dc1cfbf410c') { throw 'target readiness mismatch' }
 
     $commonEnvironment = [ordered]@{
         PLAB_TARGET_BASE_URL = "https://127.0.0.1:$port"

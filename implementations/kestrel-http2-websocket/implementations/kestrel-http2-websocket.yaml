@@ -28,7 +28,7 @@ unsupportedKnownCases: [websocket.echo, http1.websocket.rfc6455.cleartext.upgrad
 ports: [{name: websocket-h2, protocol: tcp, default: 18451, hostPort: 18451, containerPort: 18451}]
 environment: {PLAB_LISTEN_ADDRESS: "127.0.0.1:18451"}
 startup: {port: {name: websocket-h2, environmentVariable: PLAB_LISTEN_ADDRESS, default: 18451}, readiness: {protocol: process, timeoutSeconds: 10}}
-readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 250}
+readinessCheck: {type: tcp, timeoutSeconds: 30, startupDelayMilliseconds: 0}
 capabilities: [websocket.server, websocket.rfc8441, websocket.text-echo, websocket.binary-echo, websocket.control-frames, websocket.close, websocket.multi-message, tls.server, tls1.3, alpn.h2, http2.extended-connect, scenario.http2.websocket.rfc8441.extended-connect, scenario.http2.websocket.rfc8441.control-frames, scenario.http2.websocket.rfc8441.text-echo, scenario.http2.websocket.rfc8441.binary-echo, scenario.http2.websocket.rfc8441.close, scenario.http2.websocket.rfc8441.multi-message-text-echo]
 entrypoint: {kind: process, path: bin/linux-x64/KestrelHttp2WebSocket, arguments: [], workingDirectory: .}
 shutdownBehavior: graceful-termination
