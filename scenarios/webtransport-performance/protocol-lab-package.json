@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.scenario.webtransport-performance",
+  "packageVersion": "0.1.0",
+  "kind": "scenario-pack",
+  "displayName": "WebTransport Performance Scenario Pack",
+  "entryManifests": [
+    "scenarios/webtransport/session-bidi-echo.yaml",
+    "suites/webtransport-performance-smoke.yaml",
+    "load-profiles/webtransport-smoke.yaml"
+  ],
+  "providedScenarios": [{"scenarioId": "webtransport.session-bidi-echo", "displayName": "WebTransport Session Bidirectional Echo", "protocols": ["webtransport", "h3"]}],
+  "providedSuites": [{"suiteId": "webtransport-performance-smoke", "displayName": "WebTransport Performance Smoke", "purpose": "diagnostic", "resultKind": "diagnostic", "protocols": ["webtransport", "h3"], "testExecutors": ["go-webtransport-executor"]}]
+}

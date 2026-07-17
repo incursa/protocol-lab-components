@@ -1,0 +1,43 @@
+schemaVersion: "1.0"
+id: aioquic-webtransport
+name: aioquic WebTransport
+description: aioquic 1.3.0 server for the deterministic ProtocolLab WebTransport bidirectional-stream echo lane.
+family: aioquic
+role: server
+targetKind: process
+targetContract: process
+executable: bash
+workingDirectory: .
+commandArguments: [run.sh]
+image: incursa-protocol-lab-aioquic-webtransport:0.1.0
+dockerfile: docker/Dockerfile
+buildContext: .
+dockerNetworkMode: published-port
+baseUrl: https://127.0.0.1:5462
+dockerBaseUrl: https://127.0.0.1:5462
+protocolBaseUrls: {webtransport: https://127.0.0.1:5462, h3: https://127.0.0.1:5462}
+dockerProtocolBaseUrls: {webtransport: https://127.0.0.1:5462, h3: https://127.0.0.1:5462}
+certificateMode: committed-self-signed-webtransport-plab-test
+roles: [server]
+protocols: [webtransport, h3]
+supportedProtocols: [webtransport, h3]
+supportedWorkloadFamilies: [webtransport]
+supportedProtocolVersions: [webtransport-over-http3, http/3, quic-v1, tls1.3]
+supportedScenarios: [webtransport.session-bidi-echo]
+supportedTestCaseIds: [webtransport.session-bidi-echo]
+scenarioCoverage:
+  webtransport.session-bidi-echo: {status: supported, endpoint: /webtransport/echo, behavior: one-session-one-client-initiated-bidirectional-stream-65536-byte-exact-echo}
+  webtransport.session-open: {status: unsupported, reason: The session-open placeholder is not an independently measured package lane.}
+ports: [{name: webtransport, protocol: udp, default: 5462, hostPort: 5462, containerPort: 4433}]
+startup:
+  port: {name: webtransport, environmentVariable: PLAB_TARGET_PORT, default: 5462}
+readinessCheck: {type: processStarted, timeoutSeconds: 30}
+capabilities: [webtransport.server, webtransport.bidi-streams, h3.server, quic.server, tls1.3]
+endpoints:
+  echo: {method: CONNECT, protocol: webtransport, path: /webtransport/echo, authority: webtransport.plab.test}
+unsupportedKnownCases: [webtransport-datagrams, multiple-bidirectional-streams, unidirectional-streams, websocket, masque]
+artifactExports: [stdout.txt, stderr.txt, target-proof.json]
+qlogSupport: false
+sslKeyLogSupport: false
+executionMetadata: {manifest: protocol-lab.internal.json}
+notes: Exact aioquic 1.3.0 package using its native H3Connection WebTransport path. Ordinary HTTP/3 request success is not accepted as WebTransport support.

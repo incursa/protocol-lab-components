@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.executor.go-webtransport-executor",
+  "packageVersion": "0.1.0",
+  "kind": "test-executor",
+  "displayName": "Go WebTransport Test Executor",
+  "entryManifests": ["test-executors/go-webtransport-executor.yaml"],
+  "providedTestExecutors": [{
+    "testExecutorId": "go-webtransport-executor",
+    "displayName": "Go WebTransport Test Executor",
+    "protocols": ["webtransport", "h3"],
+    "scenarios": ["webtransport.session-bidi-echo"],
+    "tests": ["webtransport.session-bidi-echo"]
+  }],
+  "dependencies": {}
+}

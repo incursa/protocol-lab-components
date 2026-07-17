@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
+  "environments": [
+    {"os": "windows", "arch": "x64", "entrypoint": {"kind": "pwsh", "path": "run.ps1", "arguments": [], "workingDirectory": "."}},
+    {"os": "linux", "arch": "x64", "entrypoint": {"kind": "bash", "path": "run.sh", "arguments": [], "workingDirectory": "."}}
+  ],
+  "dependencies": {
+    "requiresDotNet": false,
+    "requiresDocker": true,
+    "requiresPwsh": true,
+    "requiresBash": true,
+    "requiresGo": false,
+    "requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "http3-runtime", "value": "true"}],
+    "images": [{
+      "name": "webtransport-go",
+      "image": "incursa-protocol-lab-webtransport-go:0.1.0",
+      "baseImage": "golang:1.25-bookworm",
+      "sourceRuntime": "scratch",
+      "module": "github.com/quic-go/webtransport-go",
+      "moduleVersion": "v0.11.1",
+      "sourceRepository": "https://github.com/quic-go/webtransport-go",
+      "sourceTag": "v0.11.1",
+      "sourceTagCommit": "d03fbc34952e05e833ab2a3810ab55aeefe2bf30"
+    }]
+  },
+  "commands": {
+    "buildTemplate": "docker build --pull -f docker/Dockerfile -t incursa-protocol-lab-webtransport-go:0.1.0 .",
+    "serverTemplate": "docker run --rm -p <port>:4433/udp incursa-protocol-lab-webtransport-go:0.1.0"
+  },
+  "knownLimitations": [
+    "The package exposes only the exact webtransport.session-bidi-echo lane.",
+    "The committed self-signed certificate is for webtransport.plab.test and is accepted only by the pinned test executor trust profile.",
+    "WebTransport datagrams, multiple streams, browser APIs, and MASQUE are not claimed."
+  ]
+}

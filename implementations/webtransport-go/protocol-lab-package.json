@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.webtransport-go",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "webtransport-go Server",
+  "entryManifests": ["implementations/webtransport-go.yaml"],
+  "providedImplementations": [{
+    "implementationId": "webtransport-go",
+    "displayName": "webtransport-go",
+    "protocols": ["webtransport", "h3"],
+    "scenarios": ["webtransport.session-bidi-echo"]
+  }],
+  "dependencies": {"requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "http3-runtime", "value": "true"}]}
+}

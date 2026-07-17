@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "org.protocol-lab.components.implementation.aioquic-webtransport",
+  "packageVersion": "0.1.0",
+  "kind": "implementation",
+  "displayName": "aioquic WebTransport Server",
+  "entryManifests": ["implementations/aioquic-webtransport.yaml"],
+  "providedImplementations": [{
+    "implementationId": "aioquic-webtransport",
+    "displayName": "aioquic WebTransport",
+    "protocols": ["webtransport", "h3"],
+    "scenarios": ["webtransport.session-bidi-echo"]
+  }],
+  "dependencies": {"requiredCapabilities": [{"name": "docker", "value": "true"}, {"name": "http3-runtime", "value": "true"}]}
+}

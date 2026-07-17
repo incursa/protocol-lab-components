@@ -1,0 +1,10 @@
+id: webtransport-performance-smoke
+name: WebTransport performance contract smoke suite
+description: Fast package-neutral validity selection for one authenticated WebTransport session and one deterministic bidirectional-stream echo.
+purpose: diagnostic
+resultKind: diagnostic
+loadProfileId: webtransport-smoke
+scenarios: [webtransport.session-bidi-echo]
+protocol: webtransport
+notes: Contract selection only; implementation support requires an exact package-backed target and executor.
+tags: [webtransport, h3, smoke, non-rankable]

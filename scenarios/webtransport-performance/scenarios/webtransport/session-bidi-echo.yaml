@@ -1,0 +1,42 @@
+schemaVersion: "2.0"
+version: 2.0.0
+id: webtransport.session-bidi-echo
+title: WebTransport Session Bidirectional Echo
+description: Open one authenticated WebTransport-over-HTTP/3 session and echo one deterministic 65,536-byte payload on one client-initiated bidirectional stream.
+status: experimental
+kind: workload
+layer: application
+protocol: webtransport
+family: webtransport
+semanticTemplateId: webtransport.session.bidi-echo-65536b
+protocolStack: [webtransport, h3, quic, tls1.3]
+upstreamStandards: [https://datatracker.ietf.org/doc/draft-ietf-webtrans-http3/]
+roles: [client, server]
+requires: {capabilities: [webtransport.client, webtransport.server, webtransport.bidi-streams], protocols: [webtransport, h3], roles: [client, server]}
+trafficShape: bidirectional-stream
+executionProfile: {transportSecurity: tls, protocolVariant: webtransport-over-h3, implementationRole: origin-server, selectedComponentProofRequired: true, executionModePolicy: record-effective-mode}
+webTransport:
+  binding: webtransport-over-http3
+  authority: webtransport.plab.test
+  path: /webtransport/echo
+  operation: session-bidi-echo
+  sessionCount: 1
+  bidirectionalStreamCount: 1
+  payloadBytes: 65536
+  payloadDirection: client-to-server-then-server-to-client
+  payloadGenerator: counter-octets-mod-251
+  payloadSha256: 4b640d85ab3ba30fd02c9fc9db4a8928f416322ad27022ea58a65aaee68a4df2
+  closeCode: 0
+  connectionLifecycle: new-session-per-operation
+  measuredWindow: bidirectional-stream-round-trip
+  handshake: {method: CONNECT, protocol: webtransport, scheme: https, authority: webtransport.plab.test, path: /webtransport/echo, responseStatus: 200, datagramsEnabled: true}
+validation:
+  required: true
+  checks: [protocol:webtransport-over-h3, tls:1.3, alpn:h3, no-fallback, extended-connect, pseudo-protocol:webtransport, response-status:200, session-established, client-initiated-bidirectional-stream, stream-count:1, payload-bytes:65536, payload-sha256, ordered-echo, session-close-code:0, zero-unexpected-failures, zero-timeouts]
+  protocol: {requested: webtransport-over-h3, expectedObserved: webtransport-over-h3, fallbackAllowed: false}
+benchmarkCompat: {compatibleLoadShapes: [smoke], primaryMetrics: [sessionsPerSecond, bytesPerSecond, streamLatencyP95, streamLatencyP99, failedOperations, timedOutOperations]}
+requiredMetrics: [sessionsPerSecond, bytesPerSecond, streamLatencyMean, streamLatencyP50, streamLatencyP75, streamLatencyP90, streamLatencyP95, streamLatencyP99, completedOperations, failedOperations, timedOutOperations, totalTransferredBytes, effectiveStreams]
+artifacts: {required: [validation.json, protocol-proof.json, webtransport-summary.json, payload-hash.json, result.json, load.stdout.log, load.stderr.log], optional: [qlog, tls-key-log, target-telemetry.json, load-generator-telemetry.json]}
+availability: {onUnsupported: unsupported, onUnavailable: unavailable, onBindingMismatch: validation-failed, knownUnsupported: [http3-request-response-substitution, websocket-over-h3-substitution, session-without-bidirectional-stream-proof, payload-hash-unavailable]}
+networkProfile: clean
+tags: [webtransport, h3, quic, bidirectional-stream, echo, experimental]
