@@ -34,6 +34,7 @@
       ,"ProtocolLab controller job job-c2e73117def54f7f85251fc7c1f3455a (nginx HTTP/1 0.1.2 plaintext and JSON, ten accepted cells, completed and published 2026-07-16)"
       ,"ProtocolLab controller job job-b0aed4e460824ef7be586020bc6c5a4c (Rust hyper HTTP/1 0.1.0 image-build failure retained as two unsupported cells and published 2026-07-16; corrected current package is 0.1.1)"
       ,"ProtocolLab controller jobs job-7e86de2340504ebd8412853c26a380cf and job-63589432716943f1b51e4263919876db (Node.js node:http2 h2c plaintext and JSON comparison rows, three accepted repetitions each, completed and publication-uploaded 2026-07-16)"
+      ,"ProtocolLab controller jobs job-b150ae8c9baa4656adaf113a0fa322f4 and job-58f709a81a514df68e12c209f008a092 (Jetty 12 h2c plaintext and JSON comparison rows, three accepted repetitions each, completed and publication-uploaded 2026-07-16)"
     ],
     "publicCatalog": "../protocol-lab-site/src/content/implementations/*.md"
   },
@@ -49,8 +50,8 @@
     "localDecisionDirectoryCount": 5,
     "quicHttp3InventoryCount": 19,
     "publicAuthoredCatalogCount": 45,
-    "currentVersionLiveProvenCount": 48,
-    "historicalVersionLiveProofOnlyCount": 1,
+    "currentVersionLiveProvenCount": 49,
+    "historicalVersionLiveProofOnlyCount": 0,
     "attemptedNoCompletedEvidenceCount": 2,
     "noLiveProofInReviewedSourcesCount": 12
   },
@@ -87,7 +88,7 @@
     { "path": "implementations/grpc-dotnet/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.grpc-dotnet", "version": "0.1.1", "implementationIds": ["grpc-dotnet"], "protocols": ["h2"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-037f36ec1657451a9af8c6052350b019"] },
     { "path": "implementations/grpc-java-netty/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.grpc-java-netty", "version": "0.1.1", "implementationIds": ["grpc-java-netty"], "protocols": ["h2"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-46c2796bece64c0199b6d9aebcd3244a"] },
     { "path": "implementations/grpc-js/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.grpc-js", "version": "0.1.1", "implementationIds": ["grpc-js"], "protocols": ["h2"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-037f36ec1657451a9af8c6052350b019"] },
-    { "path": "implementations/jetty-http-origin/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.jetty-http-origin", "version": "0.1.1", "implementationIds": ["jetty-http1", "jetty-http2"], "protocols": ["h1", "h2"], "evidenceStatus": "historical-version-live-proof-only", "evidenceVersion": "0.1.0", "evidenceJobIds": ["job-cb6fb888ee4d4979844b4f19580b1b92", "job-058c58aa3b2a4a0ea1f51c44bd07dc78"], "blocker": "Package 0.1.0 has live HTTP/1.1 proof, while its first HTTP/2 run raced the process-only readiness delay and failed validation before Jetty finished starting. Version 0.1.1 uses the working HTTP health readiness gate for both protocols and needs a current-head rerun." },
+    { "path": "implementations/jetty-http-origin/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.jetty-http-origin", "version": "0.1.1", "implementationIds": ["jetty-http1", "jetty-http2"], "protocols": ["h1", "h2"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-b150ae8c9baa4656adaf113a0fa322f4", "job-58f709a81a514df68e12c209f008a092"], "blocker": "Current Jetty 12 h2c plaintext and JSON rows completed with three accepted cross-worker repetitions each and retained 206 artifacts per job. The workers share one physical host, so these are diagnostic observations rather than decision-ready measurements. Current-version HTTP/1.1 reruns remain queued; TLS/ALPN HTTP/2 is intentionally not claimed." },
     { "path": "implementations/jetty-websocket/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.jetty-websocket", "version": "0.1.2", "implementationIds": ["jetty-websocket"], "protocols": ["h1"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-281688b290964f23baaf9632642b11a5"] },
     { "path": "implementations/kestrel-http1/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.kestrel-http1", "version": "0.1.3", "implementationIds": ["kestrel-http1"], "protocols": ["h1"], "evidenceStatus": "current-version-live-proven", "evidenceJobIds": ["job-5ab0a446b1034879899e4d5fa85bcddd"], "blocker": "Current plaintext and JSON rows are live-proven and published as a diagnostic observation with five accepted repetitions each; shared-cohort and decision-ready gates remain." },
     { "path": "implementations/kestrel-http2-websocket/protocol-lab-package.json", "packageId": "org.protocol-lab.components.implementation.kestrel-http2-websocket", "version": "0.1.0", "implementationIds": ["kestrel-http2-websocket"], "protocols": ["h2", "tls"], "evidenceStatus": "no-live-proof-in-reviewed-sources", "evidenceJobIds": [], "blocker": "Package smoke is documented, but the reviewed sources cite no real-controller job." },
@@ -163,7 +164,7 @@
     { "slug": "haproxy-http3", "status": "planned", "protocols": ["h3"], "inventoryId": "haproxy", "localPackageIds": [] },
     { "slug": "incursa-http3", "status": "public", "protocols": ["h3"], "inventoryId": "incursa-quic-dotnet", "localPackageIds": [] },
     { "slug": "jetty-http1", "status": "public", "protocols": ["h1"], "localPackageIds": ["org.protocol-lab.components.implementation.jetty-http-origin"] },
-    { "slug": "jetty-http2", "status": "candidate", "protocols": ["h2"], "localPackageIds": ["org.protocol-lab.components.implementation.jetty-http-origin"] },
+    { "slug": "jetty-http2", "status": "public", "protocols": ["h2"], "localPackageIds": ["org.protocol-lab.components.implementation.jetty-http-origin"] },
     { "slug": "kestrel-http1", "status": "public", "protocols": ["h1"], "localPackageIds": ["org.protocol-lab.components.implementation.kestrel-http1"] },
     { "slug": "kestrel-http2", "status": "public", "protocols": ["h2"], "localPackageIds": ["org.protocol-lab.components.implementation.kestrel-http2"] },
     { "slug": "kestrel-http3", "status": "reference", "protocols": ["h3"], "inventoryId": "kestrel", "localPackageIds": ["org.protocol-lab.components.implementation.kestrel-http3"] },
