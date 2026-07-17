@@ -4,7 +4,9 @@ param(
 
     [string]$OutputRoot = (Join-Path $Root 'artifacts/packages'),
 
-    [switch]$Clean
+    [switch]$Clean,
+
+    [string[]]$ImportedPackageBuildKey = @()
 )
 
 $ErrorActionPreference = 'Stop'
@@ -67,6 +69,17 @@ function ConvertTo-StringArray {
     }
 
     return @($Value | ForEach-Object { [string]$_ })
+}
+
+function Get-PackageBuildKey {
+    param([Parameter(Mandatory)]$Build)
+
+    $arguments = ConvertTo-StringArray -Value $Build.arguments
+    if ($arguments.Count -eq 0) {
+        return [string]$Build.componentPath
+    }
+
+    return '{0}|{1}' -f $Build.componentPath, ($arguments -join ',')
 }
 
 function Get-ProvidedIds {
@@ -257,6 +270,10 @@ $Root = (Resolve-Path $Root).Path
 $OutputRoot = [System.IO.Path]::GetFullPath($OutputRoot)
 Assert-PathIsUnderRoot -CandidatePath $OutputRoot -ExpectedRoot $Root
 
+if ($Clean -and $ImportedPackageBuildKey.Count -gt 0) {
+    throw 'Clean cannot be combined with ImportedPackageBuildKey because cleaning would delete the transferred package artifacts.'
+}
+
 New-Item -ItemType Directory -Force -Path $OutputRoot | Out-Null
 
 if ($Clean) {
@@ -417,10 +434,101 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'scenarios/masque-connect-udp-performance'; script = 'Build-MasqueConnectUdpScenarioPackage.ps1'; arguments = @() }
 )
 
+$packageBuildsByKey = @{}
+foreach ($build in $packageBuilds) {
+    $buildKey = Get-PackageBuildKey -Build $build
+    if ($packageBuildsByKey.ContainsKey($buildKey)) {
+        throw "Duplicate package build key '$buildKey'."
+    }
+
+    $packageBuildsByKey[$buildKey] = $build
+}
+
+$importedBuildKeys = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+foreach ($buildKey in $ImportedPackageBuildKey) {
+    if (-not $packageBuildsByKey.ContainsKey($buildKey)) {
+        throw "Imported package build key was not found: '$buildKey'."
+    }
+
+    [void]$importedBuildKeys.Add($buildKey)
+}
+
 $builderResults = [System.Collections.Generic.List[object]]::new()
 $builtArtifacts = [System.Collections.Generic.List[System.IO.FileInfo]]::new()
+$importedArtifactPaths = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+
+if ($importedBuildKeys.Count -gt 0) {
+    $currentCommit = (& git -C $Root rev-parse HEAD).Trim()
+    $matchedImportedBuildKeys = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+
+    foreach ($artifact in @(Get-ChildItem -LiteralPath $OutputRoot -File -Filter '*.plabpkg' | Sort-Object Name)) {
+        $attestationPath = "$($artifact.FullName).build-attestation.json"
+        if (-not (Test-Path -LiteralPath $attestationPath -PathType Leaf)) {
+            throw "$($artifact.Name): imported package is missing build attestation '$attestationPath'."
+        }
+
+        $attestation = Get-Content -LiteralPath $attestationPath -Raw | ConvertFrom-Json
+        if (-not [string]::Equals([string]$attestation.source.commitSha, $currentCommit, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "$($artifact.Name): imported package commit '$($attestation.source.commitSha)' does not match aggregation commit '$currentCommit'."
+        }
+
+        $actualHash = (Get-FileHash -LiteralPath $artifact.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+        if (-not [string]::Equals([string]$attestation.package.sha256, $actualHash, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "$($artifact.Name): imported package hash does not match its build attestation."
+        }
+
+        $candidateBuilds = @(
+            $packageBuilds | Where-Object {
+                [string]::Equals([string]$_.componentPath, [string]$attestation.source.componentPath, [System.StringComparison]::OrdinalIgnoreCase)
+            }
+        )
+        if ($candidateBuilds.Count -gt 1) {
+            $candidateBuilds = @(
+                $candidateBuilds | Where-Object {
+                    (ConvertTo-StringArray -Value $_.arguments) -contains [string]$attestation.build.runtimeIdentifier
+                }
+            )
+        }
+
+        if ($candidateBuilds.Count -ne 1) {
+            throw "$($artifact.Name): imported package could not be associated with exactly one package build."
+        }
+
+        $matchingBuild = $candidateBuilds[0]
+        $matchingBuildKey = Get-PackageBuildKey -Build $matchingBuild
+        if (-not $importedBuildKeys.Contains($matchingBuildKey)) {
+            throw "$($artifact.Name): imported artifact maps to unrequested build '$matchingBuildKey'."
+        }
+
+        $attestation.package.materializationPath = [System.IO.Path]::GetFullPath($artifact.FullName)
+        $attestation.package.buildAttestationPath = [System.IO.Path]::GetFullPath($attestationPath)
+        $attestation | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $attestationPath -Encoding utf8NoBOM
+
+        [void]$builtArtifacts.Add($artifact)
+        [void]$importedArtifactPaths.Add($artifact.FullName)
+        [void]$matchedImportedBuildKeys.Add($matchingBuildKey)
+        [void]$builderResults.Add([pscustomobject]@{
+            componentPath = $matchingBuild.componentPath
+            script = $matchingBuild.script
+            arguments = ConvertTo-StringArray -Value $matchingBuild.arguments
+            artifacts = @($artifact.Name)
+            status = 'passed'
+        })
+    }
+
+    foreach ($buildKey in $importedBuildKeys) {
+        if (-not $matchedImportedBuildKeys.Contains($buildKey)) {
+            throw "No transferred package artifact matched imported build '$buildKey'."
+        }
+    }
+}
 
 foreach ($build in $packageBuilds) {
+    $buildKey = Get-PackageBuildKey -Build $build
+    if ($importedBuildKeys.Contains($buildKey)) {
+        continue
+    }
+
     $scriptPath = Join-Path $PSScriptRoot $build.script
     if (-not (Test-Path -LiteralPath $scriptPath -PathType Leaf)) {
         throw "Package build script not found: $scriptPath"
@@ -440,7 +548,7 @@ foreach ($build in $packageBuilds) {
 
     $artifacts = @(
         Get-ChildItem -LiteralPath $OutputRoot -File -Filter '*.plabpkg' |
-            Where-Object { $_.LastWriteTimeUtc -ge $startTime } |
+            Where-Object { $_.LastWriteTimeUtc -ge $startTime -and -not $importedArtifactPaths.Contains($_.FullName) } |
             Sort-Object FullName
     )
 
