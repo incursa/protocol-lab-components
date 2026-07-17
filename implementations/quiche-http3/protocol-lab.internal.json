@@ -51,7 +51,7 @@
     "buildTemplate": "docker build -f docker/quiche-http3.Dockerfile -t incursa-protocol-lab-quiche-http3:0.1.3 .",
     "defaultImageEnvironmentVariable": "HTTP3_QUICHE_IMAGE",
     "clientTemplate": "quiche-client --http-version HTTP/3 --no-verify --connect-to <ip:port> --dump-responses <dir> <url>",
-    "serverTemplate": "generate /tmp/www/bytes fixtures and /tmp/certs, then quiche-server --listen 0.0.0.0:4433 --cert /tmp/certs/cert.pem --key /tmp/certs/priv.key --root /tmp/www --http-version HTTP/3"
+    "serverTemplate": "generate /tmp/www/index.html, /tmp/www/bytes fixtures, and /tmp/certs, then quiche-server --listen 0.0.0.0:4433 --cert /tmp/certs/cert.pem --key /tmp/certs/priv.key --root /tmp/www --http-version HTTP/3"
   },
   "knownLimitations": [
     "The runner target image is a metadata-only derivative of cloudflare/quiche:latest that clears the upstream entrypoint and keeps the peer binary unchanged.",

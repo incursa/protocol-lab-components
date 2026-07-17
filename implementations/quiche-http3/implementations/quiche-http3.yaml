@@ -121,6 +121,7 @@ dockerCommandArguments:
   - -lc
   - >-
     mkdir -p /tmp/www/bytes /tmp/certs /logs/qlog /logs/sslkeylog &&
+    printf '%s\n' 'quiche-http3-peer' > /tmp/www/index.html &&
     perl -e 'binmode STDOUT; for ($i = 0; $i < 1024; $i++) { print chr($i % 251) }' > /tmp/www/bytes/1024 &&
     perl -e 'binmode STDOUT; for ($i = 0; $i < 65536; $i++) { print chr($i % 251) }' > /tmp/www/bytes/65536 &&
     perl -e 'binmode STDOUT; for ($i = 0; $i < 1048576; $i++) { print chr($i % 251) }' > /tmp/www/bytes/1048576 &&

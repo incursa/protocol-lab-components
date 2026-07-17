@@ -51,7 +51,7 @@
     "buildTemplate": "docker build -f docker/ngtcp2-http3.Dockerfile -t incursa-protocol-lab-ngtcp2-http3:0.1.2 .",
     "defaultImageEnvironmentVariable": "HTTP3_NGTCP2_IMAGE",
     "clientTemplate": "wsslclient --download=/downloads --exit-on-all-streams-close --timeout=15s --handshake-timeout=10s --no-http-dump --qlog-dir=/logs/qlog <host> 4433 <url>",
-    "serverTemplate": "generate /tmp/www/bytes fixtures, /tmp/mime.types, and /tmp/certs, then wsslserver --htdocs=/tmp/www --mime-types-file=/tmp/mime.types --qlog-dir=/logs/qlog --no-http-dump --timeout=15s --handshake-timeout=10s 0.0.0.0 4433 /tmp/certs/priv.key /tmp/certs/cert.pem"
+    "serverTemplate": "generate /tmp/www/index.html, /tmp/www/bytes fixtures, /tmp/mime.types, and /tmp/certs, then wsslserver --htdocs=/tmp/www --mime-types-file=/tmp/mime.types --qlog-dir=/logs/qlog --no-http-dump --timeout=15s --handshake-timeout=10s 0.0.0.0 4433 /tmp/certs/priv.key /tmp/certs/cert.pem"
   },
   "knownLimitations": [
     "The runner target image is a metadata-only derivative of ghcr.io/ngtcp2/ngtcp2-interop:latest that clears the interop entrypoint and keeps the peer binaries unchanged.",

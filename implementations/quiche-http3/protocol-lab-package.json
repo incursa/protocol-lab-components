@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.quiche-http3",
-  "packageVersion": "0.1.8",
+  "packageVersion": "0.1.9",
   "kind": "implementation",
   "displayName": "quiche HTTP/3 Implementation Wrapper",
   "entryManifests": [

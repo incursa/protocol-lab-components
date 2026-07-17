@@ -23,6 +23,10 @@ foreach ($component in @('quiche-http3', 'ngtcp2-http3')) {
         throw "$component does not declare the h3ExternalPeer capability."
     }
 
+    if ($manifestText -notmatch '/tmp/www/index\.html') {
+        throw "$component does not materialize the scenario's root-path fixture."
+    }
+
     $hostRuntimeGates = @($internal.dependencies.requiredCapabilities | Where-Object name -notin @('docker'))
     if ($hostRuntimeGates.Count -ne 0) {
         throw "$component retains a host runtime capability gate even though its peer runtime is Docker-packaged."
