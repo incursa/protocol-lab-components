@@ -218,6 +218,8 @@ class StaticHttp3ServerProtocol(QuicConnectionProtocol):
             return 200, bytes(index % 251 for index in range(4096)), [(b"content-type", b"application/octet-stream")]
         if path == "/bytes/1024":
             return 200, bytes(index % 251 for index in range(1024)), [(b"content-type", b"application/octet-stream")]
+        if path == "/bytes/65536":
+            return 200, bytes(index % 251 for index in range(65536)), [(b"content-type", b"application/octet-stream")]
         relative = path.lstrip("/") or "index.html"
         candidate = (self._www_root / relative).resolve()
         if not str(candidate).startswith(str(self._www_root)) or not candidate.is_file():
@@ -251,7 +253,7 @@ async def main_async(args):
     configuration = QuicConfiguration(is_client=False, alpn_protocols=H3_ALPN)
     configuration.load_cert_chain(args.cert, args.key)
     await serve(args.host, args.port, configuration=configuration, create_protocol=lambda *protocol_args, **protocol_kwargs: StaticHttp3ServerProtocol(*protocol_args, www_root=args.www_root, **protocol_kwargs))
-    print(json.dumps({"eventName": "ready", "implementationId": "aioquic-http3", "implementationVersion": "0.3.2", "implementationRole": "origin-server", "listenAddress": f"{args.host}:{args.port}", "protocol": "h3", "quicVersion": "QUICv1", "tlsVersion": "TLS 1.3", "alpn": "h3", "settingsEnableConnectProtocol": 1, "path": PATH, "binaryPayloadSha256": BINARY_SHA256}), flush=True)
+    print(json.dumps({"eventName": "ready", "implementationId": "aioquic-http3", "implementationVersion": "0.3.4", "implementationRole": "origin-server", "listenAddress": f"{args.host}:{args.port}", "protocol": "h3", "quicVersion": "QUICv1", "tlsVersion": "TLS 1.3", "alpn": "h3", "settingsEnableConnectProtocol": 1, "path": PATH, "binaryPayloadSha256": BINARY_SHA256}), flush=True)
     await asyncio.Event().wait()
 
 

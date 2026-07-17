@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import secrets
 import struct
 import sys
@@ -55,17 +56,29 @@ class Http3OriginRegressionTests(unittest.TestCase):
     def tearDown(self):
         self.temporary.cleanup()
 
-    def test_status_identity_remains_static_origin_content(self):
+    def test_status_identity_is_canonical_json(self):
         status, body, headers = self.server._resolve_response("/status", {})
         self.assertEqual(status, 200)
-        self.assertEqual(body, b"aioquic HTTP/3 status\n")
-        self.assertIn((b"content-type", b"application/octet-stream"), headers)
+        document = json.loads(body)
+        self.assertEqual(document["protocol"], "h3")
+        self.assertEqual(document["server"], "aioquic")
+        self.assertEqual(document["implementation"], "aioquic-http3")
+        self.assertIsInstance(document["processId"], int)
+        self.assertIn("utc", document)
+        self.assertIn((b"content-type", b"application/json"), headers)
 
     def test_one_kibibyte_payload_remains_deterministic(self):
         status, body, headers = self.server._resolve_response("/bytes/1024", {})
         self.assertEqual(status, 200)
         self.assertEqual(len(body), 1024)
         self.assertEqual(body, bytes(index % 251 for index in range(1024)))
+        self.assertIn((b"content-type", b"application/octet-stream"), headers)
+
+    def test_sixty_four_kibibyte_payload_is_deterministic(self):
+        status, body, headers = self.server._resolve_response("/bytes/65536", {})
+        self.assertEqual(status, 200)
+        self.assertEqual(len(body), 65536)
+        self.assertEqual(body, bytes(index % 251 for index in range(65536)))
         self.assertIn((b"content-type", b"application/octet-stream"), headers)
 
     def test_header_workload_remains_exact(self):

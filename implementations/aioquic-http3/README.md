@@ -1,12 +1,12 @@
 # aioquic HTTP/3 Implementation Wrapper
 
-`aioquic-http3` packages an aioquic HTTP/3 origin-server target. Package version `0.3.3` preserves the `0.3.2` implementation image and existing HTTP/3 origin endpoints while declaring the QPACK diagnostic workload family used by h3spec.
+`aioquic-http3` packages an aioquic HTTP/3 origin-server target. Package version `0.3.4` adds the canonical deterministic 64 KiB payload endpoint to the existing origin, QPACK diagnostic, and RFC 9220 WebSocket surfaces.
 
 ## Supported
 
 - Protocol family: `h3`
 - Comparison role: origin server
-- Public scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`, and all six exact committed RFC9220 WebSocket scenarios including fragmented binary echo.
+- Public scenarios: `http3.core.status`, `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `http3.headers.response-headers-50x32`, `http3.protocol.qpack-repeated-headers`, and all six exact committed RFC9220 WebSocket scenarios including fragmented binary echo.
 - Stable external interop scenarios: `get-small`, `not-found`
 
 ## Known Unsupported
@@ -20,7 +20,7 @@
 
 - Base image: `python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203`
 - Python package: `aioquic==1.3.0`
-- Component image tag: `incursa-protocol-lab-aioquic-http3:0.3.2`
+- Component image tag: `incursa-protocol-lab-aioquic-http3:0.3.4`
 - aioquic license text: `third-party/aioquic-LICENSE.txt`
 - Fixed package-local certificate: P-256 self-signed `websocket.plab.test`, authenticated by the executor through its package-local trust copy
 - Image identity is recorded from each extracted-package build and must be an immutable `sha256:` ID.
@@ -48,7 +48,7 @@ Build the wrapper image:
 ```powershell
 docker build --build-arg AIOQUIC_VERSION=1.3.0 `
   -f ./implementations/aioquic-http3/docker/aioquic.Dockerfile `
-  -t incursa-protocol-lab-aioquic-http3:0.3.2 `
+  -t incursa-protocol-lab-aioquic-http3:0.3.4 `
   ./implementations/aioquic-http3
 ```
 
