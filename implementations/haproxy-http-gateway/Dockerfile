@@ -7,10 +7,11 @@ COPY --from=busybox /bin/busybox /bin/busybox
 COPY docker/haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
 COPY docker/entrypoint.sh /usr/local/bin/protocol-lab-haproxy-entrypoint
 COPY docker/httpd.conf /etc/httpd.conf
-COPY docker/fixtures /srv
 COPY docker/certs/haproxy.pem /usr/local/etc/haproxy/certs/haproxy.pem
 RUN /bin/busybox mkdir -p /srv/bytes \
     && /bin/busybox printf 'Hello, World!' > /srv/plaintext.txt \
+    && /bin/busybox printf '{"message":"Hello, World!"}' > /srv/json.json \
+    && /bin/busybox printf '{"protocol":"h3","server":"haproxy","implementationId":"haproxy-http3-gateway","role":"proxy"}' > /srv/status.json \
     && /bin/busybox head -c 1024 /dev/zero | /bin/busybox tr '\000' 'x' > /srv/bytes/1024 \
     && /bin/busybox head -c 65536 /dev/zero | /bin/busybox tr '\000' 'x' > /srv/bytes/65536 \
     && /bin/busybox chmod 0555 /usr/local/bin/protocol-lab-haproxy-entrypoint \
