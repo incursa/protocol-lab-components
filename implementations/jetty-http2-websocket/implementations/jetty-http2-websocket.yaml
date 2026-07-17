@@ -6,7 +6,7 @@ family: jetty-websocket
 role: origin-server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-jetty-http2-websocket:0.1.0
+image: incursa-protocol-lab-jetty-http2-websocket:0.1.1
 dockerfile: docker/Jetty.Dockerfile
 buildContext: docker
 dockerNetworkMode: published-port
@@ -34,7 +34,7 @@ ports: [{name: websocket-h2, protocol: tcp, default: 18452, hostPort: 18452, con
 environment: {PLAB_TARGET_PORT: "18452"}
 startup: {port: {name: websocket-h2, environmentVariable: PLAB_TARGET_PORT, default: 18452}, readiness: {protocol: process, timeoutSeconds: 180}}
 readinessCheck: {type: processStarted, timeoutSeconds: 180, startupDelayMilliseconds: 3000}
-capabilities: [websocket.server, websocket.rfc8441, websocket.text-echo, websocket.binary-echo, websocket.control-frames, websocket.close, websocket.multi-message, tls.server, tls1.3, alpn.h2, http2.extended-connect]
+capabilities: [websocket.server, websocket.rfc8441, websocket.text-echo, websocket.binary-echo, websocket.control-frames, websocket.close, websocket.multi-message, tls.server, tls1.3, alpn.h2, http2.extended-connect, scenario.http2.websocket.rfc8441.extended-connect, scenario.http2.websocket.rfc8441.control-frames, scenario.http2.websocket.rfc8441.text-echo, scenario.http2.websocket.rfc8441.binary-echo, scenario.http2.websocket.rfc8441.close, scenario.http2.websocket.rfc8441.multi-message-text-echo]
 entrypoint: {kind: bash, path: run.sh, arguments: [], workingDirectory: .}
 shutdownBehavior: process
 artifactExports: [version.txt]

@@ -1,7 +1,7 @@
 {
   "schemaVersion":"protocol-lab-package-v2",
   "packageId":"org.protocol-lab.components.implementation.go-http1-websocket-tls",
-  "packageVersion":"0.2.0",
+  "packageVersion":"0.2.1",
   "kind":"implementation",
   "displayName":"Go HTTP/1.1 TLS WebSocket Origin",
   "entryManifests":["implementations/go-http1-websocket-tls.yaml"],

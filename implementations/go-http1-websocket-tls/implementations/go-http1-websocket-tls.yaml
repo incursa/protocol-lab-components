@@ -30,7 +30,7 @@ ports: [{name: websocket-tls, protocol: tcp, default: 18443, hostPort: 18443, co
 environment: {PLAB_TARGET_PORT: "18443"}
 startup: {port: {name: websocket-tls, environmentVariable: PLAB_TARGET_PORT, default: 18443}, readiness: {protocol: process, timeoutSeconds: 10}}
 readinessCheck: {type: processStarted, timeoutSeconds: 10, startupDelayMilliseconds: 250}
-capabilities: [websocket.server, websocket.rfc6455, websocket.text-echo, websocket.binary-echo, websocket.control-frames, websocket.close, websocket.subprotocol, websocket.permessage-deflate, tls.server, tls1.3, alpn.http1.1]
+capabilities: [websocket.server, websocket.rfc6455, websocket.text-echo, websocket.binary-echo, websocket.control-frames, websocket.close, websocket.subprotocol, websocket.permessage-deflate, tls.server, tls1.3, alpn.http1.1, scenario.http1.websocket.rfc6455.tls.upgrade, scenario.http1.websocket.rfc6455.tls.control-frames, scenario.http1.websocket.rfc6455.tls.text-echo, scenario.http1.websocket.rfc6455.tls.binary-echo, scenario.http1.websocket.rfc6455.tls.close, scenario.http1.websocket.rfc6455.tls.subprotocol-text-echo, scenario.http1.websocket.rfc6455.tls.permessage-deflate-binary-echo]
 entrypoint: {kind: process, path: bin/linux-x64/go-http1-websocket-tls, arguments: [], workingDirectory: .}
 shutdownBehavior: graceful-termination
 artifactExports: []

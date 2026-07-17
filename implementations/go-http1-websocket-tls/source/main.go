@@ -28,7 +28,7 @@ import (
 
 const (
 	implementationID           = "go-http1-websocket-tls"
-	implementationVersion      = "0.2.0"
+	implementationVersion      = "0.2.1"
 	websocketGUID              = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 	textPayload                = "protocol-lab"
 	controlPayload             = "protocol-lab-ping"

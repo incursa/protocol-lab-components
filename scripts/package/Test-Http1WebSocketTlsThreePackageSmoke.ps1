@@ -15,7 +15,7 @@ if (-not $SkipBuild) {
 }
 $scenarioPackage = Get-ChildItem $OutputRoot -File -Filter 'org.protocol-lab.components.scenario.http1-websocket-tls-performance.0.2.0.plabpkg' | Select-Object -First 1
 $executorPackage = Get-ChildItem $OutputRoot -File -Filter 'org.protocol-lab.components.executor.go-http1-websocket-tls-executor.0.2.0.win-x64.plabpkg' | Select-Object -First 1
-$targetPackage = Get-ChildItem $OutputRoot -File -Filter 'org.protocol-lab.components.implementation.go-http1-websocket-tls.0.2.0.win-x64.plabpkg' | Select-Object -First 1
+$targetPackage = Get-ChildItem $OutputRoot -File -Filter 'org.protocol-lab.components.implementation.go-http1-websocket-tls.0.2.1.win-x64.plabpkg' | Select-Object -First 1
 foreach ($package in @($scenarioPackage,$executorPackage,$targetPackage)) { if ($null -eq $package) { throw 'Expected package artifact not found.' } }
 Remove-Item -LiteralPath $SmokeRoot -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $SmokeRoot | Out-Null
@@ -47,7 +47,7 @@ try {
     }
     if (-not (Test-Path $targetStdout) -or -not ((Get-Content $targetStdout -Raw) -match '"status":"ready"')) { throw 'Target readiness evidence was not observed.' }
     $ready = Get-Content $targetStdout -First 1 | ConvertFrom-Json
-    if ($ready.implementationId -ne 'go-http1-websocket-tls' -or $ready.version -ne '0.2.0' -or $ready.protocol -ne 'h1' -or $ready.protocolVersion -ne 'HTTP/1.1' -or $ready.protocolVariant -ne 'websocket-h1-tls1.3-upgrade' -or $ready.transportSecurity -ne 'tls' -or $ready.tlsVersion -ne 'TLS1.3' -or $ready.alpn -ne 'http/1.1') { throw 'Target readiness identity or exact protocol proof mismatch.' }
+    if ($ready.implementationId -ne 'go-http1-websocket-tls' -or $ready.version -ne '0.2.1' -or $ready.protocol -ne 'h1' -or $ready.protocolVersion -ne 'HTTP/1.1' -or $ready.protocolVariant -ne 'websocket-h1-tls1.3-upgrade' -or $ready.transportSecurity -ne 'tls' -or $ready.tlsVersion -ne 'TLS1.3' -or $ready.alpn -ne 'http/1.1') { throw 'Target readiness identity or exact protocol proof mismatch.' }
     $env:PLAB_EXECUTOR_ID='go-http1-websocket-tls-executor'; $env:PLAB_EXECUTOR_VERSION='0.2.0'
     $env:PLAB_LOAD_GENERATOR_ID='go-http1-websocket-tls-load'; $env:PLAB_LOAD_GENERATOR_VERSION='0.2.0'
     $env:PLAB_PROTOCOL='h1'; $env:PLAB_PROTOCOL_VARIANT='websocket-h1-tls1.3-upgrade'; $env:PLAB_LOAD_PROFILE_ID='websocket-smoke'

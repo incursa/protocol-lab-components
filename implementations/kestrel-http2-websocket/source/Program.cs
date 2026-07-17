@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 const string ImplementationId = "kestrel-http2-websocket";
-const string Version = "0.1.0";
+const string Version = "0.1.1";
 const string Authority = "websocket.plab.test";
 const string PathValue = "/websocket";
 const string TextPayload = "protocol-lab";

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.protocol-lab</groupId>
   <artifactId>protocol-lab-jetty-http2-websocket</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <properties><maven.compiler.release>21</maven.compiler.release><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding><jetty.version>12.1.9</jetty.version></properties>
   <dependencies>
     <dependency><groupId>org.eclipse.jetty</groupId><artifactId>jetty-server</artifactId><version>${jetty.version}</version></dependency>

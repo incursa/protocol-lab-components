@@ -1,7 +1,7 @@
 {
   "schemaVersion": "protocol-lab-package-v2",
   "packageId": "org.protocol-lab.components.implementation.jetty-http2-websocket",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "kind": "implementation",
   "displayName": "Jetty HTTP/2 RFC 8441 WebSocket Origin",
   "entryManifests": ["implementations/jetty-http2-websocket.yaml"],

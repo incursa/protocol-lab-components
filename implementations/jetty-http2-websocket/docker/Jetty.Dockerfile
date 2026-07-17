@@ -5,7 +5,7 @@ COPY pom.xml ./
 COPY src ./src
 COPY certs ./certs
 RUN mvn --batch-mode --no-transfer-progress package \
-    && cp target/protocol-lab-jetty-http2-websocket-0.1.0.jar /tmp/server.jar \
+    && cp target/protocol-lab-jetty-http2-websocket-0.1.1.jar /tmp/server.jar \
     && openssl pkcs12 -export -in certs/leaf.pem -inkey certs/leaf-key.pem -out /tmp/keystore.p12 -name protocol-lab -passout pass:protocol-lab \
     && chmod 0444 /tmp/keystore.p12
 

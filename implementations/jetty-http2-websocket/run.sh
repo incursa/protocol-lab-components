@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-image="${PLAB_JETTY_HTTP2_WEBSOCKET_IMAGE:-incursa-protocol-lab-jetty-http2-websocket:0.1.0}"
+image="${PLAB_JETTY_HTTP2_WEBSOCKET_IMAGE:-incursa-protocol-lab-jetty-http2-websocket:0.1.1}"
 port="${PLAB_TARGET_PORT:-18452}"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 artifact_root="${PLAB_ARTIFACT_DIR:-$script_dir/artifacts/jetty-http2-websocket}"
