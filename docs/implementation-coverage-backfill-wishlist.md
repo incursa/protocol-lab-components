@@ -356,7 +356,7 @@ repetition and the target/load VMs share physical host `r920`.
 
 ### Existing package completion
 
-- [ ] Bring Kestrel, Incursa HTTP/3, Caddy, nginx, quic-go, and aioquic onto a
+- [x] Bring Kestrel, Incursa HTTP/3, Caddy, nginx, quic-go, and aioquic onto a
   common plaintext, JSON, 1 KiB, and 64 KiB support matrix where their exact
   semantics permit it. Current-head Docker campaign
   `job-9cc5c3e0f7d34a9db22206bde72ed158` retained accepted status/1 KiB/64 KiB
