@@ -1,6 +1,6 @@
 # ProtocolLab Implementation Coverage Backfill Wishlist
 
-Updated: 2026-07-16
+Updated: 2026-07-17
 
 This is the delivery backlog for the program after the initial implementation-
 diversity milestone. That milestone proved that fifteen new implementation
@@ -447,13 +447,26 @@ host and therefore do not satisfy the decision-ready topology requirement.
 
 ### gRPC
 
-- [ ] Live-prove the existing Go gRPC/H2 target and add it to the public gRPC
+- [x] Live-prove the existing Go gRPC/H2 target and add it to the public gRPC
   implementation cohort.
 - [ ] Bring grpc-dotnet, grpc-go, grpc-java/Netty, grpc-cpp, and grpc-js onto a
   common unary/server-streaming/client-streaming/bidirectional matrix with
   terminal deadline and cancellation rows where supported.
+  - [x] All five runtimes have accepted unary and three streaming rows on the
+    shared package-backed core matrix.
+  - [ ] Complete the supported terminal deadline/cancellation matrix beyond
+    the retained grpc-java/Netty and grpc-cpp terminal rows.
 - [ ] Produce a four-runtime decision-ready unary cohort and comparable
   observations for streaming and terminal behavior.
+
+The five-runtime live breadth floor is met. Go job
+`job-03c572e3844d4ec2a054517909daa98a` retained four accepted core cells;
+grpc-dotnet/grpc-js job `job-037f36ec1657451a9af8c6052350b019`
+retained eight; and current grpc-java/Netty plus grpc-cpp job
+`job-16f7fdb757e8476aac823d8ed4ab7a78` retained eight. All three reports were
+published and verified on `lab.incursa.com`. They are real comparable
+observations but remain diagnostic/unranked because the target and load VMs
+share physical host `r920` and each current cohort has one repetition.
 
 ### WebSocket
 
@@ -472,11 +485,23 @@ host and therefore do not satisfy the decision-ready topology requirement.
   current component executor and scenario surfaces before adding packages.
 - [ ] Package webtransport-go plus one independent WebTransport ecosystem and
   live-prove the common session/stream/datagram contract.
+  - [x] Package and live-prove webtransport-go and aioquic on the exact
+    WebTransport-over-HTTP/3 session plus bidirectional-stream echo row.
+  - [ ] Add and live-prove the common WebTransport datagram row before closing
+    the full contract item.
 - [ ] Package two independent MASQUE CONNECT-UDP implementations with explicit
   proxy and target roles and no ordinary HTTP proxy substitution.
 - [ ] Publish comparable observations for both protocols; decision-ready
   ranking is deferred until the public comparison policy defines meaningful
   cohort and topology controls.
+
+WebTransport job `job-0deeac764885460f95d8d4d1822e4290` retained 134
+artifacts and two accepted measurements from immutable
+`webtransport-go@0.1.1` and `aioquic-webtransport@0.1.2` packages. Publication
+`pub_2f0b5c89a82544d8bd8978a52852436b` uploaded and verified the public
+objects, the import queue succeeded, and the report, protocol hub, and both
+implementation pages were verified live. This meets the two-ecosystem live
+session/stream floor, not the still-open datagram or decision-ready gates.
 
 ## Workstream H - evidence and public explanation
 
