@@ -6,7 +6,7 @@ family: h2o
 role: server
 targetKind: docker
 targetContract: process
-image: incursa-protocol-lab-h2o-http3:0.1.0
+image: incursa-protocol-lab-h2o-http3:0.1.1
 dockerfile: docker/H2O.Dockerfile
 buildContext: docker
 dockerNetworkMode: published-port

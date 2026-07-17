@@ -6,7 +6,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$image = if ($env:PLAB_IMAGE) { $env:PLAB_IMAGE } else { "incursa-protocol-lab-h2o-http3:0.1.0" }
+$image = if ($env:PLAB_IMAGE) { $env:PLAB_IMAGE } else { "incursa-protocol-lab-h2o-http3:0.1.1" }
 $port = if ($env:PLAB_HTTP_PORT) { [int]$env:PLAB_HTTP_PORT } else { 5448 }
 $skipBuild = $env:PLAB_SKIP_BUILD -eq "1"
 $artifactRoot = if ($env:PLAB_ARTIFACT_ROOT) { $env:PLAB_ARTIFACT_ROOT } else { "artifacts/h2o-http3" }
