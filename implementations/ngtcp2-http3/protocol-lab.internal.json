@@ -32,10 +32,6 @@
       {
         "name": "docker",
         "value": "true"
-      },
-      {
-        "name": "ngtcp2-nghttp3",
-        "value": "http3"
       }
     ],
     "images": [

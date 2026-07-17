@@ -32,10 +32,6 @@
       {
         "name": "docker",
         "value": "true"
-      },
-      {
-        "name": "quiche",
-        "value": "http3"
       }
     ],
     "images": [
