@@ -1,10 +1,8 @@
 name: package-production
 
 on:
-  pull_request:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: '17 3 * * *'
   workflow_dispatch:
 
 permissions:
@@ -12,7 +10,7 @@ permissions:
 
 jobs:
   build-packages:
-    name: Build package artifacts
+    name: Nightly full package artifacts
     runs-on: ubuntu-latest
 
     steps:
@@ -32,7 +30,7 @@ jobs:
             implementations/quic-go-http3/go.sum
             executors/quic-go-raw-load/source/go.sum
 
-      - name: Build all ProtocolLab component packages
+      - name: Build all ProtocolLab component packages (never publishes)
         shell: pwsh
         run: ./scripts/package/Build-AllProtocolLabComponentPackages.ps1 -Clean
 

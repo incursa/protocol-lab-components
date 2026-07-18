@@ -1,2 +1,14 @@
 # Default owner for ProtocolLab component package changes.
 * @SamuelMcAravey
+
+# Component-aware release authority and its initial independently versioned pilots.
+/release/ @SamuelMcAravey
+/scripts/package/ProtocolLabComponentRelease.Common.ps1 @SamuelMcAravey
+/scripts/package/Get-ProtocolLabComponentClosure.ps1 @SamuelMcAravey
+/scripts/package/Get-ProtocolLabComponentReleaseSelection.ps1 @SamuelMcAravey
+/scripts/package/Invoke-ProtocolLabComponentSelectedBuilds.ps1 @SamuelMcAravey
+/scripts/package/New-ProtocolLabCatalogSnapshot.ps1 @SamuelMcAravey
+/implementations/kestrel-http3/ @SamuelMcAravey
+/implementations/caddy-http3/ @SamuelMcAravey
+/executors/go-http2-executor/ @SamuelMcAravey
+/scenarios/http2-performance/ @SamuelMcAravey

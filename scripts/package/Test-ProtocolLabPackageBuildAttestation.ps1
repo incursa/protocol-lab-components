@@ -67,15 +67,33 @@ try {
 
     $reader = [System.IO.StreamReader]::new($entry.Open())
     try { $embedded = $reader.ReadToEnd() | ConvertFrom-Json } finally { $reader.Dispose() }
-    if ($embedded.schemaVersion -ne 'protocol-lab.package-build-provenance.v1' -or
-        [string]$embedded.source.repository -ne [string]$attestation.source.repository -or
-        [string]$embedded.source.commitSha -ne [string]$attestation.source.commitSha -or
-        [string]$embedded.source.dirtyState -ne [string]$attestation.source.dirtyState -or
-        [string]$embedded.build.configuration -ne [string]$attestation.build.configuration -or
-        [string]$embedded.build.runtimeIdentifier -ne [string]$attestation.build.runtimeIdentifier -or
-        [string]$embedded.package.packageId -ne [string]$attestation.package.packageId -or
-        [string]$embedded.package.packageVersion -ne [string]$attestation.package.packageVersion) {
-        throw 'Embedded package build provenance does not match the external build attestation.'
+    if ($embedded.schemaVersion -eq 'protocol-lab.package-build-provenance.v1') {
+        if ([string]$embedded.source.repository -ne [string]$attestation.source.repository -or
+            [string]$embedded.source.commitSha -ne [string]$attestation.source.commitSha -or
+            [string]$embedded.source.dirtyState -ne [string]$attestation.source.dirtyState -or
+            [string]$embedded.build.configuration -ne [string]$attestation.build.configuration -or
+            [string]$embedded.build.runtimeIdentifier -ne [string]$attestation.build.runtimeIdentifier -or
+            [string]$embedded.package.packageId -ne [string]$attestation.package.packageId -or
+            [string]$embedded.package.packageVersion -ne [string]$attestation.package.packageVersion) {
+            throw 'Embedded package build provenance does not match the external build attestation.'
+        }
+    }
+    elseif ($embedded.schemaVersion -eq 'protocol-lab.package-build-provenance.v2') {
+        foreach ($field in @('id', 'componentTreeDigest', 'buildRecipeDigest', 'componentClosureDigest')) {
+            if ([string]::IsNullOrWhiteSpace([string]$embedded.component.$field) -or
+                [string]$embedded.component.$field -ne [string]$attestation.component.$field) {
+                throw "Embedded component closure provenance '$field' does not match the external build attestation."
+            }
+        }
+        if ([string]$embedded.build.configuration -ne [string]$attestation.build.configuration -or
+            [string]$embedded.build.runtimeIdentifier -ne [string]$attestation.build.runtimeIdentifier -or
+            [string]$embedded.package.packageId -ne [string]$attestation.package.packageId -or
+            [string]$embedded.package.packageVersion -ne [string]$attestation.package.packageVersion) {
+            throw 'Embedded component package identity does not match the external build attestation.'
+        }
+    }
+    else {
+        throw "Unsupported embedded package build provenance schema '$($embedded.schemaVersion)'."
     }
 }
 finally {

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "protocol-lab.release-intent.v1",
+  "id": "2026-07-17-component-aware-release-system",
+  "classification": "no-release",
+  "status": "approved",
+  "components": [],
+  "reason": "This migration adds release architecture, metadata, validators, and dry-run selection only. It does not rebuild, tag, publish, replace, or mass-republish any component package.",
+  "changeScope": [
+    "release-system",
+    "shared-packaging-provenance"
+  ],
+  "approvedBy": "repository-owner",
+  "createdAt": "2026-07-17"
+}

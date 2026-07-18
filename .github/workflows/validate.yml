@@ -17,59 +17,45 @@ jobs:
         shell: pwsh
         run: ./scripts/package/Validate-ProtocolLabComponentManifests.ps1
 
-  package-smoke:
+  component-aware-selection:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - package: kestrel-http1
-            script: Build-KestrelHttp1Package.ps1
-            args: linux-x64
-          - package: kestrel-http2
-            script: Build-KestrelHttp2Package.ps1
-            args: ''
-          - package: caddy-http1
-            script: Build-CaddyHttp1Package.ps1
-            args: ''
-          - package: nginx-http1
-            script: Build-NginxHttp1Package.ps1
-            args: ''
-          - package: go-http1-executor
-            script: Build-GoHttp1ExecutorPackage.ps1
-            args: ''
-          - package: kestrel-http3
-            script: Build-KestrelHttp3Package.ps1
-            args: ''
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      - name: Build package
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.26.x
+
+      - name: Resolve changed paths
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $script = Join-Path './scripts/package' '${{ matrix.script }}'
-          $arguments = '${{ matrix.args }}'
-          if ([string]::IsNullOrWhiteSpace($arguments)) {
-            & $script
+          if ('${{ github.event_name }}' -eq 'pull_request') {
+            $paths = @(git diff --name-only 'origin/${{ github.base_ref }}...HEAD')
           }
-          else {
-            $argumentList = @($arguments -split ' ' | Where-Object { $_ })
-            & $script @argumentList
+          elseif ('${{ github.event_name }}' -eq 'push') {
+            $paths = @(git diff --name-only '${{ github.event.before }}' '${{ github.sha }}')
           }
+          else { $paths = @() }
+          $paths | Set-Content -LiteralPath .component-release-changed-paths.txt -Encoding utf8NoBOM
 
-      - name: Assert package artifact exists
+      - name: Validate and build graph-selected components (dry-run release)
         shell: pwsh
         run: |
-          $artifacts = Get-ChildItem -LiteralPath artifacts/packages -File -Filter '*.plabpkg' -ErrorAction SilentlyContinue
-          if (-not $artifacts) {
-            throw "Package smoke did not produce a .plabpkg artifact for ${{ matrix.package }}."
-          }
-          $artifacts | Select-Object FullName, Length
+          $paths = @(Get-Content -LiteralPath .component-release-changed-paths.txt -ErrorAction SilentlyContinue | Where-Object { $_ })
+          ./scripts/package/Invoke-ProtocolLabComponentSelectedBuilds.ps1 -ChangedPath $paths
+
+      - name: Record component selection
+        shell: pwsh
+        run: |
+          Get-ChildItem -LiteralPath artifacts/packages -File -Filter '*.plabpkg' -ErrorAction SilentlyContinue | Select-Object FullName, Length

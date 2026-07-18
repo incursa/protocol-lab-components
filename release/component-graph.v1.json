@@ -1,0 +1,160 @@
+{
+  "schemaVersion": "protocol-lab.component-graph.v1",
+  "repository": "https://github.com/incursa/protocol-lab-components",
+  "unmodeledPackagePolicy": "validate-all-and-full-build-dry-run-no-release",
+  "sharedInputs": [
+    {
+      "id": "shared.package-builder",
+      "kind": "shared-helper",
+      "paths": [
+        "scripts/package/Build-ProtocolLabComponentPackage.ps1"
+      ]
+    },
+    {
+      "id": "shared.manifest-validator",
+      "kind": "shared-helper",
+      "paths": [
+        "scripts/package/Validate-ProtocolLabComponentManifests.ps1"
+      ]
+    }
+  ],
+  "templates": [
+    {
+      "id": "component-templates",
+      "paths": [
+        "templates"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "id": "http2-performance-scenarios",
+      "packageId": "org.protocol-lab.components.scenario.http2-performance",
+      "packageRoot": "scenarios/http2-performance",
+      "kind": "scenario-pack",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-Http2PerformanceScenarioPackage.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["scenarios/http2-performance"],
+        "buildRecipe": ["scripts/package/Build-Http2PerformanceScenarioPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [],
+      "reverseDependencies": ["go-http2-executor"],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "go-http2-executor",
+      "packageId": "org.protocol-lab.components.executor.go-http2-executor",
+      "packageRoot": "executors/go-http2-executor",
+      "kind": "test-executor",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-GoHttp2ExecutorPackage.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["executors/go-http2-executor"],
+        "buildRecipe": ["scripts/package/Build-GoHttp2ExecutorPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "http2-performance-scenarios", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "kestrel-http3",
+      "packageId": "org.protocol-lab.components.implementation.kestrel-http3",
+      "packageRoot": "implementations/kestrel-http3",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-KestrelHttp3Package.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/kestrel-http3"],
+        "buildRecipe": ["scripts/package/Build-KestrelHttp3Package.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "dotnet-sdk", "version": "10.0.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "caddy-http3",
+      "packageId": "org.protocol-lab.components.implementation.caddy-http3",
+      "packageRoot": "implementations/caddy-http3",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-CaddyHttp3Package.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/caddy-http3"],
+        "buildRecipe": ["scripts/package/Build-CaddyHttp3Package.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    }
+  ],
+  "externalComponentContract": {
+    "supported": true,
+    "requiredFields": [
+      "packageId",
+      "packageRoot",
+      "source.repository",
+      "source.commitSha",
+      "build.recipeDigest",
+      "componentClosureDigest"
+    ],
+    "admission": "same-package-contract-and-immutable-registry-preflight"
+  }
+}
