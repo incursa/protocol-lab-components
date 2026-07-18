@@ -51,7 +51,13 @@
         ]
       },
       "dependsOn": [],
-      "reverseDependencies": ["go-http2-executor"],
+      "reverseDependencies": [
+        "go-http2-executor",
+        "kestrel-http2",
+        "caddy-http2",
+        "nginx-http2",
+        "apache-http2"
+      ],
       "owners": ["@SamuelMcAravey"],
       "smoke": null
     },
@@ -76,6 +82,130 @@
         ],
         "toolchains": [
           { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "http2-performance-scenarios", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "kestrel-http2",
+      "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
+      "packageRoot": "implementations/kestrel-http2",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-KestrelHttp2Package.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/kestrel-http2"],
+        "buildRecipe": ["scripts/package/Build-KestrelHttp2Package.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "dotnet-sdk", "version": "10.0.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "http2-performance-scenarios", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "caddy-http2",
+      "packageId": "org.protocol-lab.components.implementation.caddy-http2",
+      "packageRoot": "implementations/caddy-http2",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-CaddyHttp2Package.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/caddy-http2"],
+        "buildRecipe": ["scripts/package/Build-CaddyHttp2Package.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "http2-performance-scenarios", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "nginx-http2",
+      "packageId": "org.protocol-lab.components.implementation.nginx-http2",
+      "packageRoot": "implementations/nginx-http2",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-NginxHttp2Package.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/nginx-http2"],
+        "buildRecipe": ["scripts/package/Build-NginxHttp2Package.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "http2-performance-scenarios", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "apache-http2",
+      "packageId": "org.protocol-lab.components.implementation.apache-http2",
+      "packageRoot": "implementations/apache-http2",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-ApacheHttp2Package.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/apache-http2"],
+        "buildRecipe": ["scripts/package/Build-ApacheHttp2Package.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
           { "id": "powershell", "version": "7" }
         ]
       },

@@ -21,8 +21,8 @@ finally { Remove-Item -LiteralPath $unrelatedPath -Force -ErrorAction SilentlyCo
 if ($before -ne $after) { throw 'An unrelated documentation file changed the modeled component closure digest.' }
 
 $selection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/http2-performance/scenarios/http2/core/plaintext.yaml' | ConvertFrom-Json
-if (@($selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-http2-executor,http2-performance-scenarios') {
-    throw 'Declared reverse-dependency selection did not include exactly the scenario pack and Go HTTP/2 executor.'
+if (@($selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'apache-http2,caddy-http2,go-http2-executor,http2-performance-scenarios,kestrel-http2,nginx-http2') {
+    throw 'Declared reverse-dependency selection did not include the complete modeled HTTP/2 cohort.'
 }
 $unknown = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'unmodeled-release-input.txt' | ConvertFrom-Json
 if (-not $unknown.fullBuildDryRunRequired) { throw 'Unknown changes must require conservative full-build dry-run.' }

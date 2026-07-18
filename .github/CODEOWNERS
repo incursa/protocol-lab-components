@@ -12,3 +12,7 @@
 /implementations/caddy-http3/ @SamuelMcAravey
 /executors/go-http2-executor/ @SamuelMcAravey
 /scenarios/http2-performance/ @SamuelMcAravey
+/implementations/kestrel-http2/ @SamuelMcAravey
+/implementations/caddy-http2/ @SamuelMcAravey
+/implementations/nginx-http2/ @SamuelMcAravey
+/implementations/apache-http2/ @SamuelMcAravey

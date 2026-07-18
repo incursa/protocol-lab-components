@@ -72,9 +72,9 @@ release note. A no-release record cannot be used by a publication command.
 3. **Targeted tests:** prove unaffected package stability, reverse-dependency
    selection, intent enforcement, immutable version enforcement, and snapshot
    reconstruction from an index.
-4. **Pilot migration:** model one implementation, executor, scenario pack,
-   shared-helper dependency, and external component fixture. Do not republish
-   their existing versions.
+4. **Pilot migration:** model an HTTP/2 core cohort (scenario pack, executor,
+   and Kestrel, Caddy, nginx, and Apache implementations), plus a shared-helper
+   dependency. Do not republish their existing versions.
 5. **CI shadow mode:** run graph selection beside the existing full build;
    report selected components and conservative fallbacks. Nightly builds all
    packages and never publishes.
