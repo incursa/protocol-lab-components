@@ -14,13 +14,13 @@ function Expand-Package([string]$Archive,[string]$Destination){New-Item -ItemTyp
 
 if(Test-Path $ArtifactRoot){Remove-Item -LiteralPath $ArtifactRoot -Recurse -Force}
 New-Item -ItemType Directory -Force $ArtifactRoot|Out-Null
-$scenarioArchive=Resolve-OnePackage 'org.protocol-lab.components.scenario.tls13-handshake-performance.0.2.0.plabpkg'
+$scenarioArchive=Resolve-OnePackage 'org.protocol-lab.components.scenario.tls13-handshake-performance.0.2.2.plabpkg'
 $executorArchive=Resolve-OnePackage 'org.protocol-lab.components.executor.rustls-tls13-early-data-executor.0.1.0.win-x64.plabpkg'
 $targetArchive=Resolve-OnePackage 'org.protocol-lab.components.implementation.rustls-tls13-early-data.0.1.0.win-x64.plabpkg'
 $scenarioRoot=Join-Path $ArtifactRoot scenario;$executorRoot=Join-Path $ArtifactRoot executor;$targetRoot=Join-Path $ArtifactRoot target
 $scenarioManifest=Expand-Package $scenarioArchive $scenarioRoot;$executorManifest=Expand-Package $executorArchive $executorRoot;$targetManifest=Expand-Package $targetArchive $targetRoot
 $authority=Get-Content (Join-Path $scenarioRoot 'authority-lock.json') -Raw|ConvertFrom-Json
-if($authority.commit-ne'8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574'){throw 'Authority commit mismatch.'}
+if($authority.commit-ne'd5b78d7c07ef0e8a600e92887da2aa150ab89a60'){throw 'Authority commit mismatch.'}
 if($authority.files.'scenarios/tls/early-data/accepted.yaml'-ne'2f11fe6d69b5dc568b5c1a9c6549c3114de19101eb5ba0eaecd8403bfec6af78'-or$authority.files.'scenarios/tls/early-data/rejected.yaml'-ne'24a7d05bb773496da96db18821a724d2c4dc9d3e0f11fa1dd6795453b724b377'){throw 'Early-data scenario authority hash mismatch.'}
 foreach($id in @('tls.early-data.accepted','tls.early-data.rejected')){
     if($executorManifest.providedTestExecutors[0].scenarios-notcontains$id){throw "Executor package does not claim $id."}

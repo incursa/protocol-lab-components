@@ -105,7 +105,7 @@ if (@($tlsWebSocketSelection.selectedComponents.componentId | Sort-Object) -join
 }
 
 $tls12Selection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/tls13-handshake-performance/scenarios/tls/handshake/full-tls12.yaml' | ConvertFrom-Json
-if (@($tls12Selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'dotnet-sslstream-tls13,gnutls-serv,go-tls12,go-tls12-executor,go-tls13,go-tls13-chacha20,go-tls13-executor,go-tls13-mtls,go-tls13-mtls-executor,go-utls-tls13-chacha20-executor,openssl-s-server,rustls-tls13,s2n-tls13,tls-handshake-scenarios,wolfssl-tls13') {
+if (@($tls12Selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'dotnet-sslstream-tls13,gnutls-serv,go-tls12,go-tls12-executor,go-tls13,go-tls13-chacha20,go-tls13-executor,go-tls13-mtls,go-tls13-mtls-executor,go-utls-tls13-chacha20-executor,openssl-s-server,rustls-tls13,rustls-tls13-early-data,rustls-tls13-early-data-executor,s2n-tls13,tls-handshake-scenarios,wolfssl-tls13') {
     throw 'Declared reverse-dependency selection did not include the complete modeled TLS cohort.'
 }
 $certificateSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'implementations/go-dns-dot/certs/root.pem' | ConvertFrom-Json

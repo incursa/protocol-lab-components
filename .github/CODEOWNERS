@@ -116,3 +116,5 @@
 /implementations/go-tls13-chacha20/ @SamuelMcAravey
 /executors/go-tls13-mtls-executor/ @SamuelMcAravey
 /implementations/go-tls13-mtls/ @SamuelMcAravey
+/executors/rustls-tls13-early-data-executor/ @SamuelMcAravey
+/implementations/rustls-tls13-early-data/ @SamuelMcAravey

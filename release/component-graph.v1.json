@@ -1489,7 +1489,7 @@
       "id": "tls-handshake-scenarios", "packageId": "org.protocol-lab.components.scenario.tls13-handshake-performance", "packageRoot": "scenarios/tls13-handshake-performance", "kind": "scenario-pack", "migrationState": "modeled",
       "build": { "script": "scripts/package/Build-Tls13HandshakePerformanceScenarioPackage.ps1", "arguments": [] },
       "inputs": { "payload": ["scenarios/tls13-handshake-performance"], "buildRecipe": ["scripts/package/Build-Tls13HandshakePerformanceScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }] },
-      "dependsOn": [], "reverseDependencies": ["go-tls12-executor", "go-tls12", "go-tls13-executor", "go-tls13", "dotnet-sslstream-tls13", "rustls-tls13", "s2n-tls13", "wolfssl-tls13", "gnutls-serv", "openssl-s-server", "go-utls-tls13-chacha20-executor", "go-tls13-chacha20", "go-tls13-mtls-executor", "go-tls13-mtls"], "owners": ["@SamuelMcAravey"], "smoke": null
+      "dependsOn": [], "reverseDependencies": ["go-tls12-executor", "go-tls12", "go-tls13-executor", "go-tls13", "dotnet-sslstream-tls13", "rustls-tls13", "s2n-tls13", "wolfssl-tls13", "gnutls-serv", "openssl-s-server", "go-utls-tls13-chacha20-executor", "go-tls13-chacha20", "go-tls13-mtls-executor", "go-tls13-mtls", "rustls-tls13-early-data-executor", "rustls-tls13-early-data"], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
       "id": "go-tls12-executor", "packageId": "org.protocol-lab.components.executor.go-tls12-executor", "packageRoot": "executors/go-tls12-executor", "kind": "test-executor", "migrationState": "modeled",
@@ -1755,6 +1755,18 @@
       "id": "go-tls13-mtls", "packageId": "org.protocol-lab.components.implementation.go-tls13-mtls", "packageRoot": "implementations/go-tls13-mtls", "kind": "implementation", "migrationState": "modeled",
       "build": { "script": "scripts/package/Build-GoTls13MtlsImplementationPackage.ps1", "arguments": ["win-x64"] },
       "inputs": { "payload": ["implementations/go-tls13-mtls"], "buildRecipe": ["scripts/package/Build-GoTls13MtlsImplementationPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "rustls-tls13-early-data-executor", "packageId": "org.protocol-lab.components.executor.rustls-tls13-early-data-executor", "packageRoot": "executors/rustls-tls13-early-data-executor", "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-RustlsTls13EarlyDataExecutorPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["executors/rustls-tls13-early-data-executor"], "buildRecipe": ["scripts/package/Build-RustlsTls13EarlyDataExecutorPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "rust", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "rustls-tls13-early-data", "packageId": "org.protocol-lab.components.implementation.rustls-tls13-early-data", "packageRoot": "implementations/rustls-tls13-early-data", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-RustlsTls13EarlyDataImplementationPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["implementations/rustls-tls13-early-data"], "buildRecipe": ["scripts/package/Build-RustlsTls13EarlyDataImplementationPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "rust", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
       "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     }
   ],
