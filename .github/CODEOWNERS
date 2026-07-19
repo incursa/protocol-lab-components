@@ -82,3 +82,6 @@
 /implementations/quiche-raw/ @SamuelMcAravey
 /implementations/quinn-raw/ @SamuelMcAravey
 /implementations/s2n-quic-raw/ @SamuelMcAravey
+/scenarios/aioquic-rfc9220-websocket/ @SamuelMcAravey
+/executors/aioquic-rfc9220-websocket/ @SamuelMcAravey
+/implementations/nghttpx-rfc9220-gateway/ @SamuelMcAravey

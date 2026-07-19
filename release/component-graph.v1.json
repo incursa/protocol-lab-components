@@ -1166,7 +1166,7 @@
       "packageRoot": "implementations/aioquic-http3", "kind": "implementation", "migrationState": "modeled",
       "build": { "script": "scripts/package/Build-AioquicHttp3Package.ps1", "arguments": [] },
       "inputs": { "payload": ["implementations/aioquic-http3"], "buildRecipe": ["scripts/package/Build-AioquicHttp3Package.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
-      "dependsOn": [{ "componentId": "h3spec-http3-qpack-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+      "dependsOn": [{ "componentId": "h3spec-http3-qpack-scenarios", "kind": "compatibility" }, { "componentId": "aioquic-rfc9220-websocket-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
       "id": "h2o-http3",
@@ -1352,6 +1352,27 @@
       "build": { "script": "scripts/package/Build-S2nQuicRawPackage.ps1", "arguments": [] },
       "inputs": { "payload": ["implementations/s2n-quic-raw"], "buildRecipe": ["scripts/package/Build-S2nQuicRawPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
       "dependsOn": [{ "componentId": "raw-quic-transport", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "aioquic-rfc9220-websocket-scenarios",
+      "packageId": "org.protocol-lab.components.scenario.http3-websocket-performance", "packageRoot": "scenarios/aioquic-rfc9220-websocket", "kind": "scenario-pack", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-AioquicRfc9220WebSocketScenarioPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["scenarios/aioquic-rfc9220-websocket"], "buildRecipe": ["scripts/package/Build-AioquicRfc9220WebSocketScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }, { "id": "bash", "version": "declared-runtime" }] },
+      "dependsOn": [], "reverseDependencies": ["aioquic-rfc9220-websocket-executor", "aioquic-http3", "nghttpx-rfc9220-gateway"], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "aioquic-rfc9220-websocket-executor",
+      "packageId": "org.protocol-lab.components.executor.aioquic-rfc9220-websocket", "packageRoot": "executors/aioquic-rfc9220-websocket", "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-AioquicRfc9220WebSocketPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["executors/aioquic-rfc9220-websocket"], "buildRecipe": ["scripts/package/Build-AioquicRfc9220WebSocketPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "aioquic-rfc9220-websocket-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "nghttpx-rfc9220-gateway",
+      "packageId": "org.protocol-lab.components.implementation.nghttpx-rfc9220-gateway", "packageRoot": "implementations/nghttpx-rfc9220-gateway", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-NghttpxRfc9220GatewayPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/nghttpx-rfc9220-gateway"], "buildRecipe": ["scripts/package/Build-NghttpxRfc9220GatewayPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "aioquic-rfc9220-websocket-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
       "id": "kestrel-http2",
