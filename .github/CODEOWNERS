@@ -85,3 +85,10 @@
 /scenarios/aioquic-rfc9220-websocket/ @SamuelMcAravey
 /executors/aioquic-rfc9220-websocket/ @SamuelMcAravey
 /implementations/nghttpx-rfc9220-gateway/ @SamuelMcAravey
+/scenarios/http1-websocket-cleartext-performance/ @SamuelMcAravey
+/executors/go-http1-websocket-executor/ @SamuelMcAravey
+/implementations/go-http1-websocket/ @SamuelMcAravey
+/implementations/node-ws-websocket/ @SamuelMcAravey
+/implementations/jetty-websocket/ @SamuelMcAravey
+/implementations/uwebsockets-websocket/ @SamuelMcAravey
+/implementations/websocat-http1-websocket/ @SamuelMcAravey

@@ -1375,6 +1375,55 @@
       "dependsOn": [{ "componentId": "aioquic-rfc9220-websocket-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
+      "id": "http1-websocket-cleartext-scenarios",
+      "packageId": "org.protocol-lab.components.scenario.http1-websocket-cleartext-performance", "packageRoot": "scenarios/http1-websocket-cleartext-performance", "kind": "scenario-pack", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-Http1WebSocketCleartextScenarioPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["scenarios/http1-websocket-cleartext-performance"], "buildRecipe": ["scripts/package/Build-Http1WebSocketCleartextScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }] },
+      "dependsOn": [], "reverseDependencies": ["go-http1-websocket-executor", "go-http1-websocket", "node-ws-websocket", "jetty-websocket", "uwebsockets-websocket", "websocat-http1-websocket"], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-http1-websocket-executor",
+      "packageId": "org.protocol-lab.components.executor.go-http1-websocket-executor", "packageRoot": "executors/go-http1-websocket-executor", "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoHttp1WebSocketExecutorPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["executors/go-http1-websocket-executor"], "buildRecipe": ["scripts/package/Build-GoHttp1WebSocketExecutorPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "http1-websocket-cleartext-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-http1-websocket",
+      "packageId": "org.protocol-lab.components.implementation.go-http1-websocket", "packageRoot": "implementations/go-http1-websocket", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoHttp1WebSocketImplementationPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["implementations/go-http1-websocket"], "buildRecipe": ["scripts/package/Build-GoHttp1WebSocketImplementationPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "http1-websocket-cleartext-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "node-ws-websocket",
+      "packageId": "org.protocol-lab.components.implementation.node-ws-websocket", "packageRoot": "implementations/node-ws-websocket", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-NodeWsWebSocketPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/node-ws-websocket"], "buildRecipe": ["scripts/package/Build-NodeWsWebSocketPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "http1-websocket-cleartext-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "jetty-websocket",
+      "packageId": "org.protocol-lab.components.implementation.jetty-websocket", "packageRoot": "implementations/jetty-websocket", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-JettyWebSocketPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/jetty-websocket"], "buildRecipe": ["scripts/package/Build-JettyWebSocketPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "http1-websocket-cleartext-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "uwebsockets-websocket",
+      "packageId": "org.protocol-lab.components.implementation.uwebsockets-websocket", "packageRoot": "implementations/uwebsockets-websocket", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-UWebSocketsWebSocketPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/uwebsockets-websocket"], "buildRecipe": ["scripts/package/Build-UWebSocketsWebSocketPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "http1-websocket-cleartext-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "websocat-http1-websocket",
+      "packageId": "org.protocol-lab.components.implementation.websocat-http1-websocket", "packageRoot": "implementations/websocat-http1-websocket", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-WebsocatHttp1WebSocketPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/websocat-http1-websocket"], "buildRecipe": ["scripts/package/Build-WebsocatHttp1WebSocketPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "http1-websocket-cleartext-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
       "id": "kestrel-http2",
       "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
       "packageRoot": "implementations/kestrel-http2",

@@ -83,6 +83,11 @@ $rfc9220Selection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseS
 if (@($rfc9220Selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'aioquic-http3,aioquic-rfc9220-websocket-executor,aioquic-rfc9220-websocket-scenarios,nghttpx-rfc9220-gateway') {
     throw 'Declared reverse-dependency selection did not include every RFC9220 scenario consumer.'
 }
+
+$cleartextWebSocketSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/http1-websocket-cleartext-performance/scenarios/http1/websocket/rfc6455-cleartext-upgrade.yaml' | ConvertFrom-Json
+if (@($cleartextWebSocketSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-http1-websocket,go-http1-websocket-executor,http1-websocket-cleartext-scenarios,jetty-websocket,node-ws-websocket,uwebsockets-websocket,websocat-http1-websocket') {
+    throw 'Declared reverse-dependency selection did not include every cleartext HTTP/1 WebSocket consumer.'
+}
 $certificateSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'implementations/go-dns-dot/certs/root.pem' | ConvertFrom-Json
 if (@($certificateSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-dns-doh2,go-dns-doh2-executor,go-dns-doh3,go-dns-doh3-executor,go-dns-doq,go-dns-doq-executor,go-dns-dot') {
     throw 'Shared secure-DNS certificate changes did not select every consuming package.'
