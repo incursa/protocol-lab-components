@@ -65,7 +65,7 @@ if (@($webtransportSelection.selectedComponents.componentId | Sort-Object) -join
     throw 'Declared reverse-dependency selection did not include the complete WebTransport cohort.'
 }
 $masqueSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/masque-connect-udp-performance/scenarios/masque/connect-udp-tunnel.yaml' | ConvertFrom-Json
-if (@($masqueSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-masque-connect-udp-executor,masque-connect-udp-performance,masque-go-connect-udp') {
+if (@($masqueSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'envoy-connect-udp,go-masque-connect-udp-executor,masque-connect-udp-performance,masque-go-connect-udp') {
     throw 'Declared reverse-dependency selection did not include the complete MASQUE CONNECT-UDP cohort.'
 }
 

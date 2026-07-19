@@ -73,6 +73,7 @@
 /implementations/webtransport-go/ @SamuelMcAravey
 /scenarios/masque-connect-udp-performance/ @SamuelMcAravey
 /executors/go-masque-connect-udp-executor/ @SamuelMcAravey
+/implementations/envoy-connect-udp/ @SamuelMcAravey
 /implementations/masque-go-connect-udp/ @SamuelMcAravey
 /scenarios/raw-quic-transport/ @SamuelMcAravey
 /executors/quic-go-raw-load/ @SamuelMcAravey

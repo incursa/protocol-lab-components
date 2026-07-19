@@ -1283,7 +1283,7 @@
       "packageId": "org.protocol-lab.components.scenario.masque-connect-udp-performance", "packageRoot": "scenarios/masque-connect-udp-performance", "kind": "scenario-pack", "migrationState": "modeled",
       "build": { "script": "scripts/package/Build-MasqueConnectUdpScenarioPackage.ps1", "arguments": [] },
       "inputs": { "payload": ["scenarios/masque-connect-udp-performance"], "buildRecipe": ["scripts/package/Build-MasqueConnectUdpScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }] },
-      "dependsOn": [], "reverseDependencies": ["go-masque-connect-udp-executor", "masque-go-connect-udp"], "owners": ["@SamuelMcAravey"], "smoke": null
+      "dependsOn": [], "reverseDependencies": ["go-masque-connect-udp-executor", "masque-go-connect-udp", "envoy-connect-udp"], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
       "id": "go-masque-connect-udp-executor",
@@ -1780,6 +1780,12 @@
       "build": { "script": "scripts/package/Build-OpenSslTls13KeyUpdateImplementationPackage.ps1", "arguments": ["win-x64"] },
       "inputs": { "payload": ["implementations/openssl-tls13-key-update"], "buildRecipe": ["scripts/package/Build-OpenSslTls13KeyUpdateImplementationPackage.ps1", "scripts/package/Invoke-OpenSslTls13KeyUpdateBuild.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }, { "id": "protocol-execution-result-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "openssl", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
       "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "envoy-connect-udp", "packageId": "org.protocol-lab.components.implementation.envoy-connect-udp", "packageRoot": "implementations/envoy-connect-udp", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-EnvoyConnectUdpPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/envoy-connect-udp"], "buildRecipe": ["scripts/package/Build-EnvoyConnectUdpPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "masque-connect-udp-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     }
   ],
   "externalComponentContract": {
