@@ -96,3 +96,5 @@
 /executors/go-http2-websocket-executor/ @SamuelMcAravey
 /implementations/kestrel-http2-websocket/ @SamuelMcAravey
 /implementations/jetty-http2-websocket/ @SamuelMcAravey
+/implementations/go-nethttp-http1/ @SamuelMcAravey
+/implementations/node-http1/ @SamuelMcAravey

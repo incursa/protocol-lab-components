@@ -25,7 +25,7 @@ if (@($selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'ap
     throw 'Declared reverse-dependency selection did not include the complete modeled HTTP/2 cohort.'
 }
 $http1Selection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/http1-performance/scenarios/http1/core/plaintext.yaml' | ConvertFrom-Json
-if (@($http1Selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'apache-http1,caddy-http1,go-http1-executor,http1-performance-scenarios,kestrel-http1,nginx-http1') {
+if (@($http1Selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'apache-http1,caddy-http1,go-http1-executor,go-nethttp-http1,http1-performance-scenarios,kestrel-http1,nginx-http1,node-http1') {
     throw 'Declared reverse-dependency selection did not include the complete modeled HTTP/1 cohort.'
 }
 $dnsClassicSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/dns-classic-calibration/scenarios/dns/classic/query-a-udp.yaml' | ConvertFrom-Json
@@ -92,6 +92,11 @@ if (@($cleartextWebSocketSelection.selectedComponents.componentId | Sort-Object)
 $http2WebSocketSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/http2-websocket-performance/scenarios/http2/websocket/rfc8441-binary-echo.yaml' | ConvertFrom-Json
 if (@($http2WebSocketSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-http2-websocket-executor,http2-websocket-scenarios,jetty-http2-websocket,kestrel-http2-websocket') {
     throw 'Declared reverse-dependency selection did not include every HTTP/2 WebSocket consumer.'
+}
+
+$http1OriginSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/http1-performance/scenarios/http1/core/plaintext.yaml' | ConvertFrom-Json
+if (@($http1OriginSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'apache-http1,caddy-http1,go-http1-executor,go-nethttp-http1,http1-performance-scenarios,kestrel-http1,nginx-http1,node-http1') {
+    throw 'Declared reverse-dependency selection did not include every HTTP/1 core consumer.'
 }
 $certificateSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'implementations/go-dns-dot/certs/root.pem' | ConvertFrom-Json
 if (@($certificateSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-dns-doh2,go-dns-doh2-executor,go-dns-doh3,go-dns-doh3-executor,go-dns-doq,go-dns-doq-executor,go-dns-dot') {

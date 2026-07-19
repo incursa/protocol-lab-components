@@ -128,7 +128,9 @@
         "kestrel-http1",
         "caddy-http1",
         "nginx-http1",
-        "apache-http1"
+        "apache-http1",
+        "go-nethttp-http1",
+        "node-http1"
       ],
       "owners": ["@SamuelMcAravey"],
       "smoke": null
@@ -1450,6 +1452,20 @@
       "build": { "script": "scripts/package/Build-JettyHttp2WebSocketPackage.ps1", "arguments": [] },
       "inputs": { "payload": ["implementations/jetty-http2-websocket"], "buildRecipe": ["scripts/package/Build-JettyHttp2WebSocketPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
       "dependsOn": [{ "componentId": "http2-websocket-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-nethttp-http1",
+      "packageId": "org.protocol-lab.components.implementation.go-nethttp-http1", "packageRoot": "implementations/go-nethttp-http1", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoNetHttpHttp1Package.ps1", "arguments": ["linux-x64"] },
+      "inputs": { "payload": ["implementations/go-nethttp-http1"], "buildRecipe": ["scripts/package/Build-GoNetHttpHttp1Package.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "http1-performance-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "node-http1",
+      "packageId": "org.protocol-lab.components.implementation.node-http1", "packageRoot": "implementations/node-http1", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-NodeHttp1Package.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/node-http1"], "buildRecipe": ["scripts/package/Build-NodeHttp1Package.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "node", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "http1-performance-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
       "id": "kestrel-http2",
