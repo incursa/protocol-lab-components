@@ -52,6 +52,10 @@ $http3PeerSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleas
 if (@($http3PeerSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'curl-http3-client,http3-peer-characterization,lsquic-http3,neqo-http3,ngtcp2-http3,quiche-http3,xquic-http3,xquic-http3-client') {
     throw 'Declared reverse-dependency selection did not include the complete HTTP/3 peer-characterization cohort.'
 }
+$h3specSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/h3spec-http3-qpack/scenarios/http3/protocol/qpack-repeated-headers.yaml' | ConvertFrom-Json
+if (@($h3specSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'aioquic-http3,caddy-http3,curl-http3-client,h2o-http3,h3spec-http3-qpack-executor,h3spec-http3-qpack-scenarios,kestrel-http3,nginx-http3,ngtcp2-http3,quic-go-http3,quiche-http3') {
+    throw 'Declared reverse-dependency selection did not include the complete h3spec/QPACK cohort.'
+}
 $certificateSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'implementations/go-dns-dot/certs/root.pem' | ConvertFrom-Json
 if (@($certificateSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-dns-doh2,go-dns-doh2-executor,go-dns-doh3,go-dns-doh3-executor,go-dns-doq,go-dns-doq-executor,go-dns-dot') {
     throw 'Shared secure-DNS certificate changes did not select every consuming package.'

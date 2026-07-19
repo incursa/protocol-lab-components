@@ -1043,7 +1043,7 @@
         "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }],
         "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }]
       },
-      "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }],
+      "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }, { "componentId": "h3spec-http3-qpack-scenarios", "kind": "compatibility" }],
       "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
@@ -1107,7 +1107,7 @@
         "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }],
         "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }]
       },
-      "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }],
+      "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }, { "componentId": "h3spec-http3-qpack-scenarios", "kind": "compatibility" }],
       "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
@@ -1123,7 +1123,7 @@
         "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }],
         "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }]
       },
-      "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }],
+      "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }, { "componentId": "h3spec-http3-qpack-scenarios", "kind": "compatibility" }],
       "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
@@ -1141,6 +1141,56 @@
       },
       "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }],
       "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "h3spec-http3-qpack-scenarios",
+      "packageId": "org.protocol-lab.components.scenario.h3spec-http3-qpack",
+      "packageRoot": "scenarios/h3spec-http3-qpack", "kind": "scenario-pack", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-H3SpecHttp3QpackScenarioPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["scenarios/h3spec-http3-qpack"], "buildRecipe": ["scripts/package/Build-H3SpecHttp3QpackScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }] },
+      "dependsOn": [],
+      "reverseDependencies": ["h3spec-http3-qpack-executor", "curl-http3-client", "aioquic-http3", "h2o-http3", "nginx-http3", "quic-go-http3", "ngtcp2-http3", "quiche-http3", "kestrel-http3", "caddy-http3"],
+      "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "h3spec-http3-qpack-executor",
+      "packageId": "org.protocol-lab.components.executor.h3spec-http3-qpack",
+      "packageRoot": "executors/h3spec-http3-qpack", "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-H3SpecHttp3QpackPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["executors/h3spec-http3-qpack"], "buildRecipe": ["scripts/package/Build-H3SpecHttp3QpackPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "h3spec-http3-qpack-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "aioquic-http3",
+      "packageId": "org.protocol-lab.components.implementation.aioquic-http3",
+      "packageRoot": "implementations/aioquic-http3", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-AioquicHttp3Package.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/aioquic-http3"], "buildRecipe": ["scripts/package/Build-AioquicHttp3Package.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "h3spec-http3-qpack-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "h2o-http3",
+      "packageId": "org.protocol-lab.components.implementation.h2o-http3",
+      "packageRoot": "implementations/h2o-http3", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-H2oHttp3Package.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/h2o-http3"], "buildRecipe": ["scripts/package/Build-H2oHttp3Package.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "h3spec-http3-qpack-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "nginx-http3",
+      "packageId": "org.protocol-lab.components.implementation.nginx-http3",
+      "packageRoot": "implementations/nginx-http3", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-NginxHttp3Package.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/nginx-http3"], "buildRecipe": ["scripts/package/Build-NginxHttp3Package.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "h3spec-http3-qpack-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "quic-go-http3",
+      "packageId": "org.protocol-lab.components.implementation.quic-go-http3",
+      "packageRoot": "implementations/quic-go-http3", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-QuicGoHttp3Package.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/quic-go-http3"], "buildRecipe": ["scripts/package/Build-QuicGoHttp3Package.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "1.25.x" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "h3spec-http3-qpack-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
       "id": "kestrel-http2",
@@ -1290,7 +1340,7 @@
           { "id": "powershell", "version": "7" }
         ]
       },
-      "dependsOn": [],
+      "dependsOn": [{ "componentId": "h3spec-http3-qpack-scenarios", "kind": "compatibility" }],
       "reverseDependencies": [],
       "owners": ["@SamuelMcAravey"],
       "smoke": null
@@ -1319,7 +1369,7 @@
           { "id": "powershell", "version": "7" }
         ]
       },
-      "dependsOn": [],
+      "dependsOn": [{ "componentId": "h3spec-http3-qpack-scenarios", "kind": "compatibility" }],
       "reverseDependencies": [],
       "owners": ["@SamuelMcAravey"],
       "smoke": null

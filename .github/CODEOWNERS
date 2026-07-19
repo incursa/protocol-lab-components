@@ -54,3 +54,9 @@
 /implementations/ngtcp2-http3/ @SamuelMcAravey
 /implementations/quiche-http3/ @SamuelMcAravey
 /implementations/xquic-http3/ @SamuelMcAravey
+/scenarios/h3spec-http3-qpack/ @SamuelMcAravey
+/executors/h3spec-http3-qpack/ @SamuelMcAravey
+/implementations/aioquic-http3/ @SamuelMcAravey
+/implementations/h2o-http3/ @SamuelMcAravey
+/implementations/nginx-http3/ @SamuelMcAravey
+/implementations/quic-go-http3/ @SamuelMcAravey
