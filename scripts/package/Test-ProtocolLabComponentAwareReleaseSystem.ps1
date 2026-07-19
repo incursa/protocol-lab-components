@@ -32,6 +32,18 @@ $dnsClassicSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentRelea
 if (@($dnsClassicSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'bind9-classic-authority,dns-classic-calibration,go-dns-classic-authority,go-dns-tcp-executor,go-dns-udp-executor,technitium-classic-authority') {
     throw 'Declared reverse-dependency selection did not include the complete modeled classic DNS cohort.'
 }
+$dotSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/dns-dot-performance/scenarios/dns/dot/query-a.yaml' | ConvertFrom-Json
+if (@($dotSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'bind9-dot,bind9-dot-resolver,dns-dot-performance,go-dns-dot,go-dns-dot-executor,knot-resolver-secure-dns-resolver') {
+    throw 'Declared reverse-dependency selection did not include the complete modeled DoT cohort.'
+}
+$doh2Selection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/dns-doh2-performance/scenarios/dns/doh2/query-a.yaml' | ConvertFrom-Json
+if (@($doh2Selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'bind9-doh2,dns-doh2-performance,go-dns-doh2,go-dns-doh2-executor,knot-resolver-secure-dns-resolver,unbound-doh2-resolver') {
+    throw 'Declared reverse-dependency selection did not include the complete modeled DoH2 cohort.'
+}
+$certificateSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'implementations/go-dns-dot/certs/root.pem' | ConvertFrom-Json
+if (@($certificateSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-dns-doh2,go-dns-doh2-executor,go-dns-dot') {
+    throw 'Shared secure-DNS certificate changes did not select every consuming package.'
+}
 $unknown = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'unmodeled-release-input.txt' | ConvertFrom-Json
 if (-not $unknown.fullBuildDryRunRequired) { throw 'Unknown changes must require conservative full-build dry-run.' }
 

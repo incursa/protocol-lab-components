@@ -16,6 +16,13 @@
       "paths": [
         "scripts/package/Validate-ProtocolLabComponentManifests.ps1"
       ]
+    },
+    {
+      "id": "shared.secure-dns-certificates",
+      "kind": "fixture",
+      "paths": [
+        "implementations/go-dns-dot/certs"
+      ]
     }
   ],
   "templates": [
@@ -465,6 +472,354 @@
       },
       "dependsOn": [
         { "componentId": "dns-classic-calibration", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "dns-dot-performance",
+      "packageId": "org.protocol-lab.components.scenario.dns-dot-performance",
+      "packageRoot": "scenarios/dns-dot-performance",
+      "kind": "scenario-pack",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-DnsDotPerformanceScenarioPackage.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["scenarios/dns-dot-performance"],
+        "buildRecipe": ["scripts/package/Build-DnsDotPerformanceScenarioPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [],
+      "reverseDependencies": [
+        "go-dns-dot-executor",
+        "go-dns-dot",
+        "bind9-dot",
+        "bind9-dot-resolver",
+        "knot-resolver-secure-dns-resolver"
+      ],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "dns-doh2-performance",
+      "packageId": "org.protocol-lab.components.scenario.dns-doh2-performance",
+      "packageRoot": "scenarios/dns-doh2-performance",
+      "kind": "scenario-pack",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-DnsDoh2PerformanceScenarioPackage.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["scenarios/dns-doh2-performance"],
+        "buildRecipe": ["scripts/package/Build-DnsDoh2PerformanceScenarioPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [],
+      "reverseDependencies": [
+        "go-dns-doh2-executor",
+        "go-dns-doh2",
+        "bind9-doh2",
+        "unbound-doh2-resolver",
+        "knot-resolver-secure-dns-resolver"
+      ],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "go-dns-dot-executor",
+      "packageId": "org.protocol-lab.components.executor.go-dns-dot-executor",
+      "packageRoot": "executors/go-dns-dot-executor",
+      "kind": "test-executor",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-GoDnsDotExecutorPackage.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["executors/go-dns-dot-executor"],
+        "buildRecipe": ["scripts/package/Build-GoDnsDotExecutorPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-dot-performance", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "go-dns-doh2-executor",
+      "packageId": "org.protocol-lab.components.executor.go-dns-doh2-executor",
+      "packageRoot": "executors/go-dns-doh2-executor",
+      "kind": "test-executor",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-GoDnsDoh2ExecutorPackage.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["executors/go-dns-doh2-executor"],
+        "buildRecipe": ["scripts/package/Build-GoDnsDoh2ExecutorPackage.ps1"],
+        "shared": ["shared.package-builder", "shared.secure-dns-certificates"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-doh2-performance", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "go-dns-dot",
+      "packageId": "org.protocol-lab.components.implementation.go-dns-dot",
+      "packageRoot": "implementations/go-dns-dot",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-GoDnsDotPackage.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["implementations/go-dns-dot"],
+        "buildRecipe": ["scripts/package/Build-GoDnsDotPackage.ps1"],
+        "shared": ["shared.package-builder", "shared.secure-dns-certificates"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-dot-performance", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "go-dns-doh2",
+      "packageId": "org.protocol-lab.components.implementation.go-dns-doh2",
+      "packageRoot": "implementations/go-dns-doh2",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-GoDnsDoh2Package.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["implementations/go-dns-doh2"],
+        "buildRecipe": ["scripts/package/Build-GoDnsDoh2Package.ps1"],
+        "shared": ["shared.package-builder", "shared.secure-dns-certificates"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-doh2-performance", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "bind9-dot",
+      "packageId": "org.protocol-lab.components.implementation.bind9-dot",
+      "packageRoot": "implementations/bind9-dot",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-Bind9DotPackage.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/bind9-dot"],
+        "buildRecipe": ["scripts/package/Build-Bind9DotPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-dot-performance", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "bind9-dot-resolver",
+      "packageId": "org.protocol-lab.components.implementation.bind9-dot-resolver",
+      "packageRoot": "implementations/bind9-dot-resolver",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-Bind9DotResolverPackage.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/bind9-dot-resolver"],
+        "buildRecipe": ["scripts/package/Build-Bind9DotResolverPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-dot-performance", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "bind9-doh2",
+      "packageId": "org.protocol-lab.components.implementation.bind9-doh2",
+      "packageRoot": "implementations/bind9-doh2",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-Bind9Doh2Package.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/bind9-doh2"],
+        "buildRecipe": ["scripts/package/Build-Bind9Doh2Package.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-doh2-performance", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "unbound-doh2-resolver",
+      "packageId": "org.protocol-lab.components.implementation.unbound-doh2-resolver",
+      "packageRoot": "implementations/unbound-doh2-resolver",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-UnboundDoh2ResolverPackage.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/unbound-doh2-resolver"],
+        "buildRecipe": ["scripts/package/Build-UnboundDoh2ResolverPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-doh2-performance", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "knot-resolver-secure-dns-resolver",
+      "packageId": "org.protocol-lab.components.implementation.knot-resolver-secure-dns-resolver",
+      "packageRoot": "implementations/knot-resolver-secure-dns-resolver",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-KnotResolverSecureDnsResolverPackage.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/knot-resolver-secure-dns-resolver"],
+        "buildRecipe": ["scripts/package/Build-KnotResolverSecureDnsResolverPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-dot-performance", "kind": "compatibility" },
+        { "componentId": "dns-doh2-performance", "kind": "compatibility" }
       ],
       "reverseDependencies": [],
       "owners": ["@SamuelMcAravey"],

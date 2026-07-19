@@ -29,3 +29,14 @@
 /implementations/go-dns-classic-authority/ @SamuelMcAravey
 /implementations/bind9-classic-authority/ @SamuelMcAravey
 /implementations/technitium-classic-authority/ @SamuelMcAravey
+/scenarios/dns-dot-performance/ @SamuelMcAravey
+/scenarios/dns-doh2-performance/ @SamuelMcAravey
+/executors/go-dns-dot-executor/ @SamuelMcAravey
+/executors/go-dns-doh2-executor/ @SamuelMcAravey
+/implementations/go-dns-dot/ @SamuelMcAravey
+/implementations/go-dns-doh2/ @SamuelMcAravey
+/implementations/bind9-dot/ @SamuelMcAravey
+/implementations/bind9-dot-resolver/ @SamuelMcAravey
+/implementations/bind9-doh2/ @SamuelMcAravey
+/implementations/unbound-doh2-resolver/ @SamuelMcAravey
+/implementations/knot-resolver-secure-dns-resolver/ @SamuelMcAravey
