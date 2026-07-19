@@ -1298,6 +1298,62 @@
       "dependsOn": [{ "componentId": "masque-connect-udp-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
+      "id": "raw-quic-transport",
+      "packageId": "org.protocol-lab.components.scenario.raw-quic-transport", "packageRoot": "scenarios/raw-quic-transport", "kind": "scenario-pack", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-RawQuicScenarioPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["scenarios/raw-quic-transport"], "buildRecipe": ["scripts/package/Build-RawQuicScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }] },
+      "dependsOn": [], "reverseDependencies": ["quic-go-raw-load", "aioquic-raw", "picoquic-raw", "quic-go-raw", "quiche-raw", "quinn-raw", "s2n-quic-raw"], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "quic-go-raw-load",
+      "packageId": "org.protocol-lab.components.executor.quic-go-raw-load", "packageRoot": "executors/quic-go-raw-load", "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-QuicGoRawLoadPackage.ps1", "arguments": ["linux-x64"] },
+      "inputs": { "payload": ["executors/quic-go-raw-load"], "buildRecipe": ["scripts/package/Build-QuicGoRawLoadPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "1.26.x" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "raw-quic-transport", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "aioquic-raw",
+      "packageId": "org.protocol-lab.components.implementation.aioquic-raw", "packageRoot": "implementations/aioquic-raw", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-AioquicRawPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/aioquic-raw"], "buildRecipe": ["scripts/package/Build-AioquicRawPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": ["implementations/aioquic-http3/certs/leaf.pem", "implementations/aioquic-http3/certs/leaf-key.pem", "implementations/aioquic-http3/third-party/aioquic-LICENSE.txt"], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "raw-quic-transport", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "picoquic-raw",
+      "packageId": "org.protocol-lab.components.implementation.picoquic-raw", "packageRoot": "implementations/picoquic-raw", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-PicoquicRawPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/picoquic-raw"], "buildRecipe": ["scripts/package/Build-PicoquicRawPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "raw-quic-transport", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "quic-go-raw",
+      "packageId": "org.protocol-lab.components.implementation.quic-go-raw", "packageRoot": "implementations/quic-go-raw", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-QuicGoRawPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/quic-go-raw"], "buildRecipe": ["scripts/package/Build-QuicGoRawPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "1.26.x" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "raw-quic-transport", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "quiche-raw",
+      "packageId": "org.protocol-lab.components.implementation.quiche-raw", "packageRoot": "implementations/quiche-raw", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-QuicheRawPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/quiche-raw"], "buildRecipe": ["scripts/package/Build-QuicheRawPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": ["implementations/aioquic-http3/certs/leaf.pem", "implementations/aioquic-http3/certs/leaf-key.pem"], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "raw-quic-transport", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "quinn-raw",
+      "packageId": "org.protocol-lab.components.implementation.quinn-raw", "packageRoot": "implementations/quinn-raw", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-QuinnRawPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/quinn-raw"], "buildRecipe": ["scripts/package/Build-QuinnRawPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "raw-quic-transport", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "s2n-quic-raw",
+      "packageId": "org.protocol-lab.components.implementation.s2n-quic-raw", "packageRoot": "implementations/s2n-quic-raw", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-S2nQuicRawPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/s2n-quic-raw"], "buildRecipe": ["scripts/package/Build-S2nQuicRawPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "raw-quic-transport", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
       "id": "kestrel-http2",
       "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
       "packageRoot": "implementations/kestrel-http2",

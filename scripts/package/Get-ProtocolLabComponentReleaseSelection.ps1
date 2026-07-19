@@ -51,18 +51,19 @@ foreach ($inputPath in @($ChangedPath)) {
     }
     if ($matched) { continue }
     foreach ($component in $components) {
+        $componentMatched = $false
         foreach ($group in @('payload', 'buildRecipe', 'fixtures')) {
             foreach ($declaredPath in @($component.inputs[$group])) {
                 if (Test-ProtocolLabPathMatchesDeclaration -ChangedPath $path -DeclaredPath ([string]$declaredPath)) {
                     [void]$selected.Add([string]$component.id)
                     $classification.Add("${path}:$($component.id):$group")
                     $matched = $true
+                    $componentMatched = $true
                     break
                 }
             }
-            if ($matched) { break }
+            if ($componentMatched) { break }
         }
-        if ($matched) { break }
     }
     if (-not $matched) { $unknown.Add($path) }
 }

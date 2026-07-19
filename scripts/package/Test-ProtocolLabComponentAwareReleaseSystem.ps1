@@ -68,6 +68,16 @@ $masqueSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSe
 if (@($masqueSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-masque-connect-udp-executor,masque-connect-udp-performance,masque-go-connect-udp') {
     throw 'Declared reverse-dependency selection did not include the complete MASQUE CONNECT-UDP cohort.'
 }
+
+$rawQuicSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/raw-quic-transport/scenarios/quic/transport/stream-throughput.yaml' | ConvertFrom-Json
+if (@($rawQuicSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'aioquic-raw,picoquic-raw,quic-go-raw,quic-go-raw-load,quiche-raw,quinn-raw,raw-quic-transport,s2n-quic-raw') {
+    throw 'Declared reverse-dependency selection did not include the complete raw QUIC cohort.'
+}
+
+$rawQuicFixtureSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'implementations/aioquic-http3/certs/leaf.pem' | ConvertFrom-Json
+if (@($rawQuicFixtureSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'aioquic-http3,aioquic-raw,quiche-raw') {
+    throw 'Raw QUIC certificate fixture changes did not select the source package and every consuming package.'
+}
 $certificateSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'implementations/go-dns-dot/certs/root.pem' | ConvertFrom-Json
 if (@($certificateSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-dns-doh2,go-dns-doh2-executor,go-dns-doh3,go-dns-doh3-executor,go-dns-doq,go-dns-doq-executor,go-dns-dot') {
     throw 'Shared secure-DNS certificate changes did not select every consuming package.'

@@ -74,3 +74,11 @@
 /scenarios/masque-connect-udp-performance/ @SamuelMcAravey
 /executors/go-masque-connect-udp-executor/ @SamuelMcAravey
 /implementations/masque-go-connect-udp/ @SamuelMcAravey
+/scenarios/raw-quic-transport/ @SamuelMcAravey
+/executors/quic-go-raw-load/ @SamuelMcAravey
+/implementations/aioquic-raw/ @SamuelMcAravey
+/implementations/picoquic-raw/ @SamuelMcAravey
+/implementations/quic-go-raw/ @SamuelMcAravey
+/implementations/quiche-raw/ @SamuelMcAravey
+/implementations/quinn-raw/ @SamuelMcAravey
+/implementations/s2n-quic-raw/ @SamuelMcAravey
