@@ -60,6 +60,14 @@ $grpcSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSele
 if (@($grpcSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-grpc-h2,go-grpc-h2-executor,grpc-cpp,grpc-dotnet,grpc-h2-performance,grpc-java-netty,grpc-js') {
     throw 'Declared reverse-dependency selection did not include the complete gRPC HTTP/2 cohort.'
 }
+$webtransportSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/webtransport-performance/scenarios/webtransport/session-bidi-echo.yaml' | ConvertFrom-Json
+if (@($webtransportSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'aioquic-webtransport,go-webtransport-executor,webtransport-go,webtransport-performance') {
+    throw 'Declared reverse-dependency selection did not include the complete WebTransport cohort.'
+}
+$masqueSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/masque-connect-udp-performance/scenarios/masque/connect-udp-tunnel.yaml' | ConvertFrom-Json
+if (@($masqueSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-masque-connect-udp-executor,masque-connect-udp-performance,masque-go-connect-udp') {
+    throw 'Declared reverse-dependency selection did not include the complete MASQUE CONNECT-UDP cohort.'
+}
 $certificateSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'implementations/go-dns-dot/certs/root.pem' | ConvertFrom-Json
 if (@($certificateSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-dns-doh2,go-dns-doh2-executor,go-dns-doh3,go-dns-doh3-executor,go-dns-doq,go-dns-doq-executor,go-dns-dot') {
     throw 'Shared secure-DNS certificate changes did not select every consuming package.'

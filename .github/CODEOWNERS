@@ -67,3 +67,10 @@
 /implementations/grpc-dotnet/ @SamuelMcAravey
 /implementations/grpc-java-netty/ @SamuelMcAravey
 /implementations/grpc-js/ @SamuelMcAravey
+/scenarios/webtransport-performance/ @SamuelMcAravey
+/executors/go-webtransport-executor/ @SamuelMcAravey
+/implementations/aioquic-webtransport/ @SamuelMcAravey
+/implementations/webtransport-go/ @SamuelMcAravey
+/scenarios/masque-connect-udp-performance/ @SamuelMcAravey
+/executors/go-masque-connect-udp-executor/ @SamuelMcAravey
+/implementations/masque-go-connect-udp/ @SamuelMcAravey

@@ -1249,6 +1249,55 @@
       "dependsOn": [{ "componentId": "grpc-h2-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
+      "id": "webtransport-performance",
+      "packageId": "org.protocol-lab.components.scenario.webtransport-performance", "packageRoot": "scenarios/webtransport-performance", "kind": "scenario-pack", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-WebtransportScenarioPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["scenarios/webtransport-performance"], "buildRecipe": ["scripts/package/Build-WebtransportScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }] },
+      "dependsOn": [], "reverseDependencies": ["go-webtransport-executor", "aioquic-webtransport", "webtransport-go"], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-webtransport-executor",
+      "packageId": "org.protocol-lab.components.executor.go-webtransport-executor", "packageRoot": "executors/go-webtransport-executor", "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoWebtransportExecutorPackage.ps1", "arguments": ["linux-x64"] },
+      "inputs": { "payload": ["executors/go-webtransport-executor"], "buildRecipe": ["scripts/package/Build-GoWebtransportExecutorPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "1.26.x" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "webtransport-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "aioquic-webtransport",
+      "packageId": "org.protocol-lab.components.implementation.aioquic-webtransport", "packageRoot": "implementations/aioquic-webtransport", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-AioquicWebtransportPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/aioquic-webtransport"], "buildRecipe": ["scripts/package/Build-AioquicWebtransportPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "webtransport-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "webtransport-go",
+      "packageId": "org.protocol-lab.components.implementation.webtransport-go", "packageRoot": "implementations/webtransport-go", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-WebtransportGoPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/webtransport-go"], "buildRecipe": ["scripts/package/Build-WebtransportGoPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "webtransport-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "masque-connect-udp-performance",
+      "packageId": "org.protocol-lab.components.scenario.masque-connect-udp-performance", "packageRoot": "scenarios/masque-connect-udp-performance", "kind": "scenario-pack", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-MasqueConnectUdpScenarioPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["scenarios/masque-connect-udp-performance"], "buildRecipe": ["scripts/package/Build-MasqueConnectUdpScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }] },
+      "dependsOn": [], "reverseDependencies": ["go-masque-connect-udp-executor", "masque-go-connect-udp"], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-masque-connect-udp-executor",
+      "packageId": "org.protocol-lab.components.executor.go-masque-connect-udp-executor", "packageRoot": "executors/go-masque-connect-udp-executor", "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoMasqueConnectUdpExecutorPackage.ps1", "arguments": ["linux-x64"] },
+      "inputs": { "payload": ["executors/go-masque-connect-udp-executor"], "buildRecipe": ["scripts/package/Build-GoMasqueConnectUdpExecutorPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "1.26.x" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "masque-connect-udp-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "masque-go-connect-udp",
+      "packageId": "org.protocol-lab.components.implementation.masque-go-connect-udp", "packageRoot": "implementations/masque-go-connect-udp", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-MasqueGoConnectUdpPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/masque-go-connect-udp"], "buildRecipe": ["scripts/package/Build-MasqueGoConnectUdpPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "masque-connect-udp-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
       "id": "kestrel-http2",
       "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
       "packageRoot": "implementations/kestrel-http2",
