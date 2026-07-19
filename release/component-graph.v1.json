@@ -826,6 +826,192 @@
       "smoke": null
     },
     {
+      "id": "dns-doh3-performance",
+      "packageId": "org.protocol-lab.components.scenario.dns-doh3-performance",
+      "packageRoot": "scenarios/dns-doh3-performance",
+      "kind": "scenario-pack",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-DnsDoh3PerformanceScenarioPackage.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["scenarios/dns-doh3-performance"],
+        "buildRecipe": ["scripts/package/Build-DnsDoh3PerformanceScenarioPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [],
+      "reverseDependencies": [
+        "go-dns-doh3-executor",
+        "go-dns-doh3"
+      ],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "dns-doq-performance",
+      "packageId": "org.protocol-lab.components.scenario.dns-doq-performance",
+      "packageRoot": "scenarios/dns-doq-performance",
+      "kind": "scenario-pack",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-DnsDoqPerformanceScenarioPackage.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["scenarios/dns-doq-performance"],
+        "buildRecipe": ["scripts/package/Build-DnsDoqPerformanceScenarioPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [],
+      "reverseDependencies": [
+        "go-dns-doq-executor",
+        "go-dns-doq"
+      ],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "go-dns-doh3-executor",
+      "packageId": "org.protocol-lab.components.executor.go-dns-doh3-executor",
+      "packageRoot": "executors/go-dns-doh3-executor",
+      "kind": "test-executor",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-GoDnsDoh3ExecutorPackage.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["executors/go-dns-doh3-executor"],
+        "buildRecipe": ["scripts/package/Build-GoDnsDoh3ExecutorPackage.ps1"],
+        "shared": ["shared.package-builder", "shared.secure-dns-certificates"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-doh3-performance", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "go-dns-doq-executor",
+      "packageId": "org.protocol-lab.components.executor.go-dns-doq-executor",
+      "packageRoot": "executors/go-dns-doq-executor",
+      "kind": "test-executor",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-GoDnsDoqExecutorPackage.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["executors/go-dns-doq-executor"],
+        "buildRecipe": ["scripts/package/Build-GoDnsDoqExecutorPackage.ps1"],
+        "shared": ["shared.package-builder", "shared.secure-dns-certificates"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-doq-performance", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "go-dns-doh3",
+      "packageId": "org.protocol-lab.components.implementation.go-dns-doh3",
+      "packageRoot": "implementations/go-dns-doh3",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-GoDnsDoh3Package.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["implementations/go-dns-doh3"],
+        "buildRecipe": ["scripts/package/Build-GoDnsDoh3Package.ps1"],
+        "shared": ["shared.package-builder", "shared.secure-dns-certificates"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-doh3-performance", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "go-dns-doq",
+      "packageId": "org.protocol-lab.components.implementation.go-dns-doq",
+      "packageRoot": "implementations/go-dns-doq",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-GoDnsDoqPackage.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["implementations/go-dns-doq"],
+        "buildRecipe": ["scripts/package/Build-GoDnsDoqPackage.ps1"],
+        "shared": ["shared.package-builder", "shared.secure-dns-certificates"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-doq-performance", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
       "id": "kestrel-http2",
       "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
       "packageRoot": "implementations/kestrel-http2",

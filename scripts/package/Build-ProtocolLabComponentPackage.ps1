@@ -62,6 +62,44 @@ function Get-OptionalToolVersion {
     return (($output -join "`n").Trim())
 }
 
+function ConvertTo-DeterministicJsonValue {
+    param($Value)
+
+    if ($null -eq $Value) {
+        return $null
+    }
+
+    if ($Value -is [System.Collections.IDictionary]) {
+        $ordered = [ordered]@{}
+        foreach ($key in @($Value.Keys | Sort-Object)) {
+            $ordered[[string]$key] = ConvertTo-DeterministicJsonValue -Value $Value[$key]
+        }
+
+        return $ordered
+    }
+
+    if ($Value -is [pscustomobject]) {
+        $ordered = [ordered]@{}
+        foreach ($property in @($Value.PSObject.Properties | Sort-Object Name)) {
+            $ordered[[string]$property.Name] = ConvertTo-DeterministicJsonValue -Value $property.Value
+        }
+
+        return $ordered
+    }
+
+    if ($Value -is [System.Collections.IEnumerable] -and -not ($Value -is [string])) {
+        return @($Value | ForEach-Object { ConvertTo-DeterministicJsonValue -Value $_ })
+    }
+
+    return $Value
+}
+
+function ConvertTo-DeterministicJson {
+    param([Parameter(Mandatory)]$Value)
+
+    return ((ConvertTo-DeterministicJsonValue -Value $Value) | ConvertTo-Json -Depth 32)
+}
+
 function New-DeterministicZipArchive {
     param(
         [Parameter(Mandatory)][string]$SourceRoot,
@@ -190,6 +228,12 @@ Get-ChildItem -LiteralPath $componentRoot -Recurse -File -Force | Where-Object {
     $destinationDirectory = Split-Path -Parent $destinationPath
     New-Item -ItemType Directory -Force -Path $destinationDirectory | Out-Null
     Copy-Item -LiteralPath $_.FullName -Destination $destinationPath -Force
+}
+
+$stagedInternalManifestPath = Join-Path $stagingRoot 'protocol-lab.internal.json'
+if (Test-Path -LiteralPath $stagedInternalManifestPath -PathType Leaf) {
+    $stagedInternalManifest = Get-Content -LiteralPath $stagedInternalManifestPath -Raw | ConvertFrom-Json
+    ConvertTo-DeterministicJson -Value $stagedInternalManifest | Set-Content -LiteralPath $stagedInternalManifestPath -Encoding utf8NoBOM
 }
 
 $embeddedProvenance = if ($null -ne $componentClosure) {

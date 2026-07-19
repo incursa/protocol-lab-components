@@ -40,8 +40,16 @@ $doh2Selection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSele
 if (@($doh2Selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'bind9-doh2,dns-doh2-performance,go-dns-doh2,go-dns-doh2-executor,knot-resolver-secure-dns-resolver,unbound-doh2-resolver') {
     throw 'Declared reverse-dependency selection did not include the complete modeled DoH2 cohort.'
 }
+$doh3Selection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/dns-doh3-performance/scenarios/dns/doh3/query-a.yaml' | ConvertFrom-Json
+if (@($doh3Selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'dns-doh3-performance,go-dns-doh3,go-dns-doh3-executor') {
+    throw 'Declared reverse-dependency selection did not include the complete DoH3 cohort.'
+}
+$doqSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/dns-doq-performance/scenarios/dns/doq/query-a.yaml' | ConvertFrom-Json
+if (@($doqSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'dns-doq-performance,go-dns-doq,go-dns-doq-executor') {
+    throw 'Declared reverse-dependency selection did not include the complete DoQ cohort.'
+}
 $certificateSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'implementations/go-dns-dot/certs/root.pem' | ConvertFrom-Json
-if (@($certificateSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-dns-doh2,go-dns-doh2-executor,go-dns-dot') {
+if (@($certificateSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-dns-doh2,go-dns-doh2-executor,go-dns-doh3,go-dns-doh3-executor,go-dns-doq,go-dns-doq-executor,go-dns-dot') {
     throw 'Shared secure-DNS certificate changes did not select every consuming package.'
 }
 $unknown = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'unmodeled-release-input.txt' | ConvertFrom-Json

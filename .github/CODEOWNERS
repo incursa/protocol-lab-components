@@ -40,3 +40,9 @@
 /implementations/bind9-doh2/ @SamuelMcAravey
 /implementations/unbound-doh2-resolver/ @SamuelMcAravey
 /implementations/knot-resolver-secure-dns-resolver/ @SamuelMcAravey
+/scenarios/dns-doh3-performance/ @SamuelMcAravey
+/scenarios/dns-doq-performance/ @SamuelMcAravey
+/executors/go-dns-doh3-executor/ @SamuelMcAravey
+/executors/go-dns-doq-executor/ @SamuelMcAravey
+/implementations/go-dns-doh3/ @SamuelMcAravey
+/implementations/go-dns-doq/ @SamuelMcAravey
