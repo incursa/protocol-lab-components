@@ -11,7 +11,6 @@ $ErrorActionPreference='Stop'
 $repoRoot=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $PackageRoot=[IO.Path]::GetFullPath($PackageRoot);$ArtifactRoot=[IO.Path]::GetFullPath($ArtifactRoot)
 if(-not$ArtifactRoot.StartsWith([IO.Path]::GetFullPath((Join-Path $repoRoot artifacts)),[StringComparison]::OrdinalIgnoreCase)){throw 'KeyUpdate smoke artifacts must remain under this worktree artifacts directory.'}
-if((git -C $PublicRoot rev-parse HEAD)-ne'8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574'){throw 'Public authority checkout is not at 8c4bbe8.'}
 
 function Resolve-OnePackage([string]$Pattern){$matches=@(Get-ChildItem -LiteralPath $PackageRoot -Filter $Pattern -File);if($matches.Count-ne1){throw "Expected one package matching $Pattern, observed $($matches.Count)."};$matches[0]}
 function Expand-Package([IO.FileInfo]$Archive,[string]$Destination){New-Item -ItemType Directory -Force $Destination|Out-Null;[IO.Compression.ZipFile]::ExtractToDirectory($Archive.FullName,$Destination);$manifest=Get-Content (Join-Path $Destination protocol-lab-package.json)-Raw|ConvertFrom-Json;if($manifest.schemaVersion-ne'protocol-lab-package-v2'){throw "$($Archive.Name) is not package-v2."};$manifest}
@@ -24,14 +23,14 @@ function Set-CommonEnvironment([string]$EvidenceRoot,[string]$ScenarioHash,[stri
 
 if(Test-Path $ArtifactRoot){Remove-Item -LiteralPath $ArtifactRoot -Recurse -Force}
 New-Item -ItemType Directory -Force $ArtifactRoot|Out-Null
-$scenarioArchive=Resolve-OnePackage 'org.protocol-lab.components.scenario.tls13-handshake-performance.0.2.0.plabpkg'
+$scenarioArchive=Resolve-OnePackage 'org.protocol-lab.components.scenario.tls13-handshake-performance.0.2.2.plabpkg'
 $executorArchive=Resolve-OnePackage "org.protocol-lab.components.executor.openssl-tls13-key-update-executor.0.1.0.$RuntimeIdentifier.plabpkg"
 $targetArchive=Resolve-OnePackage "org.protocol-lab.components.implementation.openssl-tls13-key-update.0.1.0.$RuntimeIdentifier.plabpkg"
 $scenarioRoot=Join-Path $ArtifactRoot scenario;$executorRoot=Join-Path $ArtifactRoot executor;$targetRoot=Join-Path $ArtifactRoot target
 $scenarioManifest=Expand-Package $scenarioArchive $scenarioRoot;$executorManifest=Expand-Package $executorArchive $executorRoot;$targetManifest=Expand-Package $targetArchive $targetRoot
 $scenarioHash=(Get-FileHash $scenarioArchive.FullName -Algorithm SHA256).Hash.ToLowerInvariant();$executorHash=(Get-FileHash $executorArchive.FullName -Algorithm SHA256).Hash.ToLowerInvariant();$targetHash=(Get-FileHash $targetArchive.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
 $authority=Get-Content (Join-Path $scenarioRoot authority-lock.json)-Raw|ConvertFrom-Json
-if($authority.commit-ne'8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574'-or$authority.files.'scenarios/tls/diagnostic/key-update.yaml'-ne'10d9324acc0437fbefc6a3b29cb68937f45f52ff058d7a2111025180235ad9e7'-or$authority.files.'load-profiles/tls-diagnostic.yaml'-ne'2bd9c53844fe77990a8b9888e5e260ea6979b193ef7537aba5b24b40f8253599'-or$authority.files.'fixtures/public-contracts/tls-profile-v2/valid/tls13-aes128gcm-p256-server-auth-v2.json'-ne'6da293573d86a3521b9fe8d768d757f0a67a14d55859211ed43154a72fddbf46'){throw 'KeyUpdate authority lock mismatch.'}
+if($authority.commit-ne'd5b78d7c07ef0e8a600e92887da2aa150ab89a60'-or$authority.files.'scenarios/tls/diagnostic/key-update.yaml'-ne'10d9324acc0437fbefc6a3b29cb68937f45f52ff058d7a2111025180235ad9e7'-or$authority.files.'load-profiles/tls-diagnostic.yaml'-ne'2bd9c53844fe77990a8b9888e5e260ea6979b193ef7537aba5b24b40f8253599'-or$authority.files.'fixtures/public-contracts/tls-profile-v2/valid/tls13-aes128gcm-p256-server-auth-v2.json'-ne'6da293573d86a3521b9fe8d768d757f0a67a14d55859211ed43154a72fddbf46'){throw 'KeyUpdate authority lock mismatch.'}
 if($executorManifest.providedTestExecutors[0].scenarios.Count-ne1-or$executorManifest.providedTestExecutors[0].scenarios[0]-ne'tls.key-update.diagnostic'-or$targetManifest.providedImplementations[0].scenarios.Count-ne1-or$targetManifest.providedImplementations[0].scenarios[0]-ne'tls.key-update.diagnostic'){throw 'Exact package claims mismatch.'}
 foreach($root in @($executorRoot,$targetRoot)){if(-not(Test-Path (Join-Path $root 'third-party-licenses/openssl/LICENSE-APACHE-2.0.txt'))){throw 'OpenSSL license material is missing.'}}
 if(Test-Path (Join-Path $executorRoot 'certs/leaf-key.pem')){throw 'Server private key leaked into executor package.'};if(Test-Path (Join-Path $targetRoot 'certs/root.pem')){throw 'Trust anchor leaked into target package.'}
@@ -77,7 +76,7 @@ if($proof.postUpdateBytesClientToServer-ne65536-or$proof.postUpdateBytesServerTo
 if($v2.schemaVersion-ne'protocol-lab.protocol-execution-result.v2'-or$v2.familyEvidence.keyUpdateCount-ne1-or$v2.familyEvidence.payloadSha256-ne'944044fe482bc4e91085c15c5a923a1b9e02eac98d3bce04997d6dbecd2a5b8d'-or$v2.familyEvidence.resumption-ne'not-offered'-or$v2.familyEvidence.earlyData-ne'not-attempted'-or$v2.outcome-ne'completed'){throw 'Protocol Execution Result v2 input mismatch.'}
 $targetProof=((Get-Content (Join-Path $cellRoot target.stdout.log))|Where-Object{$_-match'"eventName":"target-proof"'}|Select-Object -Last 1)|ConvertFrom-Json
 if($targetProof.keyUpdateMessagesReceived-ne1-or$targetProof.keyUpdateMessagesSent-ne0-or$targetProof.peerUpdateRequested-or$targetProof.postUpdateBytesReceived-ne65536-or$targetProof.postUpdateBytesSent-ne65536-or$targetProof.trafficSecretsPublished){throw 'Target-side KeyUpdate proof mismatch.'}
-$schemaPath=Join-Path $PublicRoot 'schemas/measurement/v2/protocol-execution-result.schema.json';$v2Path=Join-Path $cellRoot protocol-execution-result-v2.json
+$schemaPath=Join-Path $ArtifactRoot 'protocol-execution-result.schema.json';$schemaText=git -C $PublicRoot show "$($authority.commit):schemas/measurement/v2/protocol-execution-result.schema.json";if($LASTEXITCODE-ne0-or[string]::IsNullOrWhiteSpace($schemaText)){throw 'Locked Protocol Execution Result v2 schema is unavailable.'};$schemaText|Set-Content -LiteralPath $schemaPath -Encoding utf8NoBOM;$v2Path=Join-Path $cellRoot protocol-execution-result-v2.json
 python -c "import json,jsonschema,sys; schema=json.load(open(sys.argv[1],encoding='utf-8')); value=json.load(open(sys.argv[2],encoding='utf-8')); jsonschema.Draft202012Validator(schema,format_checker=jsonschema.FormatChecker()).validate(value)" $schemaPath $v2Path
 if($LASTEXITCODE-ne0){throw 'Protocol Execution Result v2 schema validation failed.'}
 if((Get-ChildItem $cellRoot -File|Select-String -Pattern 'CLIENT_TRAFFIC_SECRET|SERVER_TRAFFIC_SECRET|CLIENT_HANDSHAKE_TRAFFIC_SECRET|SERVER_HANDSHAKE_TRAFFIC_SECRET' -SimpleMatch).Count-ne0){throw 'Traffic-secret material was published.'}

@@ -118,3 +118,5 @@
 /implementations/go-tls13-mtls/ @SamuelMcAravey
 /executors/rustls-tls13-early-data-executor/ @SamuelMcAravey
 /implementations/rustls-tls13-early-data/ @SamuelMcAravey
+/executors/openssl-tls13-key-update-executor/ @SamuelMcAravey
+/implementations/openssl-tls13-key-update/ @SamuelMcAravey

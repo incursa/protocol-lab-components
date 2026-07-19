@@ -1489,7 +1489,7 @@
       "id": "tls-handshake-scenarios", "packageId": "org.protocol-lab.components.scenario.tls13-handshake-performance", "packageRoot": "scenarios/tls13-handshake-performance", "kind": "scenario-pack", "migrationState": "modeled",
       "build": { "script": "scripts/package/Build-Tls13HandshakePerformanceScenarioPackage.ps1", "arguments": [] },
       "inputs": { "payload": ["scenarios/tls13-handshake-performance"], "buildRecipe": ["scripts/package/Build-Tls13HandshakePerformanceScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }] },
-      "dependsOn": [], "reverseDependencies": ["go-tls12-executor", "go-tls12", "go-tls13-executor", "go-tls13", "dotnet-sslstream-tls13", "rustls-tls13", "s2n-tls13", "wolfssl-tls13", "gnutls-serv", "openssl-s-server", "go-utls-tls13-chacha20-executor", "go-tls13-chacha20", "go-tls13-mtls-executor", "go-tls13-mtls", "rustls-tls13-early-data-executor", "rustls-tls13-early-data"], "owners": ["@SamuelMcAravey"], "smoke": null
+      "dependsOn": [], "reverseDependencies": ["go-tls12-executor", "go-tls12", "go-tls13-executor", "go-tls13", "dotnet-sslstream-tls13", "rustls-tls13", "s2n-tls13", "wolfssl-tls13", "gnutls-serv", "openssl-s-server", "go-utls-tls13-chacha20-executor", "go-tls13-chacha20", "go-tls13-mtls-executor", "go-tls13-mtls", "rustls-tls13-early-data-executor", "rustls-tls13-early-data", "openssl-tls13-key-update-executor", "openssl-tls13-key-update"], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
       "id": "go-tls12-executor", "packageId": "org.protocol-lab.components.executor.go-tls12-executor", "packageRoot": "executors/go-tls12-executor", "kind": "test-executor", "migrationState": "modeled",
@@ -1767,6 +1767,18 @@
       "id": "rustls-tls13-early-data", "packageId": "org.protocol-lab.components.implementation.rustls-tls13-early-data", "packageRoot": "implementations/rustls-tls13-early-data", "kind": "implementation", "migrationState": "modeled",
       "build": { "script": "scripts/package/Build-RustlsTls13EarlyDataImplementationPackage.ps1", "arguments": ["win-x64"] },
       "inputs": { "payload": ["implementations/rustls-tls13-early-data"], "buildRecipe": ["scripts/package/Build-RustlsTls13EarlyDataImplementationPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "rust", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "openssl-tls13-key-update-executor", "packageId": "org.protocol-lab.components.executor.openssl-tls13-key-update-executor", "packageRoot": "executors/openssl-tls13-key-update-executor", "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-OpenSslTls13KeyUpdateExecutorPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["executors/openssl-tls13-key-update-executor"], "buildRecipe": ["scripts/package/Build-OpenSslTls13KeyUpdateExecutorPackage.ps1", "scripts/package/Invoke-OpenSslTls13KeyUpdateBuild.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }, { "id": "protocol-execution-result-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "openssl", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "openssl-tls13-key-update", "packageId": "org.protocol-lab.components.implementation.openssl-tls13-key-update", "packageRoot": "implementations/openssl-tls13-key-update", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-OpenSslTls13KeyUpdateImplementationPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["implementations/openssl-tls13-key-update"], "buildRecipe": ["scripts/package/Build-OpenSslTls13KeyUpdateImplementationPackage.ps1", "scripts/package/Invoke-OpenSslTls13KeyUpdateBuild.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }, { "id": "protocol-execution-result-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "openssl", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
       "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     }
   ],
