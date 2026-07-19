@@ -22,3 +22,10 @@
 /implementations/caddy-http1/ @SamuelMcAravey
 /implementations/nginx-http1/ @SamuelMcAravey
 /implementations/apache-http1/ @SamuelMcAravey
+/scenarios/dns-classic-calibration/ @SamuelMcAravey
+/executors/go-dns-udp-executor/ @SamuelMcAravey
+/executors/go-dns-tcp-executor/ @SamuelMcAravey
+/executors/dns-classic-fixture/ @SamuelMcAravey
+/implementations/go-dns-classic-authority/ @SamuelMcAravey
+/implementations/bind9-classic-authority/ @SamuelMcAravey
+/implementations/technitium-classic-authority/ @SamuelMcAravey

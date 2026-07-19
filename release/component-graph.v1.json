@@ -282,6 +282,195 @@
       "smoke": null
     },
     {
+      "id": "dns-classic-calibration",
+      "packageId": "org.protocol-lab.components.scenario.dns-classic-calibration",
+      "packageRoot": "scenarios/dns-classic-calibration",
+      "kind": "scenario-pack",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-DnsClassicCalibrationScenarioPackage.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["scenarios/dns-classic-calibration"],
+        "buildRecipe": ["scripts/package/Build-DnsClassicCalibrationScenarioPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [],
+      "reverseDependencies": [
+        "go-dns-udp-executor",
+        "go-dns-tcp-executor",
+        "go-dns-classic-authority",
+        "bind9-classic-authority",
+        "technitium-classic-authority"
+      ],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "go-dns-udp-executor",
+      "packageId": "org.protocol-lab.components.executor.go-dns-udp-executor",
+      "packageRoot": "executors/go-dns-udp-executor",
+      "kind": "test-executor",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-GoDnsUdpExecutorPackage.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["executors/go-dns-udp-executor"],
+        "buildRecipe": ["scripts/package/Build-GoDnsUdpExecutorPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": ["executors/dns-classic-fixture"],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-classic-calibration", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "go-dns-tcp-executor",
+      "packageId": "org.protocol-lab.components.executor.go-dns-tcp-executor",
+      "packageRoot": "executors/go-dns-tcp-executor",
+      "kind": "test-executor",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-GoDnsTcpExecutorPackage.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["executors/go-dns-tcp-executor"],
+        "buildRecipe": ["scripts/package/Build-GoDnsTcpExecutorPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": ["executors/dns-classic-fixture"],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-classic-calibration", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "go-dns-classic-authority",
+      "packageId": "org.protocol-lab.components.implementation.go-dns-classic-authority",
+      "packageRoot": "implementations/go-dns-classic-authority",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-GoDnsClassicAuthorityPackage.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["implementations/go-dns-classic-authority"],
+        "buildRecipe": ["scripts/package/Build-GoDnsClassicAuthorityPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-classic-calibration", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "bind9-classic-authority",
+      "packageId": "org.protocol-lab.components.implementation.bind9-classic-authority",
+      "packageRoot": "implementations/bind9-classic-authority",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-Bind9ClassicAuthorityPackage.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/bind9-classic-authority"],
+        "buildRecipe": ["scripts/package/Build-Bind9ClassicAuthorityPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-classic-calibration", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "technitium-classic-authority",
+      "packageId": "org.protocol-lab.components.implementation.technitium-classic-authority",
+      "packageRoot": "implementations/technitium-classic-authority",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-TechnitiumClassicAuthorityPackage.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/technitium-classic-authority"],
+        "buildRecipe": ["scripts/package/Build-TechnitiumClassicAuthorityPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "dns-classic-calibration", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
       "id": "kestrel-http2",
       "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
       "packageRoot": "implementations/kestrel-http2",
