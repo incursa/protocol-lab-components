@@ -46,3 +46,11 @@
 /executors/go-dns-doq-executor/ @SamuelMcAravey
 /implementations/go-dns-doh3/ @SamuelMcAravey
 /implementations/go-dns-doq/ @SamuelMcAravey
+/scenarios/http3-peer-characterization/ @SamuelMcAravey
+/executors/curl-http3-client/ @SamuelMcAravey
+/executors/xquic-http3-client/ @SamuelMcAravey
+/implementations/lsquic-http3/ @SamuelMcAravey
+/implementations/neqo-http3/ @SamuelMcAravey
+/implementations/ngtcp2-http3/ @SamuelMcAravey
+/implementations/quiche-http3/ @SamuelMcAravey
+/implementations/xquic-http3/ @SamuelMcAravey

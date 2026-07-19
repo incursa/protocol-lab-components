@@ -1012,6 +1012,137 @@
       "smoke": null
     },
     {
+      "id": "http3-peer-characterization",
+      "packageId": "org.protocol-lab.components.scenario.http3-peer-characterization",
+      "packageRoot": "scenarios/http3-peer-characterization",
+      "kind": "scenario-pack",
+      "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-Http3PeerCharacterizationScenarioPackage.ps1", "arguments": [] },
+      "inputs": {
+        "payload": ["scenarios/http3-peer-characterization"],
+        "buildRecipe": ["scripts/package/Build-Http3PeerCharacterizationScenarioPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [], "templates": [],
+        "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }],
+        "toolchains": [{ "id": "powershell", "version": "7" }]
+      },
+      "dependsOn": [],
+      "reverseDependencies": ["curl-http3-client", "xquic-http3-client", "lsquic-http3", "neqo-http3", "ngtcp2-http3", "quiche-http3", "xquic-http3"],
+      "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "curl-http3-client",
+      "packageId": "org.protocol-lab.components.executor.curl-http3-client",
+      "packageRoot": "executors/curl-http3-client",
+      "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-CurlHttp3ClientPackage.ps1", "arguments": [] },
+      "inputs": {
+        "payload": ["executors/curl-http3-client"],
+        "buildRecipe": ["scripts/package/Build-CurlHttp3ClientPackage.ps1"],
+        "shared": ["shared.package-builder"], "fixtures": [], "templates": [],
+        "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }],
+        "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }]
+      },
+      "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }],
+      "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "xquic-http3-client",
+      "packageId": "org.protocol-lab.components.executor.xquic-http3-client",
+      "packageRoot": "executors/xquic-http3-client",
+      "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-XquicHttp3ClientPackage.ps1", "arguments": [] },
+      "inputs": {
+        "payload": ["executors/xquic-http3-client"],
+        "buildRecipe": ["scripts/package/Build-XquicHttp3ClientPackage.ps1"],
+        "shared": ["shared.package-builder"], "fixtures": [], "templates": [],
+        "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }],
+        "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }]
+      },
+      "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }],
+      "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "lsquic-http3",
+      "packageId": "org.protocol-lab.components.implementation.lsquic-http3",
+      "packageRoot": "implementations/lsquic-http3",
+      "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-LsquicHttp3Package.ps1", "arguments": [] },
+      "inputs": {
+        "payload": ["implementations/lsquic-http3"],
+        "buildRecipe": ["scripts/package/Build-LsquicHttp3Package.ps1"],
+        "shared": ["shared.package-builder"], "fixtures": [], "templates": [],
+        "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }],
+        "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }]
+      },
+      "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }],
+      "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "neqo-http3",
+      "packageId": "org.protocol-lab.components.implementation.neqo-http3",
+      "packageRoot": "implementations/neqo-http3",
+      "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-NeqoHttp3Package.ps1", "arguments": [] },
+      "inputs": {
+        "payload": ["implementations/neqo-http3"],
+        "buildRecipe": ["scripts/package/Build-NeqoHttp3Package.ps1"],
+        "shared": ["shared.package-builder"], "fixtures": [], "templates": [],
+        "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }],
+        "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }]
+      },
+      "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }],
+      "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "ngtcp2-http3",
+      "packageId": "org.protocol-lab.components.implementation.ngtcp2-http3",
+      "packageRoot": "implementations/ngtcp2-http3",
+      "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-Ngtcp2Http3Package.ps1", "arguments": [] },
+      "inputs": {
+        "payload": ["implementations/ngtcp2-http3"],
+        "buildRecipe": ["scripts/package/Build-Ngtcp2Http3Package.ps1"],
+        "shared": ["shared.package-builder"], "fixtures": [], "templates": [],
+        "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }],
+        "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }]
+      },
+      "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }],
+      "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "quiche-http3",
+      "packageId": "org.protocol-lab.components.implementation.quiche-http3",
+      "packageRoot": "implementations/quiche-http3",
+      "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-QuicheHttp3Package.ps1", "arguments": [] },
+      "inputs": {
+        "payload": ["implementations/quiche-http3"],
+        "buildRecipe": ["scripts/package/Build-QuicheHttp3Package.ps1"],
+        "shared": ["shared.package-builder"], "fixtures": [], "templates": [],
+        "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }],
+        "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }]
+      },
+      "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }],
+      "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "xquic-http3",
+      "packageId": "org.protocol-lab.components.implementation.xquic-http3",
+      "packageRoot": "implementations/xquic-http3",
+      "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-XquicHttp3Package.ps1", "arguments": [] },
+      "inputs": {
+        "payload": ["implementations/xquic-http3"],
+        "buildRecipe": ["scripts/package/Build-XquicHttp3Package.ps1"],
+        "shared": ["shared.package-builder"], "fixtures": [], "templates": [],
+        "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }],
+        "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }]
+      },
+      "dependsOn": [{ "componentId": "http3-peer-characterization", "kind": "compatibility" }],
+      "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
       "id": "kestrel-http2",
       "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
       "packageRoot": "implementations/kestrel-http2",
