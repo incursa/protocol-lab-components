@@ -98,3 +98,6 @@
 /implementations/jetty-http2-websocket/ @SamuelMcAravey
 /implementations/go-nethttp-http1/ @SamuelMcAravey
 /implementations/node-http1/ @SamuelMcAravey
+/scenarios/http1-websocket-tls-performance/ @SamuelMcAravey
+/executors/go-http1-websocket-tls-executor/ @SamuelMcAravey
+/implementations/go-http1-websocket-tls/ @SamuelMcAravey

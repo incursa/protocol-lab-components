@@ -98,6 +98,11 @@ $http1OriginSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentRele
 if (@($http1OriginSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'apache-http1,caddy-http1,go-http1-executor,go-nethttp-http1,http1-performance-scenarios,kestrel-http1,nginx-http1,node-http1') {
     throw 'Declared reverse-dependency selection did not include every HTTP/1 core consumer.'
 }
+
+$tlsWebSocketSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/http1-websocket-tls-performance/scenarios/http1/websocket/rfc6455-tls-binary-echo.yaml' | ConvertFrom-Json
+if (@($tlsWebSocketSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-http1-websocket-tls,go-http1-websocket-tls-executor,http1-websocket-tls-scenarios') {
+    throw 'Declared reverse-dependency selection did not include the complete TLS WebSocket cohort.'
+}
 $certificateSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'implementations/go-dns-dot/certs/root.pem' | ConvertFrom-Json
 if (@($certificateSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-dns-doh2,go-dns-doh2-executor,go-dns-doh3,go-dns-doh3-executor,go-dns-doq,go-dns-doq-executor,go-dns-dot') {
     throw 'Shared secure-DNS certificate changes did not select every consuming package.'

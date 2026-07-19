@@ -1468,6 +1468,24 @@
       "dependsOn": [{ "componentId": "http1-performance-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
+      "id": "http1-websocket-tls-scenarios", "packageId": "org.protocol-lab.components.scenario.http1-websocket-tls-performance", "packageRoot": "scenarios/http1-websocket-tls-performance", "kind": "scenario-pack", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-Http1WebSocketTlsScenarioPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["scenarios/http1-websocket-tls-performance"], "buildRecipe": ["scripts/package/Build-Http1WebSocketTlsScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }] },
+      "dependsOn": [], "reverseDependencies": ["go-http1-websocket-tls-executor", "go-http1-websocket-tls"], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-http1-websocket-tls-executor", "packageId": "org.protocol-lab.components.executor.go-http1-websocket-tls-executor", "packageRoot": "executors/go-http1-websocket-tls-executor", "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoHttp1WebSocketTlsExecutorPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["executors/go-http1-websocket-tls-executor"], "buildRecipe": ["scripts/package/Build-GoHttp1WebSocketTlsExecutorPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "http1-websocket-tls-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-http1-websocket-tls", "packageId": "org.protocol-lab.components.implementation.go-http1-websocket-tls", "packageRoot": "implementations/go-http1-websocket-tls", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoHttp1WebSocketTlsImplementationPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["implementations/go-http1-websocket-tls"], "buildRecipe": ["scripts/package/Build-GoHttp1WebSocketTlsImplementationPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "http1-websocket-tls-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
       "id": "kestrel-http2",
       "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
       "packageRoot": "implementations/kestrel-http2",
