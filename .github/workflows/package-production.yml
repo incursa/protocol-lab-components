@@ -35,7 +35,7 @@ jobs:
         run: ./scripts/package/Build-AllProtocolLabComponentPackages.ps1 -Clean
 
       - name: Upload package production artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: protocol-lab-component-packages
           if-no-files-found: error
