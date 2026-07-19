@@ -1193,6 +1193,62 @@
       "dependsOn": [{ "componentId": "h3spec-http3-qpack-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
+      "id": "grpc-h2-performance",
+      "packageId": "org.protocol-lab.components.scenario.grpc-h2-performance",
+      "packageRoot": "scenarios/grpc-h2-performance", "kind": "scenario-pack", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GrpcH2PerformanceScenarioPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["scenarios/grpc-h2-performance"], "buildRecipe": ["scripts/package/Build-GrpcH2PerformanceScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }] },
+      "dependsOn": [], "reverseDependencies": ["go-grpc-h2-executor", "go-grpc-h2", "grpc-cpp", "grpc-dotnet", "grpc-java-netty", "grpc-js"], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-grpc-h2-executor",
+      "packageId": "org.protocol-lab.components.executor.go-grpc-h2-executor",
+      "packageRoot": "executors/go-grpc-h2-executor", "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoGrpcH2ExecutorPackage.ps1", "arguments": ["linux-x64"] },
+      "inputs": { "payload": ["executors/go-grpc-h2-executor"], "buildRecipe": ["scripts/package/Build-GoGrpcH2ExecutorPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "1.26.x" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "grpc-h2-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-grpc-h2",
+      "packageId": "org.protocol-lab.components.implementation.go-grpc-h2",
+      "packageRoot": "implementations/go-grpc-h2", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoGrpcH2ImplementationPackage.ps1", "arguments": ["linux-x64"] },
+      "inputs": { "payload": ["implementations/go-grpc-h2"], "buildRecipe": ["scripts/package/Build-GoGrpcH2ImplementationPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "1.26.x" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "grpc-h2-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "grpc-cpp",
+      "packageId": "org.protocol-lab.components.implementation.grpc-cpp",
+      "packageRoot": "implementations/grpc-cpp", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GrpcCppPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/grpc-cpp"], "buildRecipe": ["scripts/package/Build-GrpcCppPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "grpc-h2-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "grpc-dotnet",
+      "packageId": "org.protocol-lab.components.implementation.grpc-dotnet",
+      "packageRoot": "implementations/grpc-dotnet", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GrpcDotNetPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/grpc-dotnet"], "buildRecipe": ["scripts/package/Build-GrpcDotNetPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "dotnet-sdk", "version": "10.0.x" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "grpc-h2-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "grpc-java-netty",
+      "packageId": "org.protocol-lab.components.implementation.grpc-java-netty",
+      "packageRoot": "implementations/grpc-java-netty", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GrpcJavaNettyPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/grpc-java-netty"], "buildRecipe": ["scripts/package/Build-GrpcJavaNettyPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "grpc-h2-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "grpc-js",
+      "packageId": "org.protocol-lab.components.implementation.grpc-js",
+      "packageRoot": "implementations/grpc-js", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GrpcJsPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/grpc-js"], "buildRecipe": ["scripts/package/Build-GrpcJsPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "grpc-h2-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
       "id": "kestrel-http2",
       "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
       "packageRoot": "implementations/kestrel-http2",

@@ -60,3 +60,10 @@
 /implementations/h2o-http3/ @SamuelMcAravey
 /implementations/nginx-http3/ @SamuelMcAravey
 /implementations/quic-go-http3/ @SamuelMcAravey
+/scenarios/grpc-h2-performance/ @SamuelMcAravey
+/executors/go-grpc-h2-executor/ @SamuelMcAravey
+/implementations/go-grpc-h2/ @SamuelMcAravey
+/implementations/grpc-cpp/ @SamuelMcAravey
+/implementations/grpc-dotnet/ @SamuelMcAravey
+/implementations/grpc-java-netty/ @SamuelMcAravey
+/implementations/grpc-js/ @SamuelMcAravey
