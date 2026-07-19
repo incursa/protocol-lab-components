@@ -112,3 +112,5 @@
 /implementations/wolfssl-tls13/ @SamuelMcAravey
 /implementations/gnutls-serv/ @SamuelMcAravey
 /implementations/openssl-s-server/ @SamuelMcAravey
+/executors/go-utls-tls13-chacha20-executor/ @SamuelMcAravey
+/implementations/go-tls13-chacha20/ @SamuelMcAravey

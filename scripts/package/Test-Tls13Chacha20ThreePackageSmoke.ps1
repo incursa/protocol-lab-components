@@ -24,7 +24,7 @@ function Expand-Package([string]$Archive, [string]$Destination) {
 
 if (Test-Path $ArtifactRoot) { Remove-Item -LiteralPath $ArtifactRoot -Recurse -Force }
 New-Item -ItemType Directory -Force $ArtifactRoot | Out-Null
-$scenarioArchive = Resolve-OnePackage 'org.protocol-lab.components.scenario.tls13-handshake-performance.0.2.0.plabpkg'
+$scenarioArchive = Resolve-OnePackage 'org.protocol-lab.components.scenario.tls13-handshake-performance.0.2.2.plabpkg'
 $executorArchive = Resolve-OnePackage 'org.protocol-lab.components.executor.go-utls-tls13-chacha20-executor.0.1.0.win-x64.plabpkg'
 $targetArchive = Resolve-OnePackage 'org.protocol-lab.components.implementation.go-tls13-chacha20.0.1.0.win-x64.plabpkg'
 $scenarioRoot = Join-Path $ArtifactRoot scenario
@@ -34,7 +34,7 @@ $null = Expand-Package $scenarioArchive $scenarioRoot
 $executorManifest = Expand-Package $executorArchive $executorRoot
 $targetManifest = Expand-Package $targetArchive $targetRoot
 $authority = Get-Content (Join-Path $scenarioRoot 'authority-lock.json') -Raw | ConvertFrom-Json
-if ($authority.commit -ne '8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574') { throw 'Authority commit mismatch.' }
+if ($authority.commit -ne 'd5b78d7c07ef0e8a600e92887da2aa150ab89a60') { throw 'Authority commit mismatch.' }
 if ($authority.files.'scenarios/tls/handshake/full-chacha20.yaml' -ne 'ca502190c313fcef152381f87d7a1e47be9dc998d1f49869e23eaa3444ef802f') { throw 'ChaCha20 scenario authority hash mismatch.' }
 if ($executorManifest.providedTestExecutors[0].scenarios -notcontains 'tls.handshake.full.chacha20' -or $targetManifest.providedImplementations[0].scenarios -notcontains 'tls.handshake.full.chacha20') { throw 'Exact ChaCha20 package claim missing.' }
 foreach ($license in @('utls-LICENSE.txt','brotli-LICENSE.txt','klauspost-compress-LICENSE.txt','golang-x-crypto-LICENSE.txt','golang-x-sys-LICENSE.txt')) {
