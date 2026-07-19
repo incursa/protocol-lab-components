@@ -105,8 +105,8 @@ if (@($tlsWebSocketSelection.selectedComponents.componentId | Sort-Object) -join
 }
 
 $tls12Selection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/tls13-handshake-performance/scenarios/tls/handshake/full-tls12.yaml' | ConvertFrom-Json
-if (@($tls12Selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-tls12,go-tls12-executor,tls-handshake-scenarios') {
-    throw 'Declared reverse-dependency selection did not include the TLS 1.2 compatibility cohort.'
+if (@($tls12Selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'dotnet-sslstream-tls13,gnutls-serv,go-tls12,go-tls12-executor,go-tls13,go-tls13-executor,openssl-s-server,rustls-tls13,s2n-tls13,tls-handshake-scenarios,wolfssl-tls13') {
+    throw 'Declared reverse-dependency selection did not include the complete modeled TLS cohort.'
 }
 $certificateSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'implementations/go-dns-dot/certs/root.pem' | ConvertFrom-Json
 if (@($certificateSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-dns-doh2,go-dns-doh2-executor,go-dns-doh3,go-dns-doh3-executor,go-dns-doq,go-dns-doq-executor,go-dns-dot') {

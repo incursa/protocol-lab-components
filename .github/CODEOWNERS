@@ -104,3 +104,11 @@
 /scenarios/tls13-handshake-performance/ @SamuelMcAravey
 /executors/go-tls12-executor/ @SamuelMcAravey
 /implementations/go-tls12/ @SamuelMcAravey
+/executors/go-tls13-executor/ @SamuelMcAravey
+/implementations/go-tls13/ @SamuelMcAravey
+/implementations/dotnet-sslstream-tls13/ @SamuelMcAravey
+/implementations/rustls-tls13/ @SamuelMcAravey
+/implementations/s2n-tls13/ @SamuelMcAravey
+/implementations/wolfssl-tls13/ @SamuelMcAravey
+/implementations/gnutls-serv/ @SamuelMcAravey
+/implementations/openssl-s-server/ @SamuelMcAravey

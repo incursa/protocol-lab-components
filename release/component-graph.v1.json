@@ -1489,7 +1489,7 @@
       "id": "tls-handshake-scenarios", "packageId": "org.protocol-lab.components.scenario.tls13-handshake-performance", "packageRoot": "scenarios/tls13-handshake-performance", "kind": "scenario-pack", "migrationState": "modeled",
       "build": { "script": "scripts/package/Build-Tls13HandshakePerformanceScenarioPackage.ps1", "arguments": [] },
       "inputs": { "payload": ["scenarios/tls13-handshake-performance"], "buildRecipe": ["scripts/package/Build-Tls13HandshakePerformanceScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }] },
-      "dependsOn": [], "reverseDependencies": ["go-tls12-executor", "go-tls12"], "owners": ["@SamuelMcAravey"], "smoke": null
+      "dependsOn": [], "reverseDependencies": ["go-tls12-executor", "go-tls12", "go-tls13-executor", "go-tls13", "dotnet-sslstream-tls13", "rustls-tls13", "s2n-tls13", "wolfssl-tls13", "gnutls-serv", "openssl-s-server"], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
       "id": "go-tls12-executor", "packageId": "org.protocol-lab.components.executor.go-tls12-executor", "packageRoot": "executors/go-tls12-executor", "kind": "test-executor", "migrationState": "modeled",
@@ -1684,6 +1684,54 @@
       "reverseDependencies": [],
       "owners": ["@SamuelMcAravey"],
       "smoke": null
+    },
+    {
+      "id": "go-tls13-executor", "packageId": "org.protocol-lab.components.executor.go-tls13-executor", "packageRoot": "executors/go-tls13-executor", "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoTls13ExecutorPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["executors/go-tls13-executor"], "buildRecipe": ["scripts/package/Build-GoTls13ExecutorPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-tls13", "packageId": "org.protocol-lab.components.implementation.go-tls13", "packageRoot": "implementations/go-tls13", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoTls13ImplementationPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["implementations/go-tls13"], "buildRecipe": ["scripts/package/Build-GoTls13ImplementationPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "dotnet-sslstream-tls13", "packageId": "org.protocol-lab.components.implementation.dotnet-sslstream-tls13", "packageRoot": "implementations/dotnet-sslstream-tls13", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-DotNetSslStreamTls13Package.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/dotnet-sslstream-tls13"], "buildRecipe": ["scripts/package/Build-DotNetSslStreamTls13Package.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "dotnet-sdk", "version": "10.0.x" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "rustls-tls13", "packageId": "org.protocol-lab.components.implementation.rustls-tls13", "packageRoot": "implementations/rustls-tls13", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-RustlsTls13ImplementationPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["implementations/rustls-tls13"], "buildRecipe": ["scripts/package/Build-RustlsTls13ImplementationPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "rust", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "s2n-tls13", "packageId": "org.protocol-lab.components.implementation.s2n-tls13", "packageRoot": "implementations/s2n-tls13", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-S2nTls13Package.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/s2n-tls13"], "buildRecipe": ["scripts/package/Build-S2nTls13Package.ps1"], "shared": ["shared.package-builder"], "fixtures": ["implementations/go-tls13/certs/leaf.pem"], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "wolfssl-tls13", "packageId": "org.protocol-lab.components.implementation.wolfssl-tls13", "packageRoot": "implementations/wolfssl-tls13", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-WolfsslTls13Package.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/wolfssl-tls13"], "buildRecipe": ["scripts/package/Build-WolfsslTls13Package.ps1"], "shared": ["shared.package-builder"], "fixtures": ["implementations/go-tls13/certs/leaf.pem"], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "gnutls-serv", "packageId": "org.protocol-lab.components.implementation.gnutls-serv", "packageRoot": "implementations/gnutls-serv", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GnuTlsServPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/gnutls-serv"], "buildRecipe": ["scripts/package/Build-GnuTlsServPackage.ps1", "scripts/package/Test-TlsEndpointToolPackages.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "openssl-s-server", "packageId": "org.protocol-lab.components.implementation.openssl-s-server", "packageRoot": "implementations/openssl-s-server", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-OpenSslSServerPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/openssl-s-server"], "buildRecipe": ["scripts/package/Build-OpenSslSServerPackage.ps1", "scripts/package/Test-TlsEndpointToolPackages.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     }
   ],
   "externalComponentContract": {

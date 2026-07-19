@@ -27,9 +27,9 @@ function Expand-Package([string]$Archive,[string]$Destination){
 
 if(Test-Path -LiteralPath $ArtifactRoot){Remove-Item -LiteralPath $ArtifactRoot -Recurse -Force}
 New-Item -ItemType Directory -Force $ArtifactRoot|Out-Null
-$scenarioArchive=Resolve-OnePackage 'org.protocol-lab.components.scenario.tls13-handshake-performance.0.1.0.plabpkg'
-$executorArchive=Resolve-OnePackage 'org.protocol-lab.components.executor.go-tls13-executor.0.2.0.win-x64.plabpkg'
-$targetArchive=Resolve-OnePackage 'org.protocol-lab.components.implementation.go-tls13.0.1.0.win-x64.plabpkg'
+$scenarioArchive=Resolve-OnePackage 'org.protocol-lab.components.scenario.tls13-handshake-performance.0.2.2.plabpkg'
+$executorArchive=Resolve-OnePackage 'org.protocol-lab.components.executor.go-tls13-executor.0.3.2.win-x64.plabpkg'
+$targetArchive=Resolve-OnePackage 'org.protocol-lab.components.implementation.go-tls13.0.2.0.win-x64.plabpkg'
 $scenarioRoot=Join-Path $ArtifactRoot 'scenario'
 $executorRoot=Join-Path $ArtifactRoot 'executor'
 $targetRoot=Join-Path $ArtifactRoot 'target'
@@ -37,7 +37,7 @@ $scenarioManifest=Expand-Package $scenarioArchive $scenarioRoot
 $executorManifest=Expand-Package $executorArchive $executorRoot
 $targetManifest=Expand-Package $targetArchive $targetRoot
 $authority=Get-Content (Join-Path $scenarioRoot 'authority-lock.json') -Raw|ConvertFrom-Json
-if($authority.commit-ne '8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574'){throw 'Scenario package authority commit mismatch.'}
+if($authority.commit-ne 'd5b78d7c07ef0e8a600e92887da2aa150ab89a60'){throw 'Scenario package authority commit mismatch.'}
 if($executorManifest.providedTestExecutors[0].scenarios-notcontains 'tls.handshake.resumed'){throw 'Executor package does not claim exact resumed scenario support.'}
 if($targetManifest.providedImplementations[0].scenarios-notcontains 'tls.handshake.resumed'){throw 'Target package does not claim exact resumed scenario support.'}
 
@@ -58,8 +58,8 @@ try{
     $env:PLAB_TARGET_BASE_URL='tls://127.0.0.1:18443'
     $env:PLAB_ARTIFACT_DIR=$executorArtifacts
     $env:PLAB_TLS_ROOT_CERTIFICATE_PATH=Join-Path $executorRoot 'certs/root.pem'
-    $env:PLAB_EXECUTOR_ID='go-tls13-executor';$env:PLAB_EXECUTOR_VERSION='0.2.0'
-    $env:PLAB_LOAD_GENERATOR_ID='go-crypto-tls13-handshake-load';$env:PLAB_LOAD_GENERATOR_VERSION='0.2.0'
+    $env:PLAB_EXECUTOR_ID='go-tls13-executor';$env:PLAB_EXECUTOR_VERSION='0.3.2'
+    $env:PLAB_LOAD_GENERATOR_ID='go-crypto-tls13-load';$env:PLAB_LOAD_GENERATOR_VERSION='0.3.2'
     $env:PLAB_PROTOCOL='tls';$env:PLAB_PROTOCOL_VARIANT='tls1.3-psk-resumed'
     $env:PLAB_SCENARIO_ID='tls.handshake.resumed';$env:PLAB_LOAD_PROFILE_ID='tls-smoke'
     $env:PLAB_CONNECTIONS='1';$env:PLAB_CONCURRENCY='1';$env:PLAB_DURATION_SECONDS='5';$env:PLAB_WARMUP_SECONDS='1';$env:PLAB_REPETITION='1';$env:PLAB_REQUEST_TIMEOUT_SECONDS='5'
@@ -69,8 +69,8 @@ try{
     if($execution.ExitCode-ne 0){throw "Extracted resumed executor failed with exit code $($execution.ExitCode)."}
     $result=Get-Content (Join-Path $executorArtifacts 'tls-executor-result.json') -Raw|ConvertFrom-Json
     $proof=Get-Content (Join-Path $executorArtifacts 'resumption-proof.json') -Raw|ConvertFrom-Json
-    if($result.executor.id-ne 'go-tls13-executor' -or $result.executor.version-ne '0.2.0' -or
-       $result.loadGenerator.id-ne 'go-crypto-tls13-handshake-load' -or $result.loadGenerator.version-ne '0.2.0' -or
+    if($result.executor.id-ne 'go-tls13-executor' -or $result.executor.version-ne '0.3.2' -or
+       $result.loadGenerator.id-ne 'go-crypto-tls13-load' -or $result.loadGenerator.version-ne '0.3.2' -or
        $result.protocolProof.tlsVersion-ne 'TLS1.3' -or $result.protocolProof.alpn-ne 'protocol-lab-tls' -or $result.protocolProof.keyExchangeGroup-ne 'X25519' -or
        -not $result.protocolProof.didResume -or $result.protocolProof.earlyDataAttempted -or
        $result.protocolProof.applicationDataBytesSent-ne 0 -or $result.protocolProof.applicationDataBytesReceived-ne 0 -or
