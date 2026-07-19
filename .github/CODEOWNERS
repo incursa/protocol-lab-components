@@ -114,3 +114,5 @@
 /implementations/openssl-s-server/ @SamuelMcAravey
 /executors/go-utls-tls13-chacha20-executor/ @SamuelMcAravey
 /implementations/go-tls13-chacha20/ @SamuelMcAravey
+/executors/go-tls13-mtls-executor/ @SamuelMcAravey
+/implementations/go-tls13-mtls/ @SamuelMcAravey

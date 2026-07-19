@@ -15,13 +15,13 @@ function Expand-Package([string]$Archive,[string]$Destination){New-Item -ItemTyp
 
 if(Test-Path $ArtifactRoot){Remove-Item -LiteralPath $ArtifactRoot -Recurse -Force}
 New-Item -ItemType Directory -Force $ArtifactRoot|Out-Null
-$scenarioArchive=Resolve-OnePackage 'org.protocol-lab.components.scenario.tls13-handshake-performance.0.2.0.plabpkg'
+$scenarioArchive=Resolve-OnePackage 'org.protocol-lab.components.scenario.tls13-handshake-performance.0.2.2.plabpkg'
 $executorArchive=Resolve-OnePackage 'org.protocol-lab.components.executor.go-tls13-mtls-executor.0.1.0.win-x64.plabpkg'
 $targetArchive=Resolve-OnePackage 'org.protocol-lab.components.implementation.go-tls13-mtls.0.1.0.win-x64.plabpkg'
 $scenarioRoot=Join-Path $ArtifactRoot scenario;$executorRoot=Join-Path $ArtifactRoot executor;$targetRoot=Join-Path $ArtifactRoot target
 $scenarioManifest=Expand-Package $scenarioArchive $scenarioRoot;$executorManifest=Expand-Package $executorArchive $executorRoot;$targetManifest=Expand-Package $targetArchive $targetRoot
 $authority=Get-Content (Join-Path $scenarioRoot 'authority-lock.json') -Raw|ConvertFrom-Json
-if($authority.commit-ne '8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574'){throw 'Authority commit mismatch.'}
+if($authority.commit-ne 'd5b78d7c07ef0e8a600e92887da2aa150ab89a60'){throw 'Authority commit mismatch.'}
 if($authority.files.'scenarios/tls/handshake/mutual-auth.yaml'-ne '355686d36b75d9c0854f29c3f7ac14b526edbe42d004b469b8a370be9c19ec02'){throw 'Mutual-auth scenario authority hash mismatch.'}
 if($executorManifest.providedTestExecutors[0].scenarios-notcontains 'tls.handshake.mutual-auth'){throw 'Executor package does not claim the exact scenario.'}
 if($targetManifest.providedImplementations[0].scenarios-notcontains 'tls.handshake.mutual-auth'){throw 'Target package does not claim the exact scenario.'}
