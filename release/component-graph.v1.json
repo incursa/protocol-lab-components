@@ -1486,6 +1486,24 @@
       "dependsOn": [{ "componentId": "http1-websocket-tls-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
+      "id": "tls-handshake-scenarios", "packageId": "org.protocol-lab.components.scenario.tls13-handshake-performance", "packageRoot": "scenarios/tls13-handshake-performance", "kind": "scenario-pack", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-Tls13HandshakePerformanceScenarioPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["scenarios/tls13-handshake-performance"], "buildRecipe": ["scripts/package/Build-Tls13HandshakePerformanceScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }] },
+      "dependsOn": [], "reverseDependencies": ["go-tls12-executor", "go-tls12"], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-tls12-executor", "packageId": "org.protocol-lab.components.executor.go-tls12-executor", "packageRoot": "executors/go-tls12-executor", "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoTls12ExecutorPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["executors/go-tls12-executor"], "buildRecipe": ["scripts/package/Build-GoTls12ExecutorPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-tls12", "packageId": "org.protocol-lab.components.implementation.go-tls12", "packageRoot": "implementations/go-tls12", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoTls12ImplementationPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["implementations/go-tls12"], "buildRecipe": ["scripts/package/Build-GoTls12ImplementationPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "tls-handshake-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
       "id": "kestrel-http2",
       "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
       "packageRoot": "implementations/kestrel-http2",

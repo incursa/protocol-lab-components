@@ -101,3 +101,6 @@
 /scenarios/http1-websocket-tls-performance/ @SamuelMcAravey
 /executors/go-http1-websocket-tls-executor/ @SamuelMcAravey
 /implementations/go-http1-websocket-tls/ @SamuelMcAravey
+/scenarios/tls13-handshake-performance/ @SamuelMcAravey
+/executors/go-tls12-executor/ @SamuelMcAravey
+/implementations/go-tls12/ @SamuelMcAravey
