@@ -93,6 +93,195 @@
       "smoke": null
     },
     {
+      "id": "http1-performance-scenarios",
+      "packageId": "org.protocol-lab.components.scenario.http1-performance",
+      "packageRoot": "scenarios/http1-performance",
+      "kind": "scenario-pack",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-Http1PerformanceScenarioPackage.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["scenarios/http1-performance"],
+        "buildRecipe": ["scripts/package/Build-Http1PerformanceScenarioPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [],
+      "reverseDependencies": [
+        "go-http1-executor",
+        "kestrel-http1",
+        "caddy-http1",
+        "nginx-http1",
+        "apache-http1"
+      ],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "go-http1-executor",
+      "packageId": "org.protocol-lab.components.executor.go-http1-executor",
+      "packageRoot": "executors/go-http1-executor",
+      "kind": "test-executor",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-GoHttp1ExecutorPackage.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["executors/go-http1-executor"],
+        "buildRecipe": ["scripts/package/Build-GoHttp1ExecutorPackage.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "go", "version": "1.26.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "http1-performance-scenarios", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "kestrel-http1",
+      "packageId": "org.protocol-lab.components.implementation.kestrel-http1",
+      "packageRoot": "implementations/kestrel-http1",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-KestrelHttp1Package.ps1",
+        "arguments": ["linux-x64"]
+      },
+      "inputs": {
+        "payload": ["implementations/kestrel-http1"],
+        "buildRecipe": ["scripts/package/Build-KestrelHttp1Package.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "dotnet-sdk", "version": "10.0.x" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "http1-performance-scenarios", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "caddy-http1",
+      "packageId": "org.protocol-lab.components.implementation.caddy-http1",
+      "packageRoot": "implementations/caddy-http1",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-CaddyHttp1Package.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/caddy-http1"],
+        "buildRecipe": ["scripts/package/Build-CaddyHttp1Package.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "http1-performance-scenarios", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "nginx-http1",
+      "packageId": "org.protocol-lab.components.implementation.nginx-http1",
+      "packageRoot": "implementations/nginx-http1",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-NginxHttp1Package.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/nginx-http1"],
+        "buildRecipe": ["scripts/package/Build-NginxHttp1Package.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "http1-performance-scenarios", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
+      "id": "apache-http1",
+      "packageId": "org.protocol-lab.components.implementation.apache-http1",
+      "packageRoot": "implementations/apache-http1",
+      "kind": "implementation",
+      "migrationState": "modeled",
+      "build": {
+        "script": "scripts/package/Build-ApacheHttp1Package.ps1",
+        "arguments": []
+      },
+      "inputs": {
+        "payload": ["implementations/apache-http1"],
+        "buildRecipe": ["scripts/package/Build-ApacheHttp1Package.ps1"],
+        "shared": ["shared.package-builder"],
+        "fixtures": [],
+        "templates": [],
+        "contracts": [
+          { "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }
+        ],
+        "toolchains": [
+          { "id": "docker", "version": "declared-runtime" },
+          { "id": "powershell", "version": "7" }
+        ]
+      },
+      "dependsOn": [
+        { "componentId": "http1-performance-scenarios", "kind": "compatibility" }
+      ],
+      "reverseDependencies": [],
+      "owners": ["@SamuelMcAravey"],
+      "smoke": null
+    },
+    {
       "id": "kestrel-http2",
       "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
       "packageRoot": "implementations/kestrel-http2",

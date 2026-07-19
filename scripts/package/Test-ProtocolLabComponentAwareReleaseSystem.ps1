@@ -24,6 +24,10 @@ $selection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelectio
 if (@($selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'apache-http2,caddy-http2,go-http2-executor,http2-performance-scenarios,kestrel-http2,nginx-http2') {
     throw 'Declared reverse-dependency selection did not include the complete modeled HTTP/2 cohort.'
 }
+$http1Selection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/http1-performance/scenarios/http1/core/plaintext.yaml' | ConvertFrom-Json
+if (@($http1Selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'apache-http1,caddy-http1,go-http1-executor,http1-performance-scenarios,kestrel-http1,nginx-http1') {
+    throw 'Declared reverse-dependency selection did not include the complete modeled HTTP/1 cohort.'
+}
 $unknown = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'unmodeled-release-input.txt' | ConvertFrom-Json
 if (-not $unknown.fullBuildDryRunRequired) { throw 'Unknown changes must require conservative full-build dry-run.' }
 
