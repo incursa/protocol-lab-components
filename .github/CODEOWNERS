@@ -92,3 +92,7 @@
 /implementations/jetty-websocket/ @SamuelMcAravey
 /implementations/uwebsockets-websocket/ @SamuelMcAravey
 /implementations/websocat-http1-websocket/ @SamuelMcAravey
+/scenarios/http2-websocket-performance/ @SamuelMcAravey
+/executors/go-http2-websocket-executor/ @SamuelMcAravey
+/implementations/kestrel-http2-websocket/ @SamuelMcAravey
+/implementations/jetty-http2-websocket/ @SamuelMcAravey

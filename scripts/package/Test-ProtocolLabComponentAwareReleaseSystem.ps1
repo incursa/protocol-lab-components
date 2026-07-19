@@ -88,6 +88,11 @@ $cleartextWebSocketSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabCompon
 if (@($cleartextWebSocketSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-http1-websocket,go-http1-websocket-executor,http1-websocket-cleartext-scenarios,jetty-websocket,node-ws-websocket,uwebsockets-websocket,websocat-http1-websocket') {
     throw 'Declared reverse-dependency selection did not include every cleartext HTTP/1 WebSocket consumer.'
 }
+
+$http2WebSocketSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/http2-websocket-performance/scenarios/http2/websocket/rfc8441-binary-echo.yaml' | ConvertFrom-Json
+if (@($http2WebSocketSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-http2-websocket-executor,http2-websocket-scenarios,jetty-http2-websocket,kestrel-http2-websocket') {
+    throw 'Declared reverse-dependency selection did not include every HTTP/2 WebSocket consumer.'
+}
 $certificateSelection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'implementations/go-dns-dot/certs/root.pem' | ConvertFrom-Json
 if (@($certificateSelection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'go-dns-doh2,go-dns-doh2-executor,go-dns-doh3,go-dns-doh3-executor,go-dns-doq,go-dns-doq-executor,go-dns-dot') {
     throw 'Shared secure-DNS certificate changes did not select every consuming package.'

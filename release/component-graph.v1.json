@@ -1424,6 +1424,34 @@
       "dependsOn": [{ "componentId": "http1-websocket-cleartext-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     },
     {
+      "id": "http2-websocket-scenarios",
+      "packageId": "org.protocol-lab.components.scenario.http2-websocket-performance", "packageRoot": "scenarios/http2-websocket-performance", "kind": "scenario-pack", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-Http2WebSocketScenarioPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["scenarios/http2-websocket-performance"], "buildRecipe": ["scripts/package/Build-Http2WebSocketScenarioPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "powershell", "version": "7" }] },
+      "dependsOn": [], "reverseDependencies": ["go-http2-websocket-executor", "kestrel-http2-websocket", "jetty-http2-websocket"], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-http2-websocket-executor",
+      "packageId": "org.protocol-lab.components.executor.go-http2-websocket-executor", "packageRoot": "executors/go-http2-websocket-executor", "kind": "test-executor", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoHttp2WebSocketExecutorPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["executors/go-http2-websocket-executor"], "buildRecipe": ["scripts/package/Build-GoHttp2WebSocketExecutorPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "http2-websocket-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "kestrel-http2-websocket",
+      "packageId": "org.protocol-lab.components.implementation.kestrel-http2-websocket", "packageRoot": "implementations/kestrel-http2-websocket", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-KestrelHttp2WebSocketPackage.ps1", "arguments": ["win-x64"] },
+      "inputs": { "payload": ["implementations/kestrel-http2-websocket"], "buildRecipe": ["scripts/package/Build-KestrelHttp2WebSocketPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "dotnet", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "http2-websocket-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "jetty-http2-websocket",
+      "packageId": "org.protocol-lab.components.implementation.jetty-http2-websocket", "packageRoot": "implementations/jetty-http2-websocket", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-JettyHttp2WebSocketPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/jetty-http2-websocket"], "buildRecipe": ["scripts/package/Build-JettyHttp2WebSocketPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [{ "componentId": "http2-websocket-scenarios", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
       "id": "kestrel-http2",
       "packageId": "org.protocol-lab.components.implementation.kestrel-http2",
       "packageRoot": "implementations/kestrel-http2",
