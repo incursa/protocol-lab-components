@@ -183,6 +183,18 @@ if (Test-Path -LiteralPath $ComponentGraphPath -PathType Leaf) {
     $modeledComponent = @($componentGraph.components | Where-Object {
         $_.migrationState -eq 'modeled' -and $_.packageRoot -eq $componentRelativePath
     })
+    if ($modeledComponent.Count -eq 0) {
+        # Prepared package roots are intentionally outside the component tree.
+        # Match their immutable package identity back to the declared component
+        # so generated binaries do not lose the source dependency closure.
+        $modeledComponent = @($componentGraph.components | Where-Object {
+            $_.migrationState -eq 'modeled' -and $_.packageId -eq $packageId
+        })
+        if ($modeledComponent.Count -eq 1) {
+            $sourceComponentRoot = (Resolve-Path (Join-Path $repositoryRoot $modeledComponent[0].packageRoot)).Path
+            $componentRelativePath = [System.IO.Path]::GetRelativePath($repositoryRoot, $sourceComponentRoot).Replace('\', '/')
+        }
+    }
     if ($modeledComponent.Count -gt 1) {
         throw "Component graph has multiple modeled entries for '$componentRelativePath'."
     }
