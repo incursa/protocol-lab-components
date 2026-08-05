@@ -34,7 +34,18 @@ jobs:
         shell: bash
         run: |
           rustup toolchain install stable --profile minimal
-          rustup target add x86_64-pc-windows-gnu x86_64-unknown-linux-musl --toolchain stable
+          for target in x86_64-pc-windows-gnu x86_64-unknown-linux-musl; do
+            for attempt in 1 2 3; do
+              if rustup target add --toolchain stable "$target"; then
+                break
+              fi
+              if [[ "$attempt" == 3 ]]; then
+                echo "Unable to install Rust target $target after $attempt attempts." >&2
+                exit 1
+              fi
+              sleep 5
+            done
+          done
           rust_sysroot="$(rustc +stable --print sysroot)"
           rust_host="$(rustc +stable -vV | sed -n 's/^host: //p')"
           rust_lld="$rust_sysroot/lib/rustlib/${rust_host#*-}/bin/rust-lld"
