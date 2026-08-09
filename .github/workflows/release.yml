@@ -58,26 +58,13 @@ jobs:
           if (-not (Test-Path -LiteralPath $intentPath -PathType Leaf)) {
             throw "Release intent was not found: $intentPath"
           }
-
           $intent = Get-Content -LiteralPath $intentPath -Raw | ConvertFrom-Json
-          if ([string]$intent.schemaVersion -ne 'protocol-lab.release-intent.v1') {
-            throw 'Release intent has an unsupported schemaVersion.'
-          }
-          if ([string]$intent.classification -ne 'release') {
-            throw 'Package publication requires classification=release.'
-          }
-          if ([string]$intent.status -ne 'approved') {
-            throw 'Package publication requires status=approved.'
-          }
-          if (@($intent.components).Count -eq 0) {
-            throw 'A release intent must name at least one component.'
-          }
-          if ([string]::IsNullOrWhiteSpace($env:RELEASE_TAG)) {
-            throw 'release_tag must not be empty.'
-          }
-          if ($env:RELEASE_TAG -notmatch '^[A-Za-z0-9][A-Za-z0-9._/-]*$') {
-            throw "release_tag contains unsupported characters: $env:RELEASE_TAG"
-          }
+          if ([string]$intent.schemaVersion -ne 'protocol-lab.release-intent.v1') { throw 'Release intent has an unsupported schemaVersion.' }
+          if ([string]$intent.classification -ne 'release') { throw 'Package publication requires classification=release.' }
+          if ([string]$intent.status -ne 'approved') { throw 'Package publication requires status=approved.' }
+          if (@($intent.components).Count -eq 0) { throw 'A release intent must name at least one component.' }
+          if ([string]::IsNullOrWhiteSpace($env:RELEASE_TAG)) { throw 'release_tag must not be empty.' }
+          if ($env:RELEASE_TAG -notmatch '^[A-Za-z0-9][A-Za-z0-9._/-]*$') { throw "release_tag contains unsupported characters: $env:RELEASE_TAG" }
 
       - name: Build and validate all package artifacts
         shell: pwsh
@@ -90,18 +77,11 @@ jobs:
           ./scripts/package/Test-ProtocolLabReleaseIntents.ps1
           $attestationScript = Join-Path (Get-Location) 'scripts/package/Test-ProtocolLabPackageBuildAttestation.ps1'
           $packages = @(Get-ChildItem -LiteralPath artifacts/packages -File -Filter '*.plabpkg' | Sort-Object Name)
-          if ($packages.Count -eq 0) {
-            throw 'No package artifacts were produced.'
-          }
+          if ($packages.Count -eq 0) { throw 'No package artifacts were produced.' }
           foreach ($package in $packages) {
             $attestationPath = "$($package.FullName).build-attestation.json"
-            if (-not (Test-Path -LiteralPath $attestationPath -PathType Leaf)) {
-              throw "Missing build attestation for $($package.Name)."
-            }
-            & $attestationScript `
-              -PackagePath $package.FullName `
-              -AttestationPath $attestationPath `
-              -RequireParityEligible
+            if (-not (Test-Path -LiteralPath $attestationPath -PathType Leaf)) { throw "Missing build attestation for $($package.Name)." }
+            & $attestationScript -PackagePath $package.FullName -AttestationPath $attestationPath -RequireParityEligible
           }
 
       - name: Upload validated package assets
@@ -124,14 +104,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
-          $assets = @(Get-ChildItem -LiteralPath artifacts/packages -File |
-            Where-Object { $_.Name -match '\.(plabpkg|json|md|txt)$' } |
-            ForEach-Object FullName)
-          if ($assets.Count -eq 0) {
-            throw 'No validated package release assets were produced.'
-          }
-          & gh release create $env:RELEASE_TAG `
-            --target '${{ inputs.ref }}' `
-            --title $env:RELEASE_TAG `
-            --notes-file artifacts/packages/package-index.md `
-            @assets
+          $assets = @(Get-ChildItem -LiteralPath artifacts/packages -File | Where-Object { $_.Name -match '\.(plabpkg|json|md|txt)$' } | ForEach-Object FullName)
+          if ($assets.Count -eq 0) { throw 'No validated package release assets were produced.' }
+          & gh release create $env:RELEASE_TAG --target '${{ inputs.ref }}' --title $env:RELEASE_TAG --notes-file artifacts/packages/package-index.md @assets

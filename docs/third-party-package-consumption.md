@@ -96,7 +96,8 @@ The package builder emits deterministic archive bytes for the same declared
 component closure, configuration, runtime identifier, and toolchain. A
 changed package requires a new package version. The package release workflow
 is intentionally manual and dry-run by default; publishing also requires a
-reviewed release intent.
+reviewed release intent. The workflow is
+[`.github/workflows/release.yml`](../.github/workflows/release.yml).
 
 ## What this does not prove
 

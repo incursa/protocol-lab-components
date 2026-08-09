@@ -113,7 +113,7 @@ Third-party consumers should start with
 It documents how to obtain a release artifact, verify its hash and build
 attestation, inspect the package manifests, and pin the package in an
 immutable ProtocolLab run plan. The manual release workflow is
-[`package-release.yml`](.github/workflows/package-release.yml); it is dry-run
+[`release.yml`](.github/workflows/release.yml); it is dry-run
 by default and requires an approved release intent before it can publish.
 
 Shared scripts may build all packages, but publish and release metadata must preserve each package ID and version. Do not replace per-package identity with one repository-wide package version.
