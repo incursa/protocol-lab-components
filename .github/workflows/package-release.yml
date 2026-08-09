@@ -88,10 +88,21 @@ jobs:
         run: |
           ./scripts/package/Test-ProtocolLabComponentReleaseGraph.ps1
           ./scripts/package/Test-ProtocolLabReleaseIntents.ps1
-          ./scripts/package/Test-ProtocolLabPackageBuildAttestation.ps1 `
-            -PackagePath (Get-ChildItem artifacts/packages -Filter '*.plabpkg' | Select-Object -First 1).FullName `
-            -AttestationPath (Get-ChildItem artifacts/packages -Filter '*.plabpkg.build-attestation.json' | Select-Object -First 1).FullName `
-            -RequireParityEligible
+          $attestationScript = Join-Path (Get-Location) 'scripts/package/Test-ProtocolLabPackageBuildAttestation.ps1'
+          $packages = @(Get-ChildItem -LiteralPath artifacts/packages -File -Filter '*.plabpkg' | Sort-Object Name)
+          if ($packages.Count -eq 0) {
+            throw 'No package artifacts were produced.'
+          }
+          foreach ($package in $packages) {
+            $attestationPath = "$($package.FullName).build-attestation.json"
+            if (-not (Test-Path -LiteralPath $attestationPath -PathType Leaf)) {
+              throw "Missing build attestation for $($package.Name)."
+            }
+            & $attestationScript `
+              -PackagePath $package.FullName `
+              -AttestationPath $attestationPath `
+              -RequireParityEligible
+          }
 
       - name: Upload validated package assets
         uses: actions/upload-artifact@v4
