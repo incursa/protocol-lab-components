@@ -1786,6 +1786,36 @@
       "build": { "script": "scripts/package/Build-EnvoyConnectUdpPackage.ps1", "arguments": [] },
       "inputs": { "payload": ["implementations/envoy-connect-udp"], "buildRecipe": ["scripts/package/Build-EnvoyConnectUdpPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
       "dependsOn": [{ "componentId": "masque-connect-udp-performance", "kind": "compatibility" }], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "go-nethttp-http2", "packageId": "org.protocol-lab.components.implementation.go-nethttp-http2", "packageRoot": "implementations/go-nethttp-http2", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-GoNetHttpHttp2Package.ps1", "arguments": ["win-x64", "linux-x64"] },
+      "inputs": { "payload": ["implementations/go-nethttp-http2"], "buildRecipe": ["scripts/package/Build-GoNetHttpHttp2Package.ps1", "scripts/package/Build-GoNetHttpOriginPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "go", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "haproxy-http-gateway", "packageId": "org.protocol-lab.components.implementation.haproxy-http-gateway", "packageRoot": "implementations/haproxy-http-gateway", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-HaproxyHttpGatewayPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/haproxy-http-gateway"], "buildRecipe": ["scripts/package/Build-HaproxyHttpGatewayPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "bash", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "jetty-http-origin", "packageId": "org.protocol-lab.components.implementation.jetty-http-origin", "packageRoot": "implementations/jetty-http-origin", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-JettyHttpOriginPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/jetty-http-origin"], "buildRecipe": ["scripts/package/Build-JettyHttpOriginPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "bash", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "node-http2", "packageId": "org.protocol-lab.components.implementation.node-http2", "packageRoot": "implementations/node-http2", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-NodeHttp2Package.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/node-http2"], "buildRecipe": ["scripts/package/Build-NodeHttp2Package.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "node", "version": "declared-runtime" }, { "id": "docker", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
+    },
+    {
+      "id": "rust-hyper-origin", "packageId": "org.protocol-lab.components.implementation.rust-hyper-origin", "packageRoot": "implementations/rust-hyper-origin", "kind": "implementation", "migrationState": "modeled",
+      "build": { "script": "scripts/package/Build-RustHyperOriginPackage.ps1", "arguments": [] },
+      "inputs": { "payload": ["implementations/rust-hyper-origin"], "buildRecipe": ["scripts/package/Build-RustHyperOriginPackage.ps1"], "shared": ["shared.package-builder"], "fixtures": [], "templates": [], "contracts": [{ "id": "protocol-lab-package-v2", "repository": "protocol-lab", "version": "v2" }], "toolchains": [{ "id": "docker", "version": "declared-runtime" }, { "id": "bash", "version": "declared-runtime" }, { "id": "powershell", "version": "7" }] },
+      "dependsOn": [], "reverseDependencies": [], "owners": ["@SamuelMcAravey"], "smoke": null
     }
   ],
   "externalComponentContract": {
