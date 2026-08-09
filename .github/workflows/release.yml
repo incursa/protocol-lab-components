@@ -51,6 +51,15 @@ jobs:
             implementations/quic-go-http3/go.sum
             executors/quic-go-raw-load/source/go.sum
 
+      - name: Verify Docker Engine
+        shell: pwsh
+        run: |
+          $serverVersion = @(docker version --format '{{.Server.Version}}' 2>$null)
+          if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace(($serverVersion -join ' ').Trim())) {
+            throw 'Docker Engine is required for the full ProtocolLab component catalog build.'
+          }
+          Write-Host "Docker Engine $($serverVersion -join ' ') is available."
+
       - name: Validate reviewed release intent
         shell: pwsh
         run: |

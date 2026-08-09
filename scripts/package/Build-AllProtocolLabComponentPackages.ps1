@@ -33,6 +33,18 @@ function Assert-PathIsUnderRoot {
     }
 }
 
+function Assert-DockerEngineAvailable {
+    $docker = Get-Command docker -ErrorAction SilentlyContinue
+    if ($null -eq $docker) {
+        throw 'The full ProtocolLab component catalog requires Docker Engine. Install Docker Desktop or Docker Engine, ensure docker is on PATH, and retry.'
+    }
+
+    $serverVersion = @(& $docker.Source version --format '{{.Server.Version}}' 2>$null)
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace(($serverVersion -join ' ').Trim())) {
+        throw 'The Docker CLI is available, but the Docker Engine is not responding. Start the Docker service and retry the full ProtocolLab component catalog build.'
+    }
+}
+
 function Read-ZipJsonEntry {
     param(
         [Parameter(Mandatory)][System.IO.Compression.ZipArchive]$Archive,
@@ -256,6 +268,7 @@ function Write-ValidationSummaryMarkdown {
 $Root = (Resolve-Path $Root).Path
 $OutputRoot = [System.IO.Path]::GetFullPath($OutputRoot)
 Assert-PathIsUnderRoot -CandidatePath $OutputRoot -ExpectedRoot $Root
+Assert-DockerEngineAvailable
 
 New-Item -ItemType Directory -Force -Path $OutputRoot | Out-Null
 

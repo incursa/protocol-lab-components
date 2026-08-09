@@ -92,6 +92,13 @@ A third-party implementation owner should:
 6. submit the package, attestation, SHA-256, public manifests, and exact
    source commit together.
 
+The full catalog builder also exercises Docker-backed packages. For that
+workflow, install Docker Desktop or Docker Engine, keep the Docker daemon
+running, and ensure `docker` is on `PATH`; the builder performs this check
+before starting package builds. Individual package builders may have narrower
+requirements, which are declared by their internal manifest and toolchain
+files.
+
 The package builder emits deterministic archive bytes for the same declared
 component closure, configuration, runtime identifier, and toolchain. A
 changed package requires a new package version. The package release workflow
