@@ -12,5 +12,5 @@
     "scenarios": ["tls.key-update.diagnostic"],
     "tests": ["tls.key-update.diagnostic"]
   }],
-  "dependencies": {}
+  "dependencies": {"requiredCapabilities": []}
 }

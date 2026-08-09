@@ -37,5 +37,5 @@ supportedArtifactTypes:
   - {type: load.stdout.log, producedByStates: [stopped, failed]}
   - {type: load.stderr.log, producedByStates: [stopped, failed]}
 metricsAvailability: {available: true, availableKinds: [validation, queries-per-second, latency-percentiles, time-to-first-byte, operation-outcomes, bytes, quic, tls-negotiation]}
-parser: {id: protocol-lab-dns-doh3-json, type: protocol-lab-dns-doh3-json, preservesRawOutput: true}
+parser: {id: protocol-lab-dns-doh3-json, preservesRawOutput: true}
 telemetry: {supported: true, supported_contract_versions: [telemetry-bundle-v1], supported_scopes: [test-executor, load-generator], supported_artifact_kinds: [summary, metrics, stdout, stderr, raw], export_modes: [inline, artifact-bundle]}

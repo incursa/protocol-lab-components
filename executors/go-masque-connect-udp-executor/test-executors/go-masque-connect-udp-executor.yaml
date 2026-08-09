@@ -29,5 +29,5 @@ supportedArtifactTypes:
   - {type: load.stderr.log, producedByStates: [stopped, failed]}
   - {type: unsupported.json, producedByStates: [failed]}
 metricsAvailability: {available: true, availableKinds: [validation, tunnels-per-second, datagrams-per-second, datagram-latency-percentiles, operation-outcomes, effective-tunnels]}
-parser: {id: protocol-lab-masque-json, type: protocol-lab-masque-json, preservesRawOutput: true}
+parser: {id: protocol-lab-masque-json, preservesRawOutput: true}
 telemetry: {supported: true, supported_contract_versions: [telemetry-bundle-v1], supported_scopes: [test-executor, load-generator], supported_artifact_kinds: [summary, metrics, stdout, stderr, raw], export_modes: [inline, artifact-bundle]}

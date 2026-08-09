@@ -12,5 +12,5 @@
     "scenarios": ["tls.early-data.accepted", "tls.early-data.rejected"],
     "tests": ["tls.early-data.accepted", "tls.early-data.rejected"]
   }],
-  "dependencies": {}
+  "dependencies": {"requiredCapabilities": []}
 }

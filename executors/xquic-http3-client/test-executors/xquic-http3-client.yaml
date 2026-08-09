@@ -65,7 +65,6 @@ metricsAvailability:
     - validation
 parser:
   id: protocol-lab-http-json
-  type: protocol-lab-http-json
   preservesRawOutput: true
 telemetry:
   supported: true
@@ -80,6 +79,3 @@ telemetry:
     - raw
   export_modes:
     - artifact-bundle
-executionMetadata:
-  upstreamImage: ghcr.io/alibaba/xquic/xquic-interop@sha256:875df1e9935c6a07e26d7b5ae14df9edd06703061ce35920234a97d6991c58e0
-  manifest: protocol-lab.internal.json

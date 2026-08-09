@@ -11,5 +11,5 @@
     "protocols": ["tls"],
     "scenarios": ["tls.early-data.accepted", "tls.early-data.rejected"]
   }],
-  "dependencies": {}
+  "dependencies": {"requiredCapabilities": []}
 }

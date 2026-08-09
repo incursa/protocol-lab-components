@@ -93,7 +93,6 @@ metricsAvailability:
     - operation-outcomes
 parser:
   id: protocol-lab-http-json
-  type: protocol-lab-http-json
   preservesRawOutput: true
 telemetry:
   supported: true

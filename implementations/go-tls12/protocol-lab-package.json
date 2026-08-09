@@ -6,5 +6,5 @@
   "displayName": "Go TLS 1.2 Compatibility Target",
   "entryManifests": ["implementations/go-tls12.yaml"],
   "providedImplementations": [{"implementationId":"go-tls12","displayName":"Go crypto/tls TLS 1.2 Compatibility","protocols":["tls"],"scenarios":["tls.handshake.full.tls12"]}],
-  "dependencies": {}
+  "dependencies": {"requiredCapabilities": []}
 }

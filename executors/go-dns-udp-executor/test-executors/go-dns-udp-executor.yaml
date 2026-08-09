@@ -35,5 +35,5 @@ supportedArtifactTypes: &artifacts
   - {type: load.stdout.log, producedByStates: [stopped, failed]}
   - {type: load.stderr.log, producedByStates: [stopped, failed]}
 metricsAvailability: {available: true, availableKinds: [validation, queries-per-second, latency-percentiles, operation-outcomes, retry-count, bytes]}
-parser: {id: protocol-lab-dns-classic-udp-json, type: protocol-lab-dns-classic-udp-json, preservesRawOutput: true}
+parser: {id: protocol-lab-dns-classic-udp-json, preservesRawOutput: true}
 telemetry: {supported: true, supported_contract_versions: [telemetry-bundle-v1], supported_scopes: [test-executor, load-generator], supported_artifact_kinds: [summary, metrics, stdout, stderr, raw], export_modes: [inline, artifact-bundle]}

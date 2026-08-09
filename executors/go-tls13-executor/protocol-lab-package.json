@@ -12,5 +12,5 @@
     "scenarios": ["tls.handshake.full", "tls.handshake.resumed", "tls.record.throughput", "tls.record.coverage"],
     "tests": ["tls.handshake.full", "tls.handshake.resumed", "tls.record.throughput", "tls.record.coverage"]
   }],
-  "dependencies": {}
+  "dependencies": {"requiredCapabilities": []}
 }

@@ -17,12 +17,7 @@
     "scenarios/tls/record/throughput.yaml",
     "suites/tls-performance-smoke.yaml",
     "suites/tls-contract-breadth-smoke.yaml",
-    "suites/tls-security-diagnostics.yaml",
-    "load-profiles/tls-smoke.yaml",
-    "load-profiles/tls-diagnostic.yaml",
-    "fixtures/public-contracts/tls-record-coverage/valid/tls-record-coverage-v1.json",
-    "fixtures/public-contracts/tls-profile-v2/valid/tls13-aes128gcm-p256-server-auth-v2.json",
-    "fixtures/public-contracts/tls/valid/tls13-p256-profile-v1.json"
+    "suites/tls-security-diagnostics.yaml"
   ],
   "providedScenarios": [
     { "scenarioId": "tls.handshake.full", "displayName": "TLS 1.3 Full Handshake", "protocols": ["tls"] },

@@ -72,7 +72,6 @@ metricsAvailability:
   availableKinds: [validation, rpc-latency-percentiles, operation-outcomes, connection-and-stream-topology, byte-accounting]
 parser:
   id: protocol-lab-grpc-h2-json
-  type: protocol-lab-grpc-h2-json
   preservesRawOutput: true
 telemetry:
   supported: true

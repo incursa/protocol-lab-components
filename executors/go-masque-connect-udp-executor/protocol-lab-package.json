@@ -12,5 +12,5 @@
     "scenarios": ["masque.connect-udp-tunnel"],
     "tests": ["masque.connect-udp-tunnel"]
   }],
-  "dependencies": {}
+  "dependencies": {"requiredCapabilities": []}
 }

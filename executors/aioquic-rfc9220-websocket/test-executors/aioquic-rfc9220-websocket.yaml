@@ -153,7 +153,6 @@ metricsAvailability:
     - operation-outcomes
 parser:
   id: protocol-lab-rfc9220-json
-  type: protocol-lab-rfc9220-json
   preservesRawOutput: true
 telemetry:
   supported: true

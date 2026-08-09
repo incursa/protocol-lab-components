@@ -8,9 +8,7 @@
     "scenarios/webtransport/session-bidi-echo.yaml",
     "scenarios/webtransport/session-datagram-echo.yaml",
     "suites/webtransport-performance-smoke.yaml",
-    "suites/webtransport-datagram-performance-smoke.yaml",
-    "load-profiles/webtransport-smoke.yaml",
-    "load-profiles/webtransport-datagram-smoke.yaml"
+    "suites/webtransport-datagram-performance-smoke.yaml"
   ],
   "providedScenarios": [
     {"scenarioId": "webtransport.session-bidi-echo", "displayName": "WebTransport Session Bidirectional Echo", "protocols": ["webtransport", "h3"]},

@@ -12,5 +12,5 @@
     "scenarios": ["webtransport.session-bidi-echo", "webtransport.session-datagram-echo"],
     "tests": ["webtransport.session-bidi-echo", "webtransport.session-datagram-echo"]
   }],
-  "dependencies": {}
+  "dependencies": {"requiredCapabilities": []}
 }

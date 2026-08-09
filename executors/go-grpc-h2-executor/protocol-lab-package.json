@@ -12,5 +12,5 @@
     "scenarios": ["grpc.h2.unary.echo","grpc.h2.unary.empty","grpc.h2.unary.fixed-metadata","grpc.h2.unary.gzip","grpc.h2.unary.large","grpc.h2.server-streaming.echo","grpc.h2.client-streaming.echo","grpc.h2.bidi-streaming.echo","grpc.h2.trailers-only-status","grpc.h2.deadline-exceeded","grpc.h2.client-cancellation","grpc.h2.unary.echo-new-channel"],
     "tests": ["grpc.h2.unary.echo","grpc.h2.unary.empty","grpc.h2.unary.fixed-metadata","grpc.h2.unary.gzip","grpc.h2.unary.large","grpc.h2.server-streaming.echo","grpc.h2.client-streaming.echo","grpc.h2.bidi-streaming.echo","grpc.h2.trailers-only-status","grpc.h2.deadline-exceeded","grpc.h2.client-cancellation","grpc.h2.unary.echo-new-channel"]
   }],
-  "dependencies": {}
+  "dependencies": {"requiredCapabilities": []}
 }

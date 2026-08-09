@@ -108,6 +108,14 @@ Package IDs should use a stable dotted namespace:
 
 Versioning is per package. A Caddy HTTP/1 wrapper can ship `0.2.0` while Kestrel HTTP/1 remains `0.1.0`.
 
+Third-party consumers should start with
+[`docs/third-party-package-consumption.md`](docs/third-party-package-consumption.md).
+It documents how to obtain a release artifact, verify its hash and build
+attestation, inspect the package manifests, and pin the package in an
+immutable ProtocolLab run plan. The manual release workflow is
+[`package-release.yml`](.github/workflows/package-release.yml); it is dry-run
+by default and requires an approved release intent before it can publish.
+
 Shared scripts may build all packages, but publish and release metadata must preserve each package ID and version. Do not replace per-package identity with one repository-wide package version.
 
 ## Adding A Component

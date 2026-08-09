@@ -8,10 +8,7 @@
     "scenarios/http2/core/plaintext.yaml",
     "scenarios/http2/core/json.yaml",
     "suites/http2-performance-smoke.yaml",
-    "suites/http2-comparison-benchmark.yaml",
-    "load-profiles/http2-smoke.yaml",
-    "load-profiles/http2-diagnostic.yaml",
-    "load-profiles/http2-comparison.yaml"
+    "suites/http2-comparison-benchmark.yaml"
   ],
   "providedScenarios": [
     {

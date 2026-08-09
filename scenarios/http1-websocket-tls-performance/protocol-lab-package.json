@@ -12,8 +12,7 @@
     "scenarios/http1/websocket/rfc6455-tls-close.yaml",
     "scenarios/http1/websocket/rfc6455-tls-subprotocol-text-echo.yaml",
     "scenarios/http1/websocket/rfc6455-tls-permessage-deflate-binary-echo.yaml",
-    "suites/http1-websocket-tls-performance-smoke.yaml",
-    "load-profiles/websocket-smoke.yaml"
+    "suites/http1-websocket-tls-performance-smoke.yaml"
   ],
   "providedScenarios": [
     {"scenarioId":"http1.websocket.rfc6455.tls.upgrade","displayName":"RFC 6455 HTTP/1.1 TLS Upgrade","protocols":["h1","tls"]},
