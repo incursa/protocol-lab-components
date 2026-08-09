@@ -305,6 +305,8 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'implementations/go-tls13'; script = 'Build-GoTls13ImplementationPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'implementations/rustls-tls13'; script = 'Build-RustlsTls13ImplementationPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'implementations/rustls-tls13'; script = 'Build-RustlsTls13ImplementationPackage.ps1'; arguments = @('linux-x64') },
+    [pscustomobject]@{ componentPath = 'implementations/rustls-tls13-early-data'; script = 'Build-RustlsTls13EarlyDataImplementationPackage.ps1'; arguments = @('win-x64') },
+    [pscustomobject]@{ componentPath = 'implementations/rustls-tls13-early-data'; script = 'Build-RustlsTls13EarlyDataImplementationPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'implementations/s2n-tls13'; script = 'Build-S2nTls13Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/wolfssl-tls13'; script = 'Build-WolfsslTls13Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/go-tls13-mtls'; script = 'Build-GoTls13MtlsImplementationPackage.ps1'; arguments = @('win-x64') },
@@ -327,10 +329,19 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'implementations/go-dns-doh3'; script = 'Build-GoDnsDoh3Package.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-http1-websocket'; script = 'Build-GoHttp1WebSocketImplementationPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-http1-websocket'; script = 'Build-GoHttp1WebSocketImplementationPackage.ps1'; arguments = @('linux-x64') },
+    [pscustomobject]@{ componentPath = 'implementations/go-http1-websocket-tls'; script = 'Build-GoHttp1WebSocketTlsImplementationPackage.ps1'; arguments = @('win-x64') },
+    [pscustomobject]@{ componentPath = 'implementations/go-http1-websocket-tls'; script = 'Build-GoHttp1WebSocketTlsImplementationPackage.ps1'; arguments = @('linux-x64') },
+    [pscustomobject]@{ componentPath = 'implementations/go-nethttp-http1'; script = 'Build-GoNetHttpHttp1Package.ps1'; arguments = @('win-x64') },
+    [pscustomobject]@{ componentPath = 'implementations/go-nethttp-http1'; script = 'Build-GoNetHttpHttp1Package.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-nethttp-http2'; script = 'Build-GoNetHttpHttp2Package.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'implementations/go-nethttp-http2'; script = 'Build-GoNetHttpHttp2Package.ps1'; arguments = @('linux-x64') },
+    [pscustomobject]@{ componentPath = 'implementations/grpc-cpp'; script = 'Build-GrpcCppPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/grpc-dotnet'; script = 'Build-GrpcDotNetPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/grpc-java-netty'; script = 'Build-GrpcJavaNettyPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/grpc-js'; script = 'Build-GrpcJsPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/websocat-http1-websocket'; script = 'Build-WebsocatHttp1WebSocketPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/node-ws-websocket'; script = 'Build-NodeWsWebSocketPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'implementations/node-http1'; script = 'Build-NodeHttp1Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/node-http2'; script = 'Build-NodeHttp2Package.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/jetty-http-origin'; script = 'Build-JettyHttpOriginPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'implementations/jetty-websocket'; script = 'Build-JettyWebSocketPackage.ps1'; arguments = @() },
@@ -408,6 +419,10 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'executors/go-dns-doh3-executor'; script = 'Build-GoDnsDoh3ExecutorPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'executors/go-http1-websocket-executor'; script = 'Build-GoHttp1WebSocketExecutorPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'executors/go-http1-websocket-executor'; script = 'Build-GoHttp1WebSocketExecutorPackage.ps1'; arguments = @('linux-x64') },
+    [pscustomobject]@{ componentPath = 'executors/go-http1-websocket-tls-executor'; script = 'Build-GoHttp1WebSocketTlsExecutorPackage.ps1'; arguments = @('win-x64') },
+    [pscustomobject]@{ componentPath = 'executors/go-http1-websocket-tls-executor'; script = 'Build-GoHttp1WebSocketTlsExecutorPackage.ps1'; arguments = @('linux-x64') },
+    [pscustomobject]@{ componentPath = 'executors/rustls-tls13-early-data-executor'; script = 'Build-RustlsTls13EarlyDataExecutorPackage.ps1'; arguments = @('win-x64') },
+    [pscustomobject]@{ componentPath = 'executors/rustls-tls13-early-data-executor'; script = 'Build-RustlsTls13EarlyDataExecutorPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'executors/go-dns-doq-executor'; script = 'Build-GoDnsDoqExecutorPackage.ps1'; arguments = @('win-x64') },
     [pscustomobject]@{ componentPath = 'executors/go-dns-doq-executor'; script = 'Build-GoDnsDoqExecutorPackage.ps1'; arguments = @('linux-x64') },
     [pscustomobject]@{ componentPath = 'executors/go-dns-udp-executor'; script = 'Build-GoDnsUdpExecutorPackage.ps1'; arguments = @('win-x64') },
@@ -423,6 +438,7 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'scenarios/dns-doh2-performance'; script = 'Build-DnsDoh2PerformanceScenarioPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'scenarios/dns-doh3-performance'; script = 'Build-DnsDoh3PerformanceScenarioPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'scenarios/http1-websocket-cleartext-performance'; script = 'Build-Http1WebSocketCleartextScenarioPackage.ps1'; arguments = @() },
+    [pscustomobject]@{ componentPath = 'scenarios/http1-websocket-tls-performance'; script = 'Build-Http1WebSocketTlsScenarioPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'scenarios/dns-doq-performance'; script = 'Build-DnsDoqPerformanceScenarioPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'scenarios/dns-classic-calibration'; script = 'Build-DnsClassicCalibrationScenarioPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'executors/h3spec-http3-qpack'; script = 'Build-H3SpecHttp3QpackPackage.ps1'; arguments = @() },
@@ -436,6 +452,23 @@ $packageBuilds = @(
     [pscustomobject]@{ componentPath = 'scenarios/webtransport-performance'; script = 'Build-WebtransportScenarioPackage.ps1'; arguments = @() },
     [pscustomobject]@{ componentPath = 'scenarios/masque-connect-udp-performance'; script = 'Build-MasqueConnectUdpScenarioPackage.ps1'; arguments = @() }
 )
+
+$manifestRoots = @(
+    Get-ChildItem -LiteralPath @(
+        (Join-Path $Root 'implementations'),
+        (Join-Path $Root 'executors'),
+        (Join-Path $Root 'scenarios')
+    ) -Recurse -File -Filter 'protocol-lab-package.json' |
+        ForEach-Object { Get-RelativePath -BasePath $Root -Path $_.Directory.FullName } |
+        Sort-Object -Unique
+)
+$builderRoots = @($packageBuilds | ForEach-Object { $_.componentPath } | Sort-Object -Unique)
+$missingBuilderRoots = @(
+    $manifestRoots | Where-Object { $_ -notin $builderRoots }
+)
+if ($missingBuilderRoots.Count -gt 0) {
+    throw "Full package builder has no build entry for manifest root(s): $($missingBuilderRoots -join ', ')"
+}
 
 $builderResults = [System.Collections.Generic.List[object]]::new()
 $builtArtifacts = [System.Collections.Generic.List[System.IO.FileInfo]]::new()
