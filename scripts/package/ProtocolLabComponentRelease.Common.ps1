@@ -71,9 +71,26 @@ function Get-ProtocolLabDeclaredFiles {
             @(Get-Item -LiteralPath $absolute -Force)
         }
 
+        $eligiblePayloadPaths = $null
+        if ($PackagePayload) {
+            $eligiblePayloadPaths = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+            $gitFiles = @(& git -C $Root ls-files --cached --others --exclude-standard -- $relative 2>$null)
+            if ($LASTEXITCODE -ne 0) {
+                throw "Unable to resolve the versioned and unignored package payload for '$relative'."
+            }
+
+            foreach ($gitFile in $gitFiles) {
+                [void]$eligiblePayloadPaths.Add(([string]$gitFile).Replace('\', '/'))
+            }
+        }
+
         foreach ($file in $candidates) {
             $fileRelative = [System.IO.Path]::GetRelativePath($Root, $file.FullName).Replace('\', '/')
             if ($PackagePayload) {
+                if (-not $eligiblePayloadPaths.Contains($fileRelative)) {
+                    continue
+                }
+
                 $parts = $fileRelative -split '/'
                 if ($parts -contains 'artifacts' -or $parts -contains 'packages' -or $parts -contains 'bin' -or $parts -contains 'obj' -or
                     $parts -contains 'package.protocol-lab.json' -or $parts[-1] -eq 'README.md') {
