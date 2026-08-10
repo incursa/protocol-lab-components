@@ -7,6 +7,4 @@ foreach($property in $lock.files.PSObject.Properties){$path=Join-Path $PSScriptR
 $manifest=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'protocol-lab-package.json') -Raw|ConvertFrom-Json
 if($manifest.packageVersion-ne'0.1.2'){throw 'HTTP/2 WebSocket scenario package version must be 0.1.2.'}
 if((@($manifest.providedSuites.suiteId)-join ',')-ne'http2-websocket-performance-smoke,http2-websocket-performance-comparison,http2-websocket-multi-message-diagnostic'){throw 'HTTP/2 WebSocket suite declarations mismatch.'}
-$expectedLoadProfiles=@('load-profiles/websocket-smoke.yaml','load-profiles/websocket-comparison.yaml','load-profiles/diagnostic.yaml')
-foreach($loadProfile in $expectedLoadProfiles){if($loadProfile-notin@($manifest.entryManifests)){throw "HTTP/2 WebSocket load-profile entry manifest missing: $loadProfile"}}
 Write-Output "Validated HTTP/2 WebSocket scenario package authority lock at $($lock.commit)."

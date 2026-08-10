@@ -17,6 +17,16 @@ jobs:
         shell: pwsh
         run: ./scripts/package/Test-ProtocolLabComponentDocumentation.ps1
 
+  scenario-packages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate scenario package authority and declarations
+        shell: pwsh
+        run: ./scripts/package/Test-ProtocolLabScenarioPackages.ps1
+
   manifests:
     runs-on: ubuntu-latest
     steps:

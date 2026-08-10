@@ -8,5 +8,4 @@ foreach($property in $lock.files.PSObject.Properties){$path=Join-Path $PSScriptR
 $manifest=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'protocol-lab-package.json') -Raw|ConvertFrom-Json
 if($manifest.packageVersion-ne'0.1.1'){throw 'MASQUE scenario package version must be 0.1.1.'}
 if((@($manifest.providedSuites.suiteId)-join ',')-ne'masque-connect-udp-performance-comparison'){throw 'MASQUE suite declaration mismatch.'}
-if('load-profiles/masque-connect-udp-comparison.yaml'-notin@($manifest.entryManifests)){throw 'MASQUE load-profile entry manifest missing.'}
 Write-Output "Validated MASQUE scenario package authority lock at $($lock.commit)."

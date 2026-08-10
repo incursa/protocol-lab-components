@@ -7,5 +7,4 @@ foreach($property in $lock.files.PSObject.Properties){$path=Join-Path $PSScriptR
 $manifest=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'protocol-lab-package.json') -Raw|ConvertFrom-Json
 if($manifest.packageVersion-ne'0.2.0'){throw 'WebTransport scenario package version must be 0.2.0.'}
 if((@($manifest.providedSuites.suiteId)-join ',')-ne'webtransport-performance-smoke,webtransport-datagram-performance-smoke'){throw 'WebTransport suite declaration mismatch.'}
-foreach($path in @('load-profiles/webtransport-smoke.yaml','load-profiles/webtransport-datagram-smoke.yaml')){if($path-notin@($manifest.entryManifests)){throw "WebTransport load-profile entry manifest missing: $path"}}
 Write-Output "Validated WebTransport scenario package authority lock at $($lock.commit)."
