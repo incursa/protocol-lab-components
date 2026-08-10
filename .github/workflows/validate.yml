@@ -7,6 +7,16 @@ on:
       - main
 
 jobs:
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate public documentation entrypoints
+        shell: pwsh
+        run: ./scripts/package/Test-ProtocolLabComponentDocumentation.ps1
+
   manifests:
     runs-on: ubuntu-latest
     steps:

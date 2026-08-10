@@ -12,7 +12,53 @@ runner must still select compatible packages, execute the selected scenario,
 retain the package identities, and report `unsupported` or `unavailable`
 explicitly when a cell cannot run.
 
-## Obtain and verify a package
+## Choose your path
+
+- To evaluate the package contract today, use the source quickstart below.
+- To consume a published bundle, first check the
+  [Releases page](https://github.com/incursa/protocol-lab-components/releases).
+- To author a new component, read [CONTRIBUTING.md](../CONTRIBUTING.md) and
+  copy the closest manifest under [`templates/`](../templates/).
+- To understand scenarios, run plans, results, and claim boundaries, use the
+  public [`incursa/protocol-lab`](https://github.com/incursa/protocol-lab)
+  repository.
+
+A GitHub Actions artifact is build evidence, not a public release. If the
+Releases page is empty, no downloadable release bundle has been published yet.
+
+## Five-minute source verification
+
+This path needs Git and PowerShell 7. It deliberately builds a declarative raw
+QUIC scenario package, so Docker and protocol runtime dependencies are not
+required:
+
+```powershell
+git clone https://github.com/incursa/protocol-lab-components.git
+Set-Location protocol-lab-components
+
+pwsh ./scripts/package/Validate-ProtocolLabComponentManifests.ps1
+
+$outputRoot = Join-Path (Get-Location) 'artifacts/quickstart'
+pwsh ./scripts/package/Build-RawQuicScenarioPackage.ps1 `
+  -OutputRoot $outputRoot
+
+$package = Get-ChildItem -LiteralPath $outputRoot -File `
+  -Filter 'org.protocol-lab.components.scenario.raw-quic-transport.*.plabpkg' |
+  Sort-Object Name |
+  Select-Object -Last 1
+
+pwsh ./scripts/package/Test-ProtocolLabPackageBuildAttestation.ps1 `
+  -PackagePath $package.FullName `
+  -AttestationPath ($package.FullName + '.build-attestation.json') `
+  -RequireParityEligible
+```
+
+Success produces one `.plabpkg`, its matching build attestation, and a final
+`Validated package build attestation` message. Run this from a clean checkout;
+dirty-source packages are diagnostic-only and intentionally fail the parity
+gate.
+
+## Obtain and verify a released package
 
 Download the `.plabpkg`, its matching `.plabpkg.build-attestation.json`, and
 the release `SHA256SUMS.txt` from a ProtocolLab Components release. Verify the
