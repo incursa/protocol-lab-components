@@ -30,6 +30,17 @@ jobs:
             implementations/quic-go-http3/go.sum
             executors/quic-go-raw-load/source/go.sum
 
+      - name: Setup Rust cross-targets
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-gnu,x86_64-unknown-linux-musl
+
+      - name: Install Rust cross-linkers
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes mingw-w64 musl-tools
+
       - name: Verify Docker Engine
         shell: pwsh
         run: |

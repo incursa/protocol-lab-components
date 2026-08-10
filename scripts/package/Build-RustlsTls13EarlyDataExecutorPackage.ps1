@@ -3,7 +3,7 @@ param(
     [ValidateSet('win-x64','linux-x64')][string]$RuntimeIdentifier='win-x64',
     [string]$Root=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,
     [string]$OutputRoot=(Join-Path $Root 'artifacts/packages'),
-    [string]$Toolchain='stable-x86_64-pc-windows-gnu',
+    [string]$Toolchain=$(if($IsWindows){'stable-x86_64-pc-windows-gnu'}else{'stable'}),
     [switch]$AllowDirtySource
 )
 
@@ -13,7 +13,11 @@ $componentName='rustls-tls13-early-data-executor';$componentRoot=Join-Path $Root
 & cargo "+$Toolchain" test --locked --manifest-path (Join-Path $sourceRoot 'Cargo.toml')
 if($LASTEXITCODE-ne 0){throw 'rustls TLS early-data executor tests failed.'}
 $rid=switch($RuntimeIdentifier){
-    'win-x64'{@{os='windows';arch='x64';target=$null;name='rustls-tls13-early-data-executor.exe';source='target/release/protocol-lab-rustls-tls13-early-data-executor.exe'}}
+    'win-x64'{
+        $target=if($IsWindows){$null}else{'x86_64-pc-windows-gnu'}
+        $source=if($target){"target/$target/release/protocol-lab-rustls-tls13-early-data-executor.exe"}else{'target/release/protocol-lab-rustls-tls13-early-data-executor.exe'}
+        @{os='windows';arch='x64';target=$target;name='rustls-tls13-early-data-executor.exe';source=$source}
+    }
     'linux-x64'{@{os='linux';arch='x64';target='x86_64-unknown-linux-musl';name='rustls-tls13-early-data-executor';source='target/x86_64-unknown-linux-musl/release/protocol-lab-rustls-tls13-early-data-executor'}}
 }
 $buildArgs=@("+$Toolchain",'build','--locked','--release','--manifest-path',(Join-Path $sourceRoot 'Cargo.toml'))
