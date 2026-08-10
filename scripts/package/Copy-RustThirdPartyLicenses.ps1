@@ -2,10 +2,13 @@
 param(
     [Parameter(Mandatory)][string]$ManifestPath,
     [Parameter(Mandatory)][string]$Destination,
-    [string]$Toolchain='stable-x86_64-pc-windows-gnu'
+    [string]$Toolchain=''
 )
 
 $ErrorActionPreference='Stop'
+if ([string]::IsNullOrWhiteSpace($Toolchain)) {
+    $Toolchain = if ($IsWindows) { 'stable-x86_64-pc-windows-gnu' } else { 'stable-x86_64-unknown-linux-gnu' }
+}
 $ManifestPath=[IO.Path]::GetFullPath($ManifestPath)
 $Destination=[IO.Path]::GetFullPath($Destination)
 if(Test-Path $Destination){Remove-Item -LiteralPath $Destination -Recurse -Force}

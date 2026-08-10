@@ -3,21 +3,20 @@ param(
     [ValidateSet('win-x64','linux-x64')][string]$RuntimeIdentifier='win-x64',
     [string]$Root=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,
     [string]$OutputRoot=(Join-Path $Root 'artifacts/packages'),
-    [string]$Toolchain=$(if($IsWindows){'stable-x86_64-pc-windows-gnu'}else{'stable'}),
+    [string]$Toolchain='',
     [switch]$AllowDirtySource
 )
 
 $ErrorActionPreference='Stop'
+if ([string]::IsNullOrWhiteSpace($Toolchain)) {
+    $Toolchain = if ($IsWindows) { 'stable-x86_64-pc-windows-gnu' } else { 'stable-x86_64-unknown-linux-gnu' }
+}
 $Root=[IO.Path]::GetFullPath($Root);$OutputRoot=[IO.Path]::GetFullPath($OutputRoot)
 $componentName='rustls-tls13-early-data';$componentRoot=Join-Path $Root "implementations/$componentName";$sourceRoot=Join-Path $componentRoot 'source'
 & cargo "+$Toolchain" test --locked --manifest-path (Join-Path $sourceRoot 'Cargo.toml')
 if($LASTEXITCODE-ne 0){throw 'rustls TLS early-data target tests failed.'}
 $rid=switch($RuntimeIdentifier){
-    'win-x64'{
-        $target=if($IsWindows){$null}else{'x86_64-pc-windows-gnu'}
-        $source=if($target){"target/$target/release/protocol-lab-rustls-tls13-early-data-target.exe"}else{'target/release/protocol-lab-rustls-tls13-early-data-target.exe'}
-        @{os='windows';arch='x64';target=$target;name='rustls-tls13-early-data.exe';source=$source}
-    }
+    'win-x64'{if($IsWindows){@{os='windows';arch='x64';target=$null;name='rustls-tls13-early-data.exe';source='target/release/protocol-lab-rustls-tls13-early-data-target.exe'}}else{@{os='windows';arch='x64';target='x86_64-pc-windows-gnu';name='rustls-tls13-early-data.exe';source='target/x86_64-pc-windows-gnu/release/protocol-lab-rustls-tls13-early-data-target.exe'}}}
     'linux-x64'{@{os='linux';arch='x64';target='x86_64-unknown-linux-musl';name='rustls-tls13-early-data';source='target/x86_64-unknown-linux-musl/release/protocol-lab-rustls-tls13-early-data-target'}}
 }
 $buildArgs=@("+$Toolchain",'build','--locked','--release','--manifest-path',(Join-Path $sourceRoot 'Cargo.toml'))

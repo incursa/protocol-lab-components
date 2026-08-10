@@ -30,16 +30,31 @@ jobs:
             implementations/quic-go-http3/go.sum
             executors/quic-go-raw-load/source/go.sum
 
-      - name: Setup Rust cross-targets
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-pc-windows-gnu,x86_64-unknown-linux-musl
-
-      - name: Install Rust cross-linkers
+      - name: Setup Rust toolchain
         shell: bash
         run: |
+          rustup toolchain install stable --profile minimal
+          for target in x86_64-pc-windows-gnu x86_64-unknown-linux-musl; do
+            for attempt in 1 2 3; do
+              if rustup target add --toolchain stable "$target"; then
+                break
+              fi
+              if [[ "$attempt" == 3 ]]; then
+                echo "Unable to install Rust target $target after $attempt attempts." >&2
+                exit 1
+              fi
+              sleep 5
+            done
+          done
           sudo apt-get update
-          sudo apt-get install --yes mingw-w64 musl-tools
+          sudo apt-get install -y gcc-mingw-w64-x86-64
+          command -v x86_64-w64-mingw32-gcc
+          rust_sysroot="$(rustc +stable --print sysroot)"
+          rust_host="$(rustc +stable -vV | sed -n 's/^host: //p')"
+          rust_lld="$rust_sysroot/lib/rustlib/$rust_host/bin/rust-lld"
+          test -x "$rust_lld"
+          echo "CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=$rust_lld" >> "$GITHUB_ENV"
 
       - name: Verify Docker Engine
         shell: pwsh
