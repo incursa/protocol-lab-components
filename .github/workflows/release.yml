@@ -34,17 +34,17 @@ jobs:
 
     steps:
       - name: Checkout requested source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.ref }}
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
           go-version: 1.26.x
           cache-dependency-path: |
@@ -94,7 +94,7 @@ jobs:
           }
 
       - name: Upload validated package assets
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: protocol-lab-component-release-assets
           if-no-files-found: error
