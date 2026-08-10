@@ -13,10 +13,7 @@
     "scenarios/http2/websocket/rfc8441-multi-message-text-echo.yaml",
     "suites/http2-websocket-performance-smoke.yaml",
     "suites/http2-websocket-performance-comparison.yaml",
-    "suites/http2-websocket-multi-message-diagnostic.yaml",
-    "load-profiles/websocket-smoke.yaml",
-    "load-profiles/websocket-comparison.yaml",
-    "load-profiles/diagnostic.yaml"
+    "suites/http2-websocket-multi-message-diagnostic.yaml"
   ],
   "providedScenarios": [
     {"scenarioId":"http2.websocket.rfc8441.extended-connect","displayName":"RFC 8441 Extended CONNECT","protocols":["h2","tls"]},

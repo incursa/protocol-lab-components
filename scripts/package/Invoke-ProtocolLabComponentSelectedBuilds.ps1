@@ -15,11 +15,15 @@ $selection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelectio
 if ($selection.fullBuildDryRunRequired) {
     Write-Warning "Unknown release inputs require legacy full-build dry-run under policy '$((Get-Content -LiteralPath $GraphPath -Raw | ConvertFrom-Json).unmodeledPackagePolicy)': $($selection.unknownPaths -join ', ')"
 }
-if (-not $SkipBuild) {
+if (-not $SkipBuild -and $selection.fullBuildDryRunRequired) {
+    Write-Host 'Skipping component-selected builds because the full package-production workflow is required.'
+}
+elseif (-not $SkipBuild) {
     foreach ($component in @($selection.selectedComponents)) {
         $scriptPath = Join-Path $Root $component.script
         Write-Host "Building selected component $($component.componentId) with $($component.script)."
-        & $scriptPath @($component.arguments) -Root $Root
+        $buildArguments = @($component.arguments | Where-Object { $null -ne $_ })
+        & $scriptPath @buildArguments -Root $Root
         if ($LASTEXITCODE -ne 0) { throw "Selected component build failed for '$($component.componentId)'." }
     }
 }

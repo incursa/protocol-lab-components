@@ -135,15 +135,12 @@ scenarioCoverage:
     status: supported
   quic.transport.stream-download.1mb:
     status: supported
-    behavior: exact deterministic 1MiB server-to-client payload validation
   quic.transport.stream-throughput.16mb:
     status: supported
   quic.transport.sustained-stream.256x64kb:
     status: supported
-    behavior: exactly 256 sequential 64KiB writes on one long-lived stream
   quic.transport.sustained-download.256x64kb:
     status: supported
-    behavior: exact deterministic 16MiB server-to-client payload delivered as 256 sequential 64KiB writes
   quic.transport.latency.echo-1kb:
     status: supported
   quic.transport.multiplex.100x1kb:

@@ -20,6 +20,14 @@ try { $after = Get-ClosureDigest 'http2-performance-scenarios' }
 finally { Remove-Item -LiteralPath $unrelatedPath -Force -ErrorAction SilentlyContinue }
 if ($before -ne $after) { throw 'An unrelated documentation file changed the modeled component closure digest.' }
 
+$ignoredBuildRoot = Join-Path $Root 'scenarios/http2-performance/target/component-closure-ignore-test'
+$ignoredBuildFile = Join-Path $ignoredBuildRoot 'active-build.lock'
+New-Item -ItemType Directory -Force -Path $ignoredBuildRoot | Out-Null
+Set-Content -LiteralPath $ignoredBuildFile -Value 'generated and gitignored build state' -Encoding utf8NoBOM
+try { $afterIgnoredBuild = Get-ClosureDigest 'http2-performance-scenarios' }
+finally { Remove-Item -LiteralPath $ignoredBuildRoot -Recurse -Force -ErrorAction SilentlyContinue }
+if ($before -ne $afterIgnoredBuild) { throw 'Gitignored build output changed the modeled component closure digest.' }
+
 $selection = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'scenarios/http2-performance/scenarios/http2/core/plaintext.yaml' | ConvertFrom-Json
 if (@($selection.selectedComponents.componentId | Sort-Object) -join ',' -ne 'apache-http2,caddy-http2,go-http2-executor,http2-performance-scenarios,kestrel-http2,nginx-http2') {
     throw 'Declared reverse-dependency selection did not include the complete modeled HTTP/2 cohort.'
@@ -114,6 +122,8 @@ if (@($certificateSelection.selectedComponents.componentId | Sort-Object) -join 
 }
 $unknown = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'unmodeled-release-input.txt' | ConvertFrom-Json
 if (-not $unknown.fullBuildDryRunRequired) { throw 'Unknown changes must require conservative full-build dry-run.' }
+$dotPrefixedPath = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath './.github/workflows/validate.yml' | ConvertFrom-Json
+if (@($dotPrefixedPath.unknownPaths) -notcontains '.github/workflows/validate.yml') { throw 'A leading ./ prefix must not remove the dot from a repository path.' }
 
 Remove-Item -LiteralPath $ArtifactRoot -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $ArtifactRoot | Out-Null

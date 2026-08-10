@@ -2,6 +2,18 @@
 
 This documentation supports the component package repository.
 
+## Start Here
+
+- [Third-party package consumption](third-party-package-consumption.md) gives
+  the shortest verified path to build, inspect, attest, and pin a package.
+- [Package scripts](../scripts/package/README.md) documents individual and
+  full-catalog builders, prerequisites, and generated evidence.
+- [Root README](../README.md) explains repository ownership and package
+  boundaries.
+- [Releases](https://github.com/incursa/protocol-lab-components/releases) is
+  the authoritative public distribution surface. If it is empty, build from
+  source; workflow artifacts are not releases.
+
 ## Repository Surfaces
 
 - [Root README](../README.md) explains the monorepo boundary, package layout,
@@ -32,7 +44,7 @@ This documentation supports the component package repository.
 - [Contributor agreement automation](contributor-agreement-automation.md)
   records the owner setup required for the CLA workflow.
 - The QUIC/HTTP/3 parity matrix lives in
-  `C:\shared\src\incursa\quic-dotnet\docs\protocol-lab\quic-http3-component-parity-matrix.md`
+  [`incursa/quic-dotnet`](https://github.com/incursa/quic-dotnet/blob/main/docs/protocol-lab/quic-http3-component-parity-matrix.md)
   because `quic-dotnet` owns the Incursa support and proof story.
 
 ## Manifest Names

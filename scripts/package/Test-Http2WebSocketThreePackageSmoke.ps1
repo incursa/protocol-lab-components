@@ -52,8 +52,9 @@ $authority = Get-Content (Join-Path $scenarioRoot 'authority-lock.json') -Raw | 
 if ($authority.commit -ne '8c4bbe8b7ee94b0e53427dd5ac15e7ede7b77574') { throw 'authority commit mismatch' }
 if ($scenarioManifest.packageVersion -ne '0.1.2' -or $executorManifest.packageVersion -ne '0.2.0' -or $targetManifest.packageVersion -ne '0.1.2') { throw 'immutable package version mismatch' }
 if ($scenarioManifest.providedScenarios.Count -ne 6 -or $executorManifest.providedTestExecutors[0].scenarios.Count -ne 6 -or $targetManifest.providedImplementations[0].scenarios.Count -ne 6) { throw 'six-ID package claim mismatch' }
-$loadProfileEntries = @($scenarioManifest.entryManifests | Where-Object { $_ -like 'load-profiles/*' } | Sort-Object)
-if (($loadProfileEntries -join ',') -ne 'load-profiles/diagnostic.yaml,load-profiles/websocket-comparison.yaml,load-profiles/websocket-smoke.yaml') { throw 'scenario load-profile entry mismatch' }
+foreach ($loadProfile in @('load-profiles/diagnostic.yaml', 'load-profiles/websocket-comparison.yaml', 'load-profiles/websocket-smoke.yaml')) {
+    if (-not (Test-Path -LiteralPath (Join-Path $scenarioRoot $loadProfile) -PathType Leaf)) { throw "scenario load-profile missing from package: $loadProfile" }
+}
 foreach ($license in @('golang-x-net-LICENSE.txt', 'golang-x-text-LICENSE.txt')) {
     if (-not (Test-Path (Join-Path $executorRoot "third-party/$license"))) { throw "missing $license" }
 }

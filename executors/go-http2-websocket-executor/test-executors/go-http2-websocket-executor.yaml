@@ -50,5 +50,5 @@ supportedArtifactTypes:
   - {type: load.stderr.log, producedByStates: [stopped, failed]}
   - {type: unsupported.json, producedByStates: [failed]}
 metricsAvailability: {available: true, availableKinds: [validation, connections-per-second, messages-per-second, bytes-per-second, latency-percentiles, operation-outcomes, configured-capacity, observed-active-connections, effective-concurrency, effective-streams]}
-parser: {id: protocol-lab-websocket-h2-json, type: protocol-lab-websocket-h2-json, preservesRawOutput: true}
+parser: {id: protocol-lab-websocket-h2-json, preservesRawOutput: true}
 telemetry: {supported: true, supported_contract_versions: [telemetry-bundle-v1], supported_scopes: [test-executor, load-generator], supported_artifact_kinds: [summary, metrics, stdout, stderr, raw], export_modes: [inline, artifact-bundle]}

@@ -14,6 +14,14 @@ Component-specific build steps may live beside the component, but shared packagi
 
 ## Package Builders
 
+For a first package build that does not require Docker, follow the
+[five-minute source verification](../../docs/third-party-package-consumption.md#five-minute-source-verification).
+
+The full catalog requires PowerShell 7, Git, Docker Engine, .NET 10, Go,
+Node.js, and Rust (`cargo` and `rustc`). Docker must be running, not merely
+installed. Individual component builders can require fewer tools; consult the
+component's `protocol-lab.internal.json`, toolchain metadata, and README.
+
 Use the full package build orchestrator for CI artifacts and release handoff:
 
 ```powershell

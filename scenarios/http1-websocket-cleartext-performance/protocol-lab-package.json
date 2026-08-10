@@ -10,8 +10,7 @@
     "scenarios/http1/websocket/rfc6455-cleartext-text-echo.yaml",
     "scenarios/http1/websocket/rfc6455-cleartext-binary-echo.yaml",
     "scenarios/http1/websocket/rfc6455-cleartext-close.yaml",
-    "suites/http1-websocket-cleartext-performance-smoke.yaml",
-    "load-profiles/websocket-smoke.yaml"
+    "suites/http1-websocket-cleartext-performance-smoke.yaml"
   ],
   "providedScenarios": [
     {"scenarioId":"http1.websocket.rfc6455.cleartext.upgrade","displayName":"RFC 6455 HTTP/1.1 Cleartext Upgrade","protocols":["h1"]},

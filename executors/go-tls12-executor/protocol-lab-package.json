@@ -6,5 +6,5 @@
   "displayName":"Go TLS 1.2 Compatibility Executor",
   "entryManifests":["test-executors/go-tls12-executor.yaml"],
   "providedTestExecutors":[{"testExecutorId":"go-tls12-executor","displayName":"Go TLS 1.2 Compatibility Executor","protocols":["tls"],"scenarios":["tls.handshake.full.tls12"],"tests":["tls.handshake.full.tls12"]}],
-  "dependencies":{}
+  "dependencies":{"requiredCapabilities":[]}
 }

@@ -4,6 +4,15 @@ on:
   schedule:
     - cron: '17 3 * * *'
   workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/package-production.yml'
+      - 'executors/**'
+      - 'implementations/**'
+      - 'release/**'
+      - 'scenarios/**'
+      - 'scripts/package/**'
+      - 'templates/**'
 
 permissions:
   contents: read
@@ -15,15 +24,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
           go-version: 1.26.x
           cache-dependency-path: |
@@ -56,12 +65,21 @@ jobs:
           echo "CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc" >> "$GITHUB_ENV"
           echo "CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=$rust_lld" >> "$GITHUB_ENV"
 
+      - name: Verify Docker Engine
+        shell: pwsh
+        run: |
+          $serverVersion = @(docker version --format '{{.Server.Version}}' 2>$null)
+          if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace(($serverVersion -join ' ').Trim())) {
+            throw 'Docker Engine is required for the full ProtocolLab component catalog build.'
+          }
+          Write-Host "Docker Engine $($serverVersion -join ' ') is available."
+
       - name: Build all ProtocolLab component packages (never publishes)
         shell: pwsh
         run: ./scripts/package/Build-AllProtocolLabComponentPackages.ps1 -Clean
 
       - name: Upload package production artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: protocol-lab-component-packages
           if-no-files-found: error

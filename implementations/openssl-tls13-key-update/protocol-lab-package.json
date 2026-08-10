@@ -11,5 +11,5 @@
     "protocols": ["tls"],
     "scenarios": ["tls.key-update.diagnostic"]
   }],
-  "dependencies": {}
+  "dependencies": {"requiredCapabilities": []}
 }

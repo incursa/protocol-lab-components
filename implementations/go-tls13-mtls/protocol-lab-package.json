@@ -11,5 +11,5 @@
     "protocols": ["tls"],
     "scenarios": ["tls.handshake.mutual-auth"]
   }],
-  "dependencies": {}
+  "dependencies": {"requiredCapabilities": []}
 }

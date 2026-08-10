@@ -8,9 +8,7 @@
     "scenarios/http1/core/plaintext.yaml",
     "scenarios/http1/core/json.yaml",
     "suites/http1-performance-smoke.yaml",
-    "suites/http1-comparison-benchmark.yaml",
-    "load-profiles/http1-smoke.yaml",
-    "load-profiles/http1-comparison.yaml"
+    "suites/http1-comparison-benchmark.yaml"
   ],
   "providedScenarios": [
     {

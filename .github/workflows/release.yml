@@ -1,0 +1,118 @@
+name: package-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Commit or branch to build'
+        required: true
+        default: main
+        type: string
+      release_tag:
+        description: 'Immutable release tag to create when dry_run is false'
+        required: true
+        type: string
+      release_intent:
+        description: 'Reviewed release intent path in this checkout'
+        required: true
+        type: string
+      dry_run:
+        description: 'Build and validate assets without creating a GitHub release'
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  package-release:
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ inputs.release_tag }}
+      RELEASE_INTENT: ${{ inputs.release_intent }}
+
+    steps:
+      - name: Checkout requested source
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: 1.26.x
+          cache-dependency-path: |
+            implementations/quic-go-http3/go.sum
+            executors/quic-go-raw-load/source/go.sum
+
+      - name: Verify Docker Engine
+        shell: pwsh
+        run: |
+          $serverVersion = @(docker version --format '{{.Server.Version}}' 2>$null)
+          if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace(($serverVersion -join ' ').Trim())) {
+            throw 'Docker Engine is required for the full ProtocolLab component catalog build.'
+          }
+          Write-Host "Docker Engine $($serverVersion -join ' ') is available."
+
+      - name: Validate reviewed release intent
+        shell: pwsh
+        run: |
+          $intentPath = Join-Path (Get-Location) $env:RELEASE_INTENT
+          if (-not (Test-Path -LiteralPath $intentPath -PathType Leaf)) {
+            throw "Release intent was not found: $intentPath"
+          }
+          $intent = Get-Content -LiteralPath $intentPath -Raw | ConvertFrom-Json
+          if ([string]$intent.schemaVersion -ne 'protocol-lab.release-intent.v1') { throw 'Release intent has an unsupported schemaVersion.' }
+          if ([string]$intent.classification -ne 'release') { throw 'Package publication requires classification=release.' }
+          if ([string]$intent.status -ne 'approved') { throw 'Package publication requires status=approved.' }
+          if (@($intent.components).Count -eq 0) { throw 'A release intent must name at least one component.' }
+          if ([string]::IsNullOrWhiteSpace($env:RELEASE_TAG)) { throw 'release_tag must not be empty.' }
+          if ($env:RELEASE_TAG -notmatch '^[A-Za-z0-9][A-Za-z0-9._/-]*$') { throw "release_tag contains unsupported characters: $env:RELEASE_TAG" }
+
+      - name: Build and validate all package artifacts
+        shell: pwsh
+        run: ./scripts/package/Build-AllProtocolLabComponentPackages.ps1 -Clean
+
+      - name: Run release-system validation
+        shell: pwsh
+        run: |
+          ./scripts/package/Test-ProtocolLabComponentReleaseGraph.ps1
+          ./scripts/package/Test-ProtocolLabReleaseIntents.ps1
+          $attestationScript = Join-Path (Get-Location) 'scripts/package/Test-ProtocolLabPackageBuildAttestation.ps1'
+          $packages = @(Get-ChildItem -LiteralPath artifacts/packages -File -Filter '*.plabpkg' | Sort-Object Name)
+          if ($packages.Count -eq 0) { throw 'No package artifacts were produced.' }
+          foreach ($package in $packages) {
+            $attestationPath = "$($package.FullName).build-attestation.json"
+            if (-not (Test-Path -LiteralPath $attestationPath -PathType Leaf)) { throw "Missing build attestation for $($package.Name)." }
+            & $attestationScript -PackagePath $package.FullName -AttestationPath $attestationPath -RequireParityEligible
+          }
+
+      - name: Upload validated package assets
+        uses: actions/upload-artifact@v7
+        with:
+          name: protocol-lab-component-release-assets
+          if-no-files-found: error
+          path: |
+            artifacts/packages/*.plabpkg
+            artifacts/packages/*.plabpkg.build-attestation.json
+            artifacts/packages/package-index.json
+            artifacts/packages/package-index.md
+            artifacts/packages/SHA256SUMS.txt
+            artifacts/packages/package-validation-summary.json
+            artifacts/packages/package-validation-summary.md
+
+      - name: Create GitHub release
+        if: ${{ inputs.dry_run == false }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $assets = @(Get-ChildItem -LiteralPath artifacts/packages -File | Where-Object { $_.Name -match '\.(plabpkg|json|md|txt)$' } | ForEach-Object FullName)
+          if ($assets.Count -eq 0) { throw 'No validated package release assets were produced.' }
+          & gh release create $env:RELEASE_TAG --target '${{ inputs.ref }}' --title $env:RELEASE_TAG --notes-file artifacts/packages/package-index.md @assets

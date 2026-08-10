@@ -59,7 +59,6 @@ metricsAvailability:
   availableKinds: [validation, handshakes-per-second, bytes-per-second, latency-percentiles, total-transferred-bytes, operation-outcomes, tls-negotiation, record-observation]
 parser:
   id: protocol-lab-tls-json
-  type: protocol-lab-tls-json
   preservesRawOutput: true
 telemetry:
   supported: true

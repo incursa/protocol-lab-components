@@ -60,11 +60,15 @@ Run the focused package validation before review:
 
 ```powershell
 pwsh ./scripts/package/Validate-ProtocolLabComponentManifests.ps1
+pwsh ./scripts/package/Test-ProtocolLabComponentReleaseGraph.ps1
+pwsh ./scripts/package/Test-ProtocolLabComponentDocumentation.ps1
 ```
 
 When changing package builders, also run the affected wrapper under
 `scripts/package/` and confirm the generated `.plabpkg` remains under
-`artifacts/packages/`.
+`artifacts/packages/`. Run the full-catalog builder for changes to shared
+packaging or release behavior; it requires a running Docker Engine and the
+toolchains listed in [scripts/package/README.md](scripts/package/README.md).
 
 ## Style
 

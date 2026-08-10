@@ -26,5 +26,5 @@
       ]
     }
   ],
-  "dependencies": {}
+  "dependencies": {"requiredCapabilities": []}
 }

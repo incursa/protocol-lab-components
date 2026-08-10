@@ -33,5 +33,5 @@ supportedArtifactTypes:
   - {type: load.stderr.log, producedByStates: [stopped, failed]}
   - {type: unsupported.json, producedByStates: [failed]}
 metricsAvailability: {available: true, availableKinds: [validation, sessions-per-second, datagrams-per-second, bytes-per-second, stream-latency-percentiles, datagram-latency-percentiles, operation-outcomes, effective-streams, effective-sessions]}
-parser: {id: protocol-lab-webtransport-json, type: protocol-lab-webtransport-json, preservesRawOutput: true}
+parser: {id: protocol-lab-webtransport-json, preservesRawOutput: true}
 telemetry: {supported: true, supported_contract_versions: [telemetry-bundle-v1], supported_scopes: [test-executor, load-generator], supported_artifact_kinds: [summary, metrics, stdout, stderr, raw], export_modes: [inline, artifact-bundle]}

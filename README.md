@@ -15,6 +15,23 @@ This repository owns ProtocolLab components that are useful outside the core pub
 - shared toolchain pins used to build those packages
 - package scripts and manifest templates
 
+## Start Here
+
+Choose the path that matches what you are trying to do:
+
+| Goal | Start here |
+| --- | --- |
+| Understand ProtocolLab's public contracts | [`incursa/protocol-lab`](https://github.com/incursa/protocol-lab) |
+| Verify a package or build one from source | [Third-party package guide](docs/third-party-package-consumption.md) |
+| Add or update a component | [Adding a component](#adding-a-component) and [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Run a hosted experiment | [lab.incursa.com](https://lab.incursa.com/) |
+
+Public package availability is visible on the
+[Releases page](https://github.com/incursa/protocol-lab-components/releases).
+If no release is listed, use the source-build quickstart in the third-party
+guide; a GitHub Actions artifact or locally built package is not a published
+release.
+
 The default ownership model is a component monorepo. Kestrel HTTP/1, Kestrel HTTP/2, Caddy HTTP/1, and small alternate executors should not each become a new repository just because they produce separate ProtocolLab packages. They share package conventions, release plumbing, validation scripts, and usually the same maintainers.
 
 Separate repositories should be created only when there is a concrete boundary that makes shared operation more expensive than useful:
@@ -108,6 +125,14 @@ Package IDs should use a stable dotted namespace:
 
 Versioning is per package. A Caddy HTTP/1 wrapper can ship `0.2.0` while Kestrel HTTP/1 remains `0.1.0`.
 
+Third-party consumers should start with
+[`docs/third-party-package-consumption.md`](docs/third-party-package-consumption.md).
+It documents how to obtain a release artifact, verify its hash and build
+attestation, inspect the package manifests, and pin the package in an
+immutable ProtocolLab run plan. The manual release workflow is
+[`release.yml`](.github/workflows/release.yml); it is dry-run
+by default and requires an approved release intent before it can publish.
+
 Shared scripts may build all packages, but publish and release metadata must preserve each package ID and version. Do not replace per-package identity with one repository-wide package version.
 
 ## Adding A Component
@@ -120,9 +145,15 @@ Shared scripts may build all packages, but publish and release metadata must pre
 
 Adding Kestrel HTTP/1 or Caddy HTTP/1 is a normal component addition in this repository. It does not require creating another repository.
 
-## Current Lane Packages
+## Package Catalog
 
-Implementation packages:
+The authoritative inventory is the set of component-local
+`protocol-lab-package.json` files and the reviewed
+[`release/component-graph.v1.json`](release/component-graph.v1.json). Run the
+manifest validator to obtain the current package count. The lists below are
+selected lane examples, not a complete catalog.
+
+Selected implementation packages:
 
 - `org.protocol-lab.components.implementation.kestrel-http1`
 - `org.protocol-lab.components.implementation.kestrel-http2`
@@ -147,7 +178,7 @@ Implementation packages:
 - `org.protocol-lab.components.implementation.aioquic-raw`
 - `org.protocol-lab.components.implementation.quiche-raw`
 
-Test-executor packages:
+Selected test-executor packages:
 
 - `org.protocol-lab.components.executor.http1-reference`
 - `org.protocol-lab.components.executor.http1-go-smoke`
@@ -157,7 +188,7 @@ Test-executor packages:
 - `org.protocol-lab.components.executor.h3spec-http3-qpack`
 - `org.protocol-lab.components.executor.aioquic-rfc9220-websocket`
 
-Scenario-pack packages:
+Selected scenario-pack packages:
 
 - `org.protocol-lab.components.scenario.raw-quic-transport`
 - `org.protocol-lab.components.scenario.h3spec-http3-qpack`

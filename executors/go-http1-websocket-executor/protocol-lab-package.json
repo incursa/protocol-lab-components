@@ -12,5 +12,5 @@
     "scenarios":["http1.websocket.rfc6455.cleartext.upgrade","http1.websocket.rfc6455.cleartext.control-frames","http1.websocket.rfc6455.cleartext.text-echo","http1.websocket.rfc6455.cleartext.binary-echo","http1.websocket.rfc6455.cleartext.close"],
     "tests":["http1.websocket.rfc6455.cleartext.upgrade","http1.websocket.rfc6455.cleartext.control-frames","http1.websocket.rfc6455.cleartext.text-echo","http1.websocket.rfc6455.cleartext.binary-echo","http1.websocket.rfc6455.cleartext.close"]
   }],
-  "dependencies":{}
+  "dependencies":{"requiredCapabilities":[]}
 }

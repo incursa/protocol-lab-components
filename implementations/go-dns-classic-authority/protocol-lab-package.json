@@ -6,5 +6,5 @@
   "displayName":"Go Classic DNS Local Fixture Authority",
   "entryManifests":["implementations/go-dns-classic-authority.yaml"],
   "providedImplementations":[{"implementationId":"go-dns-classic-authority","displayName":"Go Classic DNS Local Fixture Authority","protocols":["dns-udp","dns-tcp"],"scenarios":["dns.classic.udp.query.a","dns.classic.tcp.query.a","dns.classic.udp-truncated-tcp-retry"]}],
-  "dependencies":{}
+  "dependencies":{"requiredCapabilities":[]}
 }

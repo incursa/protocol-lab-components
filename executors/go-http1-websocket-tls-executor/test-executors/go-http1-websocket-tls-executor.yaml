@@ -54,7 +54,7 @@ supportedArtifactTypes:
   - {type: result.json, producedByStates: [stopped, failed]}
   - {type: websocket-executor-result.json, producedByStates: [stopped, failed]}
 metricsAvailability: {available: true, availableKinds: [validation, connections-per-second, messages-per-second, bytes-per-second, latency-percentiles, operation-outcomes]}
-parser: {id: protocol-lab-websocket-h1-tls-json, type: protocol-lab-websocket-h1-tls-json, preservesRawOutput: true}
+parser: {id: protocol-lab-websocket-h1-tls-json, preservesRawOutput: true}
 telemetry:
   supported: true
   supported_contract_versions: [telemetry-bundle-v1]

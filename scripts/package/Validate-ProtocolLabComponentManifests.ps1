@@ -184,6 +184,9 @@ foreach ($file in $publicManifestFiles) {
             elseif ($manifest.kind -eq 'test-executor' -and $entryPath -notmatch '^test-executors/') {
                 $errors.Add("$($file.FullName): test-executor entry manifest '$entryPath' must be under test-executors/.")
             }
+            elseif ($manifest.kind -eq 'scenario-pack' -and $entryPath -notmatch '^(scenarios|suites|specifications)/') {
+                $errors.Add("$($file.FullName): scenario-pack entry manifest '$entryPath' must be under scenarios/, suites/, or specifications/.")
+            }
 
             $entryFullPath = Join-Path $file.DirectoryName $entryPath
             if (-not (Test-Path -LiteralPath $entryFullPath -PathType Leaf)) {
