@@ -17,7 +17,10 @@ $unknown = [System.Collections.Generic.List[string]]::new()
 $templatePaths = @($graph.templates | ForEach-Object paths | ForEach-Object { $_ })
 
 foreach ($inputPath in @($ChangedPath)) {
-    $path = ([string]$inputPath).Replace('\', '/').TrimStart('./')
+    $path = ([string]$inputPath).Replace('\', '/')
+    while ($path.StartsWith('./', [System.StringComparison]::Ordinal)) {
+        $path = $path.Substring(2)
+    }
     if ([string]::IsNullOrWhiteSpace($path)) { continue }
     $matched = $false
     if ($path -eq 'release/component-graph.v1.json' -or $path.StartsWith('release/release-intents/', [System.StringComparison]::OrdinalIgnoreCase)) {

@@ -122,6 +122,8 @@ if (@($certificateSelection.selectedComponents.componentId | Sort-Object) -join 
 }
 $unknown = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath 'unmodeled-release-input.txt' | ConvertFrom-Json
 if (-not $unknown.fullBuildDryRunRequired) { throw 'Unknown changes must require conservative full-build dry-run.' }
+$dotPrefixedPath = & (Join-Path $PSScriptRoot 'Get-ProtocolLabComponentReleaseSelection.ps1') -Root $Root -GraphPath $graphPath -ChangedPath './.github/workflows/validate.yml' | ConvertFrom-Json
+if (@($dotPrefixedPath.unknownPaths) -notcontains '.github/workflows/validate.yml') { throw 'A leading ./ prefix must not remove the dot from a repository path.' }
 
 Remove-Item -LiteralPath $ArtifactRoot -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $ArtifactRoot | Out-Null
