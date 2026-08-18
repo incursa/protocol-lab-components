@@ -11,7 +11,7 @@ quinn = { version = "=0.11.11", default-features = false, features = ["runtime-t
 rcgen = { version = "=0.14.8", default-features = false, features = ["crypto", "ring"] }
 serde = { version = "=1.0.228", features = ["derive"] }
 serde_json = "=1.0.145"
-tokio = { version = "=1.48.0", features = ["io-util", "macros", "rt-multi-thread", "signal"] }
+tokio = { version = "=1.53.1", features = ["io-util", "macros", "rt-multi-thread", "signal"] }
 
 [profile.release]
 codegen-units = 1
