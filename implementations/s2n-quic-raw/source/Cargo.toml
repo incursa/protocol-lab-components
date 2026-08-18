@@ -7,7 +7,7 @@ license = "Apache-2.0"
 publish = false
 
 [dependencies]
-anyhow = "=1.0.100"
+anyhow = "=1.0.104"
 bytes = "=1.12.1"
 rcgen = { version = "=0.14.8", default-features = false, features = ["crypto", "ring"] }
 s2n-quic = { version = "=1.86.0", default-features = false, features = ["provider-address-token-default", "provider-tls-rustls"] }
