@@ -27,7 +27,7 @@
     "modules": [
       {
         "name": "s2n-quic",
-        "version": "1.83.0",
+        "version": "1.86.0",
         "sourceRepository": "https://github.com/aws/s2n-quic"
       }
     ]

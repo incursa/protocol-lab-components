@@ -8,11 +8,11 @@ Package ID: `org.protocol-lab.components.implementation.s2n-quic-raw`
 
 Pinned upstream and build inputs:
 
-- s2n-quic `1.83.0` from upstream tag `v1.83.0`
+- s2n-quic `1.86.0` from upstream tag `v1.86.0`
 - rustls TLS provider selected explicitly
 - Cargo dependency graph in `source/Cargo.lock`
-- Rust `1.88.0` Bookworm build image at
-  `rust@sha256:af306cfa71d987911a781c37b59d7d67d934f49684058f96cf72079c3626bfe0`
+- Rust `1.92.0` Bookworm build image at
+  `rust@sha256:e90e846de4124376164ddfbaab4b0774c7bdeef5e738866295e5a90a34a307a2`
 
 Supported scenarios:
 

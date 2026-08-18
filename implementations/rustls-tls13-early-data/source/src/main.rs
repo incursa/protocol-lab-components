@@ -126,7 +126,7 @@ fn run() -> Result<(), (i32, String)> {
             key_exchange_group: "X25519",
             alpn: "protocol-lab-tls",
             certificate_der_sha256: LEAF_DER_HASH,
-            crypto_provider: "rustls-rustcrypto@0.0.2-alpha",
+            crypto_provider: "oxitls-rustcrypto-provider@0.3.0",
             max_early_data_bytes: REJECTION_CIPHERTEXT_LIMIT as usize,
         })
         .map_err(|e| (1, e.to_string()))?
