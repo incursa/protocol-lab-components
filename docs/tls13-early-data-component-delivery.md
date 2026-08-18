@@ -8,7 +8,7 @@ The only supported identities are `tls.early-data.accepted` and `tls.early-data.
 
 Both identities require TLS 1.3, ALPN `protocol-lab-tls`, an authenticated package certificate, a PSK-resumed measured connection, exactly one offered 1024-byte early-data payload containing repeated `0x5A`, and payload SHA-256 `e8fb68ce4d4d002dba40c0a459d96807c96ded1c2fdefae3f56f8a0c06a4fecf`. The accepted identity requires the target to process those bytes exactly once during early data. The rejected identity requires zero early bytes processed, exactly one retry of the same bytes after the handshake, one application effect, and zero duplicate effects.
 
-The implementation is pinned by `Cargo.lock` to `rustls@0.23.35` and `rustls-rustcrypto@0.0.2-alpha`. Package builders compile Windows x64 and Linux x64 release binaries and preserve the dependency notices and license files under `third-party-licenses/`. The package contains no forked standard library, `unsafe` implementation, or `go:linkname` dependency.
+The current implementation is pinned by `Cargo.lock` to `rustls@0.23.35` and the patched `oxitls-rustcrypto-provider@0.3.0`. Package builders compile Windows x64 and Linux x64 release binaries and preserve the dependency notices and license files under `third-party-licenses/`. The package contains no forked standard library, `unsafe` implementation, or `go:linkname` dependency. The historical clean-package hashes below predate the provider upgrade and remain prior execution evidence rather than hashes for the current package source.
 
 ## Clean package evidence
 

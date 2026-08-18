@@ -1,6 +1,97 @@
 version: 2
 
 updates:
+  - package-ecosystem: cargo
+    directory: /executors/rustls-tls13-early-data-executor/source
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:20"
+      timezone: America/Denver
+    labels:
+      - dependencies
+      - rust
+    commit-message:
+      prefix: build
+
+  - package-ecosystem: cargo
+    directory: /implementations/quiche-raw/source
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:25"
+      timezone: America/Denver
+    labels:
+      - dependencies
+      - rust
+    commit-message:
+      prefix: build
+
+  - package-ecosystem: cargo
+    directory: /implementations/quinn-raw/source
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:30"
+      timezone: America/Denver
+    labels:
+      - dependencies
+      - rust
+    commit-message:
+      prefix: build
+
+  - package-ecosystem: cargo
+    directory: /implementations/rust-hyper-origin/source
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:35"
+      timezone: America/Denver
+    labels:
+      - dependencies
+      - rust
+    commit-message:
+      prefix: build
+
+  - package-ecosystem: cargo
+    directory: /implementations/rustls-tls13-early-data/source
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:40"
+      timezone: America/Denver
+    labels:
+      - dependencies
+      - rust
+    commit-message:
+      prefix: build
+
+  - package-ecosystem: cargo
+    directory: /implementations/rustls-tls13/source
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:45"
+      timezone: America/Denver
+    labels:
+      - dependencies
+      - rust
+    commit-message:
+      prefix: build
+
+  - package-ecosystem: cargo
+    directory: /implementations/s2n-quic-raw/source
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:50"
+      timezone: America/Denver
+    labels:
+      - dependencies
+      - rust
+    commit-message:
+      prefix: build
+
   - package-ecosystem: github-actions
     directory: /
     schedule:

@@ -29,7 +29,7 @@ foreach($id in @('tls.early-data.accepted','tls.early-data.rejected')){
 foreach($root in @($executorRoot,$targetRoot)){
     if(-not(Test-Path (Join-Path $root 'third-party-licenses/index.json'))){throw 'Third-party license index missing from extracted package.'}
     $licenseIndex=Get-Content (Join-Path $root 'third-party-licenses/index.json') -Raw|ConvertFrom-Json
-    foreach($dependency in @('rustls','rustls-rustcrypto','rustls-pemfile')){
+    foreach($dependency in @('rustls','oxitls-rustcrypto-provider','rustls-pemfile')){
         $entry=@($licenseIndex.packages|Where-Object name -eq $dependency)
         if($entry.Count-ne 1-or$entry[0].licenseFiles.Count-eq 0){throw "$dependency license material missing from extracted package."}
     }

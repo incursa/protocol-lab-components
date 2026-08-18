@@ -4,7 +4,7 @@
     "module": "protocol-lab-rustls-tls13-early-data-executor",
     "engineModule": "rustls",
     "engineModuleVersion": "0.23.35",
-    "cryptoProvider": "rustls-rustcrypto@0.0.2-alpha"
+    "cryptoProvider": "oxitls-rustcrypto-provider@0.3.0"
   },
   "loadGenerator": {
     "id": "rustls-tls13-early-data-load",

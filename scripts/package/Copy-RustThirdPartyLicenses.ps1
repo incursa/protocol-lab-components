@@ -45,7 +45,7 @@ foreach($package in @($metadata.packages|Sort-Object name,version)){
 $index=[ordered]@{schemaVersion='protocol-lab.third-party-licenses.v1';packages=$entries}
 $index|ConvertTo-Json -Depth 8|Set-Content (Join-Path $Destination 'index.json') -Encoding utf8NoBOM
 
-$critical=@('rustls','rustls-rustcrypto','rustls-pemfile')
+$critical=@('rustls','oxitls-rustcrypto-provider','rustls-pemfile')
 foreach($name in $critical){
     $entry=@($entries|Where-Object {$_.name-eq$name})
     if($entry.Count-ne 1-or$entry[0].licenseFiles.Count-eq 0){throw "Required license material was not found for $name."}

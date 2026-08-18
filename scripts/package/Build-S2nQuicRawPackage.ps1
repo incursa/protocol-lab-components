@@ -17,7 +17,7 @@ $sourcePackageManifest = Join-Path $componentRoot 'protocol-lab-package.json'
 $sourceInternalManifest = Join-Path $componentRoot 'protocol-lab.internal.json'
 $sourceImplementationManifest = Join-Path $componentRoot 'implementations/s2n-quic-raw.yaml'
 $sourceRunSh = Join-Path $componentRoot 'run.sh'
-$buildImage = 'rust@sha256:af306cfa71d987911a781c37b59d7d67d934f49684058f96cf72079c3626bfe0'
+$buildImage = 'rust@sha256:e90e846de4124376164ddfbaab4b0774c7bdeef5e738866295e5a90a34a307a2'
 
 foreach ($path in @($sourcePackageManifest, $sourceInternalManifest, $sourceImplementationManifest, $sourceRunSh, (Join-Path $sourceRoot 'Cargo.toml'), (Join-Path $sourceRoot 'Cargo.lock'))) {
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {

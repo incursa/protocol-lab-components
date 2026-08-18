@@ -462,7 +462,7 @@ fn observe(
         certificate_spki_sha256: LEAF_SPKI_HASH,
         certificate_verified: true,
         tls_handshake_latency_ms: elapsed.as_secs_f64() * 1000.0,
-        crypto_provider: "rustls-rustcrypto@0.0.2-alpha",
+        crypto_provider: "oxitls-rustcrypto-provider@0.3.0",
         acceleration_provenance: "portable-software",
         platform_os: env::consts::OS,
         platform_architecture: env::consts::ARCH,

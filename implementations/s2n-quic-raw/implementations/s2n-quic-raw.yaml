@@ -1,7 +1,7 @@
 schemaVersion: "1.0"
 id: s2n-quic-raw
 name: s2n-quic Raw QUIC
-description: s2n-quic 1.83.0 raw QUIC transport target for ProtocolLab handshake, echo, upload throughput, multiplexing, and duplex validation.
+description: s2n-quic 1.86.0 raw QUIC transport target for ProtocolLab handshake, echo, upload throughput, multiplexing, and duplex validation.
 family: s2n-quic
 role: server
 targetKind: process

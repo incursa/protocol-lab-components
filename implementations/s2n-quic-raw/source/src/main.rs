@@ -60,7 +60,9 @@ async fn main() -> Result<()> {
         .context("configure s2n-quic UDP endpoint")?
         .start()
         .context("start s2n-quic endpoint")?;
-    let actual = server.local_addr().context("read s2n-quic listen address")?;
+    let actual = server
+        .local_addr()
+        .context("read s2n-quic listen address")?;
 
     println!(
         "{}",
@@ -72,7 +74,7 @@ async fn main() -> Result<()> {
             alpn: "plab-raw-quic",
             listen: actual.to_string(),
             advertise_host: advertise_host.trim(),
-            s2n_quic_version: "1.83.0",
+            s2n_quic_version: "1.86.0",
             tls_provider: "rustls",
             process_id: std::process::id(),
             supported_scenarios: SUPPORTED_SCENARIOS,
@@ -110,7 +112,8 @@ async fn main() -> Result<()> {
 
 fn listen_address() -> Result<SocketAddr> {
     let port = env::var("PLAB_QUIC_PORT").unwrap_or_else(|_| DEFAULT_PORT.to_owned());
-    let bind = env::var("PROTOCOL_LAB_TARGET_BIND_ADDRESS").unwrap_or_else(|_| "127.0.0.1".to_owned());
+    let bind =
+        env::var("PROTOCOL_LAB_TARGET_BIND_ADDRESS").unwrap_or_else(|_| "127.0.0.1".to_owned());
     if let Ok(address) = bind.parse::<SocketAddr>() {
         return Ok(address);
     }
@@ -133,7 +136,10 @@ fn tls_provider() -> Result<rustls::Server> {
         .map_err(|error| anyhow::anyhow!("build s2n-quic rustls provider: {error}"))
 }
 
-async fn handle_stream(mut stream: s2n_quic::stream::BidirectionalStream, echo_max: usize) -> Result<()> {
+async fn handle_stream(
+    mut stream: s2n_quic::stream::BidirectionalStream,
+    echo_max: usize,
+) -> Result<()> {
     let mut payload = Vec::new();
     while let Some(chunk) = stream.receive().await.context("receive stream payload")? {
         if payload.len() + chunk.len() > MAX_READ_BYTES {
@@ -210,9 +216,21 @@ mod tests {
     #[test]
     fn scenario_echo_limits_match_declared_wire_behavior() {
         assert_eq!(echo_max_for_scenario("quic.transport.handshake-cold"), 0);
-        assert_eq!(echo_max_for_scenario("quic.transport.latency.echo-1kb"), 1024);
-        assert_eq!(echo_max_for_scenario("quic.transport.stream-throughput.1mb"), 0);
-        assert_eq!(echo_max_for_scenario("quic.transport.multiplex.100x64kb"), 64 * 1024);
-        assert_eq!(echo_max_for_scenario("quic.transport.duplex-streams"), 64 * 1024);
+        assert_eq!(
+            echo_max_for_scenario("quic.transport.latency.echo-1kb"),
+            1024
+        );
+        assert_eq!(
+            echo_max_for_scenario("quic.transport.stream-throughput.1mb"),
+            0
+        );
+        assert_eq!(
+            echo_max_for_scenario("quic.transport.multiplex.100x64kb"),
+            64 * 1024
+        );
+        assert_eq!(
+            echo_max_for_scenario("quic.transport.duplex-streams"),
+            64 * 1024
+        );
     }
 }
