@@ -9,7 +9,7 @@ publish = false
 env_logger = "=0.11.11"
 log = "=0.4.33"
 mio = { version = "=1.2.2", features = ["net", "os-poll"] }
-quiche = "=0.29.3"
+quiche = "=0.30.0"
 ring = "=0.17.14"
 
 [profile.release]
