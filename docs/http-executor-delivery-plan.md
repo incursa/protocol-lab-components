@@ -1,6 +1,6 @@
 # ProtocolLab HTTP Executor Delivery Plan
 
-Status: active engineering plan
+> Historical engineering record: this document preserves immutable package and evidence provenance from the delivery effort. It is not a current branch, package, deployment, or work-status page. Track active work in issues or pull requests.
 Observed: 2026-07-13
 Owner: `protocol-lab-components`, with runner integration owned by `protocol-lab-internal`
 
@@ -58,7 +58,7 @@ The current internal runner collapses `testExecutorId` into `loadToolId` and spe
 
 Unknown executor or parser IDs must be `unsupported` or `unavailable`; they must never receive generic arguments and then be accepted with empty metrics.
 
-## Current inventory
+## Recorded inventory
 
 | Lane | Existing component truth | Readiness |
 | --- | --- | --- |
@@ -765,7 +765,7 @@ git diff --check
 
 Also run package-local tests, the affected package builder, package-v2 conformance against the source and archive, and an extracted package smoke. Dirty-source builds are diagnostic-only and must use the explicit dirty-source option; they are not parity or publication evidence.
 
-## Remaining owner decisions
+## Recorded owner decisions
 
 1. Select the runtime-model authority for independent CLI concurrency and comparison-group identity before H2 comparison work. Preserve configured stream capacity separately from observed active-stream evidence.
 2. Decide whether a future controlled TLS campaign must run both Windows and Linux hosts. Both executor and Go target archives are built; each approved host topology still requires controlled proof.

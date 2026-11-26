@@ -76,3 +76,4 @@ toolchains listed in [scripts/package/README.md](scripts/package/README.md).
 - Keep package README files concrete about what the component provides and what
   it does not provide.
 - Prefer shared package helpers over one-off component release behavior.
+- Keep durable guidance free of branch, deployment, point-in-time validation, test-count, package-count, exact-latest-version, temporary-blocker, and unfinished-work status. Put active delivery tracking in issues or pull requests; reserve exact versions and hashes in Markdown for clearly labeled immutable evidence records.

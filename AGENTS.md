@@ -46,6 +46,7 @@ active component manifest name.
   package validation and, when relevant, the affected package builder smoke.
 - Governance changes may update root governance files, `.github/`, and docs
   indexes, but must not change package behavior.
+- Keep durable guidance free of branch, deployment, point-in-time validation, test-count, package-count, exact-latest-version, temporary-blocker, and unfinished-work status. Immutable versions, hashes, commits, and job IDs may remain only in clearly labeled historical evidence records where they are required for provenance.
 
 ## Validation
 
