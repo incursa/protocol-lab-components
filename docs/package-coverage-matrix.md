@@ -1,5 +1,7 @@
 # ProtocolLab Package Coverage Matrix
 
+> Historical evidence record: versions, hashes, commits, publications, and controller job IDs below identify immutable proof. They are not claims about the latest package, deployment, or controller inventory. Use package manifests and the owning controller for live availability.
+
 Observed: 2026-07-15
 
 This matrix tracks reusable component package coverage for implementations and executors that should be visible in ProtocolLab comparisons. It separates package inventory from proof quality: `supported` means the package metadata and wrapper advertise the row; live benchmark or conformance evidence remains tied to report artifacts.
@@ -174,7 +176,7 @@ This matrix tracks reusable component package coverage for implementations and e
 
 The controller also contains earlier immutable uploads from the Caddy, nginx, quic-go, aioquic, Kestrel, quiche, and ngtcp2 correction sequences. Do not use superseded or overbroad uploads for ranking. Use Caddy `0.1.9`, nginx `0.1.9`, quic-go HTTP/3 `0.1.8`, Kestrel `0.1.8`, quiche `0.1.10`, and ngtcp2 `0.1.9` for current h3spec/QPACK rows; aioquic `0.3.3` remains the immutable h3spec/QPACK proof and `0.3.4` is the current 64 KiB payload proof. Use other cited older immutable versions only for retained payload or peer-characterization rows. The quiche current proof includes two explicit conformance failures and neither peer target has an accepted performance measurement.
 
-## Remaining Ranked Gaps
+## Recorded ranked gaps
 
 | Rank | Gap | Value | Blocker |
 | --- | --- | --- | --- |

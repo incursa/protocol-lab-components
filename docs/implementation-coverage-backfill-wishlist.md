@@ -1,5 +1,7 @@
 # ProtocolLab Implementation Coverage Backfill Wishlist
 
+> Historical evidence record: versions, hashes, commits, and controller job IDs below identify immutable proof captured during the program. They are not claims about the latest package, deployment, or controller inventory. Track active work in issues or pull requests.
+
 Updated: 2026-07-17
 
 This is the delivery backlog for the program after the initial implementation-
@@ -137,7 +139,7 @@ no recursive upstream dependency.
   authoritative and resolver roles; retain DoH3 and DoQ as comparable
   observations until topology and QUIC saturation gates are proven.
 
-### Current retained secure-DNS evidence
+### Retained secure-DNS evidence
 
 | Role | Transport | Implementation | Immutable package version | Completed controller job |
 | --- | --- | --- | --- | --- |
@@ -216,7 +218,7 @@ DoH3/DoQ second-ecosystem, or decision-ready gates below.
     common cohort. The live breadth floor is met; physical-host separation,
     seven clean repetitions, and the remaining decision-ready gates are not.
 
-### Current retained raw QUIC evidence
+### Retained raw QUIC evidence
 
 | Implementation | Immutable package version | Proven rows | Completed controller job |
 | --- | --- | --- | --- |
@@ -402,7 +404,7 @@ repetition and the target/load VMs share physical host `r920`.
   15/15 cases, while quiche passed 13/15 and retained explicit RFC 9204
   Section 4.1.3 and 4.4.3 failures.
 
-### Current retained HTTP/3 evidence
+### Retained HTTP/3 evidence
 
 | Implementation | Immutable package version | Proven rows | Completed controller job |
 | --- | --- | --- | --- |
